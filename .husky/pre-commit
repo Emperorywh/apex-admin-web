@@ -1,0 +1,3 @@
+# 只读检查：暂存 TS/TSX 运行 oxlint（无 --fix），并执行全量结构门禁
+pnpm exec lint-staged
+pnpm check:structure

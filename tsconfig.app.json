@@ -5,6 +5,14 @@
     "lib": ["ES2023", "DOM"],
     "module": "esnext",
     "types": ["vite/client"],
+
+    /* 路径别名：与 vite.config.ts / Vitest 保持一致（规格 §3.5 固定 baseUrl；TS 6.0 起弃用，锁定 ~6.0 下显式确认） */
+    "ignoreDeprecations": "6.0",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+
     "allowArbitraryExtensions": true,
     "skipLibCheck": true,
 

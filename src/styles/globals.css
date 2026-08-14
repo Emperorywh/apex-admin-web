@@ -1,0 +1,34 @@
+/*
+ * 全局样式入口：只承载跨页面共享的基础样式与 CSS 自定义属性。
+ * 组件级样式使用 CSS Modules 与 antd token（规格 §10.2）。
+ */
+:root {
+  color-scheme: light dark;
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    'PingFang SC',
+    'Microsoft YaHei',
+    sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: rgb(0 0 0 / 88%);
+  background-color: #fff;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+.app-shell {
+  height: 100%;
+}
