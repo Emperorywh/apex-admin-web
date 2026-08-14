@@ -1,8 +1,10 @@
 # Apex Admin Web — 通用后台管理系统模板规格说明
 
-> 版本：v1.0 · 日期：2026-08-14 · 状态：已确认（经访谈敲定）
+> 版本：v1.1 · 日期：2026-08-14 · 状态：已确认（经访谈敲定；v1.1 为复核修订）
 >
 > 本文档是实现的唯一依据。所有标注「已定」的条目来自访谈结论；标注「默认」的条目为访谈未覆盖、按行业惯例选定的合理默认，实现时如有异议以本文档为准修改。
+>
+> v1.1 修订记录：① i18n key 改为「中文文案即 key」约定（§12 及相关处）；② 基线升级 antd v6 / react-router v8（§2，经确认）；③ 路由注册机制修正为「全量注册 + 守卫校验」（§4.1，原「过滤后注册」在 Data Router 下不可行）；④ 补充开放重定向防护（§4.3/§17）、环境变量补全（§16）、token 单一数据源（§6）等修正。
 
 ---
 
@@ -12,7 +14,7 @@
 
 设计原则：
 
-- **约定大于配置**：路由 meta、权限码、i18n key 命名均有统一约定。
+- **约定大于配置**：路由 meta、权限码、i18n key（直接使用中文文案，§12）均有统一约定。
 - **模板即文档**：示例页面（RBAC 管理三连）直接演示全部核心能力。
 - **可裁剪**：演示模式、示例页面、图表均可低成本移除。
 
@@ -25,12 +27,12 @@
 | 框架 | React 19.2 + TypeScript ~6.0 | 已有 |
 | 构建 | Vite 8 + @vitejs/plugin-react | 已有 |
 | 包管理 | pnpm | 已有 lock 文件 |
-| UI | antd v5（最新稳定） | CSS-in-JS + theme algorithm |
-| React19 兼容 | @ant-design/v5-patch-for-react-19 | **默认**：message/Modal/notification 一律用 `App.useApp()`，patch 仅兜底 |
-| 路由 | react-router v7 | **已定：Data Router 模式**（`createBrowserRouter` + `RouteObject[]`） |
+| UI | antd v6（最新稳定） | cssVar 默认开启 + theme algorithm；原生兼容 React 19，无需 v5-patch |
+| 静态反馈 | `App.useApp()` | message/Modal/notification 一律经 `App.useApp()` 实例调用，禁用静态方法 |
+| 路由 | react-router v8 | **已定：Data Router 模式**（`createBrowserRouter` + `RouteObject[]`）；`react-router-dom` 包已移除，统一从 `react-router` / `react-router/dom` 导入 |
 | 状态 | @reduxjs/toolkit + react-redux + redux-persist | **已定：白名单持久化** |
 | HTTP | axios | 封装见 §7 |
-| 国际化 | react-i18next + i18next | **已定：语言包按模块拆分、按需加载** |
+| 国际化 | react-i18next + i18next | **已定：key 即中文文案**（§12）；语言包按模块拆分、按需加载 |
 | 图标 | lucide-react | 菜单/按钮图标；antd 内部图标不混用 |
 | 样式 | CSS Modules + antd token | **已定**；禁止引入 Tailwind/Less |
 | 图表 | ECharts（按需引入） | 自研 `useECharts` hook |
@@ -65,11 +67,11 @@ src/
 ├── hooks/                    # useAuth、useECharts、useFullscreen、usePageActive ...
 ├── i18n/
 │   ├── index.ts              # i18next 初始化 + 按需加载
-│   └── locales/zh-CN/*.ts    # 按模块拆分：common.ts menu.ts system.ts ...
-│   └── locales/en-US/*.ts
+│   └── locales/en-US/*.ts    # 按模块拆分：common.ts menu.ts system.ts ...
+│                             # zh-CN 无需语言文件：key 即中文文案（§12）
 ├── layouts/
 │   ├── BasicLayout/          # 主布局（侧边/顶部两种模式在此切换）
-│   ├── components/           # SideMenu / TopMenu / Header / TabsBar / Breadcrumb / SettingDrawer ...
+│   │   └── components/       # SideMenu / TopMenu / Header / TabsBar / Breadcrumb / SettingDrawer ...
 │   └── BlankLayout.tsx       # 登录页等无框架页
 ├── pages/
 │   ├── login/  dashboard/  profile/
@@ -78,7 +80,7 @@ src/
 │   └── error/{403,404,500}.tsx
 ├── router/
 │   ├── routes.tsx            # 静态路由表（唯一数据源）
-│   ├── index.tsx             # createBrowserRouter + 过滤后注册
+│   ├── index.tsx             # createBrowserRouter + 全量注册
 │   └── guard.ts              # loader 守卫（登录态 + 权限码）
 ├── store/
 │   ├── index.ts              # configureStore + redux-persist
@@ -96,13 +98,15 @@ src/
 
 ### 4.1 组织方式（已定）
 
-**静态路由表 + 权限过滤**。前端在 `router/routes.tsx` 定义完整 `AppRouteObject[]` 树，登录后后端只返回角色标识与权限码列表，前端递归过滤路由树生成：① 注册给 `createBrowserRouter` 的路由；② 菜单数据。路由表是两者的唯一数据源。
+**静态路由表 + 权限过滤**。前端在 `router/routes.tsx` 定义完整 `AppRouteObject[]` 树并**一次性全量注册**给 `createBrowserRouter`；登录后后端只返回角色标识与权限码列表，前端按权限码递归过滤路由树，作用于两处：① 菜单数据（无权限节点不渲染）；② loader 守卫校验（直接访问无权限 URL → 403，见 §4.3）。路由表是菜单与守卫的唯一数据源。
+
+> 注：Data Router 创建后路由表不可变，且刷新场景下权限码需在守卫内异步拉取（§4.3），「过滤后再注册」在时序上不可行；全量注册 + 守卫拦截可达到等效访问控制。
 
 ### 4.2 路由 meta 约定
 
 ```ts
 interface RouteMeta {
-  title: string          // i18n key，如 'menu.system.user'，非硬编码文案
+  title: string          // i18n key 即中文文案（menu 命名空间，§12），如 '系统管理'
   icon?: LucideIcon      // 直接存 lucide 组件引用（静态路由天然支持，默认）
   permCode?: string      // 访问该路由所需权限码，如 'system:user:list'
   hideInMenu?: boolean   // 菜单不显示但路由可访问（如详情页）
@@ -119,10 +123,11 @@ interface RouteMeta {
 
 ### 4.3 守卫（已定：loader 方案）
 
-- `authLoader`：检查 store 中 token；无 → `redirect('/login?redirect=<fullPath>')`。
-- 有 token 但无用户信息（如刷新后）→ 在守卫内 `await` 拉取用户信息 + 权限码，再过滤路由。
+- `authLoader`：检查 store 中 token；无 → `redirect('/login?redirect=<fullPath>')`（fullPath 须 `encodeURIComponent` 编码）。
+- 有 token 但无用户信息（如刷新后）→ 在守卫内 `await` 拉取用户信息 + 权限码（`GET /auth/profile`），再校验权限、生成菜单。
 - 权限不足 → `redirect('/403')`。
 - `/login` 已登录访问 → `redirect('/')`。
+- 登录回跳的 `redirect` 参数仅允许站内路径（以 `/` 开头且非 `//` 开头），否则视为无效回 `/`，防开放重定向。
 
 ### 4.4 页签 key（默认）
 
@@ -160,8 +165,8 @@ User ──n:n── Role ──n:n── Permission(权限码)
 
 ## 6. 认证与 Token（已定：双 Token 静默刷新）
 
-- **存储**：accessToken + refreshToken 存 localStorage（模板默认；README 注明 XSS 风险与 httpOnly Cookie 替代方案）。
-- **登录**：`POST /auth/login` → 双 token + 用户基本信息 → 拉取权限码 → 过滤路由 → 跳回 `redirect` 参数或 `/`。
+- **存储**：双 token 随 user 切片经 redux-persist 落 localStorage（单一数据源，axios 拦截器从 store 读取；模板默认，README 注明 XSS 风险与 httpOnly Cookie 替代方案）。
+- **登录**：`POST /auth/login` → 双 token + 用户基本信息 → `GET /auth/profile` 拉取角色与权限码 → 生成菜单 → 跳回 `redirect` 参数或 `/`。
 - **静默刷新**：accessToken 过期 → 接口 401 → axios 拦截器触发刷新：
   - **single-flight**：并发 401 共享同一个刷新 Promise，期间到达的请求进入等待队列，刷新成功后用新 token 统一重放，失败则全部拒绝。
   - refreshToken 也失效 → 清空会话 → 跳登录页（带 redirect）。
@@ -188,7 +193,7 @@ GET  /auth/profile      -                             → { user, roles, permCod
 2. **统一错误提示**：业务错误自动 `message.error`（经 `App.useApp()`），单个请求可通过 `config.silent = true` 关闭。
 3. **401 刷新重放**：见 §6。
 4. **重复请求取消**：pending Map（key = method + url + 序列化参数），同 key 的 GET 重复发起时 abort 前一个；写操作（POST/PUT/DELETE）不参与自动取消。
-5. **路由切换中断**：请求挂 `AbortSignal`，路由变化时统一 abort 上一页未完成请求（被 abort 的请求静默处理，不弹错误）。
+5. **路由切换中断**：请求挂 `AbortSignal`，路由变化时统一 abort 上一页未完成请求（被 abort 的请求静默处理，不弹错误）；全局性请求（心跳、轮询等）经 `config` 标记豁免，不随路由切换中断。
 6. **全局 loading 计数**：在途请求计数入 store（app 切片），驱动顶部 `GlobalProgress` 细进度条；计数归零延迟 200ms 收起，防闪烁。
 
 明确**不做**（已定）：自动重试。
@@ -205,13 +210,13 @@ GET  /auth/profile      -                             → { user, roles, permCod
 | --- | --- | --- |
 | user | token 对、用户信息、角色、permCodes | ✅ |
 | settings | 主题模式、主题色、布局模式、字号、字体族、面包屑开关、语言 | ✅ |
-| tabs | 页签列表（fullPath、title key、affix、排序） | ❌（已定：不持久化） |
+| tabs | 页签列表（fullPath、title（中文 i18n key）、affix、排序） | ❌（已定：不持久化） |
 | keepAlive | 缓存 key 列表、LRU 顺序 | ❌ |
 | app | 全局 loading 计数、侧边栏折叠态、全屏态、演示模式开关 | 折叠态 ✅，其余 ❌ |
 
 ### 8.2 持久化（已定：redux-persist 白名单）
 
-- 白名单：`user`、`settings`、`app.sidebarCollapsed`。
+- 白名单：`user`、`settings`、`app.sidebarCollapsed`（字段级白名单以 slice 级嵌套 persist 或 `createTransform` 实现）。
 - `version: 1`，提供 `migrate` 函数骨架；后续结构变更必须升版本号写迁移。
 - RTK 集成：对 `persist/PERSIST` 等 action 关闭 `serializableCheck` 对应路径。
 - storage key 统一前缀 `apex_`，集中在 `config/constants.ts`。
@@ -223,7 +228,7 @@ GET  /auth/profile      -                             → { user, roles, permCod
 ### 9.1 页面缓存（已定：自研 display:none）
 
 - `KeepAliveOutlet`：以 fullPath 为 key 缓存 `<Outlet/>` 渲染结果；切走的页面**隐藏不卸载**，表单、滚动位置、组件状态完整保留。
-- **LRU 上限 10**（常量可配）：超过后淘汰最久未激活的非 affix 缓存；被关闭页签的缓存立即销毁。
+- **LRU 上限 10**（常量可配）：超过后淘汰最久未激活的非 affix 缓存——淘汰仅销毁缓存实例，页签保留，重新激活时重新挂载（表单等状态重置）；被关闭页签的缓存立即销毁。
 - 隐藏页面副作用规范（写入 README + 页面模板注释）：
   - 定时器 / 轮询必须挂在 `usePageActive()` 上（页面失焦自动暂停）；
   - 普通 `useEffect` 清理函数照常编写（卸载时才触发，隐藏不触发——这是与 Vue keep-alive 的语义差异，必须显式文档化）。
@@ -281,13 +286,15 @@ GET  /auth/profile      -                             → { user, roles, permCod
 
 ---
 
-## 12. 多语言（已定：react-i18next 按需加载）
+## 12. 多语言（已定：react-i18next 按需加载 + 中文 key）
 
 - 语言：zh-CN（默认）/ en-US；`navigator.language` 探测仅作首访默认，用户选择持久化后优先。
-- 语言包**按模块拆分**（common / menu / system / validation…），首屏只动态 import 当前语言全部模块；切换语言时按需加载缺失模块，加载中显示轻量过渡。
+- **key 即中文文案**（已定，目的是方便维护）：调用点直接写 `t('用户管理')`、`t('确认删除该用户吗？')`，所见即文案，省去「英文 key → 中文」映射层的维护成本。i18next 配置 `keySeparator: false`、`nsSeparator: false`，文案中的 `.` / `:` 一律不作解析；命名空间只经 `useTranslation('menu')` 显式绑定使用。
+- **zh-CN 不维护语言文件**：i18next 对缺失 key 默认返回 key 本身，即中文文案；只需按模块维护 en-US 的「中文 → English」映射表。英文缺译时回退中文——可读兜底，不会出现 `system.user.title` 式裸 key。
+- 语言包**按模块拆分**（common / menu / system / validation…）：首屏动态 import 当前语言全部模块（zh-CN 零加载），切换语言时按需加载缺失模块，加载中显示轻量过渡。
 - **联动**（默认）：切换语言同时切换 antd `ConfigProvider locale`（zhCN/enUS）与 dayjs locale。
-- key 命名：`<模块>.<页面>.<语义>`，如 `system.user.deleteConfirm`；菜单标题固定 `menu.*` 命名空间。
-- 富文本/插值用 i18next 插值与 `<Trans>`；复数规则按 i18next 标准。
+- 菜单标题固定 `menu` 命名空间；同一中文短语在不同语境译法不同（如「删除」作按钮/作标题）时用 i18next `context` 区分。
+- 插值：`t('共 {{count}} 条', { count })`；复数按 i18next 标准，en-US 中以 `<中文 key>_one` / `<中文 key>_other` 登记；富文本用 `<Trans>`。
 
 ---
 
@@ -297,7 +304,7 @@ GET  /auth/profile      -                             → { user, roles, permCod
 
 - `src/demo/` 内置演示数据：两个账号 `admin / viewer`（密码任意，演示模式提示中写明），角色、权限码、用户/角色/菜单的假数据集按 §6/§14 契约形状组织。
 - **触发条件**（默认）：`VITE_DEMO_MODE=true` 显式开启，或登录请求网络级失败（非业务错误）时提示「后端不可用，已进入演示模式」。
-- 实现位置：axios **适配器层之前的独立分支**（demo adapter），业务 api 模块无感知；不污染 `request.ts` 主流程。
+- 实现位置：以自定义 axios adapter 实现（`src/demo/` 内独立分支），业务 api 模块无感知、不污染 `request.ts` 主流程；请求/响应仍经过完整拦截器链，loading 计数、错误提示、401 行为与真实接口一致。
 - 演示模式下 CRUD 仅改内存数据 + 同步 localStorage 快照，刷新不丢；页面顶部显示「演示模式」常驻 Badge。
 - **可一键剔除**：删除 `src/demo/` + 移除 demo adapter 分支 + 关环境变量即完全移除（README 提供三步剔除指南）。
 
@@ -316,7 +323,7 @@ GET  /auth/profile      -                             → { user, roles, permCod
 | 个人中心 | `/profile` | 资料展示/编辑 + 修改密码（旧密码校验） |
 | 异常页 | `/403` `/404` `/500` | 无权限 / 路由不存在 / 路由级 ErrorBoundary 兜底（渲染错误 → 500 页） |
 
-CRUD 接口契约（用户管理为例，角色/菜单同理）：
+CRUD 接口契约（用户管理为例，角色/菜单同理；下列均为统一 envelope 内 `data` 的形状）：
 
 ```
 GET    /users?page=&size=&keyword=     → { list: User[], total }
@@ -337,7 +344,7 @@ DELETE /users/:id                      → void
 
 ## 16. 工程化
 
-- **环境变量**（默认）：`.env.development` / `.env.production` / `.env.example`；键：`VITE_API_BASE_URL`、`VITE_DEMO_MODE`。
+- **环境变量**（默认）：`.env.development` / `.env.production` / `.env.example`；键：`VITE_API_BASE_URL`（开发环境置 `/api`，配合 dev 代理）、`VITE_PROXY_TARGET`（dev 代理目标地址）、`VITE_DEMO_MODE`。
 - **dev 代理**（默认）：`/api` → `VITE_PROXY_TARGET`，`changeOrigin`。
 - **路径别名**：`@` → `src`。
 - **提交钩子**（已定）：Husky + lint-staged → `oxlint --fix` + `tsc --noEmit`（仅暂存文件范围可行则限范围，否则全量）。
@@ -360,11 +367,12 @@ DELETE /users/:id                      → void
 7. 隐藏页面的轮询/定时器：`usePageActive` 暂停约定（§9.1）。
 8. 同 fullPath 重复点击菜单：复用页签与缓存，仅激活。
 9. 快速连点查询/切页：重复请求取消 + 路由中断防脏数据（§7）。
-10. 语言切换瞬间：模块语言包未加载完 → 保持旧语言渲染，加载完成一次性切换，不出现 key 裸奔。
+10. 语言切换瞬间：模块语言包未加载完 → 保持旧语言渲染，加载完成一次性切换；缺失翻译回退中文文案，不出现 dot-path 裸 key。
 11. 主题「跟随系统」下系统主题变化：监听并即时切换，不与用户手动锁定冲突（用户选过亮/暗后不再跟随）。
 12. Fullscreen API 不可用（iframe/权限）：降级为 toast 提示。
 13. 路由组件抛错：路由级 `ErrorBoundary` → 500 页，提供「重载」按钮。
 14. 登出后浏览器后退：守卫重新拦截回登录页。
+15. 登录回跳 `redirect` 参数被篡改为外站 URL：按 §4.3 校验为站内路径，防开放重定向。
 
 ---
 
@@ -381,7 +389,7 @@ DELETE /users/:id                      → void
 - [ ] 设置面板全部设置项实时生效且刷新后保留。
 - [ ] 侧边/顶部布局热切换；三级菜单、面包屑、页签联动正确。
 - [ ] 多页签：display:none 缓存表单不丢；LRU 10 生效；右键菜单四项、affix、拖拽排序可用；刷新浏览器重置为首页+当前页。
-- [ ] 中英切换全站无硬编码文案、无 key 裸奔，antd 组件与日期同步切换。
+- [ ] 中英切换全站无硬编码文案（英文缺译时回退中文，不出现 dot-path 裸 key），antd 组件与日期同步切换。
 - [ ] 按钮级权限：viewer 账号在用户管理页看不到「新增/删除」（或按配置禁用）。
 - [ ] 双 token：access 过期后无感刷新（并发请求只刷新一次）；refresh 失效回登录。
 - [ ] 重复 GET 被取消、路由切换中断在途请求、全局进度条随请求显隐。
