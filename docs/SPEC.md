@@ -1,6 +1,6 @@
 # Apex Admin Web — 通用后台管理系统模板规格说明
 
-> 版本：v1.4 · 日期：2026-08-14 · 状态：待技术验证
+> 版本：v1.4 · 日期：2026-08-14 · 状态：已确认（§20 技术闸门已于 2026-08-15 验证通过）
 >
 > 本文档是实现候选基线。§20 技术闸门通过并记录结果后，状态才能改为「已确认」，届时本文档作为实现的唯一需求依据。技术闸门通过前，只允许完成基础工程和验证性 PoC，不进入全部业务页面开发。
 >
@@ -1205,7 +1205,17 @@ Playwright 覆盖：登录与回跳、admin/viewer 差异、CRUD、布局切换�
 
 技术闸门结果记录：
 
-- 状态：未执行
-- 验证提交：待填写
-- 执行命令：待填写
-- 结果摘要：待填写
+- 状态：已确认（2026-08-15，五项闸门全部通过）
+- 验证提交：c20b34e（五项闸门 PoC 测试落盘与全量验证，含 src/test/setup.ts 全局接线）；文档回写为独立 docs 提交
+- 执行命令：`pnpm exec vitest run src/router src/layouts src/demo`（五个闸门测试文件全部通过，14 个用例，退出码 0）；`pnpm check`（check:structure / oxlint / tsc / 43 个测试 / vite build 全绿，退出码 0）
+- 结果摘要：五项闸门 PoC 集中归档于 `src/router/gates/`（闸门验证的是 §4/§9 路由与缓存架构整体，且该目录不受组件同名文件夹约束；全部文件自包含最小 harness——内联最小路由定义、假 persist、假 adapter、stub resize 契约，不引用 src/ 内任何实现，不提前实现业务页面）。逐项结论：
+
+| 闸门 | 测试文件（`src/router/gates/`） | 结论 |
+| --- | --- | --- |
+| ① 独立路由上下文 | `gate-01-isolated-route-context.test.tsx` | 通过。CachedRouteView + useRoutes(renderRoutes, locationArg) 下，双 query 页签的 useLocation/useSearchParams/useParams 各读各自快照互不串值；外层 Data Router 导航与单页签快照更新均不影响其他缓存实例，不产生重复实例 |
+| ② Activity 生命周期 | `gate-02-activity-lifecycle.test.tsx` | 通过。React 19.2 `<Activity>` 隐藏保留受控/非受控输入与滚动容器 scrollTop（DOM 以 display:none 保留），Effect 隐藏清理、显示重建；关闭页签与 LRU 淘汰后 DOM 真正移除，再激活为全新挂载 |
+| ③ Portal 与 ECharts | `gate-03-portal-echarts.test.tsx` | 通过。antd 下拉经 getPopupContainer 挂页面容器，随页面隐藏无 body 残留、重显无重复副本；Modal 由宿主隐藏前关闭，隐藏期间无可见残留、重显保持关闭且页面状态保留（实测 Activity 隐藏会移除 body 级 Modal 门户 DOM，重显时以关闭态重挂载，“隐藏前关闭”仍为必需契约）；图表实例跨隐藏/显示保留，隐藏暂停、重激活后在下一 animation frame 以当前容器尺寸 resize（stub 契约断言） |
+| ④ 认证启动竞态 | `gate-04-auth-bootstrap-race.test.tsx` | 通过。延迟 rehydration 下父子 loader 并发启动并挂起等待，不误跳登录；token 随恢复出现后 loader 继续等待 profile，profile 完成前不渲染受保护页；并发受保护 loader 经 single-flight 只发一次 profile 请求；无 token 时才跳登录且不发 profile |
+| ⑤ demo 刷新延续 | `gate-05-demo-refresh-continuity.test.ts` | 通过。fallback 登录仅在真实 adapter 网络级失败后切 demo 并重放一次，sessionSource 随双 token 持久化；整页刷新后新会话先恢复来源，profile/CRUD 继续走 demo adapter（真实 adapter 刷新后零调用）；真实登录成功不切换 |
+
+环境备注：jsdom 不提供 ResizeObserver，已在 `src/test/setup.ts` 提供无操作最小桩；vitest 未开启 globals，Testing Library 自动清理在 setup 中显式接线。ECharts 断言按闸门约定使用 stub resize 契约实现（真实 useECharts 由后续任务实现并用 SVG renderer 复核）。
