@@ -6,12 +6,14 @@
  * loadPage 只允许 @/pages/... 具名实现路径懒加载（规格 §4.2），禁止从 features 加载页面
  * 或依赖 index 解析；结构门禁按 loadPage 内联动态导入的字面形态校验目标归属，
  * 因此保持内联动态导入，并用 .then 把页面具名导出映射为 React.lazy 需要的 default 形态。
- * 当前只注册已实现的页面（登录、错误页），业务页面路由随各自任务增量扩展；
- * 受保护根外壳由 projections 的 ProtectedRoot 容器挂载 BasicLayout 承担渲染。
+ * 业务页面路由随各自任务增量扩展；受保护根外壳由 projections 的 ProtectedRoot
+ * 容器挂载 BasicLayout 承担渲染。
  */
-import { LayoutDashboard, ListTree, Settings, ShieldCheck, UsersRound } from 'lucide-react'
+import { FlaskConical, LayoutDashboard, ListTree, Settings, ShieldCheck, UsersRound } from 'lucide-react'
 import { DASHBOARD_I18N_NAMESPACE } from '@/constants/dashboard/dashboard.constants'
+import { DEMO_NESTED_I18N_NAMESPACE } from '@/constants/demo/demo.constants'
 import { PERMISSIONS } from '@/constants/permission.constants'
+import { PROFILE_I18N_NAMESPACE } from '@/constants/profile/profile.constants'
 import { ROUTE_IDS, ROUTE_PATHS } from '@/constants/route.constants'
 import { MENU_I18N_NAMESPACE } from '@/constants/system/menu/menu.constants'
 import { ROLE_I18N_NAMESPACE } from '@/constants/system/role/role.constants'
@@ -108,6 +110,51 @@ export const routeDefinitions: readonly AppRouteDefinition[] = [
             },
           },
         ],
+      },
+      {
+        // 多级菜单演示（规格 §14.2）：演示目录 > 多级菜单目录 > 三个层级叶子页面，
+        // 构成三级菜单（演示/多级菜单/层级页面，§19.1 验收项）；同一 NestedDemo 实现
+        // 注册于三个层级路由，由 pathname 识别层级，承担三级导航、面包屑链与页签缓存
+        // 验证载体。子树权限 demo:nested:view 声明于多级菜单目录节点（规格 §4.4 权限继承：
+        // 祖先与叶子 AND），admin/viewer 均持有（规格 §5.3 矩阵）。
+        id: ROUTE_IDS.DEMO,
+        path: ROUTE_PATHS.DEMO,
+        meta: { title: '演示', icon: FlaskConical },
+        children: [
+          {
+            id: ROUTE_IDS.DEMO_NESTED,
+            path: ROUTE_PATHS.DEMO_NESTED,
+            meta: { title: '多级菜单', permCode: PERMISSIONS.DEMO_NESTED_VIEW },
+            children: [
+              {
+                id: ROUTE_IDS.DEMO_NESTED_LEVEL1,
+                path: ROUTE_PATHS.DEMO_NESTED_LEVEL1,
+                loadPage: () => import('@/pages/demo/NestedDemo/NestedDemo').then(({ NestedDemo }) => ({ default: NestedDemo })),
+                meta: { title: '一级页面', i18nNamespaces: [DEMO_NESTED_I18N_NAMESPACE] },
+              },
+              {
+                id: ROUTE_IDS.DEMO_NESTED_LEVEL2,
+                path: ROUTE_PATHS.DEMO_NESTED_LEVEL2,
+                loadPage: () => import('@/pages/demo/NestedDemo/NestedDemo').then(({ NestedDemo }) => ({ default: NestedDemo })),
+                meta: { title: '二级页面', i18nNamespaces: [DEMO_NESTED_I18N_NAMESPACE] },
+              },
+              {
+                id: ROUTE_IDS.DEMO_NESTED_LEVEL3,
+                path: ROUTE_PATHS.DEMO_NESTED_LEVEL3,
+                loadPage: () => import('@/pages/demo/NestedDemo/NestedDemo').then(({ NestedDemo }) => ({ default: NestedDemo })),
+                meta: { title: '三级页面', i18nNamespaces: [DEMO_NESTED_I18N_NAMESPACE] },
+              },
+            ],
+          },
+        ],
+      },
+      {
+        // 个人中心（规格 §14.2）：仅要求登录、不分配 permCode（规格 §5.3）；
+        // 入口为 Header 用户菜单，不在侧边/顶部菜单展示（hideInMenu 不影响 URL 可访问性，规格 §4.4）
+        id: ROUTE_IDS.PROFILE,
+        path: ROUTE_PATHS.PROFILE,
+        loadPage: () => import('@/pages/profile/Profile/Profile').then(({ Profile }) => ({ default: Profile })),
+        meta: { title: '个人中心', hideInMenu: true, i18nNamespaces: [PROFILE_I18N_NAMESPACE] },
       },
       {
         id: ROUTE_IDS.FORBIDDEN,

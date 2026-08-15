@@ -131,20 +131,31 @@ export function getProfile(): Promise<GetProfileResponseDto> {
   })
 }
 
+/**
+ * 个人中心写操作可调选项（规格 §7.4-3）：
+ * 资料与密码表单自行呈现错误（字段映射或页面级）的调用方传 silent: true 关闭全局提示，
+ * 避免同一错误既弹全局提示又在表单内重复出现；默认走全局统一提示。
+ */
+export interface ProfileWriteOptions {
+  silent?: boolean
+}
+
 /** 编辑个人资料：PUT /auth/profile（body 契约见规格 §14.3） */
-export function updateProfile(dto: UpdateProfileRequestDto): Promise<User> {
+export function updateProfile(dto: UpdateProfileRequestDto, options: ProfileWriteOptions = {}): Promise<User> {
   return request<User>({
     url: PROFILE_ENDPOINTS.UPDATE_PROFILE,
     method: 'put',
     data: dto,
+    ...(options.silent === true ? { silent: true } : {}),
   })
 }
 
 /** 修改密码：PUT /auth/password；新旧密码策略由表单校验（规格 §14.3） */
-export function changePassword(dto: ChangePasswordRequestDto): Promise<null> {
+export function changePassword(dto: ChangePasswordRequestDto, options: ProfileWriteOptions = {}): Promise<null> {
   return request<null>({
     url: PROFILE_ENDPOINTS.CHANGE_PASSWORD,
     method: 'put',
     data: dto,
+    ...(options.silent === true ? { silent: true } : {}),
   })
 }

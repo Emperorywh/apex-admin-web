@@ -1,8 +1,8 @@
 /**
  * demo adapter（规格 §13.2）：以与真实接口相同的 HTTP/envelope/errorCode 契约（规格 §7.1/§14.4）
- * 实现受支持端点——登录（密码任意）、GET profile、refresh（token 过期与旋转）、logout、
- * 用户 CRUD、角色 CRUD 与分配权限、GET /permissions/tree 权限树、GET /menus/tree 菜单树、
- * 菜单 CRUD、GET /dashboard/overview。
+ * 实现受支持端点——登录（密码任意）、profile（GET/PUT）、修改密码（PUT /auth/password）、
+ * refresh（token 过期与旋转）、logout、用户 CRUD、角色 CRUD 与分配权限、
+ * GET /permissions/tree 权限树、GET /menus/tree 菜单树、菜单 CRUD、GET /dashboard/overview。
  *
  * - 形态是 axios adapter：由 demo 运行时经 configureRequestAdapter 注册，主实例与 refresh 专用实例
  *   共用同一选择结果，因此 401 刷新单飞同样落在 demo 契约上（§20 闸门 ⑤ 结论产品化）；
@@ -481,6 +481,55 @@ function handleProfile(config: InternalAxiosRequestConfig): DemoEndpointOutput {
     permissionVersion: account.permissionVersion,
   }
   return ok(profile)
+}
+
+/**
+ * 编辑个人资料：PUT /auth/profile（规格 §14.3 编辑资料契约 { displayName, email, phone? }）。
+ * 更新当前账号对应的用户记录并同步快照；后续 GET /auth/profile 与用户列表立即反映新资料。
+ */
+function handleUpdateProfile(config: InternalAxiosRequestConfig): DemoEndpointOutput {
+  const account = requireAccount(config)
+  const target = findUserById(account.userId)
+  if (target === undefined) {
+    throw new DemoEndpointError(500, API_ERROR_CODES.INTERNAL_ERROR, '演示账号缺少种子用户记录')
+  }
+  const body = parseBody(config)
+  const validator = new FieldValidator()
+  const displayName = validator.requireString(body, 'displayName')
+  const email = validator.requireString(body, 'email')
+  const phone = validator.optionalString(body, 'phone')
+  if (email.length > 0 && !USER_EMAIL_PATTERN.test(email)) {
+    validator.add('email', 'email 格式不正确')
+  }
+  validator.throwIfInvalid()
+  // 编辑契约不含 username/password/roleIds（规格 §14.3）；空串 phone 按未填处理
+  target.displayName = displayName
+  target.email = email
+  if (phone === undefined || phone.length === 0) {
+    delete target.phone
+  } else {
+    target.phone = phone
+  }
+  target.updatedAt = nowIso()
+  persistDemoSnapshot()
+  return ok(target)
+}
+
+/**
+ * 修改密码：PUT /auth/password。演示登录密码任意（规格 §13.2），没有可校验的存储旧密码：
+ * 仅校验字段形状与密码策略（oldPassword 非空、newPassword 满足 PASSWORD_PATTERN），成功返回 null。
+ */
+function handleChangePassword(config: InternalAxiosRequestConfig): DemoEndpointOutput {
+  requireAccount(config)
+  const body = parseBody(config)
+  const validator = new FieldValidator()
+  validator.requireString(body, 'oldPassword')
+  const newPassword = validator.requireString(body, 'newPassword')
+  if (newPassword.length > 0 && !PASSWORD_PATTERN.test(newPassword)) {
+    validator.add('newPassword', 'newPassword 不满足密码策略（最少 8 位且同时含字母和数字）')
+  }
+  validator.throwIfInvalid()
+  return ok(null)
 }
 
 /** 列表查询参数校验与归一（规格 §14.3：分页、sortBy 白名单、keyword 字段）；用户/角色列表共用 */
@@ -1085,6 +1134,8 @@ const DEMO_ROUTES: readonly DemoRoute[] = [
   route('post', AUTH_ENDPOINTS.REFRESH, handleRefresh),
   route('post', AUTH_ENDPOINTS.LOGOUT, handleLogout),
   route('get', PROFILE_ENDPOINTS.GET_PROFILE, handleProfile),
+  route('put', PROFILE_ENDPOINTS.UPDATE_PROFILE, handleUpdateProfile),
+  route('put', PROFILE_ENDPOINTS.CHANGE_PASSWORD, handleChangePassword),
   route('get', DASHBOARD_ENDPOINTS.OVERVIEW, handleDashboardOverview),
   route('get', PERMISSION_TREE_ENDPOINT, handlePermissionTree),
   route('get', MENU_ENDPOINTS.TREE, handleMenuTree),

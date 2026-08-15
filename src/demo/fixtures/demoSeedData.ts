@@ -97,8 +97,8 @@ export const DEMO_SEED_NEXT_ROLE_SEQUENCE = 1
 /**
  * 种子菜单（规格 §14.1/§14.3）：扁平存储（children 由 GET /menus/tree 组装），
  * routeId/path 只引用当前已注册的静态路由（ROUTE_IDS/ROUTE_PATHS 权威值）；
- * demo:nested 演示路由在后续任务注册，对应菜单种子条目届时再补充，
- * 本任务不预置引用未注册 routeId 的数据。button 类型仅展示权限资源关系。
+ * 多级菜单演示条目与路由定义同步注册（演示 > 多级菜单 > 三个层级页面，
+ * 对应前端三级菜单，§14.2/§19.1）。button 类型仅展示权限资源关系。
  */
 export const DEMO_SEED_MENUS: readonly MenuItem[] = [
   {
@@ -168,6 +168,57 @@ export const DEMO_SEED_MENUS: readonly MenuItem[] = [
   { id: 'demo-menu-menu-create', parentId: 'demo-menu-system-menu', type: 'button', name: '新增', permCode: PERMISSIONS.SYSTEM_MENU_CREATE, sort: 2, visible: true, status: 'enabled' },
   { id: 'demo-menu-menu-update', parentId: 'demo-menu-system-menu', type: 'button', name: '编辑', permCode: PERMISSIONS.SYSTEM_MENU_UPDATE, sort: 3, visible: true, status: 'enabled' },
   { id: 'demo-menu-menu-delete', parentId: 'demo-menu-system-menu', type: 'button', name: '删除', permCode: PERMISSIONS.SYSTEM_MENU_DELETE, sort: 4, visible: true, status: 'enabled' },
+  {
+    id: 'demo-menu-demo',
+    parentId: null,
+    type: 'directory',
+    name: '演示',
+    sort: 3,
+    visible: true,
+    status: 'enabled',
+  },
+  {
+    id: 'demo-menu-nested',
+    parentId: 'demo-menu-demo',
+    type: 'directory',
+    name: '多级菜单',
+    sort: 1,
+    visible: true,
+    status: 'enabled',
+  },
+  {
+    id: 'demo-menu-nested-level1',
+    parentId: 'demo-menu-nested',
+    type: 'page',
+    name: '一级页面',
+    routeId: ROUTE_IDS.DEMO_NESTED_LEVEL1,
+    path: ROUTE_PATHS.DEMO_NESTED_LEVEL1,
+    sort: 1,
+    visible: true,
+    status: 'enabled',
+  },
+  {
+    id: 'demo-menu-nested-level2',
+    parentId: 'demo-menu-nested',
+    type: 'page',
+    name: '二级页面',
+    routeId: ROUTE_IDS.DEMO_NESTED_LEVEL2,
+    path: ROUTE_PATHS.DEMO_NESTED_LEVEL2,
+    sort: 2,
+    visible: true,
+    status: 'enabled',
+  },
+  {
+    id: 'demo-menu-nested-level3',
+    parentId: 'demo-menu-nested',
+    type: 'page',
+    name: '三级页面',
+    routeId: ROUTE_IDS.DEMO_NESTED_LEVEL3,
+    path: ROUTE_PATHS.DEMO_NESTED_LEVEL3,
+    sort: 3,
+    visible: true,
+    status: 'enabled',
+  },
 ]
 
 /** 新建演示菜单的下一个数字序号（种子菜单使用语义化 ID，不占用数字序号） */

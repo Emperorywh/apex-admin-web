@@ -5,7 +5,9 @@
  */
 import { describe, expect, expectTypeOf, it } from 'vitest'
 import { DASHBOARD_I18N_NAMESPACE } from '@/constants/dashboard/dashboard.constants'
+import { DEMO_NESTED_I18N_NAMESPACE } from '@/constants/demo/demo.constants'
 import { PERMISSIONS } from '@/constants/permission.constants'
+import { PROFILE_I18N_NAMESPACE } from '@/constants/profile/profile.constants'
 import { ROUTE_IDS, ROUTE_PATHS } from '@/constants/route.constants'
 import { MENU_I18N_NAMESPACE } from '@/constants/system/menu/menu.constants'
 import { ROLE_I18N_NAMESPACE } from '@/constants/system/role/role.constants'
@@ -107,6 +109,45 @@ describe('routeDefinitions（规格 §4.2）', () => {
     // 挂在系统管理目录下，与用户/角色管理同级
     const system = byId.get(ROUTE_IDS.SYSTEM)
     expect(system?.children?.map((child) => child.id)).toContain(ROUTE_IDS.SYSTEM_MENU)
+  })
+
+  it('多级菜单演示：三级层级叶子路由挂同一实现，权限 demo:nested:view 声明于多级菜单目录（规格 §14.2/§4.4/§12）', () => {
+    const byId = new Map(nodes.map((node) => [node.id, node]))
+    // 演示目录 > 多级菜单目录 > 三个层级叶子：构成三级菜单（§19.1 验收项）
+    const demo = byId.get(ROUTE_IDS.DEMO)
+    expect(demo?.path).toBe(ROUTE_PATHS.DEMO)
+    expect(demo?.loadPage).toBeUndefined()
+    const nested = byId.get(ROUTE_IDS.DEMO_NESTED)
+    expect(nested?.path).toBe(ROUTE_PATHS.DEMO_NESTED)
+    // 子树权限声明在目录节点：祖先与叶子 AND（规格 §4.4），admin/viewer 均持有（规格 §5.3）
+    expect(nested?.meta.permCode).toBe(PERMISSIONS.DEMO_NESTED_VIEW)
+    expect(nested?.children?.map((child) => child.id)).toEqual([
+      ROUTE_IDS.DEMO_NESTED_LEVEL1,
+      ROUTE_IDS.DEMO_NESTED_LEVEL2,
+      ROUTE_IDS.DEMO_NESTED_LEVEL3,
+    ])
+    for (const [id, path] of [
+      [ROUTE_IDS.DEMO_NESTED_LEVEL1, ROUTE_PATHS.DEMO_NESTED_LEVEL1],
+      [ROUTE_IDS.DEMO_NESTED_LEVEL2, ROUTE_PATHS.DEMO_NESTED_LEVEL2],
+      [ROUTE_IDS.DEMO_NESTED_LEVEL3, ROUTE_PATHS.DEMO_NESTED_LEVEL3],
+    ] as const) {
+      const level = byId.get(id)
+      expect(level?.path, `${id} path`).toBe(path)
+      expect(level?.meta.i18nNamespaces, `${id} namespaces`).toEqual([DEMO_NESTED_I18N_NAMESPACE])
+      expect(level?.meta.permCode).toBeUndefined()
+    }
+  })
+
+  it('个人中心：仅登录无 permCode、hideInMenu、profile 命名空间（规格 §14.2/§5.3/§12）', () => {
+    const byId = new Map(nodes.map((node) => [node.id, node]))
+    const profile = byId.get(ROUTE_IDS.PROFILE)
+    expect(profile?.path).toBe(ROUTE_PATHS.PROFILE)
+    expect(profile?.meta.permCode).toBeUndefined()
+    expect(profile?.meta.hideInMenu).toBe(true)
+    // 入口为 Header 用户菜单：正常生成页签且可缓存（不设 hideInTabs/noCache）
+    expect(profile?.meta.hideInTabs).toBeUndefined()
+    expect(profile?.meta.noCache).toBeUndefined()
+    expect(profile?.meta.i18nNamespaces).toEqual([PROFILE_I18N_NAMESPACE])
   })
 
   it('叶子节点均有 loadPage，目录节点无 loadPage（规格 §4.2）', () => {

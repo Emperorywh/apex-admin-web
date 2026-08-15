@@ -13,6 +13,7 @@ import { AUTH_ENDPOINTS } from '@/constants/auth/auth.constants'
 import { PERMISSIONS } from '@/constants/permission.constants'
 import { PROFILE_ENDPOINTS } from '@/constants/profile/profile.constants'
 import { API_ERROR_CODES } from '@/constants/request.constants'
+import { ROUTE_IDS, ROUTE_PATHS } from '@/constants/route.constants'
 import { MENU_PAGE_ROUTE_IDS } from '@/constants/system/menu/menu.constants'
 import { axiosErrorToApiError } from '@/services/request/envelope'
 import { registerUiFeedbackInstances, resetUiFeedbackInstances, type UiFeedbackInstances } from '@/services/feedback/uiFeedback'
@@ -196,6 +197,116 @@ describe('profile 端点（规格 §6.3/§5.3）', () => {
     demoAdapterTestController.invalidateAccessTokens(DEMO_ACCOUNT_USERNAMES.ADMIN)
     const { apiError } = await expectFailure(demoConfig({ url: '/auth/profile', token: accessToken }))
     expect(apiError.errorCode).toBe(API_ERROR_CODES.AUTH_ACCESS_EXPIRED)
+  })
+
+  it('编辑资料：PUT /auth/profile 更新当前账号用户记录、落快照，后续 profile 与用户列表立即反映新资料', async () => {
+    const { accessToken } = await loginDemo(DEMO_ACCOUNT_USERNAMES.VIEWER)
+    const outcome = await callAdapter(
+      demoConfig({
+        method: 'put',
+        url: PROFILE_ENDPOINTS.UPDATE_PROFILE,
+        token: accessToken,
+        data: { displayName: '演示访客·已改名', email: 'viewer2@apex.demo', phone: '13900000002' },
+      }),
+    )
+    const updated = envelopeData<User>(outcome)
+    expect(updated).toMatchObject({
+      id: 'demo-user-002',
+      username: 'viewer',
+      displayName: '演示访客·已改名',
+      email: 'viewer2@apex.demo',
+      phone: '13900000002',
+    })
+    // username/status/roleIds 等不受编辑契约影响（规格 §14.3）
+    expect(updated.roleIds).toEqual(['demo-role-viewer'])
+
+    const profile = envelopeData<ProfileData>(
+      await callAdapter(demoConfig({ url: PROFILE_ENDPOINTS.GET_PROFILE, token: accessToken })),
+    )
+    expect(profile.user.displayName).toBe('演示访客·已改名')
+
+    const page = await listUsers(accessToken, { page: 1, size: 100 })
+    expect(page.list.find((user) => user.id === 'demo-user-002')?.email).toBe('viewer2@apex.demo')
+    expect(
+      JSON.parse(readDemoSnapshotRaw() ?? '{}').users.find((user: User) => user.id === 'demo-user-002').displayName,
+    ).toBe('演示访客·已改名')
+  })
+
+  it('编辑资料：空 displayName/非法 email 400 VALIDATION_FAILED 字段映射；空串 phone 按未填清除', async () => {
+    const { accessToken } = await loginDemo(DEMO_ACCOUNT_USERNAMES.ADMIN)
+    const { envelope } = await expectFailure(
+      demoConfig({
+        method: 'put',
+        url: PROFILE_ENDPOINTS.UPDATE_PROFILE,
+        token: accessToken,
+        data: { displayName: '', email: 'not-an-email' },
+      }),
+    )
+    expect(envelope.code).toBe(400)
+    expect(envelope.errorCode).toBe(API_ERROR_CODES.VALIDATION_FAILED)
+    const fields = (envelope.details as { fields: Array<{ field: string }> }).fields.map((issue) => issue.field)
+    expect(fields).toEqual(expect.arrayContaining(['displayName', 'email']))
+
+    const outcome = await callAdapter(
+      demoConfig({
+        method: 'put',
+        url: PROFILE_ENDPOINTS.UPDATE_PROFILE,
+        token: accessToken,
+        data: { displayName: '演示管理员', email: 'admin@apex.demo', phone: '' },
+      }),
+    )
+    expect(envelopeData<User>(outcome).phone).toBeUndefined()
+  })
+
+  it('编辑资料：未登录 401', async () => {
+    const { apiError } = await expectFailure(
+      demoConfig({
+        method: 'put',
+        url: PROFILE_ENDPOINTS.UPDATE_PROFILE,
+        token: null,
+        data: { displayName: 'x', email: 'x@apex.demo' },
+      }),
+    )
+    expect(apiError.httpStatus).toBe(401)
+    expect(apiError.errorCode).toBe(API_ERROR_CODES.AUTH_ACCESS_EXPIRED)
+  })
+
+  it('修改密码：合法载荷返回 data null；弱密码 400 映射 newPassword；缺 oldPassword 400', async () => {
+    const { accessToken } = await loginDemo(DEMO_ACCOUNT_USERNAMES.ADMIN)
+    const outcome = await callAdapter(
+      demoConfig({
+        method: 'put',
+        url: PROFILE_ENDPOINTS.CHANGE_PASSWORD,
+        token: accessToken,
+        data: { oldPassword: '任意旧密码', newPassword: 'fresh12345' },
+      }),
+    )
+    expect(envelopeData<null>(outcome)).toBeNull()
+
+    const weak = await expectFailure(
+      demoConfig({
+        method: 'put',
+        url: PROFILE_ENDPOINTS.CHANGE_PASSWORD,
+        token: accessToken,
+        data: { oldPassword: '任意旧密码', newPassword: 'short' },
+      }),
+    )
+    expect(weak.apiError.httpStatus).toBe(400)
+    const fields = (weak.envelope.details as { fields: Array<{ field: string }> }).fields.map((issue) => issue.field)
+    expect(fields).toContain('newPassword')
+
+    const missing = await expectFailure(
+      demoConfig({
+        method: 'put',
+        url: PROFILE_ENDPOINTS.CHANGE_PASSWORD,
+        token: accessToken,
+        data: { newPassword: 'fresh12345' },
+      }),
+    )
+    expect(missing.apiError.errorCode).toBe(API_ERROR_CODES.VALIDATION_FAILED)
+    expect(
+      (missing.envelope.details as { fields: Array<{ field: string }> }).fields.map((issue) => issue.field),
+    ).toContain('oldPassword')
   })
 })
 
@@ -490,9 +601,9 @@ describe('用户 CRUD（规格 §14.3）', () => {
 
   it('未实现端点返回 404 RESOURCE_NOT_FOUND（后续任务在路由表扩展）', async () => {
     const { accessToken } = await loginDemo(DEMO_ACCOUNT_USERNAMES.ADMIN)
-    // 修改密码归个人中心任务接入：当前未注册的端点统一 404
+    // 单用户详情查询（GET /users/:id）当前未注册：未实现端点统一 404
     const { apiError } = await expectFailure(
-      demoConfig({ method: 'put', url: PROFILE_ENDPOINTS.CHANGE_PASSWORD, token: accessToken, data: { oldPassword: 'x', newPassword: 'y1234567' } }),
+      demoConfig({ url: '/users/demo-user-001', token: accessToken }),
     )
     expect(apiError.httpStatus).toBe(404)
     expect(apiError.errorCode).toBe(API_ERROR_CODES.RESOURCE_NOT_FOUND)
@@ -721,8 +832,8 @@ describe('菜单树与菜单 CRUD（规格 §14.3/§14.1）', () => {
   it('菜单树：种子树形结构与稳定排序（sort asc），page 携带 routeId/path、button 携带 permCode', async () => {
     const { accessToken } = await loginDemo(DEMO_ACCOUNT_USERNAMES.ADMIN)
     const tree = await fetchMenuTree(accessToken)
-    // 根级兄弟按 sort asc（仪表盘 1、系统管理 2）
-    expect(tree.map((node) => node.id)).toEqual(['demo-menu-dashboard', 'demo-menu-system'])
+    // 根级兄弟按 sort asc（仪表盘 1、系统管理 2、演示 3）
+    expect(tree.map((node) => node.id)).toEqual(['demo-menu-dashboard', 'demo-menu-system', 'demo-menu-demo'])
     const system = tree[1]
     expect(system.type).toBe('directory')
     expect(system.children?.map((node) => node.id)).toEqual([
@@ -757,8 +868,22 @@ describe('菜单树与菜单 CRUD（规格 §14.3/§14.1）', () => {
     for (const routeId of pageRouteIds) {
       expect(MENU_PAGE_ROUTE_IDS).toContain(routeId)
     }
-    // demo:nested 条目归后续任务补充，本任务不预置
-    expect(JSON.stringify(tree)).not.toContain('demo-nested')
+    // 多级菜单演示种子（规格 §14.2）：演示 > 多级菜单 > 三个层级页面，
+    // routeId/path 与静态路由定义一致（ROUTE_IDS/ROUTE_PATHS 权威值）
+    const demo = tree[2]
+    expect(demo.type).toBe('directory')
+    const nested = demo.children?.[0]
+    expect(nested?.id).toBe('demo-menu-nested')
+    expect(nested?.children?.map((node) => node.routeId)).toEqual([
+      ROUTE_IDS.DEMO_NESTED_LEVEL1,
+      ROUTE_IDS.DEMO_NESTED_LEVEL2,
+      ROUTE_IDS.DEMO_NESTED_LEVEL3,
+    ])
+    expect(nested?.children?.map((node) => node.path)).toEqual([
+      ROUTE_PATHS.DEMO_NESTED_LEVEL1,
+      ROUTE_PATHS.DEMO_NESTED_LEVEL2,
+      ROUTE_PATHS.DEMO_NESTED_LEVEL3,
+    ])
   })
 
   it('创建菜单：page 携带可识别 routeId 落库并进入树（sort asc 定位），ID 序号递增、同步快照', async () => {
@@ -775,7 +900,7 @@ describe('菜单树与菜单 CRUD（规格 §14.3/§14.1）', () => {
     expect(created).toMatchObject({ id: 'demo-menu-001', type: 'page', routeId: 'profile', path: '/profile', parentId: null })
 
     const tree = await fetchMenuTree(accessToken)
-    expect(tree.map((node) => node.id)).toEqual(['demo-menu-dashboard', 'demo-menu-system', 'demo-menu-001'])
+    expect(tree.map((node) => node.id)).toEqual(['demo-menu-dashboard', 'demo-menu-system', 'demo-menu-demo', 'demo-menu-001'])
     const snapshot = JSON.parse(readDemoSnapshotRaw() ?? '{}')
     expect(snapshot.schemaVersion).toBe(DEMO_SNAPSHOT_SCHEMA_VERSION)
     expect(snapshot.menus.map((menu: MenuItem) => menu.id)).toContain('demo-menu-001')

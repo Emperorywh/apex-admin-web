@@ -13,3 +13,10 @@ export const PROFILE_ENDPOINTS = {
   /** 修改密码：body { oldPassword, newPassword } → null；新旧密码均需满足密码策略 */
   CHANGE_PASSWORD: '/auth/password',
 } as const
+
+/**
+ * 个人中心页面 i18n 命名空间（规格 §12）：
+ * 路由 meta.i18nNamespaces 声明该值，en-US 资源文件为
+ * src/i18n/locales/en-US/profile.ts（文件名即命名空间）。
+ */
+export const PROFILE_I18N_NAMESPACE = 'profile'
