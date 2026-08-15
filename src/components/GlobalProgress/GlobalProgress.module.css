@@ -1,0 +1,33 @@
+/* 全局进度条（规格 §7.4-8）：顶部细条，归零后按 200ms 延迟收起由组件逻辑控制 */
+
+.progressBar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  z-index: 1100;
+  pointer-events: none;
+  background: transparent;
+}
+
+/* 不确定进度动画：主题色未注入 CSS 变量时回退 antd 默认主色 */
+.indicator {
+  height: 100%;
+  width: 40%;
+  border-radius: 2px;
+  background: var(--ant-color-primary, #1677ff);
+  animation: globalProgressSlide 1.2s ease-in-out infinite;
+}
+
+@keyframes globalProgressSlide {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(150%);
+  }
+  100% {
+    transform: translateX(250%);
+  }
+}
