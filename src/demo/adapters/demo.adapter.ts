@@ -1,7 +1,7 @@
 /**
  * demo adapter（规格 §13.2）：以与真实接口相同的 HTTP/envelope/errorCode 契约（规格 §7.1/§14.4）
  * 实现受支持端点——登录（密码任意）、GET profile、refresh（token 过期与旋转）、logout、
- * 用户 CRUD、GET /roles 角色列表（用户管理分配角色消费；角色 CRUD 随角色管理任务扩展）。
+ * 用户 CRUD、角色 CRUD 与分配权限、GET /permissions/tree 权限树、GET /dashboard/overview。
  *
  * - 形态是 axios adapter：由 demo 运行时经 configureRequestAdapter 注册，主实例与 refresh 专用实例
  *   共用同一选择结果，因此 401 刷新单飞同样落在 demo 契约上（§20 闸门 ⑤ 结论产品化）；
@@ -33,12 +33,14 @@ import {
 import { PERMISSIONS } from '@/constants/permission.constants'
 import {
   ADMIN_ROLE_CODE,
+  PERMISSION_TREE_ENDPOINT,
   ROLE_ENDPOINTS,
   ROLE_KEYWORD_FIELDS,
   ROLE_SORT_FIELDS,
 } from '@/constants/system/role/role.constants'
 import { USER_EMAIL_PATTERN, USER_ENDPOINTS, USER_KEYWORD_FIELDS, USER_SORT_FIELDS } from '@/constants/system/user/user.constants'
 import { hasPermissionCode } from '@/store/permissions'
+import { collectPermissionLeafCodes } from '@/utils/permissionTree'
 import type {
   LoginResponseDto,
   RefreshTokensRequestDto,
@@ -47,19 +49,20 @@ import type {
 import type { ApiErrorCode } from '@/constants/request.constants'
 import type { ProfileData } from '@/types/auth/auth.types'
 import type { DashboardOverview } from '@/types/dashboard/dashboard.types'
-import type { Role } from '@/types/system/role/role.types'
+import type { PermissionNode, Role } from '@/types/system/role/role.types'
 import type { PageResult, User } from '@/types/system/user/user.types'
 import {
   DEMO_ACCESS_TOKEN_PREFIX,
   DEMO_ACCESS_TOKEN_TTL_MS,
   DEMO_REFRESH_TOKEN_PREFIX,
   DEMO_REFRESH_TOKEN_TTL_MS,
+  DEMO_ROLE_ID_PREFIX,
   DEMO_USER_ID_PREFIX,
   findDemoAccount,
   type DemoAccount,
 } from '../demo.constants'
 import { ensureDemoDataset, persistDemoSnapshot, resetDemoDataset } from '../demoData'
-import { DEMO_SEED_ROLES } from '../fixtures/demoSeedData'
+import { DEMO_PERMISSION_TREE } from '../fixtures/demoPermissionTree'
 
 // ── 契约辅助：成功/失败 envelope 与端点错误 ────────────────────────────────────────
 
@@ -366,11 +369,17 @@ function findUserById(id: string): User | undefined {
   return ensureDemoDataset().users.find((user) => user.id === id)
 }
 
-/** admin 角色 ID：删除最后一个 admin 的冲突判定使用（规格 §14.3） */
-const DEMO_ADMIN_ROLE_ID = DEMO_SEED_ROLES.find((role) => role.code === ADMIN_ROLE_CODE)?.id
+function findRoleById(id: string): Role | undefined {
+  return ensureDemoDataset().roles.find((role) => role.id === id)
+}
 
-function hasAdminRole(user: User): boolean {
-  return DEMO_ADMIN_ROLE_ID !== undefined && user.roleIds.includes(DEMO_ADMIN_ROLE_ID)
+/** admin 角色 ID：删除最后一个 admin 的冲突判定使用（规格 §14.3）；随角色数据集动态查找 */
+function findAdminRoleId(): string | undefined {
+  return ensureDemoDataset().roles.find((role) => role.code === ADMIN_ROLE_CODE)?.id
+}
+
+function hasAdminRole(user: User, adminRoleId: string | undefined): boolean {
+  return adminRoleId !== undefined && user.roleIds.includes(adminRoleId)
 }
 
 function nowIso(): string {
@@ -527,13 +536,14 @@ function handleListUsers(config: InternalAxiosRequestConfig): DemoEndpointOutput
   return ok(page)
 }
 
-/** 角色列表：GET /roles（规格 §14.3）。用户管理分配角色 Drawer 消费；权限随 system:role:list */
+/** 角色列表：GET /roles（规格 §14.3）。角色管理页与用户管理分配角色 Drawer 共同消费 */
 function handleListRoles(config: InternalAxiosRequestConfig): DemoEndpointOutput {
   const account = requireAccount(config)
   requirePermission(account, PERMISSIONS.SYSTEM_ROLE_LIST)
   const query = parseListQuery(readQuery(config), ROLE_SORT_FIELDS)
+  const dataset = ensureDemoDataset()
   const keyword = query.keyword.toLowerCase()
-  const filtered = DEMO_SEED_ROLES.filter((role) => {
+  const filtered = dataset.roles.filter((role) => {
     if (keyword.length === 0) {
       return true
     }
@@ -572,7 +582,7 @@ function handleCreateUser(config: InternalAxiosRequestConfig): DemoEndpointOutpu
   if (password.length > 0 && !PASSWORD_PATTERN.test(password)) {
     validator.add('password', `密码最少 ${PASSWORD_MIN_LENGTH} 位且必须同时包含字母和数字`)
   }
-  const knownRoleIds = new Set(DEMO_SEED_ROLES.map((role) => role.id))
+  const knownRoleIds = new Set(ensureDemoDataset().roles.map((role) => role.id))
   if (roleIds.length > 0 && !roleIds.every((roleId) => knownRoleIds.has(roleId))) {
     validator.add('roleIds', 'roleIds 包含未知的角色 ID')
   }
@@ -644,7 +654,8 @@ function handleDeleteUser(config: InternalAxiosRequestConfig, params: Record<str
     throw new DemoEndpointError(409, API_ERROR_CODES.RESOURCE_CONFLICT, '不能删除当前登录账号')
   }
   const dataset = ensureDemoDataset()
-  if (hasAdminRole(target) && dataset.users.filter((user) => hasAdminRole(user)).length === 1) {
+  const adminRoleId = findAdminRoleId()
+  if (hasAdminRole(target, adminRoleId) && dataset.users.filter((user) => hasAdminRole(user, adminRoleId)).length === 1) {
     throw new DemoEndpointError(409, API_ERROR_CODES.RESOURCE_CONFLICT, '不能删除最后一个管理员')
   }
   dataset.users = dataset.users.filter((user) => user.id !== target.id)
@@ -662,7 +673,7 @@ function handleAssignUserRoles(config: InternalAxiosRequestConfig, params: Recor
   const body = parseBody(config)
   const validator = new FieldValidator()
   const roleIds = validator.requireStringArray(body, 'roleIds')
-  const knownRoleIds = new Set(DEMO_SEED_ROLES.map((role) => role.id))
+  const knownRoleIds = new Set(ensureDemoDataset().roles.map((role) => role.id))
   if (roleIds.length > 0 && !roleIds.every((roleId) => knownRoleIds.has(roleId))) {
     validator.add('roleIds', 'roleIds 包含未知的角色 ID')
   }
@@ -671,6 +682,131 @@ function handleAssignUserRoles(config: InternalAxiosRequestConfig, params: Recor
   target.updatedAt = nowIso()
   persistDemoSnapshot()
   return ok(target)
+}
+
+// ── 角色 CRUD 与分配权限（规格 §14.3/§14.4） ───────────────────────────────────
+
+const ROLE_STATUSES = ['enabled', 'disabled'] as const
+
+function handleCreateRole(config: InternalAxiosRequestConfig): DemoEndpointOutput {
+  const account = requireAccount(config)
+  requirePermission(account, PERMISSIONS.SYSTEM_ROLE_CREATE)
+  const body = parseBody(config)
+  const validator = new FieldValidator()
+  // 创建契约 { code, name, description?, status }（规格 §14.3）：code 全局唯一且创建后不可修改
+  const code = validator.requireString(body, 'code')
+  const name = validator.requireString(body, 'name')
+  const description = validator.optionalString(body, 'description')
+  const status = validator.requireEnum(body, 'status', ROLE_STATUSES)
+  validator.throwIfInvalid()
+  const dataset = ensureDemoDataset()
+  if (dataset.roles.some((role) => role.code === code)) {
+    throw new DemoEndpointError(409, API_ERROR_CODES.RESOURCE_CONFLICT, '角色标识已存在')
+  }
+  const timestamp = nowIso()
+  const created: Role = {
+    id: `${DEMO_ROLE_ID_PREFIX}${String(dataset.nextRoleSequence).padStart(3, '0')}`,
+    code,
+    name,
+    ...(description !== undefined ? { description } : {}),
+    status,
+    // 演示后端创建的角色一律非内置；内置保护仅针对种子角色（规格 §14.1 builtIn）
+    builtIn: false,
+    // 新建角色从空权限集合开始，权限经分配权限接口授予
+    permCodes: [],
+    createdAt: timestamp,
+    updatedAt: timestamp,
+  }
+  dataset.nextRoleSequence += 1
+  dataset.roles.push(created)
+  persistDemoSnapshot()
+  return ok(created)
+}
+
+function handleUpdateRole(config: InternalAxiosRequestConfig, params: Record<string, string>): DemoEndpointOutput {
+  const account = requireAccount(config)
+  requirePermission(account, PERMISSIONS.SYSTEM_ROLE_UPDATE)
+  const target = findRoleById(params.id ?? '')
+  if (target === undefined) {
+    throw new DemoEndpointError(404, API_ERROR_CODES.RESOURCE_NOT_FOUND, '请求的资源不存在')
+  }
+  const body = parseBody(config)
+  const validator = new FieldValidator()
+  // 编辑契约 { name, description?, status }（规格 §14.3）：不含 code，请求体中的 code 一律忽略
+  const name = validator.requireString(body, 'name')
+  const description = validator.optionalString(body, 'description')
+  const status = validator.requireEnum(body, 'status', ROLE_STATUSES)
+  validator.throwIfInvalid()
+  target.name = name
+  if (description === undefined) {
+    delete target.description
+  } else {
+    target.description = description
+  }
+  target.status = status
+  target.updatedAt = nowIso()
+  persistDemoSnapshot()
+  return ok(target)
+}
+
+function handleDeleteRole(config: InternalAxiosRequestConfig, params: Record<string, string>): DemoEndpointOutput {
+  const account = requireAccount(config)
+  requirePermission(account, PERMISSIONS.SYSTEM_ROLE_DELETE)
+  const target = findRoleById(params.id ?? '')
+  if (target === undefined) {
+    throw new DemoEndpointError(404, API_ERROR_CODES.RESOURCE_NOT_FOUND, '请求的资源不存在')
+  }
+  // builtIn 角色禁止删除（规格 §14.1/§14.3）；角色被用户引用时同样返回 RESOURCE_CONFLICT
+  if (target.builtIn) {
+    throw new DemoEndpointError(409, API_ERROR_CODES.RESOURCE_CONFLICT, '内置角色不允许删除')
+  }
+  const dataset = ensureDemoDataset()
+  if (dataset.users.some((user) => user.roleIds.includes(target.id))) {
+    throw new DemoEndpointError(409, API_ERROR_CODES.RESOURCE_CONFLICT, '角色已被用户引用，不允许删除')
+  }
+  dataset.roles = dataset.roles.filter((role) => role.id !== target.id)
+  persistDemoSnapshot()
+  return ok(null)
+}
+
+function handleAssignRolePermissions(config: InternalAxiosRequestConfig, params: Record<string, string>): DemoEndpointOutput {
+  const account = requireAccount(config)
+  requirePermission(account, PERMISSIONS.SYSTEM_ROLE_ASSIGN_PERMISSION)
+  const target = findRoleById(params.id ?? '')
+  if (target === undefined) {
+    throw new DemoEndpointError(404, API_ERROR_CODES.RESOURCE_NOT_FOUND, '请求的资源不存在')
+  }
+  const body = parseBody(config)
+  const validator = new FieldValidator()
+  const permCodes = validator.requireStringArray(body, 'permCodes')
+  // 后端验证所有权限码存在（规格 §14.3）：已知全集即权限树叶子权限码（§5.1 正式权限码）
+  const knownCodes = new Set(collectPermissionLeafCodes(DEMO_PERMISSION_TREE))
+  if (permCodes.length > 0 && !permCodes.every((permCode) => knownCodes.has(permCode))) {
+    validator.add('permCodes', 'permCodes 包含未知的权限码')
+  }
+  validator.throwIfInvalid()
+  // 去重后整体替换；不返回半选节点状态（规格 §14.1 permCodes 语义）
+  target.permCodes = [...new Set(permCodes)]
+  target.updatedAt = nowIso()
+  persistDemoSnapshot()
+  return ok(target)
+}
+
+/** 深拷贝权限树：响应与模块常量隔离，调用端拿到独立数据（与真实序列化语义一致） */
+function clonePermissionTree(nodes: readonly PermissionNode[]): PermissionNode[] {
+  return nodes.map((node) => ({
+    key: node.key,
+    title: node.title,
+    ...(node.permCode !== undefined ? { permCode: node.permCode } : {}),
+    ...(node.children !== undefined ? { children: clonePermissionTree(node.children) } : {}),
+  }))
+}
+
+/** 权限树：GET /permissions/tree（规格 §14.3）。角色分配权限 Drawer 消费，权限随分配权限码 */
+function handlePermissionTree(config: InternalAxiosRequestConfig): DemoEndpointOutput {
+  const account = requireAccount(config)
+  requirePermission(account, PERMISSIONS.SYSTEM_ROLE_ASSIGN_PERMISSION)
+  return ok(clonePermissionTree(DEMO_PERMISSION_TREE))
 }
 
 // ── Dashboard 概览（规格 §14.3：GET /dashboard/overview → DashboardOverview） ─────────
@@ -698,7 +834,7 @@ function handleDashboardOverview(config: InternalAxiosRequestConfig): DemoEndpoi
     date: today.subtract(DEMO_OVERVIEW_TREND_DAYS - 1 - index, 'day').format(DASHBOARD_DATE_FORMAT),
     count: Math.max(0, userCount - (DEMO_OVERVIEW_TREND_DAYS - 1 - index)),
   }))
-  const roleDistribution = DEMO_SEED_ROLES.map((role) => ({
+  const roleDistribution = dataset.roles.map((role) => ({
     roleName: role.name,
     count: dataset.users.filter((user) => user.roleIds.includes(role.id)).length,
   })).map(({ roleName, count }) => ({
@@ -710,7 +846,7 @@ function handleDashboardOverview(config: InternalAxiosRequestConfig): DemoEndpoi
     stats: {
       userCount,
       enabledUserCount,
-      roleCount: DEMO_SEED_ROLES.length,
+      roleCount: dataset.roles.length,
       todayLoginCount: userCount + enabledUserCount,
     },
     loginTrend,
@@ -738,7 +874,13 @@ const DEMO_ROUTES: readonly DemoRoute[] = [
   route('post', AUTH_ENDPOINTS.LOGOUT, handleLogout),
   route('get', PROFILE_ENDPOINTS.GET_PROFILE, handleProfile),
   route('get', DASHBOARD_ENDPOINTS.OVERVIEW, handleDashboardOverview),
+  route('get', PERMISSION_TREE_ENDPOINT, handlePermissionTree),
   route('get', ROLE_ENDPOINTS.LIST, handleListRoles),
+  route('post', ROLE_ENDPOINTS.CREATE, handleCreateRole),
+  // /roles/:id/permissions（4 段）先于 /roles/:id（3 段）注册无歧义：按段数与字面量精确匹配
+  route('put', ROLE_ENDPOINTS.ASSIGN_PERMISSIONS, handleAssignRolePermissions),
+  route('put', ROLE_ENDPOINTS.UPDATE, handleUpdateRole),
+  route('delete', ROLE_ENDPOINTS.DELETE, handleDeleteRole),
   route('get', USER_ENDPOINTS.LIST, handleListUsers),
   route('post', USER_ENDPOINTS.CREATE, handleCreateUser),
   // /users/:id/roles（4 段）先于 /users/:id（3 段）注册无歧义：按段数与字面量精确匹配

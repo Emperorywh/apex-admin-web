@@ -43,3 +43,9 @@ export const ROLE_KEYWORD_FIELDS = ['code', 'name'] as const
  * code 固定为 admin，前端视作拥有通配权限 '*'；后端仍逐接口鉴权。
  */
 export const ADMIN_ROLE_CODE = 'admin'
+
+/**
+ * 角色管理页面 i18n 命名空间（规格 §12）。
+ * 与 en-US 资源文件名一致，经路由 meta.i18nNamespaces 声明后按需加载。
+ */
+export const ROLE_I18N_NAMESPACE = 'role'

@@ -19,7 +19,8 @@ import type { ApiError } from '@/services/request/request.types'
 import type { LoginResponseDto } from '@/services/auth/auth.service.types'
 import type { ProfileData } from '@/types/auth/auth.types'
 import type { DashboardOverview } from '@/types/dashboard/dashboard.types'
-import type { Role } from '@/types/system/role/role.types'
+import type { PermissionNode, Role } from '@/types/system/role/role.types'
+import { collectPermissionLeafCodes } from '@/utils/permissionTree'
 import type { PageResult, User } from '@/types/system/user/user.types'
 import { DEMO_ACCOUNT_USERNAMES, DEMO_SNAPSHOT_SCHEMA_VERSION, DEMO_SNAPSHOT_STORAGE_KEY } from '../demo.constants'
 import { clearDemoDataOnLogout, readDemoSnapshotRaw } from '../demoData'
@@ -486,7 +487,7 @@ describe('用户 CRUD（规格 §14.3）', () => {
 
   it('未实现端点返回 404 RESOURCE_NOT_FOUND（后续任务在路由表扩展）', async () => {
     const { accessToken } = await loginDemo(DEMO_ACCOUNT_USERNAMES.ADMIN)
-    const { apiError } = await expectFailure(demoConfig({ url: '/permissions/tree', token: accessToken }))
+    const { apiError } = await expectFailure(demoConfig({ url: '/menus/tree', token: accessToken }))
     expect(apiError.httpStatus).toBe(404)
     expect(apiError.errorCode).toBe(API_ERROR_CODES.RESOURCE_NOT_FOUND)
   })
@@ -526,6 +527,182 @@ describe('角色列表（规格 §14.3：用户管理分配角色消费）', () 
     const { apiError } = await expectFailure(demoConfig({ url: '/roles', token: accessToken }))
     expect(apiError.httpStatus).toBe(403)
     expect(apiError.errorCode).toBe(API_ERROR_CODES.AUTH_FORBIDDEN)
+  })
+})
+
+describe('角色 CRUD 与权限树（规格 §14.3/§14.1）', () => {
+  const CREATE_ROLE_BODY = { code: 'operator', name: '运营', description: '日常运营', status: 'enabled' }
+
+  async function listRoles(token: string, params?: Record<string, unknown>): Promise<PageResult<Role>> {
+    const outcome = await callAdapter(demoConfig({ url: '/roles', token, params }))
+    return envelopeData<PageResult<Role>>(outcome)
+  }
+
+  it('admin 创建角色：新 ID 序号递增、builtIn false、permCodes 空、进入列表并落快照', async () => {
+    const { accessToken } = await loginDemo(DEMO_ACCOUNT_USERNAMES.ADMIN)
+    const outcome = await callAdapter(
+      demoConfig({ method: 'post', url: '/roles', token: accessToken, data: CREATE_ROLE_BODY }),
+    )
+    const created = envelopeData<Role>(outcome)
+    expect(created).toMatchObject({ id: 'demo-role-001', code: 'operator', builtIn: false, permCodes: [] })
+
+    const page = await listRoles(accessToken)
+    expect(page.total).toBe(3)
+    expect(page.list.map((role) => role.code)).toContain('operator')
+    // 版本化快照同步写入角色集合（schemaVersion 与 roles 字段）
+    const snapshot = JSON.parse(readDemoSnapshotRaw() ?? '{}')
+    expect(snapshot.schemaVersion).toBe(DEMO_SNAPSHOT_SCHEMA_VERSION)
+    expect(snapshot.roles.map((role: Role) => role.code)).toContain('operator')
+  })
+
+  it('重复 code 返回 409 RESOURCE_CONFLICT；缺 code/name 与非法 status 返回 400', async () => {
+    const { accessToken } = await loginDemo(DEMO_ACCOUNT_USERNAMES.ADMIN)
+    const conflict = await expectFailure(
+      demoConfig({ method: 'post', url: '/roles', token: accessToken, data: { code: 'viewer', name: '重复', status: 'enabled' } }),
+    )
+    expect(conflict.apiError.httpStatus).toBe(409)
+    expect(conflict.apiError.errorCode).toBe(API_ERROR_CODES.RESOURCE_CONFLICT)
+
+    const invalid = await expectFailure(
+      demoConfig({ method: 'post', url: '/roles', token: accessToken, data: { code: '', name: '', status: 'frozen' } }),
+    )
+    expect(invalid.apiError.httpStatus).toBe(400)
+    expect(invalid.apiError.errorCode).toBe(API_ERROR_CODES.VALIDATION_FAILED)
+    const fields = (invalid.envelope.details as { fields: Array<{ field: string }> }).fields.map((issue) => issue.field)
+    expect(fields).toEqual(expect.arrayContaining(['code', 'name', 'status']))
+  })
+
+  it('viewer 无写权限：创建/编辑/删除/分配权限全部 403 AUTH_FORBIDDEN（§5.3 矩阵）', async () => {
+    const { accessToken } = await loginDemo(DEMO_ACCOUNT_USERNAMES.VIEWER)
+    for (const config of [
+      demoConfig({ method: 'post', url: '/roles', token: accessToken, data: CREATE_ROLE_BODY }),
+      demoConfig({ method: 'put', url: '/roles/demo-role-viewer', token: accessToken, data: { name: 'x', status: 'enabled' } }),
+      demoConfig({ method: 'delete', url: '/roles/demo-role-viewer', token: accessToken }),
+      demoConfig({ method: 'put', url: '/roles/demo-role-viewer/permissions', token: accessToken, data: { permCodes: [] } }),
+    ]) {
+      const { apiError } = await expectFailure(config)
+      expect(apiError.httpStatus).toBe(403)
+      expect(apiError.errorCode).toBe(API_ERROR_CODES.AUTH_FORBIDDEN)
+    }
+  })
+
+  it('编辑角色：name/description/status 更新、description 省略即移除、body 中的 code 被忽略；不存在 404', async () => {
+    const { accessToken } = await loginDemo(DEMO_ACCOUNT_USERNAMES.ADMIN)
+    const outcome = await callAdapter(
+      demoConfig({
+        method: 'put',
+        url: '/roles/demo-role-viewer',
+        token: accessToken,
+        // 编辑契约外多传 code：后端忽略，code 保持不变
+        data: { code: 'hacked', name: '访客（只读）', description: '仅查看', status: 'enabled' },
+      }),
+    )
+    const updated = envelopeData<Role>(outcome)
+    expect(updated.code).toBe('viewer')
+    expect(updated.name).toBe('访客（只读）')
+    expect(updated.description).toBe('仅查看')
+
+    const removed = await callAdapter(
+      demoConfig({ method: 'put', url: '/roles/demo-role-viewer', token: accessToken, data: { name: '访客', status: 'enabled' } }),
+    )
+    expect(envelopeData<Role>(removed).description).toBeUndefined()
+
+    const missing = await expectFailure(
+      demoConfig({ method: 'put', url: '/roles/demo-role-none', token: accessToken, data: { name: 'x', status: 'enabled' } }),
+    )
+    expect(missing.apiError.httpStatus).toBe(404)
+    expect(missing.apiError.errorCode).toBe(API_ERROR_CODES.RESOURCE_NOT_FOUND)
+  })
+
+  it('删除角色：builtIn 与被用户引用返回 409 RESOURCE_CONFLICT；未引用的新建角色删除成功', async () => {
+    const { accessToken } = await loginDemo(DEMO_ACCOUNT_USERNAMES.ADMIN)
+    // builtIn 角色禁止删除（规格 §14.1）
+    const builtIn = await expectFailure(
+      demoConfig({ method: 'delete', url: '/roles/demo-role-viewer', token: accessToken }),
+    )
+    expect(builtIn.apiError.httpStatus).toBe(409)
+    expect(builtIn.apiError.errorCode).toBe(API_ERROR_CODES.RESOURCE_CONFLICT)
+
+    // 新建 operator 并分配给用户 alice：被引用同样拒绝
+    await callAdapter(demoConfig({ method: 'post', url: '/roles', token: accessToken, data: CREATE_ROLE_BODY }))
+    await callAdapter(
+      demoConfig({ method: 'put', url: '/users/demo-user-003/roles', token: accessToken, data: { roleIds: ['demo-role-001'] } }),
+    )
+    const referenced = await expectFailure(
+      demoConfig({ method: 'delete', url: '/roles/demo-role-001', token: accessToken }),
+    )
+    expect(referenced.apiError.httpStatus).toBe(409)
+    expect(referenced.apiError.errorCode).toBe(API_ERROR_CODES.RESOURCE_CONFLICT)
+
+    // 未分配给任何用户的新建角色：删除成功并从列表移除
+    await callAdapter(
+      demoConfig({ method: 'post', url: '/roles', token: accessToken, data: { code: 'auditor', name: '审计', status: 'enabled' } }),
+    )
+    const outcome = await callAdapter(
+      demoConfig({ method: 'delete', url: '/roles/demo-role-002', token: accessToken }),
+    )
+    expect(envelopeData<null>(outcome)).toBeNull()
+    const page = await listRoles(accessToken)
+    expect(page.list.map((role) => role.code)).toContain('operator')
+    expect(page.list.map((role) => role.code)).not.toContain('auditor')
+  })
+
+  it('分配权限：未知权限码 400 VALIDATION_FAILED；成功去重替换 permCodes 并落快照', async () => {
+    const { accessToken } = await loginDemo(DEMO_ACCOUNT_USERNAMES.ADMIN)
+    const invalid = await expectFailure(
+      demoConfig({
+        method: 'put',
+        url: '/roles/demo-role-viewer/permissions',
+        token: accessToken,
+        data: { permCodes: [PERMISSIONS.DASHBOARD_VIEW, 'system:none:fake'] },
+      }),
+    )
+    expect(invalid.apiError.httpStatus).toBe(400)
+    expect(invalid.apiError.errorCode).toBe(API_ERROR_CODES.VALIDATION_FAILED)
+    const fields = (invalid.envelope.details as { fields: Array<{ field: string }> }).fields.map((issue) => issue.field)
+    expect(fields).toContain('permCodes')
+
+    const outcome = await callAdapter(
+      demoConfig({
+        method: 'put',
+        url: '/roles/demo-role-viewer/permissions',
+        token: accessToken,
+        // 重复权限码去重；'/'（通配符不在权限树内）不合法，不参与本用例
+        data: { permCodes: [PERMISSIONS.DASHBOARD_VIEW, PERMISSIONS.DASHBOARD_VIEW, PERMISSIONS.SYSTEM_USER_LIST] },
+      }),
+    )
+    const updated = envelopeData<Role>(outcome)
+    expect(updated.permCodes).toEqual([PERMISSIONS.DASHBOARD_VIEW, PERMISSIONS.SYSTEM_USER_LIST])
+    const snapshot = JSON.parse(readDemoSnapshotRaw() ?? '{}')
+    expect(snapshot.roles.find((role: Role) => role.id === 'demo-role-viewer').permCodes).toEqual([
+      PERMISSIONS.DASHBOARD_VIEW,
+      PERMISSIONS.SYSTEM_USER_LIST,
+    ])
+  })
+
+  it('权限树：叶子权限码集合与 §5.1 全部正式权限码一致；目录节点无 permCode；viewer 403', async () => {
+    const { accessToken } = await loginDemo(DEMO_ACCOUNT_USERNAMES.ADMIN)
+    const outcome = await callAdapter(demoConfig({ url: '/permissions/tree', token: accessToken }))
+    const tree = envelopeData<PermissionNode[]>(outcome)
+    // 叶子权限码恰为 16 个正式权限码（§5.1），无重复
+    const leafCodes = collectPermissionLeafCodes(tree)
+    expect(new Set(leafCodes).size).toBe(leafCodes.length)
+    expect([...leafCodes].sort()).toEqual(Object.values(PERMISSIONS).sort())
+    // 仅叶子提供 permCode（§14.1）：顶层目录节点不含 permCode
+    expect(tree.every((node) => node.permCode === undefined)).toBe(true)
+
+    const { accessToken: viewerToken } = await loginDemo(DEMO_ACCOUNT_USERNAMES.VIEWER)
+    const forbidden = await expectFailure(demoConfig({ url: '/permissions/tree', token: viewerToken }))
+    expect(forbidden.apiError.httpStatus).toBe(403)
+    expect(forbidden.apiError.errorCode).toBe(API_ERROR_CODES.AUTH_FORBIDDEN)
+  })
+
+  it('角色 CRUD 后 keepSnapshot 模拟整页刷新：角色结果从快照恢复', async () => {
+    const { accessToken } = await loginDemo(DEMO_ACCOUNT_USERNAMES.ADMIN)
+    await callAdapter(demoConfig({ method: 'post', url: '/roles', token: accessToken, data: CREATE_ROLE_BODY }))
+    demoAdapterTestController.resetRuntime({ keepSnapshot: true })
+    const page = await listRoles(accessToken)
+    expect(page.list.map((role) => role.code)).toContain('operator')
   })
 })
 

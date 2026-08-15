@@ -88,3 +88,6 @@ export const DEMO_SEED_USERS: readonly User[] = [
 
 /** 新建演示用户的下一个数字序号（种子占用 001–004） */
 export const DEMO_SEED_NEXT_USER_SEQUENCE = 5
+
+/** 新建演示角色的下一个数字序号（种子角色使用语义化 ID，不占用数字序号） */
+export const DEMO_SEED_NEXT_ROLE_SEQUENCE = 1

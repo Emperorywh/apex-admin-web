@@ -163,9 +163,10 @@ export const DEMO_SNAPSHOT_STORAGE_KEY = `${STORAGE_KEY_PREFIX}demo_data`
 
 /**
  * demo CRUD 快照 schema 版本（规格 §13.2）。
- * 加载时校验；损坏或旧版本无迁移映射时恢复种子数据并提示一次。结构变化必须升版本并提供迁移。
+ * 加载时校验；损坏或旧版本无迁移映射时恢复种子数据并提示一次。
+ * v2：快照结构加入角色集合（roles/nextRoleSequence），v1 快照按旧版本降级恢复种子。
  */
-export const DEMO_SNAPSHOT_SCHEMA_VERSION = 1
+export const DEMO_SNAPSHOT_SCHEMA_VERSION = 2
 
 /** demo accessToken 有效期，单位：毫秒；到期由 adapter 返回 401 AUTH_ACCESS_EXPIRED 触发刷新单飞 */
 export const DEMO_ACCESS_TOKEN_TTL_MS = 5 * 60_000
@@ -181,3 +182,6 @@ export const DEMO_REFRESH_TOKEN_PREFIX = 'demo-rt.'
 
 /** demo 种子/新建用户 ID 前缀；同时是 off 构建产物扫描的 demo 账号数据标记之一 */
 export const DEMO_USER_ID_PREFIX = 'demo-user-'
+
+/** demo 新建角色 ID 前缀：`demo-role-<三位序号>`；种子角色使用语义化 ID（demo-role-admin/viewer） */
+export const DEMO_ROLE_ID_PREFIX = 'demo-role-'

@@ -9,14 +9,22 @@
  */
 import { appI18n, COMMON_NAMESPACE } from '@/i18n/i18n'
 import { showUiWarning } from '@/services/feedback/uiFeedback'
+import type { Role } from '@/types/system/role/role.types'
 import type { User } from '@/types/system/user/user.types'
 import { DEMO_SNAPSHOT_SCHEMA_VERSION, DEMO_SNAPSHOT_STORAGE_KEY } from './demo.constants'
-import { DEMO_SEED_NEXT_USER_SEQUENCE, DEMO_SEED_USERS } from './fixtures/demoSeedData'
+import {
+  DEMO_SEED_NEXT_ROLE_SEQUENCE,
+  DEMO_SEED_NEXT_USER_SEQUENCE,
+  DEMO_SEED_ROLES,
+  DEMO_SEED_USERS,
+} from './fixtures/demoSeedData'
 
-/** 演示数据集：用户列表与新建用户序号；角色集合为只读种子（角色 CRUD 随后续任务接入） */
+/** 演示数据集：用户与角色列表及各自的新建序号（角色 CRUD 的运行态，规格 §14.3） */
 export interface DemoDataset {
   users: User[]
   nextUserSequence: number
+  roles: Role[]
+  nextRoleSequence: number
 }
 
 /** 快照不可用提示文案（zh 即 key；en-US 资源见 locales/en-US/common.ts） */
@@ -26,11 +34,13 @@ function translateDemoText(key: string): string {
   return appI18n.t(key, { ns: COMMON_NAMESPACE })
 }
 
-/** 种子数据集：深拷贝种子用户，避免运行态 mutation 污染模块常量 */
+/** 种子数据集：深拷贝种子用户与角色（含嵌套 permCodes），避免运行态 mutation 污染模块常量 */
 function createSeedDataset(): DemoDataset {
   return {
     users: DEMO_SEED_USERS.map((user) => ({ ...user })),
     nextUserSequence: DEMO_SEED_NEXT_USER_SEQUENCE,
+    roles: DEMO_SEED_ROLES.map((role) => ({ ...role, permCodes: [...role.permCodes] })),
+    nextRoleSequence: DEMO_SEED_NEXT_ROLE_SEQUENCE,
   }
 }
 
@@ -54,6 +64,26 @@ function isValidUserSnapshot(value: unknown): value is User {
   )
 }
 
+/** Role 形状校验：快照反序列化后的唯一外部数据校验边界 */
+function isValidRoleSnapshot(value: unknown): value is Role {
+  if (typeof value !== 'object' || value === null) {
+    return false
+  }
+  const role = value as Record<string, unknown>
+  return (
+    typeof role.id === 'string' &&
+    typeof role.code === 'string' &&
+    typeof role.name === 'string' &&
+    (role.description === undefined || typeof role.description === 'string') &&
+    (role.status === 'enabled' || role.status === 'disabled') &&
+    typeof role.builtIn === 'boolean' &&
+    Array.isArray(role.permCodes) &&
+    role.permCodes.every((permCode) => typeof permCode === 'string') &&
+    typeof role.createdAt === 'string' &&
+    typeof role.updatedAt === 'string'
+  )
+}
+
 /** 校验并读取快照；null 表示不存在、损坏或版本无迁移映射（调用方恢复种子） */
 function parseSnapshot(raw: string | null): DemoDataset | null {
   if (raw === null) {
@@ -72,12 +102,20 @@ function parseSnapshot(raw: string | null): DemoDataset | null {
     if (!Array.isArray(snapshot.users) || !snapshot.users.every(isValidUserSnapshot)) {
       return null
     }
+    if (!Array.isArray(snapshot.roles) || !snapshot.roles.every(isValidRoleSnapshot)) {
+      return null
+    }
     if (typeof snapshot.nextUserSequence !== 'number' || !Number.isInteger(snapshot.nextUserSequence)) {
+      return null
+    }
+    if (typeof snapshot.nextRoleSequence !== 'number' || !Number.isInteger(snapshot.nextRoleSequence)) {
       return null
     }
     return {
       users: snapshot.users.map((user) => ({ ...(user as User) })),
       nextUserSequence: snapshot.nextUserSequence,
+      roles: snapshot.roles.map((role) => ({ ...(role as Role), permCodes: [...(role as Role).permCodes] })),
+      nextRoleSequence: snapshot.nextRoleSequence,
     }
   } catch {
     return null
@@ -133,6 +171,8 @@ export function persistDemoSnapshot(): void {
         schemaVersion: DEMO_SNAPSHOT_SCHEMA_VERSION,
         users: dataset.users,
         nextUserSequence: dataset.nextUserSequence,
+        roles: dataset.roles,
+        nextRoleSequence: dataset.nextRoleSequence,
       }),
     )
   } catch {

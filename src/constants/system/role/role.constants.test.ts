@@ -3,6 +3,7 @@ import {
   ADMIN_ROLE_CODE,
   PERMISSION_TREE_ENDPOINT,
   ROLE_ENDPOINTS,
+  ROLE_I18N_NAMESPACE,
   ROLE_KEYWORD_FIELDS,
   ROLE_SORT_FIELDS,
 } from './role.constants'
@@ -30,5 +31,9 @@ describe('role.constants', () => {
 
   test('超级管理员角色标识固定为 admin（§5.1）', () => {
     expect(ADMIN_ROLE_CODE).toBe('admin')
+  })
+
+  test('i18n 命名空间为 role，与 en-US 资源文件名一致（§12）', () => {
+    expect(ROLE_I18N_NAMESPACE).toBe('role')
   })
 })

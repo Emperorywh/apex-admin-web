@@ -7,6 +7,7 @@ import { describe, expect, expectTypeOf, it } from 'vitest'
 import { DASHBOARD_I18N_NAMESPACE } from '@/constants/dashboard/dashboard.constants'
 import { PERMISSIONS } from '@/constants/permission.constants'
 import { ROUTE_IDS, ROUTE_PATHS } from '@/constants/route.constants'
+import { ROLE_I18N_NAMESPACE } from '@/constants/system/role/role.constants'
 import { USER_I18N_NAMESPACE } from '@/constants/system/user/user.constants'
 import { routeDefinitions } from './definitions'
 import type { AppRouteDefinition } from './router.types'
@@ -83,6 +84,17 @@ describe('routeDefinitions（规格 §4.2）', () => {
     expect(userPage?.path).toBe(ROUTE_PATHS.SYSTEM_USER)
     expect(userPage?.meta.permCode).toBe(PERMISSIONS.SYSTEM_USER_LIST)
     expect(userPage?.meta.i18nNamespaces).toEqual([USER_I18N_NAMESPACE])
+  })
+
+  it('角色管理节点：叶子页面权限 system:role:list + role 命名空间（规格 §14.2/§12；viewer 无权限时菜单隐藏且直达 403）', () => {
+    const byId = new Map(nodes.map((node) => [node.id, node]))
+    const rolePage = byId.get(ROUTE_IDS.SYSTEM_ROLE)
+    expect(rolePage?.path).toBe(ROUTE_PATHS.SYSTEM_ROLE)
+    expect(rolePage?.meta.permCode).toBe(PERMISSIONS.SYSTEM_ROLE_LIST)
+    expect(rolePage?.meta.i18nNamespaces).toEqual([ROLE_I18N_NAMESPACE])
+    // 挂在系统管理目录下，与用户管理同级
+    const system = byId.get(ROUTE_IDS.SYSTEM)
+    expect(system?.children?.map((child) => child.id)).toContain(ROUTE_IDS.SYSTEM_ROLE)
   })
 
   it('叶子节点均有 loadPage，目录节点无 loadPage（规格 §4.2）', () => {
