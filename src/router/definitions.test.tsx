@@ -4,6 +4,8 @@
  * hideInTabs/noCache、错误页 breadcrumb:false）、index 与 * 兜底节点、接口结构性不含 action。
  */
 import { describe, expect, expectTypeOf, it } from 'vitest'
+import { DASHBOARD_I18N_NAMESPACE } from '@/constants/dashboard/dashboard.constants'
+import { PERMISSIONS } from '@/constants/permission.constants'
 import { ROUTE_IDS, ROUTE_PATHS } from '@/constants/route.constants'
 import { routeDefinitions } from './definitions'
 import type { AppRouteDefinition } from './router.types'
@@ -50,10 +52,25 @@ describe('routeDefinitions（规格 §4.2）', () => {
     }
   })
 
-  it('当前注册节点均无 permCode：错误页需登录但不要求权限码，防止权限循环（规格 §4.2）', () => {
+  it('登录/403/404/500/* 均无 permCode，防止错误页自身形成权限循环（规格 §4.2）', () => {
+    const withoutPermCode = new Set<string>([ROUTE_IDS.LOGIN, ROUTE_IDS.FORBIDDEN, ROUTE_IDS.NOT_FOUND, ROUTE_IDS.SERVER_ERROR, ROUTE_IDS.NOT_FOUND_SPLAT])
     for (const node of nodes) {
-      expect(node.meta.permCode).toBeUndefined()
+      if (withoutPermCode.has(node.id)) {
+        expect(node.meta.permCode, `${node.id} permCode`).toBeUndefined()
+      }
     }
+  })
+
+  it('Dashboard 叶子完整 meta：唯一默认 affix、权限 dashboard:view、i18n 命名空间声明（规格 §4.2）', () => {
+    const byId = new Map(nodes.map((node) => [node.id, node]))
+    const dashboard = byId.get(ROUTE_IDS.DASHBOARD)
+    expect(dashboard?.path).toBe(ROUTE_PATHS.DASHBOARD)
+    expect(dashboard?.meta.affixTab).toBe(true)
+    expect(dashboard?.meta.permCode).toBe(PERMISSIONS.DASHBOARD_VIEW)
+    expect(dashboard?.meta.i18nNamespaces).toEqual([DASHBOARD_I18N_NAMESPACE])
+    // affix 唯一性：仅 Dashboard 一个默认固定页签（规格 §4.2）
+    const affixNodes = nodes.filter((node) => node.meta.affixTab === true)
+    expect(affixNodes.map((node) => node.id)).toEqual([ROUTE_IDS.DASHBOARD])
   })
 
   it('叶子节点均有 loadPage，目录节点无 loadPage（规格 §4.2）', () => {

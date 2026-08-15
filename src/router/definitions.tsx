@@ -9,6 +9,9 @@
  * 当前只注册已实现的页面（登录、错误页），业务页面路由随各自任务增量扩展；
  * 受保护根外壳由 projections 的 ProtectedRoot 容器挂载 BasicLayout 承担渲染。
  */
+import { LayoutDashboard } from 'lucide-react'
+import { DASHBOARD_I18N_NAMESPACE } from '@/constants/dashboard/dashboard.constants'
+import { PERMISSIONS } from '@/constants/permission.constants'
 import { ROUTE_IDS, ROUTE_PATHS } from '@/constants/route.constants'
 import type { AppRouteDefinition } from './router.types'
 
@@ -36,6 +39,21 @@ export const routeDefinitions: readonly AppRouteDefinition[] = [
         id: ROUTE_IDS.INDEX,
         index: true,
         meta: { title: '首页', hideInMenu: true, hideInTabs: true },
+      },
+      {
+        // Dashboard（规格 §4.2/§14.2）：唯一默认 affix 页签；所有可登录账号必须持有
+        // dashboard:view（admin 通配），否则会话资格校验按 AUTH_FORBIDDEN 清理会话；
+        // i18nNamespaces 声明 dashboard 命名空间（规格 §12）。
+        id: ROUTE_IDS.DASHBOARD,
+        path: ROUTE_PATHS.DASHBOARD,
+        loadPage: () => import('@/pages/dashboard/Dashboard/Dashboard').then(({ Dashboard }) => ({ default: Dashboard })),
+        meta: {
+          title: '仪表盘',
+          icon: LayoutDashboard,
+          permCode: PERMISSIONS.DASHBOARD_VIEW,
+          affixTab: true,
+          i18nNamespaces: [DASHBOARD_I18N_NAMESPACE],
+        },
       },
       {
         id: ROUTE_IDS.FORBIDDEN,

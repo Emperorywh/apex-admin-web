@@ -14,6 +14,8 @@
  */
 import { AxiosError, AxiosHeaders, CanceledError } from 'axios'
 import type { AxiosAdapter, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
+import dayjs from 'dayjs'
+import { DASHBOARD_DATE_FORMAT, DASHBOARD_ENDPOINTS } from '@/constants/dashboard/dashboard.constants'
 import { AUTH_ENDPOINTS, PASSWORD_MIN_LENGTH } from '@/constants/auth/auth.constants'
 import { PROFILE_ENDPOINTS } from '@/constants/profile/profile.constants'
 import {
@@ -38,6 +40,7 @@ import type {
 } from '@/services/auth/auth.service.types'
 import type { ApiErrorCode } from '@/constants/request.constants'
 import type { ProfileData } from '@/types/auth/auth.types'
+import type { DashboardOverview } from '@/types/dashboard/dashboard.types'
 import type { PageResult, User } from '@/types/system/user/user.types'
 import {
   DEMO_ACCESS_TOKEN_PREFIX,
@@ -640,6 +643,53 @@ function handleAssignUserRoles(config: InternalAxiosRequestConfig, params: Recor
   return ok(target)
 }
 
+// ── Dashboard 概览（规格 §14.3：GET /dashboard/overview → DashboardOverview） ─────────
+
+/** 概览趋势窗口天数：loginTrend/userGrowth 展示最近 7 天（演示数据口径） */
+const DEMO_OVERVIEW_TREND_DAYS = 7
+
+/**
+ * 概览数据全部由当前内存数据集推导，公式确定性、无随机数，测试与快照可复现；
+ * 图表序列按日期升序，date 使用 YYYY-MM-DD（规格 §14.1）。
+ */
+function handleDashboardOverview(config: InternalAxiosRequestConfig): DemoEndpointOutput {
+  const account = requireAccount(config)
+  requirePermission(account, PERMISSIONS.DASHBOARD_VIEW)
+  const dataset = ensureDemoDataset()
+  const userCount = dataset.users.length
+  const enabledUserCount = dataset.users.filter((user) => user.status === 'enabled').length
+  const today = dayjs()
+  const loginTrend = Array.from({ length: DEMO_OVERVIEW_TREND_DAYS }, (_, index) => ({
+    date: today.subtract(DEMO_OVERVIEW_TREND_DAYS - 1 - index, 'day').format(DASHBOARD_DATE_FORMAT),
+    count: enabledUserCount + index * 3,
+  }))
+  // 增长序列单调递增至当前总数，末位即 userCount
+  const userGrowth = Array.from({ length: DEMO_OVERVIEW_TREND_DAYS }, (_, index) => ({
+    date: today.subtract(DEMO_OVERVIEW_TREND_DAYS - 1 - index, 'day').format(DASHBOARD_DATE_FORMAT),
+    count: Math.max(0, userCount - (DEMO_OVERVIEW_TREND_DAYS - 1 - index)),
+  }))
+  const roleDistribution = DEMO_SEED_ROLES.map((role) => ({
+    roleName: role.name,
+    count: dataset.users.filter((user) => user.roleIds.includes(role.id)).length,
+  })).map(({ roleName, count }) => ({
+    roleName,
+    count,
+    percent: userCount === 0 ? 0 : Math.round((count / userCount) * 100),
+  }))
+  const overview: DashboardOverview = {
+    stats: {
+      userCount,
+      enabledUserCount,
+      roleCount: DEMO_SEED_ROLES.length,
+      todayLoginCount: userCount + enabledUserCount,
+    },
+    loginTrend,
+    userGrowth,
+    roleDistribution,
+  }
+  return ok(overview)
+}
+
 // ── 路由表：method + 路径模板 → handler；后续页面任务在此注册处扩展 ──────────────────
 
 interface DemoRoute {
@@ -657,6 +707,7 @@ const DEMO_ROUTES: readonly DemoRoute[] = [
   route('post', AUTH_ENDPOINTS.REFRESH, handleRefresh),
   route('post', AUTH_ENDPOINTS.LOGOUT, handleLogout),
   route('get', PROFILE_ENDPOINTS.GET_PROFILE, handleProfile),
+  route('get', DASHBOARD_ENDPOINTS.OVERVIEW, handleDashboardOverview),
   route('get', USER_ENDPOINTS.LIST, handleListUsers),
   route('post', USER_ENDPOINTS.CREATE, handleCreateUser),
   // /users/:id/roles（4 段）先于 /users/:id（3 段）注册无歧义：按段数与字面量精确匹配

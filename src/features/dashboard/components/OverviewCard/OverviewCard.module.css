@@ -1,0 +1,48 @@
+/*
+ * 统计卡片样式（规格 §10.2）：颜色一律来自 antd CSS 变量 var(--ant-*)，
+ * 本文件不出现色值字面量。
+ */
+.card {
+  height: 100%;
+}
+
+.content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.iconWrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  color: var(--ant-color-primary);
+  background: var(--ant-color-primary-bg);
+}
+
+.meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.title {
+  color: var(--ant-color-text-secondary);
+  font-size: 14px;
+}
+
+.value {
+  color: var(--ant-color-text-heading);
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.skeleton {
+  margin: 0;
+}

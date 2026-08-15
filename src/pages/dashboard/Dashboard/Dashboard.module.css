@@ -1,0 +1,26 @@
+/*
+ * Dashboard 页面布局（规格 §10.2）：颜色一律来自 antd CSS 变量 var(--ant-*)，
+ * 本文件不出现色值字面量。
+ */
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.chartCard {
+  height: 100%;
+}
+
+/* 图表容器固定高度：echarts init 需要非零高度容器 */
+.chartContainer {
+  width: 100%;
+  height: 320px;
+}
+
+.chartLoading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
+}

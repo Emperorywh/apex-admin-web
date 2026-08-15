@@ -18,9 +18,11 @@ import { hasPermissionCode } from '@/store/permissions'
 import type { ApiError } from '@/services/request/request.types'
 import type { LoginResponseDto } from '@/services/auth/auth.service.types'
 import type { ProfileData } from '@/types/auth/auth.types'
+import type { DashboardOverview } from '@/types/dashboard/dashboard.types'
 import type { PageResult, User } from '@/types/system/user/user.types'
 import { DEMO_ACCOUNT_USERNAMES, DEMO_SNAPSHOT_SCHEMA_VERSION, DEMO_SNAPSHOT_STORAGE_KEY } from '../demo.constants'
 import { clearDemoDataOnLogout, readDemoSnapshotRaw } from '../demoData'
+import { DEMO_SEED_ROLES } from '../fixtures/demoSeedData'
 import { demoAdapter, demoAdapterTestController, formatDemoAccessToken, formatDemoRefreshToken } from './demo.adapter'
 
 /** 构造直达 adapter 的请求配置；data 按 axios 序列化后形态传入（JSON 字符串） */
@@ -188,6 +190,54 @@ describe('profile 端点（规格 §6.3/§5.3）', () => {
     const { accessToken } = await loginDemo(DEMO_ACCOUNT_USERNAMES.ADMIN)
     demoAdapterTestController.invalidateAccessTokens(DEMO_ACCOUNT_USERNAMES.ADMIN)
     const { apiError } = await expectFailure(demoConfig({ url: '/auth/profile', token: accessToken }))
+    expect(apiError.errorCode).toBe(API_ERROR_CODES.AUTH_ACCESS_EXPIRED)
+  })
+})
+
+describe('dashboard 概览端点（规格 §14.3：GET /dashboard/overview）', () => {
+  it('登录账号返回与真实接口同形的 DashboardOverview，序列按日期升序', async () => {
+    const { accessToken } = await loginDemo(DEMO_ACCOUNT_USERNAMES.ADMIN)
+    const outcome = await callAdapter(demoConfig({ url: '/dashboard/overview', token: accessToken }))
+    const overview = envelopeData<DashboardOverview>(outcome)
+    // 统计卡四字段均为非负整数，且由当前数据集推导（种子 4 用户/3 启用/2 角色）
+    expect(overview.stats).toMatchObject({
+      userCount: expect.any(Number),
+      enabledUserCount: expect.any(Number),
+      roleCount: expect.any(Number),
+      todayLoginCount: expect.any(Number),
+    })
+    expect(overview.stats.userCount).toBeGreaterThanOrEqual(4)
+    expect(overview.stats.roleCount).toBe(2)
+    // 图表序列按日期升序（规格 §14.1），date 为 YYYY-MM-DD
+    for (const series of [overview.loginTrend, overview.userGrowth]) {
+      expect(series.length).toBeGreaterThan(0)
+      const dates = series.map((point) => point.date)
+      expect([...dates].sort()).toEqual(dates)
+      for (const point of series) {
+        expect(point.date).toMatch(/^\d{4}-\d{2}-\d{2}$/)
+        expect(point.count).toBeGreaterThanOrEqual(0)
+      }
+    }
+    // 角色分布与种子角色一一对应，percent 落在 0–100
+    expect(overview.roleDistribution.map((item) => item.roleName)).toEqual(
+      DEMO_SEED_ROLES.map((role) => role.name),
+    )
+    for (const item of overview.roleDistribution) {
+      expect(item.count).toBeGreaterThanOrEqual(0)
+      expect(item.percent).toBeGreaterThanOrEqual(0)
+      expect(item.percent).toBeLessThanOrEqual(100)
+    }
+  })
+
+  it('viewer 同样可访问（dashboard:view 属最小权限码，规格 §5.3）', async () => {
+    const { accessToken } = await loginDemo(DEMO_ACCOUNT_USERNAMES.VIEWER)
+    const outcome = await callAdapter(demoConfig({ url: '/dashboard/overview', token: accessToken }))
+    expect(envelopeData<DashboardOverview>(outcome).stats.roleCount).toBe(2)
+  })
+
+  it('缺少认证头返回 401 AUTH_ACCESS_EXPIRED', async () => {
+    const { apiError } = await expectFailure(demoConfig({ url: '/dashboard/overview', token: null }))
+    expect(apiError.httpStatus).toBe(401)
     expect(apiError.errorCode).toBe(API_ERROR_CODES.AUTH_ACCESS_EXPIRED)
   })
 })

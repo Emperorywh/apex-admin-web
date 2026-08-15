@@ -13,3 +13,10 @@ export const DASHBOARD_ENDPOINTS = {
  * loginTrend/userGrowth 的 date 使用 YYYY-MM-DD，序列按日期升序。
  */
 export const DASHBOARD_DATE_FORMAT = 'YYYY-MM-DD'
+
+/**
+ * Dashboard 页面 i18n 命名空间（规格 §12）：
+ * 路由 meta.i18nNamespaces 声明该值，en-US 资源文件为
+ * src/i18n/locales/en-US/dashboard.ts（文件名即命名空间）。
+ */
+export const DASHBOARD_I18N_NAMESPACE = 'dashboard'
