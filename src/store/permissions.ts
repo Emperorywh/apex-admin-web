@@ -24,6 +24,16 @@ export function hasPermissionCode(
   return permCodes.includes(code)
 }
 
+/**
+ * 判定权限快照是否满足一条完整权限码链（规格 §4.4）：
+ * 祖先与叶子权限为 AND——链上任一权限码不满足即整体不满足；
+ * 链为空（无 permCode 的路由）表示所有已登录用户可访问，返回 true。
+ * 路由守卫、菜单过滤与失权页签判定共用本函数，不得另写一份链式判断。
+ */
+export function hasPermissionChain(chain: readonly string[], input: PermissionInput): boolean {
+  return chain.every((code) => hasPermissionCode(input.permCodes, input.roleCodes, code))
+}
+
 /** 权限判定的输入快照：来自 user 切片的权限码与角色 code 列表 */
 export interface PermissionInput {
   readonly permCodes: readonly string[]

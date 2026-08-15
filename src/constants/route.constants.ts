@@ -27,6 +27,8 @@ export const ROUTE_IDS = {
   /** 错误页：仅要求登录、无 permCode，防止错误页自身形成权限循环（规格 §4.2） */
   FORBIDDEN: 'forbidden',
   NOT_FOUND: 'not-found',
+  /** 受保护根内的 * 兜底路由：渲染同一 NotFound 页面组件（规格 §4.2，与显式 /404 区分的独立节点） */
+  NOT_FOUND_SPLAT: 'not-found-splat',
   SERVER_ERROR: 'server-error',
 } as const
 

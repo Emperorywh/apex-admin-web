@@ -50,6 +50,15 @@ const common: Record<string, string> = {
   '操作与当前状态冲突，请刷新后重试': 'The operation conflicts with the current state. Please refresh and try again.',
   '服务器内部错误，请稍后重试': 'Internal server error. Please try again later.',
   '请求失败，请稍后重试': 'Request failed. Please try again later.',
+  // 错误页与路由错误边界文案（规格 §14.2/§4.3）
+  重试: 'Retry',
+  返回首页: 'Back to Home',
+  退出登录: 'Sign Out',
+  您没有访问该页面的权限: 'You do not have permission to access this page.',
+  您访问的页面不存在: 'The page you are looking for does not exist.',
+  '服务器开小差了，请稍后重试': 'The server is having a moment. Please try again later.',
+  // 持久化恢复失败一次性提示（规格 §4.3/§8.2）
+  '本地设置恢复失败，已使用默认设置': 'Failed to restore local settings. Defaults were applied.',
 }
 
 export default common

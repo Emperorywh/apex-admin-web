@@ -42,6 +42,15 @@ export function showUiMessage(text: string): void {
   instances.message.error(text)
 }
 
+/** 展示一条全局警告消息（非错误降级提示，如持久化恢复失败一次性提醒，规格 §4.3）；未就绪仅记录 */
+export function showUiWarning(text: string): void {
+  if (!instances) {
+    console.error('[uiFeedback] 实例未就绪，仅记录警告消息：', text)
+    return
+  }
+  instances.message.warning(text)
+}
+
 /**
  * 展示 API 错误（规格 §7.4-3）：
  * 已知 errorCode 映射为前端 i18n 文案；未知错误显示固定兜底文案和 requestId，

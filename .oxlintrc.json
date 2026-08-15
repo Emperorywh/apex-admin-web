@@ -4,6 +4,23 @@
   "ignorePatterns": ["coverage/**", "dist/**"],
   "rules": {
     "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
+    "react/only-export-components": ["warn", { "allowConstantExport": true }],
+    "no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "name": "react-router",
+            "importNames": [
+              "useLoaderData",
+              "useRouteLoaderData",
+              "useFetcher",
+              "useRevalidator"
+            ],
+            "message": "renderRoutes 纯渲染架构下页面禁止使用 Data Router 数据 API（规格 §4.1）：业务页数据统一经 service 层获取，页面路由上下文来自 useRoutes(renderRoutes, locationArg)。"
+          }
+        ]
+      }
+    ]
   }
 }

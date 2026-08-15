@@ -11,13 +11,16 @@ import {
   resetUiFeedbackInstances,
   showUiApiError,
   showUiMessage,
+  showUiWarning,
 } from './uiFeedback'
 
 const messageError = vi.fn()
+const messageWarning = vi.fn()
 
 beforeEach(() => {
   messageError.mockClear()
-  registerUiFeedbackInstances({ message: { error: messageError } } as never)
+  messageWarning.mockClear()
+  registerUiFeedbackInstances({ message: { error: messageError, warning: messageWarning } } as never)
 })
 
 afterEach(() => {
@@ -53,6 +56,19 @@ describe('uiFeedback（规格 §7.2/§7.4-3）', () => {
   it('未知 errorCode 字符串同样走兜底文案', () => {
     showUiApiError(createApiError({ message: 'x', errorCode: 'NOT_IN_TABLE' as never, requestId: 'r-8' }))
     expect(messageError).toHaveBeenCalledWith('请求失败，请稍后重试（requestId: r-8）')
+  })
+
+  it('showUiWarning 经注册实例展示警告消息（恢复失败一次性提示，规格 §4.3）', () => {
+    showUiWarning('本地设置恢复失败，已使用默认设置')
+    expect(messageWarning).toHaveBeenCalledTimes(1)
+    expect(messageWarning).toHaveBeenCalledWith('本地设置恢复失败，已使用默认设置')
+    expect(messageError).not.toHaveBeenCalled()
+  })
+
+  it('showUiWarning 未就绪时只记录、不抛错', () => {
+    resetUiFeedbackInstances()
+    expect(() => showUiWarning('本地设置恢复失败，已使用默认设置')).not.toThrow()
+    expect(messageWarning).not.toHaveBeenCalled()
   })
 
   it('未就绪时只记录、不排队补弹、不抛错', () => {

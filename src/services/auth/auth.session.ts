@@ -22,7 +22,7 @@ import { registerProfileRefreshFetcher } from '@/services/request/profileRefresh
 import type { RequestStore } from '@/services/request/request.types'
 import { performSessionCleanup, runSessionCleanup } from '@/services/request/sessionCleanup'
 import { getDefaultAppStore } from '@/store/store'
-import { hasPermissionCode } from '@/store/permissions'
+import { hasPermissionChain, hasPermissionCode } from '@/store/permissions'
 import { cacheEntriesRemoved } from '@/store/slices/pageCache.slice'
 import { tabsRemoved } from '@/store/slices/tabs.slice'
 import { profileLoaded, sessionEpochIncremented, tokensStored } from '@/store/slices/user.slice'
@@ -168,7 +168,7 @@ export function createAuthSessionRuntime(options: CreateAuthSessionOptions): Aut
         continue
       }
       const required = resolver(tab.location.pathname)
-      const accessible = required.every((code) => hasPermissionCode(user.permCodes, user.roles, code))
+      const accessible = hasPermissionChain(required, { permCodes: user.permCodes, roleCodes: user.roles })
       if (!accessible) {
         removedKeys.push(tab.key)
         if (tab.key === tabs.activeKey) {

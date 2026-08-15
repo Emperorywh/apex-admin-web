@@ -1,0 +1,8 @@
+/* 页面加载占位：铺满父容器的居中加载态 */
+.pageLoading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 160px;
+}
