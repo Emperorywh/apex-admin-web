@@ -1,0 +1,12 @@
+/*
+ * 登录表单局部样式（规格 §3.3 共置）。
+ * 颜色一律来自 antd CSS 变量/token，禁止出现色值字面量（规格 §10.2）。
+ */
+
+/* 回跳目标提示：弱化呈现，仅告知登录后的默认去向 */
+.redirectHint {
+  margin-bottom: 16px;
+  font-size: 12px;
+  color: var(--ant-color-text-tertiary);
+  word-break: break-all;
+}

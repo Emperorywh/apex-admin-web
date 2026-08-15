@@ -1,0 +1,34 @@
+/*
+ * 登录页布局（规格 §3.3 共置）：全屏居中的登录卡片。
+ * 颜色与间距一律来自 antd CSS 变量/token，禁止出现色值字面量（规格 §10.2）。
+ */
+
+.loginPage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 24px;
+  background: var(--ant-color-bg-layout);
+}
+
+.loginCard {
+  width: 100%;
+  max-width: 380px;
+}
+
+.brand {
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.brandTitle {
+  margin: 0;
+  font-size: 24px;
+  color: var(--ant-color-text-heading);
+}
+
+.brandSubtitle {
+  margin: 8px 0 0;
+  color: var(--ant-color-text-secondary);
+}

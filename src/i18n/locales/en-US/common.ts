@@ -30,6 +30,14 @@ const common: Record<string, string> = {
   '{{count}} 条记录_other': '{{count}} records',
   // 富文本（<Trans>，规格 §12）：<1> 与子节点占位序号对应
   '已阅读并同意<1>服务条款</1>': 'I have read and agree to the <1>Terms of Service</1>',
+  // 登录页文案（规格 §14.2）
+  用户名: 'Username',
+  密码: 'Password',
+  登录: 'Sign in',
+  请输入用户名: 'Please enter your username',
+  请输入密码: 'Please enter your password',
+  登录后将前往: 'You will be redirected to',
+  通用后台管理模板: 'General-purpose admin template',
   // API errorCode 本地化（规格 §7.1/§7.4）：键与 src/i18n/errorTexts.ts 的映射一一对应
   请求参数校验失败: 'Request validation failed',
   用户名或密码错误: 'Incorrect username or password',
