@@ -1,10 +1,116 @@
 /*
- * 页签栏占位容器（规格 §11.1）：为 TASK-011 预留稳定高度与底边分隔；
+ * 页签栏（规格 §9.3/§11.3）：横向页签条 + 溢出滚动 + 左右箭头。
  * 颜色一律来自 var(--ant-*) CSS 变量（规格 §10.2）。
  */
 
 .tabsBar {
+  display: flex;
+  align-items: stretch;
   min-height: 40px;
-  border-bottom: 1px solid var(--ant-color-border-secondary);
   background: var(--ant-color-bg-container);
+  border-bottom: 1px solid var(--ant-color-border-secondary);
+}
+
+/* 溢出箭头：仅溢出方向可见（jsdom 等无布局环境恒不可见） */
+.scrollButton {
+  display: none;
+  flex: 0 0 auto;
+  align-items: center;
+  border: none;
+  background: transparent;
+  color: var(--ant-color-text-tertiary);
+  cursor: pointer;
+  padding: 0 6px;
+}
+
+.scrollButton[data-visible='true'] {
+  display: inline-flex;
+}
+
+.scrollButton:hover {
+  color: var(--ant-color-text);
+  background: var(--ant-color-fill-tertiary);
+}
+
+/* 页签条：横向滚动容器（规格 §9.3 溢出滚动） */
+.list {
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 4px 8px;
+  scrollbar-width: thin;
+}
+
+/* 页签节点：外层为拖拽/焦点语义节点，内层 tabBody 铺满外层（display:contents） */
+.tab {
+  position: relative;
+  display: inline-flex;
+  align-items: stretch;
+  flex: 0 0 auto;
+  min-height: 32px;
+  padding: 0 4px 0 10px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ant-color-text);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.tab:hover {
+  background: var(--ant-color-fill-tertiary);
+}
+
+.tab[data-active='true'] {
+  background: var(--ant-color-bg-container);
+  border-color: var(--ant-color-border-secondary);
+  color: var(--ant-color-text-heading);
+  font-weight: 600;
+  box-shadow: inset 0 -2px 0 var(--ant-color-primary);
+}
+
+.tab[data-dragging='true'] {
+  opacity: 0.6;
+  z-index: 1;
+}
+
+/* 内层右键菜单触发区：不产生额外盒子 */
+.tabBody {
+  display: contents;
+}
+
+.tabTitle {
+  display: inline-flex;
+  align-items: center;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.affixIcon {
+  align-self: center;
+  margin-right: 4px;
+  color: var(--ant-color-primary);
+}
+
+.closeButton {
+  display: inline-flex;
+  align-items: center;
+  align-self: center;
+  margin-left: 6px;
+  padding: 2px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--ant-color-text-tertiary);
+  cursor: pointer;
+}
+
+.closeButton:hover {
+  background: var(--ant-color-fill-secondary);
+  color: var(--ant-color-text);
 }

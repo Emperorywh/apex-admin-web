@@ -31,12 +31,21 @@ export interface NavTreeNode {
 
 /**
  * Data Router handle.meta 的布局消费子集（规格 §4.2：meta 原样映射到 handle.meta）。
- * 面包屑与标题只从 handle.meta 读取，不维护副本；此处只声明布局实际读取的字段。
+ * 面包屑与标题只从 handle.meta 读取，不维护副本；此处只声明布局实际读取的字段，
+ * 含页签系统消费的 hideInTabs/noCache/affixTab/tabKeyMode（规格 §4.2/§9）。
  */
 export interface NavMatchMeta {
   title: string
   breadcrumb?: boolean
   i18nNamespaces?: string[]
+  /** 不生成页签的辅助路由（登录、错误页等，规格 §4.2） */
+  hideInTabs?: boolean
+  /** 离开即卸载、不进入 Activity/LRU 的页面（规格 §9.1） */
+  noCache?: boolean
+  /** 固定页签：排在最前且不可关闭（规格 §9.3） */
+  affixTab?: boolean
+  /** 页签 key 模式：fullPath 含规范化 search，pathname 仅按路径（规格 §4.5） */
+  tabKeyMode?: 'fullPath' | 'pathname'
 }
 
 /**
@@ -52,7 +61,10 @@ export function readNavMatchMeta(handle: unknown): NavMatchMeta | undefined {
   if (typeof meta !== 'object' || meta === null) {
     return undefined
   }
-  const { title, breadcrumb, i18nNamespaces } = meta as Record<string, unknown>
+  const { title, breadcrumb, i18nNamespaces, hideInTabs, noCache, affixTab, tabKeyMode } = meta as Record<
+    string,
+    unknown
+  >
   if (typeof title !== 'string') {
     return undefined
   }
@@ -60,5 +72,9 @@ export function readNavMatchMeta(handle: unknown): NavMatchMeta | undefined {
     title,
     ...(typeof breadcrumb === 'boolean' ? { breadcrumb } : {}),
     ...(Array.isArray(i18nNamespaces) ? { i18nNamespaces: i18nNamespaces as string[] } : {}),
+    ...(hideInTabs === true ? { hideInTabs: true } : {}),
+    ...(noCache === true ? { noCache: true } : {}),
+    ...(affixTab === true ? { affixTab: true } : {}),
+    ...(tabKeyMode === 'pathname' || tabKeyMode === 'fullPath' ? { tabKeyMode } : {}),
   }
 }

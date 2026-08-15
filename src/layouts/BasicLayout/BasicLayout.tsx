@@ -7,20 +7,23 @@
  * - 内容区通栏不定宽（不支持定宽开关）；
  * - 视口 <768px（LAYOUT_MOBILE_MEDIA_QUERY）：侧边菜单改 Drawer、顶部布局折叠为
  *   菜单按钮（同一 Drawer 承载垂直菜单），Header 次要操作由 Header 自身收入更多菜单；
- * - 页面渲染经 useRoutes(renderRoutes) 以 Data Router 当前 location 进行（规格 §4.1），
- *   PageCacheHost/CachedRouteView 页签缓存归 TASK-011 在内容区内接管。
+ * - 页面渲染（规格 §4.1/§9.1）：内容区经 PageCacheHost 的 Activity 缓存体系渲染所有
+ *   缓存页签（CachedRouteView 以页签快照调用 useRoutes(renderRoutes, snapshot)），
+ *   页签同步依据 Data Router 当前 location 完成；禁止缓存 <Outlet/> 或 useOutlet() 结果。
  */
 import { Drawer } from 'antd'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
-import { useMatches, useNavigate, useRoutes, type RouteObject } from 'react-router'
+import { useMatches, useNavigate, type RouteObject } from 'react-router'
 import { LayoutGrid, Menu as MenuIcon, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
 import { LAYOUT_MOBILE_MEDIA_QUERY } from '@/constants/app.constants'
 import { appI18n, COMMON_NAMESPACE, MENU_NAMESPACE, setDocumentTitle } from '@/i18n/i18n'
 import { readNavMatchMeta, type NavTreeNode } from '@/layouts/BasicLayout/navModel'
 import { deriveNavSelection } from '@/layouts/BasicLayout/navTree'
+import { PAGE_CONTAINER_ID, type AffixTabRoute } from '@/layouts/BasicLayout/tabsModel'
 import { Header, type HeaderTrigger } from '@/layouts/BasicLayout/components/Header/Header'
+import { PageCacheHost } from '@/layouts/BasicLayout/components/PageCacheHost/PageCacheHost'
 import { SettingDrawer } from '@/layouts/BasicLayout/components/SettingDrawer/SettingDrawer'
 import { SideMenu } from '@/layouts/BasicLayout/components/SideMenu/SideMenu'
 import { TabsBar } from '@/layouts/BasicLayout/components/TabsBar/TabsBar'
@@ -61,13 +64,15 @@ function useMediaMatches(query: string): boolean {
 export interface BasicLayoutProps {
   /** 已过滤导航树：router 层经 filterMenuRoutes（权限/hideInMenu/目录保留）注入的 menuRoutes 投影 */
   navItems: readonly NavTreeNode[]
-  /** 纯渲染投影（renderRoutes）：内容区经 useRoutes 以当前 location 渲染页面（规格 §4.1） */
+  /** 纯渲染投影（renderRoutes）：内容区经 PageCacheHost 以页签快照渲染页面（规格 §4.1/§9.1） */
   renderRoutes: RouteObject[]
+  /** affix 页签投影（默认仅 Dashboard）：浏览器刷新后的页签重建来源（规格 §9.3） */
+  affixTabRoutes: readonly AffixTabRoute[]
   /** 退出登录回调：执行认证登出状态机，post-logout 导航意图由路由接线消费 */
   onLogout: () => Promise<void>
 }
 
-export function BasicLayout({ navItems, renderRoutes, onLogout }: BasicLayoutProps) {
+export function BasicLayout({ navItems, renderRoutes, affixTabRoutes, onLogout }: BasicLayoutProps) {
   const { t } = useTranslation()
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -77,6 +82,8 @@ export function BasicLayout({ navItems, renderRoutes, onLogout }: BasicLayoutPro
   const isMobile = useMediaMatches(LAYOUT_MOBILE_MEDIA_QUERY)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [navDrawerOpen, setNavDrawerOpen] = useState(false)
+  // 页面主容器：页面切换后焦点进入该容器（规格 §11.3），id 供页签 aria-controls 引用
+  const pageContainerRef = useRef<HTMLElement | null>(null)
 
   // 选中项与祖先展开链由 Data Router 当前 match 派生（规格 §11.2）
   const selection = useMemo(() => deriveNavSelection(navItems, matches.map((match) => match.pathname)), [navItems, matches])
@@ -126,9 +133,9 @@ export function BasicLayout({ navItems, renderRoutes, onLogout }: BasicLayoutPro
   const showTopNav = layout === SETTINGS_LAYOUTS.TOP && !isMobile
   const brandTitle = t('通用后台管理模板', { ns: COMMON_NAMESPACE })
 
-  // 页面渲染（规格 §4.1）：Data Router 只负责 URL/守卫，页面全部经纯渲染投影渲染；
-  // 调用位于组件顶层（hook 规则），内容随区域挂载、不因布局切换改变树位置
-  const content = useRoutes(renderRoutes)
+  // 页面渲染（规格 §4.1/§9.1）：Data Router 只负责 URL/守卫，页面全部经 PageCacheHost
+  // 的 Activity 缓存体系渲染（每个缓存页签独立路由上下文）；内容区随外壳持久存在、
+  // 不因布局切换改变树位置
 
   return (
     <div
@@ -167,9 +174,11 @@ export function BasicLayout({ navItems, renderRoutes, onLogout }: BasicLayoutPro
         />
       </div>
       <div className={styles.tabsRegion}>
-        <TabsBar />
+        <TabsBar pageContainerRef={pageContainerRef} />
       </div>
-      <main className={styles.content}>{content}</main>
+      <main ref={pageContainerRef} id={PAGE_CONTAINER_ID} tabIndex={-1} className={styles.content}>
+        <PageCacheHost renderRoutes={renderRoutes} affixTabRoutes={affixTabRoutes} />
+      </main>
       {/* 窄视口导航抽屉（规格 §11.1）：侧边与顶部布局共用，承载同一垂直菜单 */}
       <Drawer
         placement="left"

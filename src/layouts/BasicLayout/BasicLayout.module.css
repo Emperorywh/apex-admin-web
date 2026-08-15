@@ -108,10 +108,12 @@
   min-width: 0;
 }
 
-/* 内容区：通栏不定宽（规格 §11.1），独立滚动容器（页面级滚动归 TASK-011 页签容器） */
+/* 内容区：通栏不定宽（规格 §11.1）；滚动发生在每个 Activity 页签的独立容器（规格 §9.2），
+ * 本区域只承载缓存宿主不自身滚动；程序化焦点目标（§11.3）不显示聚焦环 */
 .content {
   grid-area: content;
   min-width: 0;
   min-height: 0;
-  overflow: auto;
+  overflow: hidden;
+  outline: none;
 }

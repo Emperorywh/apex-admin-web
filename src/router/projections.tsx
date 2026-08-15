@@ -14,6 +14,7 @@ import { useSelector } from 'react-redux'
 import { ROUTE_IDS } from '@/constants/route.constants'
 import { BlankLayout } from '@/layouts/BlankLayout/BlankLayout'
 import { BasicLayout } from '@/layouts/BasicLayout/BasicLayout'
+import type { AffixTabRoute } from '@/layouts/BasicLayout/tabsModel'
 import { PageLoading } from '@/components/PageLoading/PageLoading'
 import { getDefaultAuthSessionRuntime } from '@/services/auth/auth.session'
 import { hasPermissionChain, type PermissionInput } from '@/store/permissions'
@@ -80,7 +81,14 @@ function ProtectedRoot(): ReactNode {
     () => filterMenuRoutes(menuRoutes, { permCodes, roleCodes }),
     [permCodes, roleCodes],
   )
-  return <BasicLayout navItems={navItems} renderRoutes={renderRoutes} onLogout={logoutFromUserMenu} />
+  return (
+    <BasicLayout
+      navItems={navItems}
+      renderRoutes={renderRoutes}
+      affixTabRoutes={affixTabRoutes}
+      onLogout={logoutFromUserMenu}
+    />
+  )
 }
 
 /** 登录路由（公开）：BlankLayout 布局承载页面，loader 处理已登录直达（规格 §4.3） */
@@ -199,6 +207,39 @@ export function buildMenuRoutes(defs: readonly AppRouteDefinition[]): MenuRouteN
   return root?.children?.map((child) => buildMenuRoute(child, [])) ?? []
 }
 
+/** 拼接父子路径：定义一律使用绝对路径，此处兼容相对段以保持通用 */
+function joinRoutePath(parent: string, segment: string | undefined): string {
+  if (segment === undefined) {
+    return parent
+  }
+  if (segment.startsWith('/')) {
+    return segment
+  }
+  return parent === '' || parent === '/' ? `/${segment}` : `${parent}/${segment}`
+}
+
+/**
+ * 生成 affix 页签投影（规格 §9.3）：meta.affixTab 且挂载页面的叶子（默认仅 Dashboard），
+ * 供 BasicLayout 浏览器刷新后重建「Dashboard + 当前页签」；权限不参与——所有可登录
+ * 账号必须可访问 affix 页（会话资格校验保证，规格 §4.2）。
+ */
+export function buildAffixTabRoutes(defs: readonly AppRouteDefinition[]): AffixTabRoute[] {
+  const affixes: AffixTabRoute[] = []
+  const visit = (def: AppRouteDefinition, parentPath: string): void => {
+    const fullPath = joinRoutePath(parentPath, def.path)
+    if (def.meta.affixTab === true && def.loadPage !== undefined && def.path !== undefined) {
+      affixes.push({ pathname: fullPath, title: def.meta.title })
+    }
+    for (const child of def.children ?? []) {
+      visit(child, fullPath)
+    }
+  }
+  for (const def of defs) {
+    visit(def, '')
+  }
+  return affixes
+}
+
 /**
  * 菜单过滤（规格 §4.4）：与守卫共用 hasPermissionChain 单一判定。
  * - hideInMenu 隐藏该节点及其菜单子树，但不改变 URL 可访问性（accessRoutes 不受影响）；
@@ -245,7 +286,8 @@ export const routePermissionChains: ReadonlyMap<string, readonly string[]> = (()
   return chains
 })()
 
-/** 三投影常量：模块初始化时生成一次，引用稳定（规格 §4.1） */
+/** 三投影常量：模块初始化时生成一次，引用稳定（规格 §4.1）；affixTabRoutes 为页签重建附属投影 */
 export const accessRoutes: RouteObject[] = buildAccessRoutes(routeDefinitions)
 export const renderRoutes: RouteObject[] = buildRenderRoutes(routeDefinitions)
 export const menuRoutes: MenuRouteNode[] = buildMenuRoutes(routeDefinitions)
+export const affixTabRoutes: AffixTabRoute[] = buildAffixTabRoutes(routeDefinitions)

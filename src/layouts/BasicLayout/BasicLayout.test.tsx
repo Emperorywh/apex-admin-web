@@ -93,7 +93,14 @@ function buildAccessRoutes(navItems: readonly NavTreeNode[], onLogout: () => Pro
   return [
     {
       path: '/',
-      element: <BasicLayout navItems={navItems} renderRoutes={RENDER_ROUTES} onLogout={onLogout} />,
+      element: (
+        <BasicLayout
+          navItems={navItems}
+          renderRoutes={RENDER_ROUTES}
+          affixTabRoutes={[{ pathname: '/dashboard', title: '仪表盘' }]}
+          onLogout={onLogout}
+        />
+      ),
       children: [
         { path: 'dashboard', handle: { meta: { title: '仪表盘' } } },
         {
@@ -488,11 +495,15 @@ describe('Header 全功能与回调（规格 §11.2）', () => {
   })
 })
 
-describe('TabsBar 占位（规格 §11.1：TASK-011 稳定挂载点）', () => {
-  it('占位区域随外壳渲染且布局热切换保持同一挂载节点', () => {
+describe('TabsBar 挂载点（规格 §11.1：随外壳持久存在）', () => {
+  it('页签区域随外壳渲染（含 affix 仪表盘页签）且布局热切换保持同一挂载节点', () => {
     const { store, container } = renderLayout({ initialPath: '/dashboard' })
     const tabsBar = container.querySelector('[data-region="tabs-bar"]') as HTMLElement
     expect(tabsBar).not.toBeNull()
+    // 浏览器刷新重建（规格 §9.3）：当前即 Dashboard 时只有 affix 一个页签
+    const tablist = within(tabsBar).getByRole('tablist', { name: '页签' })
+    expect(within(tablist).getAllByRole('tab')).toHaveLength(1)
+    expect(within(tablist).getByRole('tab', { selected: true })).toHaveTextContent('仪表盘')
     act(() => {
       store.dispatch(settingsChanged({ layout: SETTINGS_LAYOUTS.TOP }))
     })

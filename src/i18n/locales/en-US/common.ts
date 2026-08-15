@@ -71,6 +71,14 @@ const common: Record<string, string> = {
   更多: 'More',
   打开界面设置: 'Open appearance settings',
   用户菜单: 'User menu',
+  // 页签栏（规格 §9.3/§11.3）
+  页签: 'Tabs',
+  刷新当前: 'Refresh Current',
+  关闭其他: 'Close Others',
+  关闭右侧: 'Close to the Right',
+  关闭全部: 'Close All',
+  向左滚动: 'Scroll Left',
+  向右滚动: 'Scroll Right',
   // 语言原生名：语言切换菜单展示，不做翻译（规格 §12：语言名按原生写法呈现）
   简体中文: '简体中文',
   English: 'English',

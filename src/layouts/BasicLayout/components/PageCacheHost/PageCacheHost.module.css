@@ -1,0 +1,19 @@
+/*
+ * 页面缓存宿主（规格 §9.2）：每个 Activity 页面拥有独立滚动容器，
+ * 滚动发生在该容器而不是共享内容外壳，才能自然保留 scrollTop。
+ * 颜色一律来自 var(--ant-*) CSS 变量（规格 §10.2）。
+ */
+
+.host {
+  position: relative;
+  height: 100%;
+  min-height: 0;
+}
+
+/* 独立滚动容器：隐藏页由 Activity 以 display:none 保留 DOM 与 scrollTop */
+.pagePane {
+  height: 100%;
+  min-height: 0;
+  overflow: auto;
+  padding: 16px;
+}
