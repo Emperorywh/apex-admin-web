@@ -118,6 +118,14 @@ const common: Record<string, string> = {
   当前浏览器不支持全屏功能: 'Fullscreen is not supported by this browser.',
   '无法切换全屏，可能被浏览器权限策略拒绝':
     'Unable to toggle fullscreen. It may be blocked by a browser permission policy.',
+  // 演示模式（规格 §13）
+  演示模式: 'Demo Mode',
+  '无法连接真实后端，已切换到演示模式': 'Real backend unreachable. Switched to demo mode.',
+  '演示数据快照不可用，已恢复初始演示数据': 'Demo data snapshot unavailable. Initial demo data restored.',
+  退出登录确认: 'Confirm Sign Out',
+  '演示会话数据（用户管理增删改快照）默认保留，可继续演示。':
+    'Demo session data (user CRUD snapshot) is kept by default so the demo can continue.',
+  同时清除演示数据快照: 'Also clear the demo data snapshot',
 }
 
 export default common

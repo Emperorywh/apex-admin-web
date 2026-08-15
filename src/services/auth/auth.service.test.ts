@@ -12,6 +12,7 @@ import { API_ERROR_CODES, GLOBAL_REQUEST_SCOPE } from '@/constants/request.const
 import { registerUiFeedbackInstances, resetUiFeedbackInstances } from '@/services/feedback/uiFeedback'
 import type { UiFeedbackInstances } from '@/services/feedback/uiFeedback'
 import { configureRequestAdapter } from '@/services/request/request'
+import { createApiError } from '@/services/request/envelope'
 import {
   createMockAdapter,
   failureEnvelope,
@@ -19,7 +20,17 @@ import {
   userFixture,
   type MockAdapter,
 } from '@/test/requestTestHelpers'
-import { changePassword, getProfile, login, logout, refreshTokens, updateProfile } from './auth.service'
+import {
+  changePassword,
+  getProfile,
+  login,
+  loginViaTransport,
+  logout,
+  refreshTokens,
+  registerLoginTransportExtension,
+  updateProfile,
+  type LoginTransportExtension,
+} from './auth.service'
 
 const profileFixture = {
   user: userFixture,
@@ -145,5 +156,69 @@ describe('PUT /auth/password（规格 §6.3/§14.3）', () => {
     expect(config.url).toBe(PROFILE_ENDPOINTS.CHANGE_PASSWORD)
     expect(config.method).toBe('put')
     expect(requestBody(config)).toEqual(dto)
+  })
+})
+
+describe('登录传输扩展（规格 §13.2：off 构建不注册，登录保持纯真实通道）', () => {
+  const dto = { username: 'admin', password: 'any' }
+
+  afterEach(() => {
+    registerLoginTransportExtension(null)
+  })
+
+  it('成功路径调用 normalizeSourceAfterRealLogin 并返回真实结果', async () => {
+    const data = { accessToken: 'at-1', refreshToken: 'rt-1', user: userFixture }
+    adapter.respondWith(() => ({ status: 200, data: successEnvelope(data) }))
+    const normalize = vi.fn()
+    registerLoginTransportExtension({ normalizeSourceAfterRealLogin: normalize, replayViaDemoAfterNetworkFailure: vi.fn() })
+
+    await expect(login(dto)).resolves.toEqual(data)
+    expect(normalize).toHaveBeenCalledTimes(1)
+  })
+
+  it('失败被扩展重放接管时返回重放结果', async () => {
+    adapter.respondWith(() => Promise.reject(new Error('Network Error')))
+    const replayResult = { accessToken: 'demo-at', refreshToken: 'demo-rt', user: userFixture }
+    const replay = vi.fn().mockResolvedValue(replayResult)
+    registerLoginTransportExtension({ normalizeSourceAfterRealLogin: vi.fn(), replayViaDemoAfterNetworkFailure: replay })
+
+    await expect(login(dto)).resolves.toEqual(replayResult)
+    expect(replay).toHaveBeenCalledTimes(1)
+    expect(replay.mock.calls[0][0]).toEqual(dto)
+  })
+
+  it('扩展返回 null（业务错误/取消/未启用）时原错误上抛', async () => {
+    adapter.respondWith(() => ({
+      status: 401,
+      data: failureEnvelope(401, API_ERROR_CODES.AUTH_INVALID_CREDENTIALS, '凭证错误'),
+    }))
+    const replay = vi.fn().mockResolvedValue(null)
+    registerLoginTransportExtension({ normalizeSourceAfterRealLogin: vi.fn(), replayViaDemoAfterNetworkFailure: replay })
+
+    await expect(login(dto)).rejects.toMatchObject({
+      name: 'ApiError',
+      errorCode: API_ERROR_CODES.AUTH_INVALID_CREDENTIALS,
+    })
+    expect(replay).toHaveBeenCalledTimes(1)
+  })
+
+  it('未注册扩展时失败原样上抛且不吞错误', async () => {
+    adapter.respondWith(() => Promise.reject(createApiError({ message: '网络错误，请求未送达' })))
+    registerLoginTransportExtension(null)
+    await expect(login(dto)).rejects.toMatchObject({ name: 'ApiError', canceled: false })
+  })
+
+  it('loginViaTransport 是不含扩展编排的原始通道：成功不触发扩展', async () => {
+    const data = { accessToken: 'at-2', refreshToken: 'rt-2', user: userFixture }
+    adapter.respondWith(() => ({ status: 200, data: successEnvelope(data) }))
+    const extension: LoginTransportExtension = {
+      normalizeSourceAfterRealLogin: vi.fn(),
+      replayViaDemoAfterNetworkFailure: vi.fn(),
+    }
+    registerLoginTransportExtension(extension)
+
+    await expect(loginViaTransport(dto)).resolves.toEqual(data)
+    expect(extension.normalizeSourceAfterRealLogin).not.toHaveBeenCalled()
+    expect(extension.replayViaDemoAfterNetworkFailure).not.toHaveBeenCalled()
   })
 })

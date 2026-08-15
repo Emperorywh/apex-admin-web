@@ -31,3 +31,6 @@ blob-report/
 *.njsproj
 *.sln
 *.sw?
+
+# demo off 构建检查临时产物（scripts/check-demo-off.mjs 退出前自清理）
+dist-demo-off-check/

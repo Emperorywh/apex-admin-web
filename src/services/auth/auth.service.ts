@@ -21,11 +21,35 @@ import type {
 } from './auth.service.types'
 
 /**
- * 登录：POST /auth/login。
- * silent 由登录表单自行呈现错误（如 AUTH_INVALID_CREDENTIALS 行内提示），避免全局提示重复；
- * skipAuthHeader 关闭旧 token 认证头（规格 §7.4-2）。
+ * 登录传输扩展（规格 §13.2）：由演示模式运行时在启动时注册，off 构建不注册。
+ * 本模块保持 demo 无关：只定义扩展点契约，不感知 demo adapter 的存在。
  */
-export function login(dto: LoginRequestDto): Promise<LoginResponseDto> {
+export interface LoginTransportExtension {
+  /**
+   * 真实通道登录成功后调用：把 store 的 sessionSource 归一为实际承载通道。
+   * force 模式下该请求实际由 demo adapter 承载，来源归一为 demo；
+   * fallback 模式清除历史失败尝试残留的 demo 标记。
+   */
+  normalizeSourceAfterRealLogin(): void
+  /**
+   * 真实通道登录失败后调用：仅网络级失败且演示模式允许时切换 demo 来源并重放一次登录。
+   * 返回重放结果；返回 null 表示不接管（业务错误/取消/未启用），由调用方上抛原错误。
+   */
+  replayViaDemoAfterNetworkFailure(dto: LoginRequestDto, error: unknown): Promise<LoginResponseDto | null>
+}
+
+let loginTransportExtension: LoginTransportExtension | null = null
+
+/** 注册/清空登录传输扩展；演示模式运行时（src/demo/demoRuntime.ts）唯一调用方 */
+export function registerLoginTransportExtension(extension: LoginTransportExtension | null): void {
+  loginTransportExtension = extension
+}
+
+/**
+ * 真实传输通道的原始登录请求：POST /auth/login。
+ * 登录编排（login）与 demo fallback 重放共用；本身不感知演示模式，不含 fallback 逻辑。
+ */
+export function loginViaTransport(dto: LoginRequestDto): Promise<LoginResponseDto> {
   return request<LoginResponseDto>({
     url: AUTH_ENDPOINTS.LOGIN,
     method: 'post',
@@ -34,6 +58,31 @@ export function login(dto: LoginRequestDto): Promise<LoginResponseDto> {
     skipAuthHeader: true,
     silent: true,
   })
+}
+
+/**
+ * 登录：POST /auth/login（规格 §6.3/§13.2）。
+ * silent 由登录表单自行呈现错误（如 AUTH_INVALID_CREDENTIALS 行内提示），避免全局提示重复；
+ * skipAuthHeader 关闭旧 token 认证头（规格 §7.4-2）。
+ * 登录 API 服务负责 fallback：真实 adapter 网络级失败后经注册的扩展切换 demo 来源并重放一次；
+ * 业务错误不切换。未注册扩展（off 构建/测试）时保持纯真实通道。
+ */
+export async function login(dto: LoginRequestDto): Promise<LoginResponseDto> {
+  try {
+    const result = await loginViaTransport(dto)
+    loginTransportExtension?.normalizeSourceAfterRealLogin()
+    return result
+  } catch (error) {
+    const extension = loginTransportExtension
+    if (extension === null) {
+      throw error
+    }
+    const replayed = await extension.replayViaDemoAfterNetworkFailure(dto, error)
+    if (replayed === null) {
+      throw error
+    }
+    return replayed
+  }
 }
 
 /**

@@ -15,6 +15,7 @@ const FAIL_CASES = [
   ['loadpage-target', 'loadpage-in-pages'],
   ['pages-in-features', 'pages-not-in-features'],
   ['feature-leaf', 'feature-leaf-content'],
+  ['feature-leaf-nested-demo', 'feature-leaf-content'],
   ['deep-parent', 'no-deep-parent-import'],
   ['second-alias', 'unique-alias'],
   ['pseudo-absolute', 'unique-alias'],
@@ -38,6 +39,19 @@ describe('check-structure 合法样例', () => {
   it('合法样例经 CLI 执行退出码为 0', () => {
     const { status } = runScript(join(fixturesRoot, 'pass'))
     expect(status).toBe(0)
+  })
+
+  it('features/demo 顶层业务域合法（规格 §13.3 可整体剔除目录），域内嵌套 demo/ 才违规', () => {
+    // pass 树包含 features/demo/components/DemoBadge/DemoBadge.tsx：已由上一用例覆盖通过
+    const passResult = checkStructure(join(fixturesRoot, 'pass'))
+    const demoDomainClean = passResult.violations.filter((v) => v.file.startsWith('features/demo'))
+    expect(demoDomainClean).toEqual([])
+
+    const nested = checkStructure(join(fixturesRoot, 'fail', 'feature-leaf-nested-demo'))
+    const hits = nested.violations.filter(
+      (v) => v.rule === 'feature-leaf-content' && v.file === 'features/auth/demo',
+    )
+    expect(hits.length).toBe(1)
   })
 })
 

@@ -201,14 +201,16 @@ export function createAuthSessionRuntime(options: CreateAuthSessionOptions): Aut
 
   async function loginWithCredentials(dto: LoginRequestDto): Promise<void> {
     const result = await api.login(dto)
-    // 会话切换：先递增 epoch 使旧会话在途任务失效，再保存双 token 与来源（规格 §6.1/§6.2）；
-    // 来源固定 real：demo fallback 切换由演示模式任务在本流程插入（规格 §13.2）
+    // 会话切换：先递增 epoch 使旧会话在途任务失效，再保存双 token 与来源（规格 §6.1/§6.2）。
+    // 来源按登录实际承载通道写入：真实服务层在登录成功后已把来源归一写入 store
+    // （fallback 网络级失败切换 demo / force 全量走 demo 时为 demo，规格 §13.2）；
+    // 注入 api 的测试桩不写来源，回落 real 与纯真实登录一致
     store.dispatch(sessionEpochIncremented() as UnknownAction)
     store.dispatch(
       tokensStored({
         accessToken: result.accessToken,
         refreshToken: result.refreshToken,
-        sessionSource: SESSION_SOURCES.REAL,
+        sessionSource: store.getState().user.sessionSource ?? SESSION_SOURCES.REAL,
       }) as UnknownAction,
     )
     resetProfileSingleFlight()
