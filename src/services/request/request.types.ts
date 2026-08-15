@@ -9,6 +9,7 @@
  *   业务模块不能用类型断言绕过配置类型。
  */
 import type { Store } from '@reduxjs/toolkit'
+import type { AxiosRequestConfig } from 'axios'
 import type { ApiErrorCode } from '@/constants/request.constants'
 import type { AppState } from '@/store/slices/app.slice'
 import type { PageCacheState } from '@/store/slices/pageCache.slice'
@@ -84,6 +85,13 @@ export interface RequestOptions {
 declare module 'axios' {
   export interface AxiosRequestConfig extends RequestOptions {}
 }
+
+/**
+ * 传输无关的请求发送函数形态：结构兼容 request 与 usePageRequest() 的返回值。
+ * 业务 service 以 send 参数接收注入的发送函数（默认真实 request），
+ * 页面 Hook 注入页签作用域请求函数，使请求随页签生命周期统一取消（规格 §7.4-6）。
+ */
+export type SendRequest = <T>(config: AxiosRequestConfig) => Promise<T>
 
 /** 请求层依赖的最小 store 状态树：应用 RootState 的结构子集，测试可用纯 store 构造 */
 export interface RequestStateTree {

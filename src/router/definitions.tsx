@@ -9,10 +9,11 @@
  * 当前只注册已实现的页面（登录、错误页），业务页面路由随各自任务增量扩展；
  * 受保护根外壳由 projections 的 ProtectedRoot 容器挂载 BasicLayout 承担渲染。
  */
-import { LayoutDashboard } from 'lucide-react'
+import { LayoutDashboard, Settings, UsersRound } from 'lucide-react'
 import { DASHBOARD_I18N_NAMESPACE } from '@/constants/dashboard/dashboard.constants'
 import { PERMISSIONS } from '@/constants/permission.constants'
 import { ROUTE_IDS, ROUTE_PATHS } from '@/constants/route.constants'
+import { USER_I18N_NAMESPACE } from '@/constants/system/user/user.constants'
 import type { AppRouteDefinition } from './router.types'
 
 /**
@@ -54,6 +55,29 @@ export const routeDefinitions: readonly AppRouteDefinition[] = [
           affixTab: true,
           i18nNamespaces: [DASHBOARD_I18N_NAMESPACE],
         },
+      },
+      {
+        // 系统管理目录节点（规格 §14.2）：无 permCode，仅承担菜单/面包屑分组；
+        // 目录菜单只在自身权限满足且至少有一个可见子节点时保留（规格 §4.4）
+        id: ROUTE_IDS.SYSTEM,
+        path: ROUTE_PATHS.SYSTEM,
+        meta: { title: '系统管理', icon: Settings },
+        children: [
+          {
+            // 用户管理（规格 §14.2/§14.3）：查询/分页/Drawer CRUD/角色分配；
+            // 页面权限 system:user:list，按钮级权限由页内 <Auth> 门控；
+            // i18nNamespaces 声明 user 命名空间（规格 §12）
+            id: ROUTE_IDS.SYSTEM_USER,
+            path: ROUTE_PATHS.SYSTEM_USER,
+            loadPage: () => import('@/pages/system/user/User/User').then(({ User }) => ({ default: User })),
+            meta: {
+              title: '用户管理',
+              icon: UsersRound,
+              permCode: PERMISSIONS.SYSTEM_USER_LIST,
+              i18nNamespaces: [USER_I18N_NAMESPACE],
+            },
+          },
+        ],
       },
       {
         id: ROUTE_IDS.FORBIDDEN,

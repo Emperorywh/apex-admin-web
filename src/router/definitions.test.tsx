@@ -7,6 +7,7 @@ import { describe, expect, expectTypeOf, it } from 'vitest'
 import { DASHBOARD_I18N_NAMESPACE } from '@/constants/dashboard/dashboard.constants'
 import { PERMISSIONS } from '@/constants/permission.constants'
 import { ROUTE_IDS, ROUTE_PATHS } from '@/constants/route.constants'
+import { USER_I18N_NAMESPACE } from '@/constants/system/user/user.constants'
 import { routeDefinitions } from './definitions'
 import type { AppRouteDefinition } from './router.types'
 
@@ -71,6 +72,17 @@ describe('routeDefinitions（规格 §4.2）', () => {
     // affix 唯一性：仅 Dashboard 一个默认固定页签（规格 §4.2）
     const affixNodes = nodes.filter((node) => node.meta.affixTab === true)
     expect(affixNodes.map((node) => node.id)).toEqual([ROUTE_IDS.DASHBOARD])
+  })
+
+  it('用户管理节点：目录分组 + 叶子页面权限 system:user:list + user 命名空间（规格 §14.2/§12）', () => {
+    const byId = new Map(nodes.map((node) => [node.id, node]))
+    const system = byId.get(ROUTE_IDS.SYSTEM)
+    expect(system?.path).toBe(ROUTE_PATHS.SYSTEM)
+    expect(system?.loadPage).toBeUndefined()
+    const userPage = byId.get(ROUTE_IDS.SYSTEM_USER)
+    expect(userPage?.path).toBe(ROUTE_PATHS.SYSTEM_USER)
+    expect(userPage?.meta.permCode).toBe(PERMISSIONS.SYSTEM_USER_LIST)
+    expect(userPage?.meta.i18nNamespaces).toEqual([USER_I18N_NAMESPACE])
   })
 
   it('叶子节点均有 loadPage，目录节点无 loadPage（规格 §4.2）', () => {

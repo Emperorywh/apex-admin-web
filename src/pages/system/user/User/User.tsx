@@ -1,0 +1,288 @@
+/**
+ * 用户管理页面（规格 §14.2/§14.3）：路由 /system/user，页面权限 system:user:list。
+ * keyword 查询（去空白、不区分大小写包含 username/displayName）+ sortBy/sortOrder 白名单排序
+ * + 分页（默认 10、最大 100、未传 sortBy 按 createdAt desc）由 useUserList 承担（§17.24 竞态防护）；
+ * 表格 + Drawer CRUD（创建/编辑契约差异见 UserForm），分配角色独立 Drawer（PUT /users/:id/roles）；
+ * 新增/编辑/删除/分配角色按钮由 <Auth> 按钮级门控（规格 §5.2），viewer 下隐藏，
+ * 权限码一律引用 PERMISSIONS 常量，页面不出现权限魔法字符串。
+ */
+import { useEffect, useState } from 'react'
+import { App, Button, Drawer, Input, Select, Space, Table, Tag } from 'antd'
+import type { TableProps } from 'antd'
+import { Pencil, Plus, ShieldCheck, Trash2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import dayjs from 'dayjs'
+import { PAGE_SIZE_MAX, SORT_ORDERS } from '@/constants/request.constants'
+import type { SortOrder as ListSortOrder } from '@/constants/request.constants'
+import { PERMISSIONS } from '@/constants/permission.constants'
+import { USER_I18N_NAMESPACE, USER_SORT_FIELDS } from '@/constants/system/user/user.constants'
+import type { UserSortField } from '@/constants/system/user/user.constants'
+import { Auth } from '@/components/Auth/Auth'
+import { UserForm } from '@/features/system/user/components/UserForm/UserForm'
+import type { UserFormMode, UserFormSubmitPayload } from '@/features/system/user/components/UserForm/UserForm.types'
+import { UserRoleDrawer } from '@/features/system/user/components/UserRoleDrawer/UserRoleDrawer'
+import { useUserList } from '@/features/system/user/hooks/useUserList'
+import { usePageRequest } from '@/hooks/usePageRequest'
+import { listRoles } from '@/services/system/role/role.service'
+import {
+  assignUserRoles,
+  createUser,
+  deleteUser,
+  updateUser,
+} from '@/services/system/user/user.service'
+import type { Role } from '@/types/system/role/role.types'
+import type { User as UserEntity } from '@/types/system/user/user.types'
+
+/** 列表创建时间列展示格式（dayjs）；页面私有常量（规格 §3.6） */
+const USER_TABLE_DATETIME_FORMAT = 'YYYY-MM-DD HH:mm'
+
+/** 每页条数可选项：全部不超过分页上限（规格 §14.3 size 最大 100） */
+const USER_PAGE_SIZE_OPTIONS = ['10', '20', '50', '100']
+
+/** 排序字段选项文案 key：与 USER_SORT_FIELDS 白名单一一对应（规格 §14.3） */
+const SORT_FIELD_LABEL_KEYS: Record<UserSortField, string> = {
+  username: '用户名',
+  displayName: '显示名称',
+  status: '状态',
+  createdAt: '创建时间',
+}
+
+/** 表单 Drawer 开合状态：mode + 编辑目标（创建模式 user 为 null） */
+interface FormDrawerState {
+  open: boolean
+  mode: UserFormMode
+  user: UserEntity | null
+}
+
+const FORM_DRAWER_CLOSED: FormDrawerState = { open: false, mode: 'create', user: null }
+
+export function User() {
+  const { t } = useTranslation(USER_I18N_NAMESPACE)
+  const { message, modal } = App.useApp()
+  const pageRequest = usePageRequest()
+  const list = useUserList()
+  // 可选角色集合：创建表单初始角色与分配角色 Drawer 共用；一次性加载（demo 种子角色数量远小于分页上限）
+  const [roles, setRoles] = useState<Role[]>([])
+  const [keywordDraft, setKeywordDraft] = useState('')
+  const [formDrawer, setFormDrawer] = useState<FormDrawerState>(FORM_DRAWER_CLOSED)
+  const [roleDrawerUser, setRoleDrawerUser] = useState<UserEntity | null>(null)
+  const [submitting, setSubmitting] = useState(false)
+  const [roleSubmitting, setRoleSubmitting] = useState(false)
+
+  useEffect(() => {
+    let alive = true
+    void listRoles({ page: 1, size: PAGE_SIZE_MAX }, pageRequest)
+      .then((page) => {
+        if (alive) {
+          setRoles(page.list)
+        }
+      })
+      .catch(() => {
+        // 角色加载失败的提示由请求层统一弹出；角色选项保持为空，不阻塞用户列表
+      })
+    return () => {
+      alive = false
+    }
+  }, [pageRequest])
+
+  const closeFormDrawer = (): void => {
+    setFormDrawer(FORM_DRAWER_CLOSED)
+  }
+
+  const handleFormSubmit = async (payload: UserFormSubmitPayload): Promise<void> => {
+    setSubmitting(true)
+    try {
+      if (payload.mode === 'create') {
+        // silent：字段映射与页面级错误由 UserForm 呈现（规格 §7.4-3/§14.4）
+        await createUser(payload.dto, { silent: true })
+        message.success(t('创建用户成功'))
+      } else {
+        const target = formDrawer.user
+        if (target !== null) {
+          await updateUser(target.id, payload.dto, { silent: true })
+          message.success(t('保存成功'))
+        }
+      }
+      closeFormDrawer()
+      list.reload()
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const handleAssignRoles = async (roleIds: string[]): Promise<void> => {
+    const target = roleDrawerUser
+    if (target === null) {
+      return
+    }
+    setRoleSubmitting(true)
+    try {
+      await assignUserRoles(target.id, { roleIds }, { silent: true })
+      message.success(t('保存成功'))
+      setRoleDrawerUser(null)
+      list.reload()
+    } finally {
+      setRoleSubmitting(false)
+    }
+  }
+
+  const confirmDelete = (target: UserEntity): void => {
+    modal.confirm({
+      title: t('删除用户'),
+      content: t('确定要删除用户「{{name}}」吗？删除后不可恢复。', { name: target.displayName }),
+      okText: t('确认删除'),
+      okButtonProps: { danger: true },
+      cancelText: t('取消'),
+      onOk: async () => {
+        try {
+          // 非 silent：删除失败由请求层统一弹出错误提示
+          await deleteUser(target.id)
+          message.success(t('删除成功'))
+          list.reload()
+        } catch {
+          // 吞掉 rejection 使确认框正常关闭；失败提示已由请求层弹出
+        }
+      },
+    })
+  }
+
+  const columns: TableProps<UserEntity>['columns'] = [
+    { title: t('用户名'), dataIndex: 'username', key: 'username' },
+    { title: t('显示名称'), dataIndex: 'displayName', key: 'displayName' },
+    { title: t('邮箱'), dataIndex: 'email', key: 'email' },
+    {
+      title: t('手机号'),
+      dataIndex: 'phone',
+      key: 'phone',
+      render: (phone: string | undefined) => phone ?? '-',
+    },
+    {
+      title: t('状态'),
+      dataIndex: 'status',
+      key: 'status',
+      render: (status: UserEntity['status']) => (
+        <Tag color={status === 'enabled' ? 'success' : 'error'}>
+          {status === 'enabled' ? t('启用', { context: 'status' }) : t('禁用', { context: 'status' })}
+        </Tag>
+      ),
+    },
+    {
+      title: t('创建时间'),
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      render: (createdAt: string) => dayjs(createdAt).format(USER_TABLE_DATETIME_FORMAT),
+    },
+    {
+      title: t('操作'),
+      key: 'actions',
+      render: (_, record) => (
+        <Space size={0}>
+          <Auth code={PERMISSIONS.SYSTEM_USER_UPDATE}>
+            <Button type="link" icon={<Pencil size={14} />} onClick={() => setFormDrawer({ open: true, mode: 'edit', user: record })}>
+              {t('编辑')}
+            </Button>
+          </Auth>
+          <Auth code={PERMISSIONS.SYSTEM_USER_ASSIGN_ROLE}>
+            <Button type="link" icon={<ShieldCheck size={14} />} onClick={() => setRoleDrawerUser(record)}>
+              {t('分配角色')}
+            </Button>
+          </Auth>
+          <Auth code={PERMISSIONS.SYSTEM_USER_DELETE}>
+            <Button type="link" danger icon={<Trash2 size={14} />} onClick={() => confirmDelete(record)}>
+              {t('删除')}
+            </Button>
+          </Auth>
+        </Space>
+      ),
+    },
+  ]
+
+  return (
+    <div>
+      <Space wrap style={{ marginBottom: 16 }}>
+        <Input.Search
+          allowClear
+          placeholder={t('搜索用户名或显示名称')}
+          value={keywordDraft}
+          onChange={(event) => setKeywordDraft(event.target.value)}
+          onSearch={(value) => list.searchKeyword(value)}
+          style={{ width: 240 }}
+        />
+        <Select<UserSortField | undefined>
+          allowClear
+          placeholder={t('默认排序（创建时间倒序）')}
+          value={list.query.sortBy}
+          onChange={(value) => list.changeSort(value, list.query.sortOrder)}
+          style={{ width: 180 }}
+          options={USER_SORT_FIELDS.map((field) => ({ label: t(SORT_FIELD_LABEL_KEYS[field]), value: field }))}
+        />
+        <Select<ListSortOrder>
+          placeholder={t('排序方向')}
+          value={list.query.sortBy === undefined ? undefined : list.query.sortOrder}
+          disabled={list.query.sortBy === undefined}
+          onChange={(value) => list.changeSort(list.query.sortBy, value)}
+          style={{ width: 120 }}
+          options={[
+            { label: t('升序'), value: SORT_ORDERS.ASC },
+            { label: t('降序'), value: SORT_ORDERS.DESC },
+          ]}
+        />
+        <Button
+          onClick={() => {
+            setKeywordDraft('')
+            list.searchKeyword('')
+            list.changeSort(undefined, list.query.sortOrder)
+          }}
+        >
+          {t('重置')}
+        </Button>
+        <Auth code={PERMISSIONS.SYSTEM_USER_CREATE}>
+          <Button type="primary" icon={<Plus size={14} />} onClick={() => setFormDrawer({ open: true, mode: 'create', user: null })}>
+            {t('新增用户')}
+          </Button>
+        </Auth>
+      </Space>
+      <Table<UserEntity>
+        rowKey="id"
+        columns={columns}
+        dataSource={list.users}
+        loading={list.loading}
+        pagination={{
+          current: list.query.page,
+          pageSize: list.query.size,
+          total: list.total,
+          showSizeChanger: true,
+          pageSizeOptions: USER_PAGE_SIZE_OPTIONS,
+          onChange: (page, size) => list.changePagination(page, size),
+        }}
+      />
+      <Drawer
+        title={formDrawer.mode === 'create' ? t('新增用户') : t('编辑用户')}
+        placement="right"
+        width={440}
+        open={formDrawer.open}
+        onClose={closeFormDrawer}
+        destroyOnHidden
+      >
+        <UserForm
+          mode={formDrawer.mode}
+          user={formDrawer.user}
+          roles={roles}
+          submitting={submitting}
+          onSubmit={handleFormSubmit}
+          onCancel={closeFormDrawer}
+        />
+      </Drawer>
+      {/* key 按目标用户重建抽屉组件：勾选初始值随目标用户的当前角色重置 */}
+      <UserRoleDrawer
+        key={roleDrawerUser?.id ?? 'closed'}
+        open={roleDrawerUser !== null}
+        user={roleDrawerUser}
+        roles={roles}
+        submitting={roleSubmitting}
+        onSubmit={handleAssignRoles}
+        onClose={() => setRoleDrawerUser(null)}
+      />
+    </div>
+  )
+}

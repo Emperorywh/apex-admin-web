@@ -40,3 +40,10 @@ export const USER_KEYWORD_FIELDS = ['username', 'displayName'] as const
  * 创建与编辑用户、个人中心资料表单共用。
  */
 export const USER_EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+/**
+ * 用户管理页面 i18n 命名空间（规格 §12）：
+ * 路由 meta.i18nNamespaces 声明该值，en-US 资源文件为
+ * src/i18n/locales/en-US/user.ts（文件名即命名空间）。
+ */
+export const USER_I18N_NAMESPACE = 'user'

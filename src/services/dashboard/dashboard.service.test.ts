@@ -9,10 +9,10 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { DASHBOARD_ENDPOINTS } from '@/constants/dashboard/dashboard.constants'
 import { API_ERROR_CODES } from '@/constants/request.constants'
 import { configureRequestAdapter } from '@/services/request/request'
-import type { ApiError } from '@/services/request/request.types'
+import type { ApiError, SendRequest } from '@/services/request/request.types'
 import type { DashboardOverview } from '@/types/dashboard/dashboard.types'
 import { createMockAdapter, failureEnvelope, successEnvelope, type MockAdapter } from '@/test/requestTestHelpers'
-import { getDashboardOverview, type SendRequest } from './dashboard.service'
+import { getDashboardOverview } from './dashboard.service'
 
 const overviewFixture: DashboardOverview = {
   stats: { userCount: 12, enabledUserCount: 10, roleCount: 2, todayLoginCount: 7 },

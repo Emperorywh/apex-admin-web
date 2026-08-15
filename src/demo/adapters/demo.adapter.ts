@@ -1,6 +1,7 @@
 /**
  * demo adapter（规格 §13.2）：以与真实接口相同的 HTTP/envelope/errorCode 契约（规格 §7.1/§14.4）
- * 实现受支持端点——登录（密码任意）、GET profile、refresh（token 过期与旋转）、logout、用户 CRUD。
+ * 实现受支持端点——登录（密码任意）、GET profile、refresh（token 过期与旋转）、logout、
+ * 用户 CRUD、GET /roles 角色列表（用户管理分配角色消费；角色 CRUD 随角色管理任务扩展）。
  *
  * - 形态是 axios adapter：由 demo 运行时经 configureRequestAdapter 注册，主实例与 refresh 专用实例
  *   共用同一选择结果，因此 401 刷新单飞同样落在 demo 契约上（§20 闸门 ⑤ 结论产品化）；
@@ -16,7 +17,7 @@ import { AxiosError, AxiosHeaders, CanceledError } from 'axios'
 import type { AxiosAdapter, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
 import dayjs from 'dayjs'
 import { DASHBOARD_DATE_FORMAT, DASHBOARD_ENDPOINTS } from '@/constants/dashboard/dashboard.constants'
-import { AUTH_ENDPOINTS, PASSWORD_MIN_LENGTH } from '@/constants/auth/auth.constants'
+import { AUTH_ENDPOINTS, PASSWORD_MIN_LENGTH, PASSWORD_PATTERN } from '@/constants/auth/auth.constants'
 import { PROFILE_ENDPOINTS } from '@/constants/profile/profile.constants'
 import {
   API_ERROR_CODES,
@@ -30,7 +31,12 @@ import {
   type SortOrder,
 } from '@/constants/request.constants'
 import { PERMISSIONS } from '@/constants/permission.constants'
-import { ADMIN_ROLE_CODE } from '@/constants/system/role/role.constants'
+import {
+  ADMIN_ROLE_CODE,
+  ROLE_ENDPOINTS,
+  ROLE_KEYWORD_FIELDS,
+  ROLE_SORT_FIELDS,
+} from '@/constants/system/role/role.constants'
 import { USER_EMAIL_PATTERN, USER_ENDPOINTS, USER_KEYWORD_FIELDS, USER_SORT_FIELDS } from '@/constants/system/user/user.constants'
 import { hasPermissionCode } from '@/store/permissions'
 import type {
@@ -41,6 +47,7 @@ import type {
 import type { ApiErrorCode } from '@/constants/request.constants'
 import type { ProfileData } from '@/types/auth/auth.types'
 import type { DashboardOverview } from '@/types/dashboard/dashboard.types'
+import type { Role } from '@/types/system/role/role.types'
 import type { PageResult, User } from '@/types/system/user/user.types'
 import {
   DEMO_ACCESS_TOKEN_PREFIX,
@@ -440,8 +447,8 @@ function handleProfile(config: InternalAxiosRequestConfig): DemoEndpointOutput {
   return ok(profile)
 }
 
-/** 列表查询参数校验与归一（规格 §14.3：分页、sortBy 白名单、keyword 字段） */
-interface UserListQuery {
+/** 列表查询参数校验与归一（规格 §14.3：分页、sortBy 白名单、keyword 字段）；用户/角色列表共用 */
+interface ListQuery {
   page: number
   size: number
   sortBy: string
@@ -449,7 +456,7 @@ interface UserListQuery {
   keyword: string
 }
 
-function parseUserListQuery(query: Record<string, string>): UserListQuery {
+function parseListQuery(query: Record<string, string>, sortFields: readonly string[]): ListQuery {
   const validator = new FieldValidator()
   const page = parsePositiveInt(query.page, PAGE_DEFAULT, 'page', validator)
   const size = parsePositiveInt(query.size, PAGE_SIZE_DEFAULT, 'size', validator)
@@ -457,8 +464,8 @@ function parseUserListQuery(query: Record<string, string>): UserListQuery {
     validator.add('size', `size 不能超过 ${PAGE_SIZE_MAX}`)
   }
   const sortBy = query.sortBy ?? DEFAULT_SORT_BY
-  if (!(USER_SORT_FIELDS as readonly string[]).includes(sortBy)) {
-    validator.add('sortBy', `sortBy 必须是 ${USER_SORT_FIELDS.join(' | ')} 之一`)
+  if (!sortFields.includes(sortBy)) {
+    validator.add('sortBy', `sortBy 必须是 ${sortFields.join(' | ')} 之一`)
   }
   const rawSortOrder = query.sortOrder ?? DEFAULT_SORT_ORDER
   if (rawSortOrder !== SORT_ORDERS.ASC && rawSortOrder !== SORT_ORDERS.DESC) {
@@ -482,11 +489,12 @@ function parsePositiveInt(raw: string | undefined, fallback: number, field: stri
   return parsed
 }
 
-function compareUsersBy(field: string, sortOrder: 'asc' | 'desc'): (left: User, right: User) => number {
+/** 列表稳定排序比较器：主字段后按 id asc（用户/角色列表共用，规格 §14.3） */
+function compareByField<T extends { id: string }>(field: string, sortOrder: 'asc' | 'desc'): (left: T, right: T) => number {
   const direction = sortOrder === SORT_ORDERS.DESC ? -1 : 1
   return (left, right) => {
-    const leftValue = String(left[field as keyof User] ?? '')
-    const rightValue = String(right[field as keyof User] ?? '')
+    const leftValue = String(left[field as keyof T] ?? '')
+    const rightValue = String(right[field as keyof T] ?? '')
     if (leftValue !== rightValue) {
       return leftValue < rightValue ? -direction : direction
     }
@@ -498,7 +506,7 @@ function compareUsersBy(field: string, sortOrder: 'asc' | 'desc'): (left: User, 
 function handleListUsers(config: InternalAxiosRequestConfig): DemoEndpointOutput {
   const account = requireAccount(config)
   requirePermission(account, PERMISSIONS.SYSTEM_USER_LIST)
-  const query = parseUserListQuery(readQuery(config))
+  const query = parseListQuery(readQuery(config), USER_SORT_FIELDS)
   const dataset = ensureDemoDataset()
   const keyword = query.keyword.toLowerCase()
   const filtered = dataset.users.filter((user) => {
@@ -508,7 +516,7 @@ function handleListUsers(config: InternalAxiosRequestConfig): DemoEndpointOutput
     // keyword 去首尾空白后对用户名/显示名不区分大小写包含匹配（规格 §14.3）
     return USER_KEYWORD_FIELDS.some((field) => String(user[field as keyof User]).toLowerCase().includes(keyword))
   })
-  const sorted = [...filtered].sort(compareUsersBy(query.sortBy, query.sortOrder))
+  const sorted = [...filtered].sort(compareByField<User>(query.sortBy, query.sortOrder))
   const start = (query.page - 1) * query.size
   const page: PageResult<User> = {
     list: sorted.slice(start, start + query.size),
@@ -519,10 +527,31 @@ function handleListUsers(config: InternalAxiosRequestConfig): DemoEndpointOutput
   return ok(page)
 }
 
-const USER_STATUSES = ['enabled', 'disabled'] as const
+/** 角色列表：GET /roles（规格 §14.3）。用户管理分配角色 Drawer 消费；权限随 system:role:list */
+function handleListRoles(config: InternalAxiosRequestConfig): DemoEndpointOutput {
+  const account = requireAccount(config)
+  requirePermission(account, PERMISSIONS.SYSTEM_ROLE_LIST)
+  const query = parseListQuery(readQuery(config), ROLE_SORT_FIELDS)
+  const keyword = query.keyword.toLowerCase()
+  const filtered = DEMO_SEED_ROLES.filter((role) => {
+    if (keyword.length === 0) {
+      return true
+    }
+    // keyword 去首尾空白后对 code/name 不区分大小写包含匹配（规格 §14.3）
+    return ROLE_KEYWORD_FIELDS.some((field) => String(role[field as keyof Role]).toLowerCase().includes(keyword))
+  })
+  const sorted = [...filtered].sort(compareByField<Role>(query.sortBy, query.sortOrder))
+  const start = (query.page - 1) * query.size
+  const page: PageResult<Role> = {
+    list: sorted.slice(start, start + query.size),
+    total: sorted.length,
+    page: query.page,
+    size: query.size,
+  }
+  return ok(page)
+}
 
-/** 密码策略与创建/修改密码表单一致：最少 8 位且同时包含字母和数字（规格 §14.3） */
-const DEMO_PASSWORD_PATTERN = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/
+const USER_STATUSES = ['enabled', 'disabled'] as const
 
 function handleCreateUser(config: InternalAxiosRequestConfig): DemoEndpointOutput {
   const account = requireAccount(config)
@@ -539,7 +568,8 @@ function handleCreateUser(config: InternalAxiosRequestConfig): DemoEndpointOutpu
   if (email.length > 0 && !USER_EMAIL_PATTERN.test(email)) {
     validator.add('email', 'email 格式不正确')
   }
-  if (password.length > 0 && !DEMO_PASSWORD_PATTERN.test(password)) {
+  // 密码策略与创建/修改密码表单共用同一权威正则（规格 §14.3：最少 8 位且同时包含字母和数字）
+  if (password.length > 0 && !PASSWORD_PATTERN.test(password)) {
     validator.add('password', `密码最少 ${PASSWORD_MIN_LENGTH} 位且必须同时包含字母和数字`)
   }
   const knownRoleIds = new Set(DEMO_SEED_ROLES.map((role) => role.id))
@@ -708,6 +738,7 @@ const DEMO_ROUTES: readonly DemoRoute[] = [
   route('post', AUTH_ENDPOINTS.LOGOUT, handleLogout),
   route('get', PROFILE_ENDPOINTS.GET_PROFILE, handleProfile),
   route('get', DASHBOARD_ENDPOINTS.OVERVIEW, handleDashboardOverview),
+  route('get', ROLE_ENDPOINTS.LIST, handleListRoles),
   route('get', USER_ENDPOINTS.LIST, handleListUsers),
   route('post', USER_ENDPOINTS.CREATE, handleCreateUser),
   // /users/:id/roles（4 段）先于 /users/:id（3 段）注册无歧义：按段数与字面量精确匹配

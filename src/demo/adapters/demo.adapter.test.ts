@@ -19,6 +19,7 @@ import type { ApiError } from '@/services/request/request.types'
 import type { LoginResponseDto } from '@/services/auth/auth.service.types'
 import type { ProfileData } from '@/types/auth/auth.types'
 import type { DashboardOverview } from '@/types/dashboard/dashboard.types'
+import type { Role } from '@/types/system/role/role.types'
 import type { PageResult, User } from '@/types/system/user/user.types'
 import { DEMO_ACCOUNT_USERNAMES, DEMO_SNAPSHOT_SCHEMA_VERSION, DEMO_SNAPSHOT_STORAGE_KEY } from '../demo.constants'
 import { clearDemoDataOnLogout, readDemoSnapshotRaw } from '../demoData'
@@ -485,9 +486,46 @@ describe('用户 CRUD（规格 §14.3）', () => {
 
   it('未实现端点返回 404 RESOURCE_NOT_FOUND（后续任务在路由表扩展）', async () => {
     const { accessToken } = await loginDemo(DEMO_ACCOUNT_USERNAMES.ADMIN)
-    const { apiError } = await expectFailure(demoConfig({ url: '/roles', token: accessToken }))
+    const { apiError } = await expectFailure(demoConfig({ url: '/permissions/tree', token: accessToken }))
     expect(apiError.httpStatus).toBe(404)
     expect(apiError.errorCode).toBe(API_ERROR_CODES.RESOURCE_NOT_FOUND)
+  })
+})
+
+describe('角色列表（规格 §14.3：用户管理分配角色消费）', () => {
+  it('admin 分页查询角色：默认 createdAt desc，返回种子角色', async () => {
+    const { accessToken } = await loginDemo(DEMO_ACCOUNT_USERNAMES.ADMIN)
+    const outcome = await callAdapter(
+      demoConfig({ url: '/roles', token: accessToken, params: { page: '1', size: '10' } }),
+    )
+    const page = envelopeData<PageResult<Role>>(outcome)
+    expect(page.total).toBe(2)
+    expect(page.list.map((role) => role.code)).toEqual(['admin', 'viewer'])
+  })
+
+  it('keyword 对 code/name 不区分大小写包含匹配', async () => {
+    const { accessToken } = await loginDemo(DEMO_ACCOUNT_USERNAMES.ADMIN)
+    const outcome = await callAdapter(
+      demoConfig({ url: '/roles', token: accessToken, params: { keyword: ' VIEWER ' } }),
+    )
+    const page = envelopeData<PageResult<Role>>(outcome)
+    expect(page.list.map((role) => role.code)).toEqual(['viewer'])
+  })
+
+  it('sortBy 白名单外返回 400 VALIDATION_FAILED', async () => {
+    const { accessToken } = await loginDemo(DEMO_ACCOUNT_USERNAMES.ADMIN)
+    const { apiError } = await expectFailure(
+      demoConfig({ url: '/roles', token: accessToken, params: { sortBy: 'username' } }),
+    )
+    expect(apiError.httpStatus).toBe(400)
+    expect(apiError.errorCode).toBe(API_ERROR_CODES.VALIDATION_FAILED)
+  })
+
+  it('viewer 无 system:role:list：403 AUTH_FORBIDDEN（规格 §5.3 角色管理矩阵）', async () => {
+    const { accessToken } = await loginDemo(DEMO_ACCOUNT_USERNAMES.VIEWER)
+    const { apiError } = await expectFailure(demoConfig({ url: '/roles', token: accessToken }))
+    expect(apiError.httpStatus).toBe(403)
+    expect(apiError.errorCode).toBe(API_ERROR_CODES.AUTH_FORBIDDEN)
   })
 })
 
