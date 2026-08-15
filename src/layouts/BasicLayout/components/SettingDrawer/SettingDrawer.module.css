@@ -1,0 +1,57 @@
+/*
+ * 界面设置抽屉样式（规格 §10.2）：
+ * 颜色一律来自 var(--ant-*) CSS 变量（规格 §10.2，色值字面量只允许出现在 src/config/theme.ts）。
+ */
+
+.settingGroup {
+  margin-bottom: 24px;
+}
+
+.groupTitle {
+  margin: 0 0 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ant-color-text-heading);
+}
+
+.settingRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 32px;
+  margin-bottom: 8px;
+}
+
+.rowLabel {
+  color: var(--ant-color-text);
+}
+
+/* 预设色板：选中态以主题色描边并加对钩区域 */
+.presetList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.presetSwatch {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  /* 预设色值由内联 style 注入（来自 config/theme.ts），本文件不出现色值字面量 */
+  box-shadow: 0 0 0 1px var(--ant-color-border) inset;
+}
+
+.presetSwatchActive {
+  outline: 2px solid var(--ant-color-primary);
+  outline-offset: 2px;
+}
+
+.contrastWarning {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--ant-color-warning);
+}

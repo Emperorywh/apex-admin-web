@@ -11,12 +11,12 @@
   background: transparent;
 }
 
-/* 不确定进度动画：主题色未注入 CSS 变量时回退 antd 默认主色 */
+/* 不确定进度动画：主题色只取 antd CSS 变量（规格 §10.2，色值字面量禁止散落） */
 .indicator {
   height: 100%;
   width: 40%;
   border-radius: 2px;
-  background: var(--ant-color-primary, #1677ff);
+  background: var(--ant-color-primary);
   animation: globalProgressSlide 1.2s ease-in-out infinite;
 }
 

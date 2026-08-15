@@ -7,6 +7,10 @@ import dayjs from 'dayjs'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { API_ERROR_CODES } from '@/constants/request.constants'
 
+// 本文件逐用例 resetModules 后动态 import 重建 i18next 模块图；
+// 全量套件并行时冷导入在负载较高的机器上可能超过默认 5 秒，放宽本文件超时
+vi.setConfig({ testTimeout: 20_000 })
+
 beforeEach(() => {
   vi.resetModules()
 })

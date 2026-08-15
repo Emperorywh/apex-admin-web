@@ -9,6 +9,7 @@
  */
 import { persistReducer } from 'redux-persist'
 import type { PersistConfig, PersistMigrate, PersistedState } from 'redux-persist'
+import { isHexColor } from '@/config/theme'
 import { SESSION_SOURCES, type SessionSource } from '@/constants/auth/auth.constants'
 import { PERSIST_SCHEMA_VERSION, STORAGE_KEY_PREFIX } from '@/constants/storage.constants'
 import { appSlice, type AppState } from '@/store/slices/app.slice'
@@ -162,8 +163,7 @@ export function createSafePersistStorage(
   }
 }
 
-/** 主题色持久化格式：六位十六进制（规格 §10.2 自定义取色持久化） */
-const HEX_COLOR_PATTERN = /^#[0-9a-f]{6}$/i
+/** 主题色持久化格式：六位十六进制（规格 §10.2 自定义取色持久化），校验复用 config/theme.ts */
 
 /**
  * 从持久化 blob 中取出待校验记录：空存储返回 undefined；
@@ -318,7 +318,7 @@ function migrateSettingsState(state: unknown, currentVersion: number) {
   }
   assertNoUnknownKeys(record, [...SETTINGS_PERSIST_FIELDS, '_persist'])
   const colorPrimary = readRequiredString(record, 'colorPrimary')
-  if (colorPrimary !== undefined && !HEX_COLOR_PATTERN.test(colorPrimary)) {
+  if (colorPrimary !== undefined && !isHexColor(colorPrimary)) {
     throw new Error('字段 colorPrimary 不是六位十六进制主题色')
   }
   return omitUndefined({

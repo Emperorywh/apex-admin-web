@@ -5,14 +5,15 @@
  * Provider 启动后立即以 Redux 设置校正镜像（store 创建时写入一次，之后随 settings 变化重写）。
  */
 import { THEME_BOOT_STORAGE_KEY } from '@/constants/storage.constants'
+import type { ResolvedThemeMode } from '@/config/theme'
 import {
   SETTINGS_THEME_MODES,
   type SettingsState,
   type SettingsThemeMode,
 } from '@/store/slices/settings.slice'
 
-/** 解析后的主题模式：跟随系统时按 prefers-color-scheme 归约为亮/暗 */
-export type ResolvedThemeMode = Exclude<SettingsThemeMode, (typeof SETTINGS_THEME_MODES)['SYSTEM']>
+/** 解析后的主题模式：权威定义位于 config/theme.ts，此处转发供 store 层消费方沿用 */
+export type { ResolvedThemeMode }
 
 /** 镜像内容：只读最小字段集，结构与 index.html 启动脚本约定一致 */
 export interface ThemeBootMirror {

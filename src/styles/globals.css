@@ -1,25 +1,13 @@
 /*
  * 全局样式入口：只承载跨页面共享的基础样式与 CSS 自定义属性。
  * 组件级样式使用 CSS Modules 与 antd token（规格 §10.2）。
+ * 颜色一律来自 antd CSS 变量（var(--ant-*)）或主题运行时写入的文档属性，
+ * 色值字面量只允许出现在 src/config/theme.ts（规格 §10.2）。
  */
+
+/* 无启动镜像时的 color-scheme 兜底；首帧后由启动脚本与主题运行时的内联值接管 */
 :root {
-  color-scheme: light dark;
-  font-family:
-    system-ui,
-    -apple-system,
-    'Segoe UI',
-    Roboto,
-    'PingFang SC',
-    'Microsoft YaHei',
-    sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-  color: rgb(0 0 0 / 88%);
-  background-color: #fff;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  color-scheme: light;
 }
 
 html,
@@ -29,6 +17,45 @@ body,
   margin: 0;
 }
 
+/*
+ * 字体族经 body CSS 变量消费（规格 §10.1）：--app-font-family 由
+ * applyThemeToDocument 按 antd token 写入；未写入前的回退栈即「系统默认」档。
+ */
+body {
+  font-family:
+    var(
+      --app-font-family,
+      system-ui,
+      -apple-system,
+      'Segoe UI',
+      Roboto,
+      'PingFang SC',
+      'Microsoft YaHei',
+      sans-serif
+    );
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 .app-shell {
   height: 100%;
+}
+
+/*
+ * 尊重 prefers-reduced-motion（规格 §11.3）：关闭非必要过渡与动画。
+ * antd 组件动画由 antd 自带的同名 media query 处理，此处覆盖自定义样式。
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
 }

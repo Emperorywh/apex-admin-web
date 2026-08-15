@@ -1,10 +1,44 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>admin-web</title>
+    <script>
+      // 主题启动镜像（规格 §8.3/§10.2/§17.16）：首帧前按 localStorage 镜像设置
+      // data-theme、color-scheme 与初始背景色，避免刷新时出现相反主题底色。
+      // 镜像由 src/store/themeBootMirror.ts 随 settings 写入（key: apex_boot_theme）；
+      // 本脚本无法引用模块，背景色字面量与运行时 antd colorBgLayout 取值保持一致
+      // （亮 #f5f5f5 / 暗 #000000，运行时由 applyThemeToDocument 以真实 token 校正）。
+      // 镜像缺失或损坏（首访/隐私模式）按「跟随系统」回退。
+      ;(function () {
+        var resolved = null
+        try {
+          var raw = window.localStorage.getItem('apex_boot_theme')
+          if (raw) {
+            var mirror = JSON.parse(raw)
+            if (mirror && (mirror.resolvedMode === 'dark' || mirror.resolvedMode === 'light')) {
+              resolved = mirror.resolvedMode
+            }
+          }
+        } catch (error) {
+          /* 镜像读取失败按无镜像处理，不阻塞启动 */
+        }
+        if (resolved === null) {
+          try {
+            resolved =
+              window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+          } catch (error) {
+            resolved = 'light'
+          }
+        }
+        var root = document.documentElement
+        root.setAttribute('data-theme', resolved)
+        root.style.colorScheme = resolved
+        root.style.backgroundColor = resolved === 'dark' ? '#000000' : '#f5f5f5'
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>

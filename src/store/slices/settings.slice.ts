@@ -4,6 +4,7 @@
  * 设置变化实时组装 ConfigProvider theme，无「应用」按钮；Fullscreen 属于 app slice，不属于本切片。
  */
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
+import { DEFAULT_COLOR_PRIMARY } from '@/config/theme'
 
 /** 主题模式：亮 / 暗 / 跟随系统，默认跟随系统（规格 §10.1） */
 export const SETTINGS_THEME_MODES = {
@@ -58,8 +59,8 @@ export interface SettingsState {
 
 export const initialSettingsState: SettingsState = {
   themeMode: SETTINGS_THEME_MODES.SYSTEM,
-  // antd v6 默认主题色：作为「自定义取色持久化」的初始默认值，主题任务落盘预设色板时统一收编
-  colorPrimary: '#1677ff',
+  // 默认主题色来自 config/theme.ts 预设色板首项（色值字面量唯一集中地，规格 §10.2）
+  colorPrimary: DEFAULT_COLOR_PRIMARY,
   layout: SETTINGS_LAYOUTS.SIDE,
   fontSize: SETTINGS_FONT_SIZES.MEDIUM,
   fontFamily: SETTINGS_FONT_FAMILIES.SYSTEM,
