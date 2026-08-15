@@ -56,6 +56,12 @@ describe('user.slice', () => {
     expect(state.accessToken).toBeNull()
   })
 
+  it('sessionSourceSet 恢复为 null（重放失败恢复切换前取值，未登录不残留 demo 标记）', () => {
+    const switched = reducer(initialUserState, sessionSourceSet({ sessionSource: 'demo' }))
+    const restored = reducer(switched, sessionSourceSet({ sessionSource: null }))
+    expect(restored.sessionSource).toBeNull()
+  })
+
   it('sessionEpochIncremented 递增纪元', () => {
     const once = reducer(initialUserState, sessionEpochIncremented())
     const twice = reducer(once, sessionEpochIncremented())

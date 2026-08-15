@@ -2,6 +2,8 @@
  * 演示模式运行时集成测试（规格 §13.1/§13.2；§20 闸门 ⑤ 结论产品化）：
  * - fallback：真实通道网络级失败 → 提示并切换 demo 来源 → demo adapter 重放一次登录成功，
  *   登录状态机完成 token/来源保存与 profile 拉取（profile 亦由 demo adapter 承载）；
+ *   重放自身失败（业务错误/取消）时恢复切换前来源，未登录不残留 demo 标记，
+ *   下一次登录仍先请求真实通道；残留 demo 来源下 demo 承载的成功登录保持 demo 来源；
  * - 业务错误不切换；真实登录成功归一 real 来源，后续网络失败不隐式切换（普通拦截器不切 adapter）；
  * - force：首个登录直接由 demo adapter 承载，来源归一 demo；
  * - 整页刷新延续：全新 store 从持久化恢复 sessionSource（先于首个 profile），
@@ -20,7 +22,7 @@ import { login } from '@/services/auth/auth.service'
 import { createAuthSessionRuntime } from '@/services/auth/auth.session'
 import { configureRequestAdapter, createRequestRuntime } from '@/services/request/request'
 import { createMockAdapter, successEnvelope, userFixture } from '@/test/requestTestHelpers'
-import { authCleared } from '@/store/slices/user.slice'
+import { authCleared, sessionSourceSet } from '@/store/slices/user.slice'
 import { createAppStore, getDefaultAppStore } from '@/store/store'
 import { demoAdapter, demoAdapterTestController } from './adapters/demo.adapter'
 import { createDemoRuntime, type DemoRuntimeHandle } from './demoRuntime'
@@ -100,6 +102,54 @@ describe('fallback 登录（规格 §13.1/§13.2）', () => {
       errorCode: API_ERROR_CODES.AUTH_INVALID_CREDENTIALS,
     })
     expect(getDefaultAppStore().store.getState().user.sessionSource).toBeNull()
+    expect(warningMock).not.toHaveBeenCalled()
+  })
+
+  it('重放失败（demo 业务错误）恢复切换前来源：未登录不残留 demo，下一次登录仍先请求真实通道', async () => {
+    const handle = registerRuntime()
+    // 第一次登录：真实通道网络级失败（jsdom 天然不可达）→ 切换 demo → 重放命中未知用户名 401
+    const error = await login({ username: 'unknown-user', password: '任意密码' }).catch(
+      (caught: unknown) => caught,
+    )
+    expect(error).toMatchObject({
+      name: 'ApiError',
+      httpStatus: 401,
+      errorCode: API_ERROR_CODES.AUTH_INVALID_CREDENTIALS,
+    })
+    // 重放失败后来源恢复切换前取值（null）：未登录状态不得残留 demo 标记
+    expect(getDefaultAppStore().store.getState().user.sessionSource).toBeNull()
+    expect(warningMock).toHaveBeenCalledTimes(1)
+
+    // 第二次登录：真实通道恢复可达时仍先请求真实通道（resolver 不再路由 demo），
+    // 成功后归一 real，真实 adapter 收到且仅收到本次登录请求
+    const real = createMockAdapter()
+    real.respondWith(() => ({ status: 200, data: successEnvelope(REAL_LOGIN_DATA) }))
+    configureRequestAdapter((config) => handle.resolver(config) ?? real.adapter)
+
+    const result = await login({ username: 'real-user', password: 'secret' })
+    expect(result.accessToken).toBe('real-at-1')
+    expect(real.calls.length).toBe(1)
+    expect(real.calls[0].url).toBe(AUTH_ENDPOINTS.LOGIN)
+    expect(getDefaultAppStore().store.getState().user.sessionSource).toBe('real')
+  })
+
+  it('残留 demo 来源下的登录由 demo adapter 承载：来源保持 demo 且与 token 一致，profile 继续走 demo adapter', async () => {
+    const handle = registerRuntime()
+    const real = createMockAdapter()
+    real.respondWith(() => Promise.reject(new Error('真实通道不应被调用')))
+    configureRequestAdapter((config) => handle.resolver(config) ?? real.adapter)
+    // 构造残留/重登的 demo 来源（未被清理的 demo 会话标记）
+    getDefaultAppStore().store.dispatch(sessionSourceSet({ sessionSource: 'demo' }))
+
+    await createDefaultSession().loginWithCredentials({ username: 'admin', password: '任意密码' })
+
+    const user = getDefaultAppStore().store.getState().user
+    // 成功会话不被归一为 real：来源与实际承载通道（demo adapter）一致
+    expect(user.sessionSource).toBe('demo')
+    expect(user.accessToken?.startsWith('demo-at.admin.')).toBe(true)
+    // 状态机内 profile 继续由 demo adapter 承载；真实通道零调用
+    expect(user.user?.username).toBe('admin')
+    expect(real.calls.length).toBe(0)
     expect(warningMock).not.toHaveBeenCalled()
   })
 

@@ -28,12 +28,14 @@ export interface LoginTransportExtension {
   /**
    * 真实通道登录成功后调用：把 store 的 sessionSource 归一为实际承载通道。
    * force 模式下该请求实际由 demo adapter 承载，来源归一为 demo；
-   * fallback 模式清除历史失败尝试残留的 demo 标记。
+   * fallback 模式下若登录请求发起时来源已是 demo（重登/残留的 demo 会话，
+   * 请求由 demo adapter 承载）则保持 demo，否则归一 real（清除失败尝试残留的 demo 标记）。
    */
   normalizeSourceAfterRealLogin(): void
   /**
    * 真实通道登录失败后调用：仅网络级失败且演示模式允许时切换 demo 来源并重放一次登录。
-   * 返回重放结果；返回 null 表示不接管（业务错误/取消/未启用），由调用方上抛原错误。
+   * 返回重放结果；返回 null 表示不接管（业务错误/取消/未启用），由调用方上抛原错误；
+   * 重放自身失败时实现方须恢复切换前来源并上抛重放错误，未登录状态不得残留 demo 标记。
    */
   replayViaDemoAfterNetworkFailure(dto: LoginRequestDto, error: unknown): Promise<LoginResponseDto | null>
 }

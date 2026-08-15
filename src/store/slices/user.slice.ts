@@ -52,8 +52,11 @@ export const userSlice = createSlice({
       state.refreshToken = action.payload.refreshToken
       state.sessionSource = action.payload.sessionSource
     },
-    /** 单独切换会话来源：demo fallback 登录在网络级失败后切换并重放时使用（规格 §13.2） */
-    sessionSourceSet(state, action: PayloadAction<{ sessionSource: SessionSource }>) {
+    /**
+     * 单独切换会话来源：demo fallback 登录在网络级失败后切换并重放时使用（规格 §13.2）。
+     * null 表示恢复到未登录的无来源状态——重放自身失败时恢复切换前取值，未登录状态不得残留 demo 标记
+     */
+    sessionSourceSet(state, action: PayloadAction<{ sessionSource: SessionSource | null }>) {
       state.sessionSource = action.payload.sessionSource
     },
     /** 会话纪元递增：登录、登出、切换账号前调用，使旧异步任务的纪元比对失效 */

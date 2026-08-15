@@ -6,7 +6,8 @@
  * - 注册请求 adapter 解析器：force 模式全量走 demo adapter；fallback 模式仅 sessionSource=demo
  *   的会话走 demo adapter（主实例与 refresh 专用实例共用，401 刷新单飞同样落在 demo 契约上）；
  * - 注册登录传输扩展：fallback 登录网络级失败 → 提示并 dispatch sessionSource=demo →
- *   以 demo adapter 重放一次登录；业务错误不切换；
+ *   以 demo adapter 重放一次登录；业务错误不切换；重放自身失败时恢复切换前来源，
+ *   未登录状态不得残留 demo 标记（残留会使下一次登录跳过真实通道并错标来源）；
  * - 订阅会话清理：token 与来源清空后重置 demo token 运行态（登出清 demo 运行态，规格 §13.2）。
  */
 import type { UnknownAction } from '@reduxjs/toolkit'
@@ -66,10 +67,22 @@ export function createDemoRuntime(store: RequestStore): DemoRuntimeHandle {
   // ② 登录传输扩展（规格 §13.2）：真实 adapter 网络级失败后切换 demo 来源并重放一次
   const extension: LoginTransportExtension = {
     normalizeSourceAfterRealLogin() {
+      const mode = currentDemoMode()
       // force 模式下「真实通道」请求实际由 demo adapter 承载，会话来源归一为 demo
-      const source =
-        currentDemoMode() === DEMO_MODES.FORCE ? SESSION_SOURCES.DEMO : SESSION_SOURCES.REAL
-      store.dispatch(sessionSourceSet({ sessionSource: source }) as UnknownAction)
+      if (mode === DEMO_MODES.FORCE) {
+        store.dispatch(sessionSourceSet({ sessionSource: SESSION_SOURCES.DEMO }) as UnknownAction)
+        return
+      }
+      // fallback 模式：来源与实际承载通道一致——登录请求发起时来源已是 demo
+      //（resolver 按 sessionSource 路由，如残留/重登的 demo 会话），该请求由 demo
+      // adapter 承载，保持 demo；其余归一 real（清除历史失败尝试残留的 demo 标记）。
+      // 请求发起到本调用之间没有其他派发方改写来源，读取当前值即请求时的承载判定
+      const carriedByDemo = mode === DEMO_MODES.FALLBACK && store.getState().user.sessionSource === SESSION_SOURCES.DEMO
+      store.dispatch(
+        sessionSourceSet({
+          sessionSource: carriedByDemo ? SESSION_SOURCES.DEMO : SESSION_SOURCES.REAL,
+        }) as UnknownAction,
+      )
     },
     async replayViaDemoAfterNetworkFailure(dto, error) {
       if (currentDemoMode() !== DEMO_MODES.FALLBACK) {
@@ -79,11 +92,19 @@ export function createDemoRuntime(store: RequestStore): DemoRuntimeHandle {
       if (!isNetworkLevelFailure(error)) {
         return null
       }
+      // 切换前来源：重放失败（业务错误/取消）时恢复，未登录状态不得残留 demo 标记
+      const sourceBeforeSwitch = store.getState().user.sessionSource
       store.dispatch(sessionSourceSet({ sessionSource: SESSION_SOURCES.DEMO }) as UnknownAction)
       showUiWarning(appI18n.t(FALLBACK_SWITCH_NOTICE_KEY, { ns: COMMON_NAMESPACE }))
       // 重放走原始传输请求：adapter 解析器已按 demo 来源路由到 demo adapter；
       // 不经 login() 编排避免重放自身再次触发扩展（保持「重放一次」上限）
-      return loginViaTransport(dto)
+      try {
+        return await loginViaTransport(dto)
+      } catch (replayError) {
+        // 重放失败：来源恢复切换前取值，下一次登录仍先请求真实通道
+        store.dispatch(sessionSourceSet({ sessionSource: sourceBeforeSwitch }) as UnknownAction)
+        throw replayError
+      }
     },
   }
   registerLoginTransportExtension(extension)
