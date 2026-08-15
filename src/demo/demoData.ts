@@ -9,22 +9,28 @@
  */
 import { appI18n, COMMON_NAMESPACE } from '@/i18n/i18n'
 import { showUiWarning } from '@/services/feedback/uiFeedback'
+import type { MenuItem } from '@/types/system/menu/menu.types'
 import type { Role } from '@/types/system/role/role.types'
 import type { User } from '@/types/system/user/user.types'
 import { DEMO_SNAPSHOT_SCHEMA_VERSION, DEMO_SNAPSHOT_STORAGE_KEY } from './demo.constants'
 import {
+  DEMO_SEED_NEXT_MENU_SEQUENCE,
   DEMO_SEED_NEXT_ROLE_SEQUENCE,
   DEMO_SEED_NEXT_USER_SEQUENCE,
+  DEMO_SEED_MENUS,
   DEMO_SEED_ROLES,
   DEMO_SEED_USERS,
 } from './fixtures/demoSeedData'
 
-/** 演示数据集：用户与角色列表及各自的新建序号（角色 CRUD 的运行态，规格 §14.3） */
+/** 演示数据集：用户/角色/菜单列表及各自的新建序号（各域 CRUD 的运行态，规格 §14.3）。
+ * 菜单按扁平集合存储（不含 children），GET /menus/tree 由 adapter 组装树并稳定排序。 */
 export interface DemoDataset {
   users: User[]
   nextUserSequence: number
   roles: Role[]
   nextRoleSequence: number
+  menus: MenuItem[]
+  nextMenuSequence: number
 }
 
 /** 快照不可用提示文案（zh 即 key；en-US 资源见 locales/en-US/common.ts） */
@@ -34,13 +40,15 @@ function translateDemoText(key: string): string {
   return appI18n.t(key, { ns: COMMON_NAMESPACE })
 }
 
-/** 种子数据集：深拷贝种子用户与角色（含嵌套 permCodes），避免运行态 mutation 污染模块常量 */
+/** 种子数据集：深拷贝种子用户/角色（含嵌套 permCodes）与菜单（扁平集合），避免运行态 mutation 污染模块常量 */
 function createSeedDataset(): DemoDataset {
   return {
     users: DEMO_SEED_USERS.map((user) => ({ ...user })),
     nextUserSequence: DEMO_SEED_NEXT_USER_SEQUENCE,
     roles: DEMO_SEED_ROLES.map((role) => ({ ...role, permCodes: [...role.permCodes] })),
     nextRoleSequence: DEMO_SEED_NEXT_ROLE_SEQUENCE,
+    menus: DEMO_SEED_MENUS.map((menu) => ({ ...menu })),
+    nextMenuSequence: DEMO_SEED_NEXT_MENU_SEQUENCE,
   }
 }
 
@@ -84,6 +92,26 @@ function isValidRoleSnapshot(value: unknown): value is Role {
   )
 }
 
+/** MenuItem 形状校验：快照反序列化后的唯一外部数据校验边界（扁平集合，children 不入快照） */
+function isValidMenuSnapshot(value: unknown): value is MenuItem {
+  if (typeof value !== 'object' || value === null) {
+    return false
+  }
+  const menu = value as Record<string, unknown>
+  return (
+    typeof menu.id === 'string' &&
+    (menu.parentId === null || typeof menu.parentId === 'string') &&
+    (menu.type === 'directory' || menu.type === 'page' || menu.type === 'button') &&
+    typeof menu.name === 'string' &&
+    (menu.routeId === undefined || typeof menu.routeId === 'string') &&
+    (menu.path === undefined || typeof menu.path === 'string') &&
+    (menu.permCode === undefined || typeof menu.permCode === 'string') &&
+    typeof menu.sort === 'number' &&
+    typeof menu.visible === 'boolean' &&
+    (menu.status === 'enabled' || menu.status === 'disabled')
+  )
+}
+
 /** 校验并读取快照；null 表示不存在、损坏或版本无迁移映射（调用方恢复种子） */
 function parseSnapshot(raw: string | null): DemoDataset | null {
   if (raw === null) {
@@ -111,11 +139,19 @@ function parseSnapshot(raw: string | null): DemoDataset | null {
     if (typeof snapshot.nextRoleSequence !== 'number' || !Number.isInteger(snapshot.nextRoleSequence)) {
       return null
     }
+    if (!Array.isArray(snapshot.menus) || !snapshot.menus.every(isValidMenuSnapshot)) {
+      return null
+    }
+    if (typeof snapshot.nextMenuSequence !== 'number' || !Number.isInteger(snapshot.nextMenuSequence)) {
+      return null
+    }
     return {
       users: snapshot.users.map((user) => ({ ...(user as User) })),
       nextUserSequence: snapshot.nextUserSequence,
       roles: snapshot.roles.map((role) => ({ ...(role as Role), permCodes: [...(role as Role).permCodes] })),
       nextRoleSequence: snapshot.nextRoleSequence,
+      menus: snapshot.menus.map((menu) => ({ ...(menu as MenuItem) })),
+      nextMenuSequence: snapshot.nextMenuSequence,
     }
   } catch {
     return null
@@ -173,6 +209,8 @@ export function persistDemoSnapshot(): void {
         nextUserSequence: dataset.nextUserSequence,
         roles: dataset.roles,
         nextRoleSequence: dataset.nextRoleSequence,
+        menus: dataset.menus,
+        nextMenuSequence: dataset.nextMenuSequence,
       }),
     )
   } catch {

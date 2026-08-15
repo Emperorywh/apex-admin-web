@@ -1,9 +1,11 @@
 /**
- * 演示种子数据（规格 §13.2/§14.3）：用户 CRUD 的初始内存数据集与快照恢复基准。
+ * 演示种子数据（规格 §13.2/§14.3）：用户/角色/菜单 CRUD 的初始内存数据集与快照恢复基准。
  * 只允许被 src/demo 内部与同目录测试引用；账号权限语义见 demo.constants.ts（§5.3 权威）。
  * 种子时间戳固定，保证快照测试与默认排序（createdAt desc、id asc）确定性。
  */
 import { PERMISSIONS, PERMISSION_WILDCARD } from '@/constants/permission.constants'
+import { ROUTE_IDS, ROUTE_PATHS } from '@/constants/route.constants'
+import type { MenuItem } from '@/types/system/menu/menu.types'
 import type { Role } from '@/types/system/role/role.types'
 import type { User } from '@/types/system/user/user.types'
 
@@ -91,3 +93,82 @@ export const DEMO_SEED_NEXT_USER_SEQUENCE = 5
 
 /** 新建演示角色的下一个数字序号（种子角色使用语义化 ID，不占用数字序号） */
 export const DEMO_SEED_NEXT_ROLE_SEQUENCE = 1
+
+/**
+ * 种子菜单（规格 §14.1/§14.3）：扁平存储（children 由 GET /menus/tree 组装），
+ * routeId/path 只引用当前已注册的静态路由（ROUTE_IDS/ROUTE_PATHS 权威值）；
+ * demo:nested 演示路由在后续任务注册，对应菜单种子条目届时再补充，
+ * 本任务不预置引用未注册 routeId 的数据。button 类型仅展示权限资源关系。
+ */
+export const DEMO_SEED_MENUS: readonly MenuItem[] = [
+  {
+    id: 'demo-menu-dashboard',
+    parentId: null,
+    type: 'page',
+    name: '仪表盘',
+    routeId: ROUTE_IDS.DASHBOARD,
+    path: ROUTE_PATHS.DASHBOARD,
+    sort: 1,
+    visible: true,
+    status: 'enabled',
+  },
+  {
+    id: 'demo-menu-system',
+    parentId: null,
+    type: 'directory',
+    name: '系统管理',
+    sort: 2,
+    visible: true,
+    status: 'enabled',
+  },
+  {
+    id: 'demo-menu-system-user',
+    parentId: 'demo-menu-system',
+    type: 'page',
+    name: '用户管理',
+    routeId: ROUTE_IDS.SYSTEM_USER,
+    path: ROUTE_PATHS.SYSTEM_USER,
+    sort: 1,
+    visible: true,
+    status: 'enabled',
+  },
+  { id: 'demo-menu-user-list', parentId: 'demo-menu-system-user', type: 'button', name: '查询', permCode: PERMISSIONS.SYSTEM_USER_LIST, sort: 1, visible: true, status: 'enabled' },
+  { id: 'demo-menu-user-create', parentId: 'demo-menu-system-user', type: 'button', name: '新增', permCode: PERMISSIONS.SYSTEM_USER_CREATE, sort: 2, visible: true, status: 'enabled' },
+  { id: 'demo-menu-user-update', parentId: 'demo-menu-system-user', type: 'button', name: '编辑', permCode: PERMISSIONS.SYSTEM_USER_UPDATE, sort: 3, visible: true, status: 'enabled' },
+  { id: 'demo-menu-user-delete', parentId: 'demo-menu-system-user', type: 'button', name: '删除', permCode: PERMISSIONS.SYSTEM_USER_DELETE, sort: 4, visible: true, status: 'enabled' },
+  { id: 'demo-menu-user-assign', parentId: 'demo-menu-system-user', type: 'button', name: '分配角色', permCode: PERMISSIONS.SYSTEM_USER_ASSIGN_ROLE, sort: 5, visible: true, status: 'enabled' },
+  {
+    id: 'demo-menu-system-role',
+    parentId: 'demo-menu-system',
+    type: 'page',
+    name: '角色管理',
+    routeId: ROUTE_IDS.SYSTEM_ROLE,
+    path: ROUTE_PATHS.SYSTEM_ROLE,
+    sort: 2,
+    visible: true,
+    status: 'enabled',
+  },
+  { id: 'demo-menu-role-list', parentId: 'demo-menu-system-role', type: 'button', name: '查询', permCode: PERMISSIONS.SYSTEM_ROLE_LIST, sort: 1, visible: true, status: 'enabled' },
+  { id: 'demo-menu-role-create', parentId: 'demo-menu-system-role', type: 'button', name: '新增', permCode: PERMISSIONS.SYSTEM_ROLE_CREATE, sort: 2, visible: true, status: 'enabled' },
+  { id: 'demo-menu-role-update', parentId: 'demo-menu-system-role', type: 'button', name: '编辑', permCode: PERMISSIONS.SYSTEM_ROLE_UPDATE, sort: 3, visible: true, status: 'enabled' },
+  { id: 'demo-menu-role-delete', parentId: 'demo-menu-system-role', type: 'button', name: '删除', permCode: PERMISSIONS.SYSTEM_ROLE_DELETE, sort: 4, visible: true, status: 'enabled' },
+  { id: 'demo-menu-role-assign', parentId: 'demo-menu-system-role', type: 'button', name: '分配权限', permCode: PERMISSIONS.SYSTEM_ROLE_ASSIGN_PERMISSION, sort: 5, visible: true, status: 'enabled' },
+  {
+    id: 'demo-menu-system-menu',
+    parentId: 'demo-menu-system',
+    type: 'page',
+    name: '菜单管理',
+    routeId: ROUTE_IDS.SYSTEM_MENU,
+    path: ROUTE_PATHS.SYSTEM_MENU,
+    sort: 3,
+    visible: true,
+    status: 'enabled',
+  },
+  { id: 'demo-menu-menu-list', parentId: 'demo-menu-system-menu', type: 'button', name: '查询', permCode: PERMISSIONS.SYSTEM_MENU_LIST, sort: 1, visible: true, status: 'enabled' },
+  { id: 'demo-menu-menu-create', parentId: 'demo-menu-system-menu', type: 'button', name: '新增', permCode: PERMISSIONS.SYSTEM_MENU_CREATE, sort: 2, visible: true, status: 'enabled' },
+  { id: 'demo-menu-menu-update', parentId: 'demo-menu-system-menu', type: 'button', name: '编辑', permCode: PERMISSIONS.SYSTEM_MENU_UPDATE, sort: 3, visible: true, status: 'enabled' },
+  { id: 'demo-menu-menu-delete', parentId: 'demo-menu-system-menu', type: 'button', name: '删除', permCode: PERMISSIONS.SYSTEM_MENU_DELETE, sort: 4, visible: true, status: 'enabled' },
+]
+
+/** 新建演示菜单的下一个数字序号（种子菜单使用语义化 ID，不占用数字序号） */
+export const DEMO_SEED_NEXT_MENU_SEQUENCE = 1

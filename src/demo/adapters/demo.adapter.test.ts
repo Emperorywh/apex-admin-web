@@ -11,7 +11,9 @@ import type { AxiosError, InternalAxiosRequestConfig } from 'axios'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AUTH_ENDPOINTS } from '@/constants/auth/auth.constants'
 import { PERMISSIONS } from '@/constants/permission.constants'
+import { PROFILE_ENDPOINTS } from '@/constants/profile/profile.constants'
 import { API_ERROR_CODES } from '@/constants/request.constants'
+import { MENU_PAGE_ROUTE_IDS } from '@/constants/system/menu/menu.constants'
 import { axiosErrorToApiError } from '@/services/request/envelope'
 import { registerUiFeedbackInstances, resetUiFeedbackInstances, type UiFeedbackInstances } from '@/services/feedback/uiFeedback'
 import { hasPermissionCode } from '@/store/permissions'
@@ -19,6 +21,7 @@ import type { ApiError } from '@/services/request/request.types'
 import type { LoginResponseDto } from '@/services/auth/auth.service.types'
 import type { ProfileData } from '@/types/auth/auth.types'
 import type { DashboardOverview } from '@/types/dashboard/dashboard.types'
+import type { MenuItem } from '@/types/system/menu/menu.types'
 import type { PermissionNode, Role } from '@/types/system/role/role.types'
 import { collectPermissionLeafCodes } from '@/utils/permissionTree'
 import type { PageResult, User } from '@/types/system/user/user.types'
@@ -487,7 +490,10 @@ describe('用户 CRUD（规格 §14.3）', () => {
 
   it('未实现端点返回 404 RESOURCE_NOT_FOUND（后续任务在路由表扩展）', async () => {
     const { accessToken } = await loginDemo(DEMO_ACCOUNT_USERNAMES.ADMIN)
-    const { apiError } = await expectFailure(demoConfig({ url: '/menus/tree', token: accessToken }))
+    // 修改密码归个人中心任务接入：当前未注册的端点统一 404
+    const { apiError } = await expectFailure(
+      demoConfig({ method: 'put', url: PROFILE_ENDPOINTS.CHANGE_PASSWORD, token: accessToken, data: { oldPassword: 'x', newPassword: 'y1234567' } }),
+    )
     expect(apiError.httpStatus).toBe(404)
     expect(apiError.errorCode).toBe(API_ERROR_CODES.RESOURCE_NOT_FOUND)
   })
@@ -703,6 +709,226 @@ describe('角色 CRUD 与权限树（规格 §14.3/§14.1）', () => {
     demoAdapterTestController.resetRuntime({ keepSnapshot: true })
     const page = await listRoles(accessToken)
     expect(page.list.map((role) => role.code)).toContain('operator')
+  })
+})
+
+describe('菜单树与菜单 CRUD（规格 §14.3/§14.1）', () => {
+  async function fetchMenuTree(token: string): Promise<MenuItem[]> {
+    const outcome = await callAdapter(demoConfig({ url: '/menus/tree', token }))
+    return envelopeData<MenuItem[]>(outcome)
+  }
+
+  it('菜单树：种子树形结构与稳定排序（sort asc），page 携带 routeId/path、button 携带 permCode', async () => {
+    const { accessToken } = await loginDemo(DEMO_ACCOUNT_USERNAMES.ADMIN)
+    const tree = await fetchMenuTree(accessToken)
+    // 根级兄弟按 sort asc（仪表盘 1、系统管理 2）
+    expect(tree.map((node) => node.id)).toEqual(['demo-menu-dashboard', 'demo-menu-system'])
+    const system = tree[1]
+    expect(system.type).toBe('directory')
+    expect(system.children?.map((node) => node.id)).toEqual([
+      'demo-menu-system-user',
+      'demo-menu-system-role',
+      'demo-menu-system-menu',
+    ])
+    const userPage = system.children![0]
+    expect(userPage.routeId).toBe('system-user')
+    expect(userPage.path).toBe('/system/user')
+    expect(userPage.children?.map((node) => node.permCode)).toEqual([
+      PERMISSIONS.SYSTEM_USER_LIST,
+      PERMISSIONS.SYSTEM_USER_CREATE,
+      PERMISSIONS.SYSTEM_USER_UPDATE,
+      PERMISSIONS.SYSTEM_USER_DELETE,
+      PERMISSIONS.SYSTEM_USER_ASSIGN_ROLE,
+    ])
+    // 种子全部 page routeId 均在可识别全集内（对照 route.constants；不预置未注册 routeId 数据）
+    const pageRouteIds: string[] = []
+    const walk = (nodes: readonly MenuItem[]): void => {
+      for (const node of nodes) {
+        if (node.type === 'page') {
+          pageRouteIds.push(node.routeId ?? '')
+        }
+        if (node.children !== undefined) {
+          walk(node.children)
+        }
+      }
+    }
+    walk(tree)
+    expect(pageRouteIds.length).toBeGreaterThanOrEqual(4)
+    for (const routeId of pageRouteIds) {
+      expect(MENU_PAGE_ROUTE_IDS).toContain(routeId)
+    }
+    // demo:nested 条目归后续任务补充，本任务不预置
+    expect(JSON.stringify(tree)).not.toContain('demo-nested')
+  })
+
+  it('创建菜单：page 携带可识别 routeId 落库并进入树（sort asc 定位），ID 序号递增、同步快照', async () => {
+    const { accessToken } = await loginDemo(DEMO_ACCOUNT_USERNAMES.ADMIN)
+    const outcome = await callAdapter(
+      demoConfig({
+        method: 'post',
+        url: '/menus',
+        token: accessToken,
+        data: { parentId: null, type: 'page', name: '个人中心', routeId: 'profile', path: '/profile', sort: 5, visible: true, status: 'enabled' },
+      }),
+    )
+    const created = envelopeData<MenuItem>(outcome)
+    expect(created).toMatchObject({ id: 'demo-menu-001', type: 'page', routeId: 'profile', path: '/profile', parentId: null })
+
+    const tree = await fetchMenuTree(accessToken)
+    expect(tree.map((node) => node.id)).toEqual(['demo-menu-dashboard', 'demo-menu-system', 'demo-menu-001'])
+    const snapshot = JSON.parse(readDemoSnapshotRaw() ?? '{}')
+    expect(snapshot.schemaVersion).toBe(DEMO_SNAPSHOT_SCHEMA_VERSION)
+    expect(snapshot.menus.map((menu: MenuItem) => menu.id)).toContain('demo-menu-001')
+  })
+
+  it('按类型条件校验（写入契约）：directory 带 routeId、page 缺/不可识别 routeId、button 缺/未知 permCode、未知 parentId 均 400', async () => {
+    const { accessToken } = await loginDemo(DEMO_ACCOUNT_USERNAMES.ADMIN)
+    const cases: Array<{ body: Record<string, unknown>; field: string }> = [
+      // directory 不得设置 routeId
+      { body: { parentId: null, type: 'directory', name: '目录', routeId: 'dashboard', sort: 1, visible: true, status: 'enabled' }, field: 'routeId' },
+      // page 必须设置 routeId / 必须可识别
+      { body: { parentId: null, type: 'page', name: '页面', sort: 1, visible: true, status: 'enabled' }, field: 'routeId' },
+      { body: { parentId: null, type: 'page', name: '页面', routeId: 'no-such-route', sort: 1, visible: true, status: 'enabled' }, field: 'routeId' },
+      // button 必须设置 permCode / 必须已知
+      { body: { parentId: null, type: 'button', name: '按钮', sort: 1, visible: true, status: 'enabled' }, field: 'permCode' },
+      { body: { parentId: null, type: 'button', name: '按钮', permCode: 'system:none:fake', sort: 1, visible: true, status: 'enabled' }, field: 'permCode' },
+      // parentId 必须指向现存菜单
+      { body: { parentId: 'no-such-menu', type: 'directory', name: '目录', sort: 1, visible: true, status: 'enabled' }, field: 'parentId' },
+    ]
+    for (const { body, field } of cases) {
+      const invalid = await expectFailure(demoConfig({ method: 'post', url: '/menus', token: accessToken, data: body }))
+      expect(invalid.apiError.httpStatus, JSON.stringify(body)).toBe(400)
+      expect(invalid.apiError.errorCode).toBe(API_ERROR_CODES.VALIDATION_FAILED)
+      const fields = (invalid.envelope.details as { fields: Array<{ field: string }> }).fields.map((issue) => issue.field)
+      expect(fields).toContain(field)
+    }
+
+    // 基础字段校验：非法 type、空 name、非整数 sort、非布尔 visible
+    const malformed = await expectFailure(
+      demoConfig({
+        method: 'post',
+        url: '/menus',
+        token: accessToken,
+        data: { parentId: null, type: 'frozen', name: '', sort: 1.5, visible: 'yes', status: 'enabled' },
+      }),
+    )
+    expect(malformed.apiError.httpStatus).toBe(400)
+    const fields = (malformed.envelope.details as { fields: Array<{ field: string }> }).fields.map((issue) => issue.field)
+    expect(fields).toEqual(expect.arrayContaining(['type', 'name', 'sort', 'visible']))
+  })
+
+  it('编辑菜单：字段更新且类型切换清理独占字段；parentId 成环 400；不存在 404', async () => {
+    const { accessToken } = await loginDemo(DEMO_ACCOUNT_USERNAMES.ADMIN)
+    // page → directory：routeId/path 从数据中移除
+    const outcome = await callAdapter(
+      demoConfig({
+        method: 'put',
+        url: '/menus/demo-menu-dashboard',
+        token: accessToken,
+        data: { parentId: null, type: 'directory', name: '仪表盘目录', sort: 1, visible: false, status: 'disabled' },
+      }),
+    )
+    const updated = envelopeData<MenuItem>(outcome)
+    expect(updated).toMatchObject({ name: '仪表盘目录', sort: 1, visible: false, status: 'disabled' })
+    expect(updated.routeId).toBeUndefined()
+    expect(updated.path).toBeUndefined()
+    const tree = await fetchMenuTree(accessToken)
+    expect(tree.find((menu) => menu.id === 'demo-menu-dashboard')?.routeId).toBeUndefined()
+
+    // 成环：目录挂到自己的子页面下（400，父链非法）
+    const cycle = await expectFailure(
+      demoConfig({
+        method: 'put',
+        url: '/menus/demo-menu-system',
+        token: accessToken,
+        data: { parentId: 'demo-menu-system-user', type: 'directory', name: '系统管理', sort: 2, visible: true, status: 'enabled' },
+      }),
+    )
+    expect(cycle.apiError.httpStatus).toBe(400)
+    expect(cycle.apiError.errorCode).toBe(API_ERROR_CODES.VALIDATION_FAILED)
+    const cycleFields = (cycle.envelope.details as { fields: Array<{ field: string }> }).fields.map((issue) => issue.field)
+    expect(cycleFields).toContain('parentId')
+
+    const missing = await expectFailure(
+      demoConfig({
+        method: 'put',
+        url: '/menus/demo-menu-none',
+        token: accessToken,
+        data: { parentId: null, type: 'directory', name: 'x', sort: 1, visible: true, status: 'enabled' },
+      }),
+    )
+    expect(missing.apiError.httpStatus).toBe(404)
+    expect(missing.apiError.errorCode).toBe(API_ERROR_CODES.RESOURCE_NOT_FOUND)
+  })
+
+  it('删除菜单：存在子节点返回 409 RESOURCE_CONFLICT；叶子删除成功并从树移除', async () => {
+    const { accessToken } = await loginDemo(DEMO_ACCOUNT_USERNAMES.ADMIN)
+    const conflict = await expectFailure(
+      demoConfig({ method: 'delete', url: '/menus/demo-menu-system', token: accessToken }),
+    )
+    expect(conflict.apiError.httpStatus).toBe(409)
+    expect(conflict.apiError.errorCode).toBe(API_ERROR_CODES.RESOURCE_CONFLICT)
+
+    // 叶子按钮：删除成功
+    const outcome = await callAdapter(
+      demoConfig({ method: 'delete', url: '/menus/demo-menu-user-list', token: accessToken }),
+    )
+    expect(envelopeData<null>(outcome)).toBeNull()
+    const tree = await fetchMenuTree(accessToken)
+    const userPage = tree[1].children?.find((menu) => menu.id === 'demo-menu-system-user')
+    expect(userPage?.children?.map((node) => node.id)).not.toContain('demo-menu-user-list')
+
+    const missing = await expectFailure(
+      demoConfig({ method: 'delete', url: '/menus/demo-menu-none', token: accessToken }),
+    )
+    expect(missing.apiError.httpStatus).toBe(404)
+    expect(missing.apiError.errorCode).toBe(API_ERROR_CODES.RESOURCE_NOT_FOUND)
+  })
+
+  it('viewer 无菜单权限：树查询与写操作全部 403 AUTH_FORBIDDEN（§5.3 矩阵）', async () => {
+    const { accessToken } = await loginDemo(DEMO_ACCOUNT_USERNAMES.VIEWER)
+    const writeBody = { parentId: null, type: 'directory', name: '越权', sort: 1, visible: true, status: 'enabled' }
+    for (const config of [
+      demoConfig({ url: '/menus/tree', token: accessToken }),
+      demoConfig({ method: 'post', url: '/menus', token: accessToken, data: writeBody }),
+      demoConfig({ method: 'put', url: '/menus/demo-menu-system', token: accessToken, data: writeBody }),
+      demoConfig({ method: 'delete', url: '/menus/demo-menu-system', token: accessToken }),
+    ]) {
+      const { apiError } = await expectFailure(config)
+      expect(apiError.httpStatus).toBe(403)
+      expect(apiError.errorCode).toBe(API_ERROR_CODES.AUTH_FORBIDDEN)
+    }
+  })
+
+  it('同 sort 兄弟按 id asc 稳定排序（规格 §14.3）', async () => {
+    const { accessToken } = await loginDemo(DEMO_ACCOUNT_USERNAMES.ADMIN)
+    for (const name of ['甲目录', '乙目录']) {
+      await callAdapter(
+        demoConfig({
+          method: 'post',
+          url: '/menus',
+          token: accessToken,
+          data: { parentId: null, type: 'directory', name, sort: 9, visible: true, status: 'enabled' },
+        }),
+      )
+    }
+    const tree = await fetchMenuTree(accessToken)
+    expect(tree.filter((node) => node.sort === 9).map((node) => node.id)).toEqual(['demo-menu-001', 'demo-menu-002'])
+  })
+
+  it('菜单 CRUD 后 keepSnapshot 模拟整页刷新：菜单结果从快照恢复', async () => {
+    const { accessToken } = await loginDemo(DEMO_ACCOUNT_USERNAMES.ADMIN)
+    await callAdapter(
+      demoConfig({
+        method: 'post',
+        url: '/menus',
+        token: accessToken,
+        data: { parentId: null, type: 'page', name: '个人中心', routeId: 'profile', sort: 5, visible: true, status: 'enabled' },
+      }),
+    )
+    demoAdapterTestController.resetRuntime({ keepSnapshot: true })
+    const tree = await fetchMenuTree(accessToken)
+    expect(tree.map((node) => node.id)).toContain('demo-menu-001')
   })
 })
 

@@ -9,10 +9,11 @@
  * 当前只注册已实现的页面（登录、错误页），业务页面路由随各自任务增量扩展；
  * 受保护根外壳由 projections 的 ProtectedRoot 容器挂载 BasicLayout 承担渲染。
  */
-import { LayoutDashboard, Settings, ShieldCheck, UsersRound } from 'lucide-react'
+import { LayoutDashboard, ListTree, Settings, ShieldCheck, UsersRound } from 'lucide-react'
 import { DASHBOARD_I18N_NAMESPACE } from '@/constants/dashboard/dashboard.constants'
 import { PERMISSIONS } from '@/constants/permission.constants'
 import { ROUTE_IDS, ROUTE_PATHS } from '@/constants/route.constants'
+import { MENU_I18N_NAMESPACE } from '@/constants/system/menu/menu.constants'
 import { ROLE_I18N_NAMESPACE } from '@/constants/system/role/role.constants'
 import { USER_I18N_NAMESPACE } from '@/constants/system/user/user.constants'
 import type { AppRouteDefinition } from './router.types'
@@ -90,6 +91,20 @@ export const routeDefinitions: readonly AppRouteDefinition[] = [
               icon: ShieldCheck,
               permCode: PERMISSIONS.SYSTEM_ROLE_LIST,
               i18nNamespaces: [ROLE_I18N_NAMESPACE],
+            },
+          },
+          {
+            // 菜单管理（规格 §14.2/§14.3）：树表维护后端菜单数据，明确不动态改变前端
+            // 静态路由；viewer 无 system:menu:list，菜单隐藏且直达被守卫重定向 /403
+            // （规格 §5.3 矩阵）；i18nNamespaces 声明 systemMenu 命名空间（规格 §12）
+            id: ROUTE_IDS.SYSTEM_MENU,
+            path: ROUTE_PATHS.SYSTEM_MENU,
+            loadPage: () => import('@/pages/system/menu/Menu/Menu').then(({ Menu }) => ({ default: Menu })),
+            meta: {
+              title: '菜单管理',
+              icon: ListTree,
+              permCode: PERMISSIONS.SYSTEM_MENU_LIST,
+              i18nNamespaces: [MENU_I18N_NAMESPACE],
             },
           },
         ],

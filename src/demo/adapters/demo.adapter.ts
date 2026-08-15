@@ -1,7 +1,8 @@
 /**
  * demo adapter（规格 §13.2）：以与真实接口相同的 HTTP/envelope/errorCode 契约（规格 §7.1/§14.4）
  * 实现受支持端点——登录（密码任意）、GET profile、refresh（token 过期与旋转）、logout、
- * 用户 CRUD、角色 CRUD 与分配权限、GET /permissions/tree 权限树、GET /dashboard/overview。
+ * 用户 CRUD、角色 CRUD 与分配权限、GET /permissions/tree 权限树、GET /menus/tree 菜单树、
+ * 菜单 CRUD、GET /dashboard/overview。
  *
  * - 形态是 axios adapter：由 demo 运行时经 configureRequestAdapter 注册，主实例与 refresh 专用实例
  *   共用同一选择结果，因此 401 刷新单飞同样落在 demo 契约上（§20 闸门 ⑤ 结论产品化）；
@@ -38,6 +39,7 @@ import {
   ROLE_KEYWORD_FIELDS,
   ROLE_SORT_FIELDS,
 } from '@/constants/system/role/role.constants'
+import { MENU_ENDPOINTS, MENU_PAGE_ROUTE_IDS, MENU_TYPES } from '@/constants/system/menu/menu.constants'
 import { USER_EMAIL_PATTERN, USER_ENDPOINTS, USER_KEYWORD_FIELDS, USER_SORT_FIELDS } from '@/constants/system/user/user.constants'
 import { hasPermissionCode } from '@/store/permissions'
 import { collectPermissionLeafCodes } from '@/utils/permissionTree'
@@ -46,14 +48,17 @@ import type {
   RefreshTokensRequestDto,
   RefreshTokensResponseDto,
 } from '@/services/auth/auth.service.types'
+import type { MenuWriteRequestDto } from '@/services/system/menu/menu.service.types'
 import type { ApiErrorCode } from '@/constants/request.constants'
 import type { ProfileData } from '@/types/auth/auth.types'
 import type { DashboardOverview } from '@/types/dashboard/dashboard.types'
+import type { MenuItem } from '@/types/system/menu/menu.types'
 import type { PermissionNode, Role } from '@/types/system/role/role.types'
 import type { PageResult, User } from '@/types/system/user/user.types'
 import {
   DEMO_ACCESS_TOKEN_PREFIX,
   DEMO_ACCESS_TOKEN_TTL_MS,
+  DEMO_MENU_ID_PREFIX,
   DEMO_REFRESH_TOKEN_PREFIX,
   DEMO_REFRESH_TOKEN_TTL_MS,
   DEMO_ROLE_ID_PREFIX,
@@ -153,6 +158,24 @@ class FieldValidator {
       return []
     }
     return value as string[]
+  }
+
+  requireBoolean(source: Record<string, unknown>, field: string): boolean {
+    const value = source[field]
+    if (typeof value !== 'boolean') {
+      this.issues.push({ field, message: `${field} 必须是布尔值` })
+      return false
+    }
+    return value
+  }
+
+  requireInt(source: Record<string, unknown>, field: string): number {
+    const value = source[field]
+    if (typeof value !== 'number' || !Number.isInteger(value)) {
+      this.issues.push({ field, message: `${field} 必须是整数` })
+      return 0
+    }
+    return value
   }
 
   add(field: string, message: string): void {
@@ -371,6 +394,10 @@ function findUserById(id: string): User | undefined {
 
 function findRoleById(id: string): Role | undefined {
   return ensureDemoDataset().roles.find((role) => role.id === id)
+}
+
+function findMenuById(id: string): MenuItem | undefined {
+  return ensureDemoDataset().menus.find((menu) => menu.id === id)
 }
 
 /** admin 角色 ID：删除最后一个 admin 的冲突判定使用（规格 §14.3）；随角色数据集动态查找 */
@@ -809,6 +836,191 @@ function handlePermissionTree(config: InternalAxiosRequestConfig): DemoEndpointO
   return ok(clonePermissionTree(DEMO_PERMISSION_TREE))
 }
 
+// ── 菜单树与 CRUD（规格 §14.1/§14.3） ─────────────────────────────────────────
+
+/**
+ * 扁平菜单集合 → 菜单树：兄弟节点按 sort asc、id asc 稳定排序（规格 §14.3），
+ * 叶子节点不携带 children 字段；数据集写入端点已保证 parentId 合法，不产生孤儿节点。
+ */
+function buildMenuTree(menus: readonly MenuItem[]): MenuItem[] {
+  const byParent = new Map<string | null, MenuItem[]>()
+  for (const menu of menus) {
+    const siblings = byParent.get(menu.parentId)
+    if (siblings === undefined) {
+      byParent.set(menu.parentId, [menu])
+    } else {
+      siblings.push(menu)
+    }
+  }
+  const assemble = (parentId: string | null): MenuItem[] =>
+    (byParent.get(parentId) ?? [])
+      .slice()
+      .sort((left, right) =>
+        left.sort !== right.sort ? left.sort - right.sort : left.id < right.id ? -1 : left.id > right.id ? 1 : 0,
+      )
+      .map((menu) => {
+        const children = assemble(menu.id)
+        return children.length > 0 ? { ...menu, children } : { ...menu }
+      })
+  return assemble(null)
+}
+
+const MENU_STATUSES = ['enabled', 'disabled'] as const
+
+/**
+ * 解析并校验创建/编辑菜单请求体（写入契约，规格 §14.3）：
+ * 按类型条件校验——directory 不得设置 routeId，page 必须设置可识别 routeId
+ * （全集对照 MENU_PAGE_ROUTE_IDS），button 必须设置 permCode（已知权限码全集内）；
+ * parentId 为 null（根节点）或必须指向现存菜单。返回可直接落库的写入 DTO。
+ */
+function parseMenuWriteBody(body: Record<string, unknown>): MenuWriteRequestDto {
+  const validator = new FieldValidator()
+  const parentIdRaw: unknown = body.parentId
+  if (parentIdRaw !== null && typeof parentIdRaw !== 'string') {
+    validator.add('parentId', 'parentId 必须是字符串或 null')
+  }
+  const parentId = parentIdRaw === null ? null : typeof parentIdRaw === 'string' ? parentIdRaw : null
+  const type = validator.requireEnum(body, 'type', Object.values(MENU_TYPES))
+  const name = validator.requireString(body, 'name')
+  const sort = validator.requireInt(body, 'sort')
+  const visible = validator.requireBoolean(body, 'visible')
+  const status = validator.requireEnum(body, 'status', MENU_STATUSES)
+  const routeId = validator.optionalString(body, 'routeId')
+  const path = validator.optionalString(body, 'path')
+  const permCode = validator.optionalString(body, 'permCode')
+  if (parentId !== null && findMenuById(parentId) === undefined) {
+    validator.add('parentId', 'parentId 指向不存在的菜单')
+  }
+  // 按类型条件校验（规格 §14.3 写入契约）
+  if (type === MENU_TYPES.DIRECTORY) {
+    if (routeId !== undefined) {
+      validator.add('routeId', 'directory 类型不得设置 routeId')
+    }
+  } else if (type === MENU_TYPES.PAGE) {
+    if (routeId === undefined) {
+      validator.add('routeId', 'page 类型必须设置 routeId')
+    } else if (!MENU_PAGE_ROUTE_IDS.includes(routeId)) {
+      validator.add('routeId', 'routeId 必须是已注册的路由 ID')
+    }
+  } else if (type === MENU_TYPES.BUTTON) {
+    if (permCode === undefined) {
+      validator.add('permCode', 'button 类型必须设置 permCode')
+    } else if (!collectPermissionLeafCodes(DEMO_PERMISSION_TREE).includes(permCode)) {
+      validator.add('permCode', 'permCode 必须是已知的权限码')
+    }
+  }
+  validator.throwIfInvalid()
+  // 校验通过：只落库当前类型允许的字段，其余可选字段一律忽略
+  const dto: MenuWriteRequestDto = {
+    parentId,
+    type,
+    name,
+    sort,
+    visible,
+    status,
+    ...(type === MENU_TYPES.PAGE
+      ? { routeId: routeId as string, ...(path !== undefined ? { path } : {}) }
+      : {}),
+    ...(type === MENU_TYPES.BUTTON ? { permCode: permCode as string } : {}),
+  }
+  return dto
+}
+
+/**
+ * 编辑目标的父链成环检测：新 parentId 是自身或自身后代时拒绝
+ * （否则树组装会形成环，规格 §14.3 parentId 合法性校验）。
+ */
+function menuParentWouldCycle(menuId: string, parentId: string | null): boolean {
+  let cursor: string | null = parentId
+  // 扁平集合有限且写入端点保证无环，沿父链上行最多遍历全部节点
+  while (cursor !== null) {
+    if (cursor === menuId) {
+      return true
+    }
+    cursor = findMenuById(cursor)?.parentId ?? null
+  }
+  return false
+}
+
+/** 菜单树：GET /menus/tree（规格 §14.3：不分页，仅维护后端菜单数据） */
+function handleMenuTree(config: InternalAxiosRequestConfig): DemoEndpointOutput {
+  const account = requireAccount(config)
+  requirePermission(account, PERMISSIONS.SYSTEM_MENU_LIST)
+  return ok(buildMenuTree(ensureDemoDataset().menus))
+}
+
+function handleCreateMenu(config: InternalAxiosRequestConfig): DemoEndpointOutput {
+  const account = requireAccount(config)
+  requirePermission(account, PERMISSIONS.SYSTEM_MENU_CREATE)
+  const dto = parseMenuWriteBody(parseBody(config))
+  const dataset = ensureDemoDataset()
+  const created: MenuItem = {
+    id: `${DEMO_MENU_ID_PREFIX}${String(dataset.nextMenuSequence).padStart(3, '0')}`,
+    ...dto,
+  }
+  dataset.nextMenuSequence += 1
+  dataset.menus.push(created)
+  persistDemoSnapshot()
+  return ok(created)
+}
+
+function handleUpdateMenu(config: InternalAxiosRequestConfig, params: Record<string, string>): DemoEndpointOutput {
+  const account = requireAccount(config)
+  requirePermission(account, PERMISSIONS.SYSTEM_MENU_UPDATE)
+  const target = findMenuById(params.id ?? '')
+  if (target === undefined) {
+    throw new DemoEndpointError(404, API_ERROR_CODES.RESOURCE_NOT_FOUND, '请求的资源不存在')
+  }
+  const dto = parseMenuWriteBody(parseBody(config))
+  if (menuParentWouldCycle(target.id, dto.parentId)) {
+    throw new DemoEndpointError(400, API_ERROR_CODES.VALIDATION_FAILED, 'parentId 不能指向自身或其后代', [
+      { field: 'parentId', message: 'parentId 不能指向自身或其后代' },
+    ])
+  }
+  target.parentId = dto.parentId
+  target.type = dto.type
+  target.name = dto.name
+  target.sort = dto.sort
+  target.visible = dto.visible
+  target.status = dto.status
+  if (dto.type === MENU_TYPES.PAGE) {
+    target.routeId = dto.routeId
+    if (dto.path !== undefined) {
+      target.path = dto.path
+    } else {
+      delete target.path
+    }
+    delete target.permCode
+  } else if (dto.type === MENU_TYPES.BUTTON) {
+    target.permCode = dto.permCode
+    delete target.routeId
+    delete target.path
+  } else {
+    delete target.routeId
+    delete target.path
+    delete target.permCode
+  }
+  persistDemoSnapshot()
+  return ok(target)
+}
+
+function handleDeleteMenu(config: InternalAxiosRequestConfig, params: Record<string, string>): DemoEndpointOutput {
+  const account = requireAccount(config)
+  requirePermission(account, PERMISSIONS.SYSTEM_MENU_DELETE)
+  const target = findMenuById(params.id ?? '')
+  if (target === undefined) {
+    throw new DemoEndpointError(404, API_ERROR_CODES.RESOURCE_NOT_FOUND, '请求的资源不存在')
+  }
+  // 存在子节点时返回 RESOURCE_CONFLICT（规格 §14.3 菜单删除契约）
+  const dataset = ensureDemoDataset()
+  if (dataset.menus.some((menu) => menu.parentId === target.id)) {
+    throw new DemoEndpointError(409, API_ERROR_CODES.RESOURCE_CONFLICT, '菜单存在子节点，不允许删除')
+  }
+  dataset.menus = dataset.menus.filter((menu) => menu.id !== target.id)
+  persistDemoSnapshot()
+  return ok(null)
+}
+
 // ── Dashboard 概览（规格 §14.3：GET /dashboard/overview → DashboardOverview） ─────────
 
 /** 概览趋势窗口天数：loginTrend/userGrowth 展示最近 7 天（演示数据口径） */
@@ -875,6 +1087,10 @@ const DEMO_ROUTES: readonly DemoRoute[] = [
   route('get', PROFILE_ENDPOINTS.GET_PROFILE, handleProfile),
   route('get', DASHBOARD_ENDPOINTS.OVERVIEW, handleDashboardOverview),
   route('get', PERMISSION_TREE_ENDPOINT, handlePermissionTree),
+  route('get', MENU_ENDPOINTS.TREE, handleMenuTree),
+  route('post', MENU_ENDPOINTS.CREATE, handleCreateMenu),
+  route('put', MENU_ENDPOINTS.UPDATE, handleUpdateMenu),
+  route('delete', MENU_ENDPOINTS.DELETE, handleDeleteMenu),
   route('get', ROLE_ENDPOINTS.LIST, handleListRoles),
   route('post', ROLE_ENDPOINTS.CREATE, handleCreateRole),
   // /roles/:id/permissions（4 段）先于 /roles/:id（3 段）注册无歧义：按段数与字面量精确匹配
