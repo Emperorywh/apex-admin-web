@@ -8,12 +8,16 @@
  *    以 useRoutes(renderRoutes, locationSnapshot) 渲染，让每个缓存页签获得独立路由上下文；
  * 3. menuRoutes——受保护根子树的菜单形态投影，按权限与 hideInMenu 过滤后供侧边/顶部菜单使用。
  */
-import { lazy, Suspense, createElement, type ComponentType, type LazyExoticComponent, type ReactNode } from 'react'
-import { Outlet, useRoutes, type RouteObject } from 'react-router'
+import { lazy, Suspense, createElement, useMemo, type ComponentType, type LazyExoticComponent, type ReactNode } from 'react'
+import { Outlet, type RouteObject } from 'react-router'
+import { useSelector } from 'react-redux'
 import { ROUTE_IDS } from '@/constants/route.constants'
 import { BlankLayout } from '@/layouts/BlankLayout/BlankLayout'
+import { BasicLayout } from '@/layouts/BasicLayout/BasicLayout'
 import { PageLoading } from '@/components/PageLoading/PageLoading'
+import { getDefaultAuthSessionRuntime } from '@/services/auth/auth.session'
 import { hasPermissionChain, type PermissionInput } from '@/store/permissions'
+import type { RootState } from '@/store/store'
 import { routeDefinitions } from './definitions'
 import {
   createIndexRedirectLoader,
@@ -56,16 +60,27 @@ function findProtectedRoot(defs: readonly AppRouteDefinition[]): AppRouteDefinit
 // ── 投影 1：accessRoutes ──
 
 /**
- * 受保护根过渡外壳：TASK-010 接入 BasicLayout（含 PageCacheHost/CachedRouteView）前的渲染容器。
- * 经 useRoutes(renderRoutes) 以 Data Router 当前 location 渲染纯渲染投影，使 Data Router
- * 只负责 URL/守卫、页面渲染全部经 renderRoutes（规格 §4.1）。
- * 「BasicLayout 在受保护根内只挂载一次」的约束自本任务起生效：本组件是唯一布局挂载点。
+ * 受保护根容器（规格 §4.1/§11.1）：BasicLayout 在受保护根路由内只挂载一次的唯一装配点。
+ * 布局层不得反向导入 router/（依赖方向固定为 router → layouts），因此由本容器读取
+ * user 切片权限快照、复用 filterMenuRoutes 与守卫同一个 hasPermissionChain 判定完成
+ * 菜单过滤（权限/hideInMenu/目录保留，规格 §4.4），并把 navItems、纯渲染投影与
+ * 登出状态机经 props 注入 BasicLayout；页面渲染由 BasicLayout 内的
+ * useRoutes(renderRoutes) 以 Data Router 当前 location 承担（规格 §4.1）。
  */
-// 过渡外壳与投影构建器同文件：路由装配文件不做 Fast Refresh，局部禁用该告警；
-// TASK-010 接入 BasicLayout 后本组件随之移除
+/** 用户菜单退出登录回调：执行登出状态机，post-logout 导航意图由路由接线消费 */
+const logoutFromUserMenu = (): Promise<void> => getDefaultAuthSessionRuntime().logoutSession()
+
+// 容器与投影构建器同文件：路由装配文件不做 Fast Refresh，局部禁用该告警
 // oxlint-disable-next-line react/only-export-components
-function ProtectedRootShell(): ReactNode {
-  return useRoutes(renderRoutes)
+function ProtectedRoot(): ReactNode {
+  // 分别订阅两个数组引用：避免整对象选择器因每次返回新引用导致任意 dispatch 都重渲染
+  const permCodes = useSelector((state: RootState) => state.user.permCodes)
+  const roleCodes = useSelector((state: RootState) => state.user.roles)
+  const navItems = useMemo(
+    () => filterMenuRoutes(menuRoutes, { permCodes, roleCodes }),
+    [permCodes, roleCodes],
+  )
+  return <BasicLayout navItems={navItems} renderRoutes={renderRoutes} onLogout={logoutFromUserMenu} />
 }
 
 /** 登录路由（公开）：BlankLayout 布局承载页面，loader 处理已登录直达（规格 §4.3） */
@@ -102,7 +117,7 @@ function buildProtectedAccessRoute(def: AppRouteDefinition, inherited: readonly 
           loader: createProtectedRouteLoader(resolveDefaultGuardDeps, chain),
         }
   if (def.id === ROUTE_IDS.ROOT) {
-    node.element = <ProtectedRootShell />
+    node.element = <ProtectedRoot />
   }
   if (def.children !== undefined && def.children.length > 0) {
     node.children = def.children.map((child) => buildProtectedAccessRoute(child, chain))
@@ -156,7 +171,7 @@ export function buildRenderRoutes(defs: readonly AppRouteDefinition[]): RouteObj
 
 // ── 投影 3：menuRoutes 与权限过滤 ──
 
-/** 菜单投影节点：保留 hideInMenu 供过滤函数统一处理，权限码链随节点携带 */
+/** 菜单投影节点：保留 hideInMenu 供过滤函数统一处理，权限码链与 hasPage 随节点携带 */
 function buildMenuRoute(def: AppRouteDefinition, inherited: readonly string[]): MenuRouteNode {
   const chain = accumulateChain(inherited, def)
   const node: MenuRouteNode = {
@@ -164,6 +179,8 @@ function buildMenuRoute(def: AppRouteDefinition, inherited: readonly string[]): 
     path: def.path,
     title: def.meta.title,
     icon: def.meta.icon,
+    // 是否挂载页面组件：目录节点 false，布局面包屑据此判定不可点击（规格 §11.2）
+    hasPage: def.loadPage !== undefined,
     hideInMenu: def.meta.hideInMenu,
     permChain: chain,
   }

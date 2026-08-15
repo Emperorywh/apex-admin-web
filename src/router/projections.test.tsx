@@ -4,10 +4,13 @@
  * 菜单过滤（admin 通配、目录可见子节点、hideInMenu 隐藏子树不改 URL 可访问性）
  * 以及 routePermissionChains 与真实 definitions 的对应。
  */
+import { screen } from '@testing-library/react'
+import { RouterProvider, createMemoryRouter } from 'react-router'
 import { describe, expect, it } from 'vitest'
 import { PERMISSIONS } from '@/constants/permission.constants'
 import { ROUTE_IDS, ROUTE_PATHS } from '@/constants/route.constants'
 import type { PermissionInput } from '@/store/permissions'
+import { createComponentTestStore, renderWithProviders } from '@/test/componentTestHelpers'
 import { routeDefinitions } from './definitions'
 import {
   accessRoutes,
@@ -181,6 +184,13 @@ describe('filterMenuRoutes 菜单过滤（规格 §4.4）', () => {
     filterMenuRoutes(menu, VIEWER_INPUT)
     expect(menu.find((node) => node.id === ROUTE_IDS.SYSTEM)?.children).toHaveLength(3)
   })
+
+  it('hasPage 随投影携带：目录节点 false、叶子 true，过滤后保留（规格 §11.2 面包屑可点击性）', () => {
+    const visible = filterMenuRoutes(menu, ADMIN_INPUT)
+    expect(visible.find((node) => node.id === ROUTE_IDS.DASHBOARD)?.hasPage).toBe(true)
+    expect(visible.find((node) => node.id === ROUTE_IDS.SYSTEM)?.hasPage).toBe(false)
+    expect(visible.find((node) => node.id === ROUTE_IDS.SYSTEM)?.children?.[0]?.hasPage).toBe(true)
+  })
 })
 
 describe('routePermissionChains 权限链累计（规格 §4.4 AND 语义）', () => {
@@ -222,5 +232,27 @@ describe('真实 definitions 的投影（规格 §4.2 约定）', () => {
     expect(accessRoutes.map((route) => route.id)).toEqual(buildAccessRoutes(routeDefinitions).map((route) => route.id))
     expect(renderRoutes.map((route) => route.path)).toEqual(buildRenderRoutes(routeDefinitions).map((route) => route.path))
     expect(menuRoutes.map((node) => node.id)).toEqual(buildMenuRoutes(routeDefinitions).map((node) => node.id))
+  })
+
+  it('受保护根容器接线冒烟：读取 store 权限过滤真实 menuRoutes 后渲染 BasicLayout 外壳（规格 §11.1）', async () => {
+    const rootElement = accessRoutes.find((route) => route.id === ROUTE_IDS.ROOT)?.element
+    expect(rootElement).toBeDefined()
+    const store = createComponentTestStore()
+    const router = createMemoryRouter(
+      [
+        {
+          path: '/',
+          element: rootElement,
+          children: [{ path: 'dashboard', handle: { meta: { title: '仪表盘' } } }],
+        },
+      ],
+      { initialEntries: ['/dashboard'] },
+    )
+    renderWithProviders(<RouterProvider router={router} />, { store })
+    // 外壳渲染（品牌 + 顶栏）；默认测试 store 无权限快照，真实 definitions 当前全部
+    // 节点 hideInMenu，过滤结果为空菜单，但布局结构与注入链路完整可用
+    expect(await screen.findByText('通用后台管理模板')).toBeInTheDocument()
+    expect(screen.getByRole('banner')).toBeInTheDocument()
+    expect(screen.getByRole('navigation', { name: '导航菜单' })).toBeInTheDocument()
   })
 })

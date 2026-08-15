@@ -7,7 +7,7 @@
  * 或依赖 index 解析；结构门禁按 loadPage 内联动态导入的字面形态校验目标归属，
  * 因此保持内联动态导入，并用 .then 把页面具名导出映射为 React.lazy 需要的 default 形态。
  * 当前只注册已实现的页面（登录、错误页），业务页面路由随各自任务增量扩展；
- * BasicLayout 受保护根外壳在 TASK-010 接入前由过渡容器承担渲染。
+ * 受保护根外壳由 projections 的 ProtectedRoot 容器挂载 BasicLayout 承担渲染。
  */
 import { ROUTE_IDS, ROUTE_PATHS } from '@/constants/route.constants'
 import type { AppRouteDefinition } from './router.types'

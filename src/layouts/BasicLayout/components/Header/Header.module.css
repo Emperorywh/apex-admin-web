@@ -1,0 +1,51 @@
+/*
+ * 顶栏样式（规格 §11.1/§11.2）：面包屑居左、操作区居右；
+ * 颜色一律来自 var(--ant-*) CSS 变量（规格 §10.2，色值字面量只允许出现在 config/theme.ts）。
+ */
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 12px;
+  background: var(--ant-color-bg-container);
+  border-bottom: 1px solid var(--ant-color-border-secondary);
+}
+
+/* 面包屑占据触发按钮与操作区之间的剩余空间，过长时截断省略 */
+.header > :global(.ant-breadcrumb) {
+  flex: 1;
+  min-width: 0;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.triggerButton {
+  flex-shrink: 0;
+}
+
+.userTrigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.userName {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--ant-color-text);
+}
+
+.avatar {
+  flex-shrink: 0;
+  background: var(--ant-color-primary);
+  color: var(--ant-color-text-light-solid);
+}

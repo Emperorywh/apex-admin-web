@@ -6,6 +6,7 @@
  */
 import type { LucideIcon } from 'lucide-react'
 import type { ComponentType } from 'react'
+import type { NavTreeNode } from '@/layouts/BasicLayout/navModel'
 
 /**
  * 路由节点定义（规格 §4.2 逐字一致）：
@@ -35,15 +36,12 @@ export interface RouteMeta {
   i18nNamespaces?: string[]
 }
 
-/** 菜单投影节点（规格 §4.1 投影 3）：由 definitions 派生，侧边/顶部菜单共用 */
-export interface MenuRouteNode {
-  /** 对应路由定义的稳定唯一 id */
-  id: string
-  /** 节点完整路径；index route 无独立菜单项 */
-  path?: string
-  /** 菜单标题（中文文案 key，menu 命名空间翻译） */
-  title: string
-  icon?: LucideIcon
+/**
+ * 菜单投影节点（规格 §4.1 投影 3）：由 definitions 派生，侧边/顶部菜单共用。
+ * 基础形状继承布局消费契约 NavTreeNode（layouts 层所有，router → layouts 注入方向），
+ * 本接口只追加过滤输入字段；过滤后的树可直接作为 BasicLayout 的 navItems。
+ */
+export interface MenuRouteNode extends NavTreeNode {
   /** 菜单隐藏标记：true 时该节点及其菜单子树被过滤，但不影响 URL 可访问性（规格 §4.4） */
   hideInMenu?: boolean
   /** 从受保护根到本节点累计的权限码链（含祖先，规格 §4.4 AND 语义），过滤时一次判定 */

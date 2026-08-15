@@ -4,7 +4,7 @@
  * 无「应用」按钮；主题色预设取自 config/theme.ts，自定义取色经 ColorPicker
  * 以六位十六进制持久化（自定义取色持久化是色值字面量的合法落点，规格 §10.2）。
  * 全屏是瞬时状态：走 useFullscreen（app slice），不写入 settings、不持久化。
- * 本组件挂载进 Header 由 TASK-010 完成。
+ * 本组件由 BasicLayout 挂载，开合状态经 Header 设置入口控制。
  */
 import { ColorPicker, Drawer, Radio, Switch } from 'antd'
 import { useTranslation } from 'react-i18next'
@@ -26,7 +26,7 @@ import type { RootState } from '@/store/store'
 import styles from './SettingDrawer.module.css'
 
 export interface SettingDrawerProps {
-  /** 抽屉开合：由 Header 设置入口控制（TASK-010 接线） */
+  /** 抽屉开合：由 BasicLayout 状态控制，Header 设置入口触发 */
   open: boolean
   /** 关闭回调 */
   onClose: () => void
@@ -100,7 +100,7 @@ export function SettingDrawer({ open, onClose }: SettingDrawerProps) {
         )}
       </section>
 
-      {/* ── 布局：侧边 / 顶部（BasicLayout 热切换由 TASK-010 消费） ── */}
+      {/* ── 布局：侧边 / 顶部（BasicLayout 经 settings.layout 热切换消费） ── */}
       <section className={styles.settingGroup}>
         <h4 className={styles.groupTitle}>{t('布局')}</h4>
         <Radio.Group

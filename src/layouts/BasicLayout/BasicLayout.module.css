@@ -1,0 +1,117 @@
+/*
+ * 基础布局外壳（规格 §11.1）：五个区域（brand/nav/mainbar/tabs/content）的 DOM
+ * 顺序在侧边与顶部布局下完全一致，布局差异仅由 grid-template-areas 重排表达，
+ * 因此 settings.layout 热切换不会改变 React 树结构，页面缓存区与页签占位不重挂载。
+ * 颜色一律来自 var(--ant-*) CSS 变量（规格 §10.2）。响应式断点统一由
+ * LAYOUT_MOBILE_MEDIA_QUERY（matchMedia）驱动，本文件不维护第二份断点。
+ */
+
+.shell {
+  display: grid;
+  height: 100%;
+  min-height: 0;
+  background: var(--ant-color-bg-layout);
+}
+
+/* 侧边布局（桌面）：左列通栏为 品牌+垂直菜单，右列 顶栏/页签/内容 三行 */
+.shell[data-layout-mode='side'] {
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: auto auto minmax(0, 1fr);
+  grid-template-areas:
+    'brand mainbar'
+    'nav   tabs'
+    'nav   content';
+}
+
+/* 顶部布局（桌面）：首行 品牌 | 水平菜单 | 顶栏（含用户区），页签与内容通栏不定宽 */
+.shell[data-layout-mode='top'] {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  grid-template-areas:
+    'brand nav    mainbar'
+    'tabs  tabs   tabs'
+    'content content content';
+}
+
+/* 窄视口（<768px）：侧边/顶部布局统一为 品牌+顶栏 首行、页签通栏、内容通栏 */
+.shell[data-viewport='mobile'] {
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: auto auto minmax(0, 1fr);
+  grid-template-areas:
+    'brand mainbar'
+    'tabs  tabs'
+    'content content';
+}
+
+/* 品牌区：侧边布局折叠时仅保留图标（与折叠菜单同宽对齐） */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 16px;
+  font-weight: 600;
+  color: var(--ant-color-text-heading);
+  background: var(--ant-color-bg-container);
+  border-bottom: 1px solid var(--ant-color-border-secondary);
+}
+
+.shell[data-layout-mode='side'][data-viewport='desktop'] .brand {
+  border-right: 1px solid var(--ant-color-border-secondary);
+}
+
+.brand[data-collapsed='true'] {
+  justify-content: center;
+  padding: 0;
+}
+
+.brand[data-collapsed='true'] .brandTitle {
+  display: none;
+}
+
+.brandTitle {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 垂直菜单列：宽/折叠两档宽度与 antd Menu 口径一致（224px / 80px） */
+.sideNav {
+  grid-area: nav;
+  width: 224px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--ant-color-bg-container);
+  border-right: 1px solid var(--ant-color-border-secondary);
+}
+
+.sideNav[data-collapsed='true'] {
+  width: 80px;
+}
+
+/* 水平菜单区：min-width 0 允许 antd 水平菜单溢出收纳 */
+.topNav {
+  grid-area: nav;
+  min-width: 0;
+  background: var(--ant-color-bg-container);
+}
+
+.mainBar {
+  grid-area: mainbar;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.tabsRegion {
+  grid-area: tabs;
+  min-width: 0;
+}
+
+/* 内容区：通栏不定宽（规格 §11.1），独立滚动容器（页面级滚动归 TASK-011 页签容器） */
+.content {
+  grid-area: content;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+}

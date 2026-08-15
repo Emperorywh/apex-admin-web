@@ -1,7 +1,7 @@
 /**
  * 路由级错误边界（规格 §4.2/§4.3）：
  * guard/loader 错误（如 profile 网络失败）由本组件承接，提供「重试」与「退出登录」，
- * 不把网络故障误判为未登录。页面渲染错误由各缓存实例外层 PageErrorBoundary 承接（TASK-010）。
+ * 不把网络故障误判为未登录。页面渲染错误由各缓存实例外层 PageErrorBoundary 承接（TASK-011）。
  * 重试以 replace 重新导航当前地址：loader 失败后该路由没有 loaderData，
  * 重新导航即触发 loader 重跑；退出登录经注入的 onLogout 回调执行认证会话状态机，
  * 本组件不依赖任何业务 service（登出后的 post-logout 导航意图由路由接线消费）。

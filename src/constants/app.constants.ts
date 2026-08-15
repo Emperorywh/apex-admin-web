@@ -22,3 +22,11 @@ export const GLOBAL_PROGRESS_HIDE_DELAY_MS = 200
  * 相同 permissionVersion 在该窗口内不重复弹出提示。
  */
 export const PERMISSION_CHANGE_TIP_COOLDOWN_MS = 30_000
+
+/**
+ * 窄视口断点 media query（规格 §11.1：视口 <768px）。
+ * 触发侧边菜单改 Drawer、顶部布局折叠为菜单按钮、Header 次要操作收入更多菜单；
+ * 取 767.98px 与 antd Grid 断点口径一致，避免亚像素视口双向命中。
+ * 布局响应式全部由该常量驱动的 matchMedia 判定，CSS 不另行维护第二份断点。
+ */
+export const LAYOUT_MOBILE_MEDIA_QUERY = '(max-width: 767.98px)'

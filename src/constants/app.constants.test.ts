@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vitest'
 import {
   GLOBAL_PROGRESS_HIDE_DELAY_MS,
+  LAYOUT_MOBILE_MEDIA_QUERY,
   PAGE_CACHE_MAX_ENTRIES,
   PERMISSION_CHANGE_TIP_COOLDOWN_MS,
 } from './app.constants'
@@ -16,5 +17,9 @@ describe('app.constants', () => {
 
   test('权限变更提示冷却窗口固定为 30 秒（§5.4）', () => {
     expect(PERMISSION_CHANGE_TIP_COOLDOWN_MS).toBe(30_000)
+  })
+
+  test('窄视口断点 media query 对应 <768px（§11.1）', () => {
+    expect(LAYOUT_MOBILE_MEDIA_QUERY).toBe('(max-width: 767.98px)')
   })
 })

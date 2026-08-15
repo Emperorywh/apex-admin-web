@@ -1,0 +1,10 @@
+/*
+ * 页签栏占位容器（规格 §11.1）：为 TASK-011 预留稳定高度与底边分隔；
+ * 颜色一律来自 var(--ant-*) CSS 变量（规格 §10.2）。
+ */
+
+.tabsBar {
+  min-height: 40px;
+  border-bottom: 1px solid var(--ant-color-border-secondary);
+  background: var(--ant-color-bg-container);
+}

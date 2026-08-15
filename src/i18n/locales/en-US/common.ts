@@ -61,6 +61,19 @@ const common: Record<string, string> = {
   '本地设置恢复失败，已使用默认设置': 'Failed to restore local settings. Defaults were applied.',
   // 界面设置抽屉（规格 §10.1/§10.2）
   界面设置: 'Appearance Settings',
+  // 布局与导航（规格 §11.1/§11.2）：BasicLayout 外壳与 Header
+  打开导航菜单: 'Open navigation menu',
+  导航菜单: 'Navigation menu',
+  切换侧边栏: 'Toggle sidebar',
+  退出全屏: 'Exit fullscreen',
+  切换语言: 'Switch language',
+  切换主题: 'Switch theme',
+  更多: 'More',
+  打开界面设置: 'Open appearance settings',
+  用户菜单: 'User menu',
+  // 语言原生名：语言切换菜单展示，不做翻译（规格 §12：语言名按原生写法呈现）
+  简体中文: '简体中文',
+  English: 'English',
   主题: 'Theme',
   主题模式: 'Theme Mode',
   跟随系统: 'Follow System',
