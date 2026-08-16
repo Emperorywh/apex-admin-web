@@ -1117,3 +1117,93 @@ describe('取消契约（规格 §7.4-9）', () => {
     expect(outcome.error.name).toBe('CanceledError')
   })
 })
+
+describe('测试控制器可观测性面（规格 §13.2：E2E 调用记录与人工延迟）', () => {
+  it('失效后 refresh 签发的新 token 立即生效：401 → 刷新 → 重放成功链路可用（规格 §13.2）', async () => {
+    const login = await loginDemo(DEMO_ACCOUNT_USERNAMES.ADMIN)
+    demoAdapterTestController.invalidateAccessTokens()
+    // 既有 token 立即 401
+    const denied = await callAdapter(demoConfig({ url: '/auth/profile', token: login.accessToken }))
+    expect(denied.ok).toBe(false)
+    // refresh 签发新 token 对：失效自动恢复（否则重放永远 401，无法验证单飞重放）
+    const refreshed = await callAdapter(
+      demoConfig({
+        method: 'post',
+        url: AUTH_ENDPOINTS.REFRESH,
+        data: { refreshToken: login.refreshToken },
+      }),
+    )
+    expect(refreshed.ok).toBe(true)
+    const tokens = envelopeData<{ accessToken: string; refreshToken: string }>(refreshed)
+    // 新 token 重放成功
+    const replay = await callAdapter(demoConfig({ url: '/auth/profile', token: tokens.accessToken }))
+    expect(replay.ok).toBe(true)
+  })
+
+  it('记录成功、失败与取消三类调用的 method/path/status/outcome', async () => {
+    demoAdapterTestController.clearCallLog()
+    const login = await loginDemo(DEMO_ACCOUNT_USERNAMES.ADMIN)
+    // 失败：过期 token 的受保护请求 → 401 AUTH_ACCESS_EXPIRED
+    await callAdapter(demoConfig({ url: '/auth/profile', token: formatDemoAccessToken('admin', Date.now() - 1) }))
+    // 取消：请求发出前已 abort
+    const controller = new AbortController()
+    controller.abort()
+    await callAdapter(demoConfig({ url: '/users', token: login.accessToken, signal: controller.signal }))
+    expect(demoAdapterTestController.getCallLog()).toEqual([
+      { method: 'post', path: '/auth/login', status: 200, outcome: 'fulfilled' },
+      { method: 'get', path: '/auth/profile', status: 401, outcome: 'rejected' },
+      { method: 'get', path: '/users', status: null, outcome: 'canceled' },
+    ])
+  })
+
+  it('人工延迟期间 abort 以 CanceledError 结束并记录取消；清除延迟后恢复即时落定', async () => {
+    const login = await loginDemo(DEMO_ACCOUNT_USERNAMES.ADMIN)
+    demoAdapterTestController.clearCallLog()
+    demoAdapterTestController.setEndpointDelay('get', '/users', 5_000)
+    vi.useFakeTimers()
+    try {
+      const controller = new AbortController()
+      const pending = callAdapter(
+        demoConfig({ url: '/users?size=5', token: login.accessToken, signal: controller.signal }),
+      )
+      // 未到延迟时间不得落定
+      await vi.advanceTimersByTimeAsync(100)
+      controller.abort()
+      const outcome = await pending
+      expect(outcome.ok).toBe(false)
+      if (outcome.ok) {
+        throw new Error('预期 adapter 取消拒绝')
+      }
+      expect(outcome.error.name).toBe('CanceledError')
+      expect(demoAdapterTestController.getCallLog()).toEqual([
+        { method: 'get', path: '/users', status: null, outcome: 'canceled' },
+      ])
+      // 清除延迟后同端点即时成功（不依赖任何计时器）
+      demoAdapterTestController.clearEndpointDelays()
+      const immediate = await callAdapter(demoConfig({ url: '/users', token: login.accessToken }))
+      expect(immediate.ok).toBe(true)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('resetRuntime 只重置 token 运行态：调用记录与人工延迟由各自方法显式清理', async () => {
+    const login = await loginDemo(DEMO_ACCOUNT_USERNAMES.ADMIN)
+    demoAdapterTestController.setEndpointDelay('get', '/users', 60_000)
+    demoAdapterTestController.resetRuntime({ keepSnapshot: true })
+    // 会话清理（登出订阅）会触发 resetDemoTokenRuntime：可观测性面必须保留
+    //（E2E 需跨会话清理断言「只刷新一次」），由显式方法清理
+    expect(demoAdapterTestController.getCallLog().length).toBeGreaterThan(0)
+    demoAdapterTestController.clearCallLog()
+    expect(demoAdapterTestController.getCallLog()).toEqual([])
+    // 已设置的延迟不随 token 重置移除：在途请求仍可经 abort 取消（E2E 取消语义）
+    const controller = new AbortController()
+    const pending = callAdapter(
+      demoConfig({ url: '/users', token: login.accessToken, signal: controller.signal }),
+    )
+    controller.abort()
+    const outcome = await pending
+    expect(outcome.ok).toBe(false)
+    demoAdapterTestController.clearEndpointDelays()
+  })
+})

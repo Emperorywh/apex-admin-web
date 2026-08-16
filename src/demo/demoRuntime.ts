@@ -22,8 +22,19 @@ import type { RequestAdapterResolver } from '@/services/request/request'
 import type { RequestStore } from '@/services/request/request.types'
 import { getDefaultAppStore } from '@/store/store'
 import { sessionSourceSet } from '@/store/slices/user.slice'
-import { demoAdapter, resetDemoTokenRuntime } from './adapters/demo.adapter'
+import { demoAdapter, demoAdapterTestController, resetDemoTokenRuntime } from './adapters/demo.adapter'
 import { DEMO_MODES, type DemoMode } from './demo.constants'
+
+/**
+ * E2E 可观测性桥（规格 §13.2 测试专用控制器）：demo 构建下挂到 window，
+ * 供 Playwright 在页面上下文内触发 token 失效、设置人工延迟并读取调用记录；
+ * off 构建不包含本模块，真实生产部署不存在该入口。
+ */
+declare global {
+  interface Window {
+    __APEX_DEMO_E2E__?: typeof demoAdapterTestController
+  }
+}
 
 /** fallback 切换提示文案（zh 即 key；en-US 资源见 locales/en-US/common.ts） */
 const FALLBACK_SWITCH_NOTICE_KEY = '无法连接真实后端，已切换到演示模式'
@@ -138,4 +149,8 @@ export function setupDemoMode(): void {
     return
   }
   createDemoRuntime(getDefaultAppStore().store)
+  // E2E 桥（见上方 declare global）：仅 demo 构建存在，供浏览器内测试控制器调用
+  if (typeof window !== 'undefined') {
+    window.__APEX_DEMO_E2E__ = demoAdapterTestController
+  }
 }

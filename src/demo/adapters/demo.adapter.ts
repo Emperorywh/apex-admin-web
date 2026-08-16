@@ -306,6 +306,13 @@ function validateRefreshToken(token: string): DemoAccount {
 function issueTokenPair(username: string): { accessToken: string; refreshToken: string } {
   const now = nextIssueTime()
   refreshRotationStamps.set(username, now)
+  // 失效语义（规格 §13.2：控制器用于验证 401 单飞重放）：失效只作用于签发时刻之前的
+  // 既有 token；登录/refresh 签发的新 token 对立即生效，重放得以成功。
+  // 全局失效标记一并清除（demo 控制器仅测试用途，语义为「令当前 token 立即失效」）。
+  allAccessTokensInvalidated = false
+  allRefreshTokensInvalidated = false
+  invalidatedAccessAccounts.delete(username)
+  invalidatedRefreshAccounts.delete(username)
   return {
     accessToken: formatDemoAccessToken(username, now + DEMO_ACCESS_TOKEN_TTL_MS),
     refreshToken: formatDemoRefreshToken(username, now + DEMO_REFRESH_TOKEN_TTL_MS, now),
@@ -1195,68 +1202,117 @@ function buildResponse(config: InternalAxiosRequestConfig, output: DemoEndpointO
   }
 }
 
+// ── 测试可观测性（E2E，规格 §13.2 测试专用控制器的扩展面） ────────────────────────
+
+/** 单次 adapter 调用记录：E2E 断言「只刷新一次」「取消在途请求」等行为的唯一可观测来源 */
+export interface DemoCallRecord {
+  method: string
+  /** 去除查询串后的路径（与路由表同口径） */
+  path: string
+  /** HTTP 语义状态码；取消（无响应落定）为 null */
+  status: number | null
+  outcome: 'fulfilled' | 'rejected' | 'canceled'
+}
+
+/** 调用记录上限：环形裁剪，防止长会话无限增长 */
+const MAX_CALL_LOG_ENTRIES = 200
+const callLog: DemoCallRecord[] = []
+
+/** 人工延迟表：key 为 `${method} ${path}`，仅测试控制器写入（默认空 = 保持同步语义） */
+const endpointDelays = new Map<string, number>()
+
+function delayKey(method: string, path: string): string {
+  return `${method} ${path}`
+}
+
+/** 记录一次调用并维护环形上限 */
+function recordCall(record: DemoCallRecord): void {
+  callLog.push(record)
+  if (callLog.length > MAX_CALL_LOG_ENTRIES) {
+    callLog.splice(0, callLog.length - MAX_CALL_LOG_ENTRIES)
+  }
+}
+
+/** 等待人工延迟；期间 abort 立即返回（由调用方以 CanceledError 结束） */
+function waitForTestDelay(delayMs: number, signal: AbortSignal | undefined): Promise<void> {
+  return new Promise((resolve) => {
+    const done = () => {
+      clearTimeout(timer)
+      signal?.removeEventListener('abort', done)
+      resolve()
+    }
+    const timer = setTimeout(done, delayMs)
+    signal?.addEventListener('abort', done, { once: true })
+  })
+}
+
 // ── adapter 入口：取消遵循 + DemoEndpointError → AxiosError（失败 envelope） ─────────
 
-export const demoAdapter: AxiosAdapter = (config) =>
-  new Promise<AxiosResponse>((resolve, reject) => {
-    // 与真实 adapter 相同的取消时序：请求发出前/落定前 abort 均以 CanceledError 结束
-    const signal = config.signal as AbortSignal | undefined
-    const cancel = () => reject(new CanceledError('canceled', config))
+export const demoAdapter: AxiosAdapter = async (config) => {
+  // 与真实 adapter 相同的取消时序：请求发出前/落定前 abort 均以 CanceledError 结束
+  const signal = config.signal as AbortSignal | undefined
+  const method = (config.method ?? 'get').toLowerCase()
+  const path = (config.url ?? '').split('?')[0]
+  const canceled = (): never => {
+    recordCall({ method, path, status: null, outcome: 'canceled' })
+    throw new CanceledError('canceled', config)
+  }
+  if (signal?.aborted) {
+    canceled()
+  }
+  // 测试人工延迟：默认不配置，保持既有同步落定语义
+  const testDelay = endpointDelays.get(delayKey(method, path))
+  if (testDelay !== undefined) {
+    await waitForTestDelay(testDelay, signal)
     if (signal?.aborted) {
-      cancel()
-      return
+      canceled()
     }
-    signal?.addEventListener('abort', cancel, { once: true })
-    const settle = () => signal?.removeEventListener('abort', cancel)
-    let output: DemoEndpointOutput
-    try {
-      output = dispatchRequest(config)
-    } catch (error) {
-      settle()
-      if (signal?.aborted) {
-        cancel()
-        return
-      }
-      if (error instanceof DemoEndpointError) {
-        const response = buildResponse(config, endpointError(error))
-        reject(
-          new AxiosError(
-            `Request failed with status code ${error.status}`,
-            AxiosError.ERR_BAD_REQUEST,
-            config,
-            {},
-            response,
-          ),
-        )
-        return
-      }
-      reject(error instanceof Error ? error : new Error(String(error)))
-      return
-    }
-    settle()
+  }
+  let output: DemoEndpointOutput
+  try {
+    output = dispatchRequest(config)
+  } catch (error) {
     if (signal?.aborted) {
-      cancel()
-      return
+      canceled()
     }
-    const response = buildResponse(config, output)
-    if (output.status >= 200 && output.status < 300) {
-      resolve(response)
-    } else {
-      reject(
-        new AxiosError(
-          `Request failed with status code ${output.status}`,
-          AxiosError.ERR_BAD_REQUEST,
-          config,
-          {},
-          response,
-        ),
+    if (error instanceof DemoEndpointError) {
+      recordCall({ method, path, status: error.status, outcome: 'rejected' })
+      throw new AxiosError(
+        `Request failed with status code ${error.status}`,
+        AxiosError.ERR_BAD_REQUEST,
+        config,
+        {},
+        buildResponse(config, endpointError(error)),
       )
     }
-  })
+    recordCall({ method, path, status: null, outcome: 'rejected' })
+    throw error instanceof Error ? error : new Error(String(error))
+  }
+  if (signal?.aborted) {
+    canceled()
+  }
+  recordCall({ method, path, status: output.status, outcome: output.status < 300 ? 'fulfilled' : 'rejected' })
+  const response = buildResponse(config, output)
+  if (output.status >= 200 && output.status < 300) {
+    return response
+  }
+  throw new AxiosError(
+    `Request failed with status code ${output.status}`,
+    AxiosError.ERR_BAD_REQUEST,
+    config,
+    {},
+    response,
+  )
+}
 
 // ── 测试专用失效控制器（规格 §13.2）：仅同目录测试与 E2E 引用，生产代码不得使用 ────────
 
-/** 重置 token 运行态：失效标记、旋转时间戳与签发时钟；不动 CRUD 数据集（登出清理订阅使用，规格 §13.2） */
+/**
+ * 重置 token 运行态：失效标记、旋转时间戳与签发时钟；不动 CRUD 数据集
+ * （登出清理订阅使用，规格 §13.2）。不清理测试可观测性面（调用记录与人工延迟）：
+ * 会话清理会经订阅触发本函数，E2E 需要跨会话清理保留调用记录以断言「只刷新一次」；
+ * 两者由 clearCallLog/clearEndpointDelays 显式管理。
+ */
 export function resetDemoTokenRuntime(): void {
   allAccessTokensInvalidated = false
   allRefreshTokensInvalidated = false
@@ -1266,8 +1322,13 @@ export function resetDemoTokenRuntime(): void {
   lastTokenIssuedAt = 0
 }
 
+/** 测试专用控制器（规格 §13.2）：仅同目录测试与 E2E 引用，生产代码不得使用 */
 export const demoAdapterTestController = {
-  /** 令指定账号（省略则全部账号）的 accessToken 立即失效：受保护端点返回 401 AUTH_ACCESS_EXPIRED */
+  /**
+   * 令指定账号（省略则全部账号）的 accessToken 立即失效：受保护端点返回 401 AUTH_ACCESS_EXPIRED。
+   * 失效作用于调用时刻的既有 token；下一次登录/refresh 签发的新 token 对自动恢复生效
+   * （支撑「401 → 刷新单飞 → 重放成功」链路的 E2E 验证，规格 §13.2）。
+   */
   invalidateAccessTokens(username?: string): void {
     if (username === undefined) {
       allAccessTokensInvalidated = true
@@ -1287,5 +1348,25 @@ export const demoAdapterTestController = {
   resetRuntime(options: { keepSnapshot?: boolean } = {}): void {
     resetDemoTokenRuntime()
     resetDemoDataset(options)
+  },
+  /** 为指定端点设置人工延迟（毫秒）：E2E 制造在途请求以断言取消行为；0 表示清除该端点延迟 */
+  setEndpointDelay(method: string, path: string, delayMs: number): void {
+    if (delayMs <= 0) {
+      endpointDelays.delete(delayKey(method, path))
+      return
+    }
+    endpointDelays.set(delayKey(method, path), delayMs)
+  },
+  /** 清除全部人工延迟 */
+  clearEndpointDelays(): void {
+    endpointDelays.clear()
+  },
+  /** 读取调用记录副本（环形上限内） */
+  getCallLog(): readonly DemoCallRecord[] {
+    return [...callLog]
+  },
+  /** 清空调用记录 */
+  clearCallLog(): void {
+    callLog.length = 0
   },
 }

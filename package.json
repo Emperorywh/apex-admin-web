@@ -16,6 +16,7 @@
     "lint": "oxlint",
     "typecheck": "tsc -b --noEmit",
     "test": "vitest run --coverage",
+    "test:e2e": "playwright test",
     "check": "pnpm check:structure && pnpm lint && pnpm typecheck && pnpm test && pnpm build",
     "prepare": "husky"
   },
@@ -40,6 +41,7 @@
     "redux-persist": "^6.0.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.4",
