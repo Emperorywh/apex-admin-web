@@ -1,6 +1,6 @@
 # Apex Admin Web — 视觉现代化第二轮专项规格（SPEC-UI2：slash-admin 风格转向）
 
-> 版本：v1.1 · 日期：2026-08-17 · 状态：已确认（访谈结论，待实施；v1.1 为审核修订）
+> 版本：v1.2 · 日期：2026-08-17 · 状态：已确认（两阶段实施完成，实测定稿见 §16 v1.2 修订记录）
 >
 > 本文档是主规格 `docs/SPEC.md` 的**视觉专项子规格**，承接并取代 `docs/SPEC_UI.md`（v1.3，两阶段已验收）。主规格仍是全项目唯一需求依据；本文档只覆盖视觉与壳层呈现，不改变任何功能行为。冲突裁决：功能行为以主规格为准；视觉呈现上 SPEC_UI.md 与本文档冲突的条文**以本文档为准**（§13 给出逐条取代映射）。
 >
@@ -247,7 +247,7 @@
 | `@iconify/react` | ^6.x（2026-08 实查最新 6.0.2，peer `react >=16`） | MIT | 图标运行时，`addCollection` 离线注册（仅 AppIcon 封装内使用） |
 | `@fontsource-variable/inter` | ^5.x（5.3.0） | 代码 MIT / 字体 SIL OFL | Inter Variable 自托管（拉丁子集） |
 | `motion` | ^13.x（13.1.0） | MIT | 受限动效（§10 边界） |
-| `@iconify/utils`（待定） | ^3.x（3.1.4） | MIT | **构建期**工具集，仅当 §5.1 选定「构建期 SVG→IconifyJSON 转换脚本」路径时按需引入；若脚本改用其他工具或人工维护 JSON 则不引入（PoC 定稿回写） |
+| `@iconify/utils`（待定） | ^3.x（3.1.4） | MIT | **构建期**工具集，仅当 §5.1 选定「构建期 SVG→IconifyJSON 转换脚本」路径时按需引入；若脚本改用其他工具或人工维护 JSON 则不引入（**v1.2 定稿：未引入**——转换脚本 `scripts/generate-icon-collection.mjs` 为零依赖自写实现） |
 | slash-admin `src/assets/icons/*.svg`、光斑 PNG | — | MIT | 菜单彩色图标、抽屉光斑背景；随资产附 LICENSE/NOTICE |
 
 版本为下限指引而非锁定：实际可复现版本以 `pnpm-lock.yaml` 定稿为准，升级依赖单独提交并重跑全部测试（主规格 §2 惯例）。
@@ -256,5 +256,15 @@
 
 ## 16. 修订记录
 
+- v1.2（2026-08-17）：两阶段实施完成，实测定稿回写——
+  - **§5.1 装载路径 PoC 定稿**：选定首选路径「构建期预生成 IconifyJSON + `import.meta.glob` 聚合 + `addCollection`」；转换脚本 `scripts/generate-icon-collection.mjs` 为零依赖自写实现（剥外层 `<svg>` 取 body、读 viewBox 推尺寸），产物 `src/assets/icons/local.iconify.json` 随资产提交；**未引入 `@iconify/utils`**（§15 待定项落空）。glob 以 `@/assets/icons/*.iconify.json` 别名形态使用（Vite 对 CSS/TS url 与 glob 均解析别名）。
+  - **§10 动效封装落位调整**：`src/components/MotionDiv/`（`MotionDiv.tsx` + `motionVariants.ts`）承载统一封装。原定 `src/components/animate/` 与结构门禁「components/ 直属子项必须是同名组件文件夹」冲突（主规格 §3.3 优先于子规格路径命名），按裁决规则调整；业务代码仍不直接 import `motion/react`。
+  - **实测定稿值**（标「默认」条目回写）：TabsBar 栏高 **44px**（§6.3 区间定稿）；SettingDrawer 宽 **360px**（§6.5）；Card `bodyPadding 24` / Table `cellPaddingBlock 10`、`cellPaddingInline 16`（§4.2）；页面容器 padding 维持 **16px**（§7 复核不变）；Header 毛玻璃亮 **60%** / 暗 **78%** 透明度 + `blur(12px)`（§6.2）；Header 工具图标按钮 **36px** 圆形（§6.2）；主色发光阴影定稿 `0 4px 10px -2px <colorPrimary>/24%`，经 `--app-primary-glow` CSS 变量派生消费（§4.1）；画布色 `#F4F6F8`/`#09090B` 与卡片浅阴影取值实测通过亮暗走查（§4.1）。
+  - **§4.4 对比度实测**：meadow `#00A76F`（落盘统一小写 `#00a76f`）与白字对比度 ≈**3.11** ≥3 通过，无需微调。
+  - **§8 落地口径**：Sparkline 为**静态 SVG**（缓存页禁 mount 触发动效的 §10 红线优先于 §8「CSS 描边动画」示例表述）；统计卡趋势序列由 overview 既有时间序列确定性推导（启用用户按当前启用占比对增长序列等比缩放），demo 趋势窗口 7 → **14 天**补充时间序列；`DashboardOverview` 契约（§14.1）零变更。
+  - **§4.5 rem 审计定稿**：壳层 rem 尺寸全部改 px（StatusResult 徽章 80px、Login 品牌区/表单列、PageLoading、DemoLoginHint）；全局 CSS 已无 rem 依赖（基准 14px 下保像素语义）。
+  - **§6.3 稳定性修复**：页签栏溢出滚动箭头改为**绝对定位覆盖**（不参与 flex 布局），消除箭头显隐瞬间页签整体横移导致点击落点漂移到关闭按钮的竞态（E2E 实测捕获并根治）。
+  - **§12 E2E 选择器同步**：`.ant-menu-*` → `nav[data-nav-mode]` / `getByRole('menuitem')`（自绘导航目录与叶子同为 menuitem）；启动镜像背景断言 `rgb(9, 9, 11)`；`helpers.ts` 新增 `settleRouter`（双 rAF 冲刷 pending transition），LRU 用例在连发 spaNavigate 后的页签点击前调用（既有 router POP 竞态的测试侧加固，基线在同等压力下亦存在）。
+  - 两阶段交付完成：第 0 步文档衔接（主规格 v1.7 + SPEC_UI.md 头部标注）→ 依赖/资产（含 LICENSE/NOTICE）→ token v2 → 图标体系 → 壳层五件套 + 启动镜像 → PageCard 骨架逐页套用（含 §5.7 菜单管理图标列）→ Dashboard 重排 → 登录/错误页 motion 入场；`pnpm check` 各环节与 `check:demo-off` 全绿，chromium 全量 + firefox/webkit 冒烟 E2E 全绿。
 - v1.1（2026-08-17）：审核修订——①纠正事实错误：`src/assets/` 本就是合法资产目录（无白名单新增）、slash-admin 参照栈无 vanilla-extract；②§5.7 重写：菜单管理页为**新增**图标列（现状无此列、demo 数据无 icon 字段），明确为 demo fixture 私有字段 + 本规格唯一列结构例外（§7 豁免），`MenuItem` 契约不变；③§5.1 明确装载路径首选「构建期预生成 IconifyJSON + glob 聚合 + addCollection」，纠正 addCollection 导出归属（`@iconify/react`，非 `@iconify/utils`），后者降为构建期待定项；④§13.2 升级为阶段一第 0 步前置交付（消除与主规格 v1.6 的「已确认」矛盾窗口），补主规格 §4.2 RouteMeta 与 §16.2 门禁清单两项衔接；⑤§4.1/§4.2 逐行标注已定/默认，§4.1 补 Firefox 滚动条口径；⑥§5.5 回退图标改为同尺寸（24/20px）；⑦§10 明确 hover 类动效禁用 motion；⑧§12 补 theme.test.ts 存量断言破坏、导航测试同目录约定、自绘导航键盘走查矩阵项；⑨§15 版本更新为当前 major（@iconify/react ^6 / motion ^13 / @iconify/utils ^3 待定）并注明以 lock 定稿；⑩§8 sparkline 落位 `features/dashboard/components/`。
 - v1.0（2026-08-17）：第二轮访谈结论落盘——全面转向 slash-admin 式观感；范围=壳层五件套再设计 + 设置抽屉重做 + Dashboard 全面重排（含迷你趋势图）+ 业务页单卡片骨架，登录页仅继承+入场动效；维持 Tailwind 红线（token 翻译）；新增四依赖（@iconify/react、@iconify/utils、@fontsource-variable/inter、motion）；菜单完全自绘（无指示条、260px、虚线分隔、mini 88px 纵向+悬浮子菜单、44px 行高+副标题 caption，不分组）；图标复用 slash SVG 离线打包（local: 唯一前缀，禁运行时 CDN）；布局模式零新增（settings 零迁移）；Inter Variable + 固定 14px；色板保留 8 色、默认改 slash 绿（替换 emerald）；页签圆角卡片式；Header 64px + 毛玻璃 + 圆形按钮（滚动架构不变，毛玻璃仅质感）；不加 Cmd+K；业务页单卡片合并；motion 限错误页/登录/组件级，Activity 缓存页禁挂载动效；设置抽屉四要素（缩略图/色条/毛玻璃光斑/图标卡片）；新建本文档取代 SPEC_UI 冲突条文；沿用上轮测试验收机制；两阶段交付。
