@@ -1,5 +1,5 @@
 /**
- * 界面设置抽屉测试（规格 §10.1/§10.2）：四分组就位、设置实时派发（无「应用」按钮）、
+ * 界面设置抽屉测试（规格 §10.1/§10.2）：三分组就位、设置实时派发（无「应用」按钮）、
  * 预设色板与对比度提示、全屏开关走 app slice 且不写入 settings。
  * 设置按 §8.1 白名单持久化（Fullscreen 不持久化）由 store 层 store.test.ts/persist.test.ts 覆盖。
  */
@@ -21,14 +21,16 @@ afterEach(() => {
   warningSpy.mockClear()
 })
 
-describe('SettingDrawer 四分组就位（规格 §10.2 分组）', () => {
-  it('渲染主题/布局/字体/界面元素四组与抽屉标题', async () => {
+describe('SettingDrawer 三分组就位（规格 §10.2 分组）', () => {
+  it('渲染主题/布局/界面元素三组与抽屉标题，字体分组已移除（规格 v1.6 §10.1）', async () => {
     renderWithProviders(<SettingDrawer open onClose={() => undefined} />)
     expect(await screen.findByText('界面设置')).toBeInTheDocument()
     expect(screen.getByText('主题')).toBeInTheDocument()
     expect(screen.getByText('布局')).toBeInTheDocument()
-    expect(screen.getByText('字体')).toBeInTheDocument()
     expect(screen.getByText('界面元素')).toBeInTheDocument()
+    expect(screen.queryByText('字体')).not.toBeInTheDocument()
+    expect(screen.queryByText('字体族')).not.toBeInTheDocument()
+    expect(screen.queryByText('字号')).not.toBeInTheDocument()
   })
 
   it('关闭状态不渲染抽屉内容', () => {
@@ -52,16 +54,11 @@ describe('SettingDrawer 设置实时派发（规格 §10.2，无「应用」按�
     expect(store.getState().settings.colorPrimary).toBe('#059669')
   })
 
-  it('布局、字体族、字号切换立即写入 settings', async () => {
+  it('布局切换立即写入 settings', async () => {
     const user = userEvent.setup()
     const { store } = renderWithProviders(<SettingDrawer open onClose={() => undefined} />)
-    await screen.findByRole('radio', { name: '顶部布局' })
-    await user.click(screen.getByRole('radio', { name: '顶部布局' }))
-    await user.click(screen.getByRole('radio', { name: '等宽' }))
-    await user.click(screen.getByRole('radio', { name: '大' }))
+    await user.click(await screen.findByRole('radio', { name: '顶部布局' }))
     expect(store.getState().settings.layout).toBe('top')
-    expect(store.getState().settings.fontFamily).toBe('mono')
-    expect(store.getState().settings.fontSize).toBe('large')
   })
 
   it('面包屑开关切换写入 breadcrumbEnabled', async () => {

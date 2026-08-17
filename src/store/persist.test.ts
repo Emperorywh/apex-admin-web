@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import type { PersistMigrate } from 'redux-persist'
+import { PERSIST_SCHEMA_VERSION } from '@/constants/storage.constants'
 import {
   APP_PERSIST_FIELDS,
   SETTINGS_PERSIST_FIELDS,
@@ -230,7 +231,7 @@ describe('安全迁移：user slice', () => {
     expect(USER_PERSIST_FIELDS).toEqual(['accessToken', 'refreshToken', 'sessionSource'])
     expect(userPersistConfig.key).toBe('user')
     expect(userPersistConfig.keyPrefix).toBe('apex_')
-    expect(userPersistConfig.version).toBe(1)
+    expect(userPersistConfig.version).toBe(PERSIST_SCHEMA_VERSION)
   })
 })
 
@@ -245,6 +246,27 @@ describe('安全迁移：settings slice', () => {
         themeMode: 'dark',
         colorPrimary: '#13c2c2',
         layout: 'top',
+        breadcrumbEnabled: false,
+        language: 'en-US',
+      },
+      PERSIST_SCHEMA_VERSION,
+    )
+    await expect(settingsPersistConfig.migrate!(decodePersistBlob(blob), PERSIST_SCHEMA_VERSION)).resolves.toEqual({
+      themeMode: 'dark',
+      colorPrimary: '#13c2c2',
+      layout: 'top',
+      breadcrumbEnabled: false,
+      language: 'en-US',
+    })
+    expect(getPersistRecoveryFailures()).toEqual([])
+  })
+
+  it('v1 旧数据迁移：遗留 fontSize/fontFamily 被识别并丢弃，其余设置照常恢复（规格 v1.6 §10.1）', async () => {
+    const blob = buildPersistBlob(
+      {
+        themeMode: 'dark',
+        colorPrimary: '#13c2c2',
+        layout: 'top',
         fontSize: 'large',
         fontFamily: 'serif',
         breadcrumbEnabled: false,
@@ -252,12 +274,10 @@ describe('安全迁移：settings slice', () => {
       },
       1,
     )
-    await expect(settingsPersistConfig.migrate!(decodePersistBlob(blob), 1)).resolves.toEqual({
+    await expect(settingsPersistConfig.migrate!(decodePersistBlob(blob), PERSIST_SCHEMA_VERSION)).resolves.toEqual({
       themeMode: 'dark',
       colorPrimary: '#13c2c2',
       layout: 'top',
-      fontSize: 'large',
-      fontFamily: 'serif',
       breadcrumbEnabled: false,
       language: 'en-US',
     })
@@ -286,13 +306,11 @@ describe('安全迁移：settings slice', () => {
     ])
   })
 
-  it('settings 全量持久化：字段清单覆盖 §8.1 全部七项，无白名单裁剪', () => {
+  it('settings 全量持久化：字段清单覆盖 §8.1 全部五项，无白名单裁剪', () => {
     expect(SETTINGS_PERSIST_FIELDS).toEqual([
       'themeMode',
       'colorPrimary',
       'layout',
-      'fontSize',
-      'fontFamily',
       'breadcrumbEnabled',
       'language',
     ])

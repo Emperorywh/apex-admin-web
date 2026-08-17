@@ -19,7 +19,8 @@ body,
 
 /*
  * 字体族经 body CSS 变量消费（规格 §10.1）：--app-font-family 由
- * applyThemeToDocument 按 antd token 写入；未写入前的回退栈即「系统默认」档。
+ * applyThemeToDocument 按 antd token 写入（固定系统字体栈，无设置项）；
+ * 未写入前的回退栈与固定栈一致。
  */
 body {
   font-family:

@@ -1,10 +1,12 @@
 # Apex Admin Web — 通用后台管理系统模板规格说明
 
-> 版本：v1.5 · 日期：2026-08-17 · 状态：已确认（§20 技术闸门已于 2026-08-15 验证通过）
+> 版本：v1.6 · 日期：2026-08-17 · 状态：已确认（§20 技术闸门已于 2026-08-15 验证通过）
 >
 > 本文档是实现候选基线。§20 技术闸门通过并记录结果后，状态才能改为「已确认」，届时本文档作为实现的唯一需求依据。技术闸门通过前，只允许完成基础工程和验证性 PoC，不进入全部业务页面开发。
 >
 > 所有标注「已定」的条目来自访谈结论；标注「默认」的条目为访谈未覆盖、按行业惯例选定的默认值。如需变更，必须先修改本文档及修订记录，不允许实现与文档长期分叉。
+>
+> v1.6 修订记录（2026-08-17）：移除界面设置中的「字体族」与「字号」配置项——字体族固定为系统字体栈、基准字号固定 16px；settings 切片相应移除 `fontSize`/`fontFamily` 字段，持久化 schema 版本升至 2，v1 旧数据迁移时识别并丢弃这两个字段（其余设置照常恢复）；设置抽屉分组调整为「主题、布局、界面元素」。
 >
 > v1.5 修订记录（2026-08-17）：新增视觉现代化专项子规格 `docs/SPEC_UI.md`（v1.0），壳层与视觉呈现以子规格为准，功能行为不变。
 >
@@ -690,7 +692,7 @@ interface RequestOptions {
 | 切片 | 内容 | 持久化 |
 | --- | --- | --- |
 | `user`（应用级 `store/slices/user.slice.ts`） | 双 token、sessionSource、sessionEpoch、用户信息、角色、permCodes、permissionVersion | 仅双 token + sessionSource |
-| `settings`（应用级） | 主题选择、主题色、布局、字号、字体、面包屑、语言 | ✅ |
+| `settings`（应用级） | 主题选择、主题色、布局、面包屑、语言 | ✅ |
 | `tabs`（应用级） | 页签 key、location 快照、title、affix、排序 | ❌ |
 | `pageCache`（应用级） | 缓存 key、revision、LRU 顺序 | ❌ |
 | `app`（应用级） | loadingCount、侧栏折叠、全屏状态、初始化状态 | 仅 sidebarCollapsed |
@@ -761,17 +763,17 @@ Fullscreen 是浏览器瞬时状态，明确属于 app slice，不属于 setting
 | 主题模式 | 亮 / 暗 / 跟随系统；默认跟随系统 | antd algorithm + `prefers-color-scheme` |
 | 主题色 | 至少 6 个预设 + 自定义取色器 | ConfigProvider `colorPrimary` |
 | 布局 | 侧边 / 顶部 | BasicLayout 热切换 |
-| 字体族 | 系统默认 / 无衬线 / 衬线 / 等宽 | antd token + body CSS 变量 |
-| 字号 | 小 / 中 / 大，对应 14/16/18 | 根 rem 基准 + antd fontSize |
 | 面包屑 | 开 / 关 | 条件渲染 |
 | 全屏 | 瞬时开关 | Fullscreen API；状态在 app slice |
+
+字体不提供设置项：字体族固定为系统字体栈，基准字号固定 16px（根 rem 基准 html font-size 与 antd fontSize 同值）。
 
 ### 10.2 实现规则
 
 - settings 变化实时组装 ConfigProvider theme，无「应用」按钮。
 - 自定义组件的颜色只能来自 `theme.useToken()`或 `var(--ant-*)`。
 - 颜色字面量只允许出现在 `config/theme.ts`预设、自定义取色结果持久化以及必要的测试夹具；其他 CSS/TSX 出现十六进制、rgb、hsl 色值视为违规。
-- 设置 Drawer 分组：主题、布局、字体、界面元素。
+- 设置 Drawer 分组：主题、布局、界面元素。
 - 跟随系统时监听 media query；用户选亮/暗后停止跟随，重新选“跟随系统”才恢复监听结果。
 - `index.html`启动镜像必须确保刷新时不出现相反主题底色；允许显示同主题的轻量初始化壳。
 - Fullscreen API 不可用或被权限策略拒绝时保持原状态并提示，不写入 settings。

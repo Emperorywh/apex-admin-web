@@ -1,5 +1,5 @@
 /**
- * 界面设置抽屉（规格 §10.1/§10.2）：主题、布局、字体、界面元素四组。
+ * 界面设置抽屉（规格 §10.1/§10.2）：主题、布局、界面元素三组。
  * 所有设置项变更即 dispatch settingsChanged，经 ThemeProvider 实时组装生效，
  * 无「应用」按钮；主题色预设取自 config/theme.ts，自定义取色经 ColorPicker
  * 以六位十六进制持久化（自定义取色持久化是色值字面量的合法落点，规格 §10.2）。
@@ -12,13 +12,9 @@ import { useDispatch, useSelector } from 'react-redux'
 import { THEME_PRESET_COLORS, isReadablePrimaryColor } from '@/config/theme'
 import { useFullscreen } from '@/hooks/useFullscreen'
 import {
-  SETTINGS_FONT_FAMILIES,
-  SETTINGS_FONT_SIZES,
   SETTINGS_LAYOUTS,
   SETTINGS_THEME_MODES,
   settingsChanged,
-  type SettingsFontFamily,
-  type SettingsFontSize,
   type SettingsLayout,
   type SettingsThemeMode,
 } from '@/store/slices/settings.slice'
@@ -114,42 +110,6 @@ export function SettingDrawer({ open, onClose }: SettingDrawerProps) {
             { value: SETTINGS_LAYOUTS.TOP, label: t('顶部布局') },
           ]}
         />
-      </section>
-
-      {/* ── 字体：字体族 + 字号（token + body CSS 变量，规格 §10.1） ── */}
-      <section className={styles.settingGroup}>
-        <h4 className={styles.groupTitle}>{t('字体')}</h4>
-        <div className={styles.settingRow}>
-          <span className={styles.rowLabel}>{t('字体族')}</span>
-          <Radio.Group
-            size="small"
-            value={settings.fontFamily}
-            onChange={(event) =>
-              dispatch(settingsChanged({ fontFamily: event.target.value as SettingsFontFamily }))
-            }
-            options={[
-              { value: SETTINGS_FONT_FAMILIES.SYSTEM, label: t('系统默认') },
-              { value: SETTINGS_FONT_FAMILIES.SANS, label: t('无衬线') },
-              { value: SETTINGS_FONT_FAMILIES.SERIF, label: t('衬线') },
-              { value: SETTINGS_FONT_FAMILIES.MONO, label: t('等宽') },
-            ]}
-          />
-        </div>
-        <div className={styles.settingRow}>
-          <span className={styles.rowLabel}>{t('字号')}</span>
-          <Radio.Group
-            size="small"
-            value={settings.fontSize}
-            onChange={(event) =>
-              dispatch(settingsChanged({ fontSize: event.target.value as SettingsFontSize }))
-            }
-            options={[
-              { value: SETTINGS_FONT_SIZES.SMALL, label: t('小') },
-              { value: SETTINGS_FONT_SIZES.MEDIUM, label: t('中') },
-              { value: SETTINGS_FONT_SIZES.LARGE, label: t('大') },
-            ]}
-          />
-        </div>
       </section>
 
       {/* ── 界面元素：面包屑开关 + 全屏瞬时开关（规格 §10.2 分组） ── */}

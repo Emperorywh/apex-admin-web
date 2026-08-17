@@ -76,8 +76,6 @@ describe('createAppStore 持久化白名单（规格 §8.1/§8.2）', () => {
       '_persist',
       'breadcrumbEnabled',
       'colorPrimary',
-      'fontFamily',
-      'fontSize',
       'language',
       'layout',
       'themeMode',
@@ -156,7 +154,7 @@ describe('rehydratedPromise 启动闸门（规格 §4.3）', () => {
 describe('持久化恢复降级（规格 §8.2/§17.22）', () => {
   it('user JSON 损坏：清认证字段、保留可解析界面设置、记录一次诊断、写入恢复失败标记后继续启动', async () => {
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-    // 预先播种合法 settings 与损坏的 user
+    // 预先播种合法 settings（v1 旧版 blob，含已移除的 fontSize/fontFamily 遗留字段，迁移时丢弃）与损坏的 user
     window.localStorage.setItem(
       'apex_settings',
       buildPersistBlob(

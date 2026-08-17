@@ -14,14 +14,10 @@ import { SESSION_SOURCES, type SessionSource } from '@/constants/auth/auth.const
 import { PERSIST_SCHEMA_VERSION, STORAGE_KEY_PREFIX } from '@/constants/storage.constants'
 import { appSlice, type AppState } from '@/store/slices/app.slice'
 import {
-  SETTINGS_FONT_FAMILIES,
-  SETTINGS_FONT_SIZES,
   SETTINGS_LANGUAGES,
   SETTINGS_LAYOUTS,
   SETTINGS_THEME_MODES,
   settingsSlice,
-  type SettingsFontFamily,
-  type SettingsFontSize,
   type SettingsLanguage,
   type SettingsLayout,
   type SettingsState,
@@ -305,18 +301,23 @@ export const SETTINGS_PERSIST_FIELDS = [
   'themeMode',
   'colorPrimary',
   'layout',
-  'fontSize',
-  'fontFamily',
   'breadcrumbEnabled',
   'language',
 ] as const
+
+/**
+ * v1 遗留字段：字体设置项已随规格 v1.6（§10.1）移除、schema 升至 v2。
+ * 迁移时识别并直接丢弃（不读取、不校验取值），使旧数据其余设置照常恢复，
+ * 不触发「未知字段」结构漂移降级。
+ */
+const SETTINGS_LEGACY_FIELDS = ['fontSize', 'fontFamily'] as const
 
 function migrateSettingsState(state: unknown, currentVersion: number) {
   const record = readPersistedRecord(state, currentVersion)
   if (!record) {
     return undefined
   }
-  assertNoUnknownKeys(record, [...SETTINGS_PERSIST_FIELDS, '_persist'])
+  assertNoUnknownKeys(record, [...SETTINGS_PERSIST_FIELDS, ...SETTINGS_LEGACY_FIELDS, '_persist'])
   const colorPrimary = readRequiredString(record, 'colorPrimary')
   if (colorPrimary !== undefined && !isHexColor(colorPrimary)) {
     throw new Error('字段 colorPrimary 不是六位十六进制主题色')
@@ -325,8 +326,6 @@ function migrateSettingsState(state: unknown, currentVersion: number) {
     themeMode: readOptionalEnum(record, 'themeMode', Object.values(SETTINGS_THEME_MODES) as SettingsThemeMode[]),
     colorPrimary,
     layout: readOptionalEnum(record, 'layout', Object.values(SETTINGS_LAYOUTS) as SettingsLayout[]),
-    fontSize: readOptionalEnum(record, 'fontSize', Object.values(SETTINGS_FONT_SIZES) as SettingsFontSize[]),
-    fontFamily: readOptionalEnum(record, 'fontFamily', Object.values(SETTINGS_FONT_FAMILIES) as SettingsFontFamily[]),
     breadcrumbEnabled: readOptionalBoolean(record, 'breadcrumbEnabled'),
     language: readOptionalEnum(record, 'language', Object.values(SETTINGS_LANGUAGES) as SettingsLanguage[]),
   })

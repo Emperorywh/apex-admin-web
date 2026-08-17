@@ -1,14 +1,14 @@
 /**
  * 主题配置集中地测试（规格 §10.1/§10.2/§11.3）：
- * 预设色板、对比度校验、字体族/字号映射、antd theme 组装、文档属性同步与系统配色监听。
+ * 预设色板、对比度校验、固定基准字号/字体族、antd theme 组装、文档属性同步与系统配色监听。
  */
 import { theme } from 'antd'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
+  BASE_FONT_FAMILY,
+  BASE_FONT_SIZE_PX,
   DEFAULT_COLOR_PRIMARY,
   PRIMARY_COLOR_MIN_CONTRAST_RATIO,
-  THEME_FONT_FAMILY_STACKS,
-  THEME_FONT_SIZE_PX,
   THEME_PRESET_COLORS,
   applyThemeToDocument,
   buildAntdThemeConfig,
@@ -123,33 +123,26 @@ describe('对比度校验（WCAG 2.1 相对亮度，规格 §11.3）', () => {
   })
 })
 
-describe('字体族与字号映射（规格 §10.1）', () => {
-  it('字体族四档（系统默认/无衬线/衬线/等宽）栈互不相同且非空', () => {
-    const stacks = Object.values(THEME_FONT_FAMILY_STACKS)
-    expect(Object.keys(THEME_FONT_FAMILY_STACKS).sort()).toEqual(['mono', 'sans', 'serif', 'system'])
-    expect(new Set(stacks).size).toBe(stacks.length)
-    for (const stack of stacks) {
-      expect(stack.length).toBeGreaterThan(0)
-    }
-  })
-
-  it('字号三档对应 14/16/18（rem 基准 + antd fontSize 同值）', () => {
-    expect(THEME_FONT_SIZE_PX).toEqual({ small: 14, medium: 16, large: 18 })
+describe('固定基准字号与字体族（规格 §10.1，字体无设置项）', () => {
+  it('基准字号固定 16px，字体族固定系统字体栈', () => {
+    expect(BASE_FONT_SIZE_PX).toBe(16)
+    expect(BASE_FONT_FAMILY.length).toBeGreaterThan(0)
+    expect(BASE_FONT_FAMILY).toContain('system-ui')
   })
 })
 
 describe('buildAntdThemeConfig 由设置实时组装（规格 §10.2）', () => {
-  const baseSettings = { colorPrimary: DEFAULT_COLOR_PRIMARY, fontSize: 'medium' as const, fontFamily: 'serif' as const }
+  const baseSettings = { colorPrimary: DEFAULT_COLOR_PRIMARY }
 
-  it('亮色使用 defaultAlgorithm，暗色使用 darkAlgorithm；token 携带主题色/字号/字体族', () => {
+  it('亮色使用 defaultAlgorithm，暗色使用 darkAlgorithm；token 携带主题色/固定字号/固定字体族', () => {
     const light = buildAntdThemeConfig(baseSettings, 'light')
     const dark = buildAntdThemeConfig(baseSettings, 'dark')
     expect(light.algorithm).toBe(theme.defaultAlgorithm)
     expect(dark.algorithm).toBe(theme.darkAlgorithm)
     for (const config of [light, dark]) {
       expect(config.token?.colorPrimary).toBe(baseSettings.colorPrimary)
-      expect(config.token?.fontSize).toBe(THEME_FONT_SIZE_PX.medium)
-      expect(config.token?.fontFamily).toBe(THEME_FONT_FAMILY_STACKS.serif)
+      expect(config.token?.fontSize).toBe(BASE_FONT_SIZE_PX)
+      expect(config.token?.fontFamily).toBe(BASE_FONT_FAMILY)
     }
   })
 
@@ -191,7 +184,7 @@ function normalizeCssColor(property: 'backgroundColor' | 'color', value: string)
 
 describe('applyThemeToDocument 文档属性同步（规格 §10.2/§8.3）', () => {
   it('按解析后模式设置 data-theme 与 color-scheme，背景/文字/rem 基准/字体变量取自当前 token', () => {
-    const darkSettings = { colorPrimary: DEFAULT_COLOR_PRIMARY, fontSize: 'large' as const, fontFamily: 'mono' as const }
+    const darkSettings = { colorPrimary: DEFAULT_COLOR_PRIMARY }
     applyThemeToDocument(darkSettings, 'dark')
     const root = document.documentElement
     expect(root.getAttribute('data-theme')).toBe('dark')
@@ -201,21 +194,21 @@ describe('applyThemeToDocument 文档属性同步（规格 §10.2/§8.3）', () 
     expect(root.style.backgroundColor).toBe(normalizeCssColor('backgroundColor', darkTokens.colorBgLayout))
     expect(document.body.style.backgroundColor).toBe(normalizeCssColor('backgroundColor', darkTokens.colorBgLayout))
     expect(document.body.style.color).toBe(normalizeCssColor('color', darkTokens.colorText))
-    // rem 基准与 antd fontSize 同值（large=18px）
-    expect(root.style.fontSize).toBe('18px')
-    // 字体族经 body CSS 变量消费（规格 §10.1）
-    expect(document.body.style.getPropertyValue('--app-font-family')).toBe(THEME_FONT_FAMILY_STACKS.mono)
+    // rem 基准与 antd fontSize 同值（固定基准字号 16px，规格 §10.1）
+    expect(root.style.fontSize).toBe('16px')
+    // 固定字体族经 body CSS 变量消费（规格 §10.1）
+    expect(document.body.style.getPropertyValue('--app-font-family')).toBe(BASE_FONT_FAMILY)
   })
 
-  it('亮色模式写入 light 属性，背景色与亮色 colorBgLayout 一致，rem 基准随小号档位', () => {
-    const lightSettings = { colorPrimary: DEFAULT_COLOR_PRIMARY, fontSize: 'small' as const, fontFamily: 'system' as const }
+  it('亮色模式写入 light 属性，背景色与亮色 colorBgLayout 一致，rem 基准同为固定 16px', () => {
+    const lightSettings = { colorPrimary: DEFAULT_COLOR_PRIMARY }
     applyThemeToDocument(lightSettings, 'light')
     const lightTokens = theme.getDesignToken(buildAntdThemeConfig(lightSettings, 'light'))
     expect(document.documentElement.getAttribute('data-theme')).toBe('light')
     expect(document.documentElement.style.backgroundColor).toBe(
       normalizeCssColor('backgroundColor', lightTokens.colorBgLayout),
     )
-    expect(document.documentElement.style.fontSize).toBe('14px')
+    expect(document.documentElement.style.fontSize).toBe('16px')
   })
 })
 

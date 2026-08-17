@@ -8,7 +8,7 @@ import { Button, theme as antdTheme } from 'antd'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { Provider } from 'react-redux'
 import { ThemeProvider } from './ThemeProvider'
-import { buildAntdThemeConfig } from '@/config/theme'
+import { BASE_FONT_FAMILY, buildAntdThemeConfig } from '@/config/theme'
 import { settingsChanged } from '@/store/slices/settings.slice'
 import type { SettingsState } from '@/store/slices/settings.slice'
 import { createComponentTestStore, type ComponentTestStore } from '@/test/componentTestHelpers'
@@ -113,24 +113,19 @@ describe('ThemeProvider 实时组装（规格 §10.2，无「应用」按钮）'
     expect(screen.getByTestId('probe-bg-container')).toHaveTextContent('#141414')
 
     act(() => {
-      renderedStore.dispatch(settingsChanged({ colorPrimary: '#389e0d', fontSize: 'large' }))
+      renderedStore.dispatch(settingsChanged({ colorPrimary: '#389e0d' }))
     })
     // useToken 返回算法加工后的 map token，与 getDesignToken 同口径比较
-    const darkLargeTokens = antdTheme.getDesignToken(buildAntdThemeConfig(settingsOf(renderedStore), 'dark'))
-    expect(screen.getByTestId('probe-color-primary')).toHaveTextContent(darkLargeTokens.colorPrimary)
-    // rem 基准随字号档位（large=18px，规格 §10.1）
-    expect(document.documentElement.style.fontSize).toBe('18px')
+    const darkTokens = antdTheme.getDesignToken(buildAntdThemeConfig(settingsOf(renderedStore), 'dark'))
+    expect(screen.getByTestId('probe-color-primary')).toHaveTextContent(darkTokens.colorPrimary)
+    // rem 基准为固定基准字号（16px，规格 §10.1），不随设置变化
+    expect(document.documentElement.style.fontSize).toBe('16px')
   })
 
-  it('字体族切换经 token 与 body CSS 变量同时生效（规格 §10.1）', async () => {
-    const store = createComponentTestStore()
-    const { store: renderedStore } = renderThemeProvider(store)
+  it('固定字体族经 body CSS 变量生效（规格 §10.1，字体无设置项）', async () => {
+    renderThemeProvider(createComponentTestStore())
     await screen.findByTestId('probe-button')
-    act(() => {
-      renderedStore.dispatch(settingsChanged({ fontFamily: 'mono' }))
-    })
-    const monoStack = "ui-monospace, SFMono-Regular, Consolas, 'Courier New', monospace"
-    expect(document.body.style.getPropertyValue('--app-font-family')).toBe(monoStack)
+    expect(document.body.style.getPropertyValue('--app-font-family')).toBe(BASE_FONT_FAMILY)
   })
 })
 

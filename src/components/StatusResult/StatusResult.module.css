@@ -1,6 +1,6 @@
 /*
  * 状态结果页样式（SPEC-UI §8）：居中留白排版、主题色点缀、Lucide 插画级图标。
- * 颜色一律来自 var(--ant-*) CSS 变量（规格 §10.2）；尺寸用 rem 随字号档位缩放（SPEC-UI §11）。
+ * 颜色一律来自 var(--ant-*) CSS 变量（规格 §10.2）；尺寸用 rem 随根 rem 基准排版（SPEC-UI §11）。
  */
 
 .statusResult {

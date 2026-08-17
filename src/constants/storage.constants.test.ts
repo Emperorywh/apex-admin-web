@@ -11,8 +11,8 @@ describe('storage.constants', () => {
     expect(THEME_BOOT_STORAGE_KEY.startsWith(STORAGE_KEY_PREFIX)).toBe(true)
   })
 
-  test('persist schema 版本从 1 起步（§8.2）', () => {
-    expect(PERSIST_SCHEMA_VERSION).toBe(1)
+  test('persist schema 版本从 1 起步、随结构变化递增（§8.2；v2 移除 settings 字体字段）', () => {
+    expect(PERSIST_SCHEMA_VERSION).toBe(2)
     expect(Number.isInteger(PERSIST_SCHEMA_VERSION)).toBe(true)
   })
 })

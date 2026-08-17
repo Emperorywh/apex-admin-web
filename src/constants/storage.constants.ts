@@ -20,5 +20,8 @@ export const THEME_BOOT_STORAGE_KEY = 'apex_boot_theme'
  * redux-persist schema 版本，从 1 起步（规格 §8.2）。
  * 持久化结构变化必须递增该版本并提供 migrate 映射；
  * 迁移失败时清认证字段、保留可解析的界面设置并提示一次恢复失败。
+ *
+ * 版本历史：v1 初始；v2（2026-08-17）settings 移除 fontSize/fontFamily（规格 v1.6 §10.1），
+ * 迁移识别并丢弃这两个遗留字段。
  */
-export const PERSIST_SCHEMA_VERSION = 1
+export const PERSIST_SCHEMA_VERSION = 2

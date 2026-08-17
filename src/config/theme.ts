@@ -9,7 +9,7 @@
  */
 import { theme } from 'antd'
 import type { ThemeConfig } from 'antd'
-import type { SettingsFontFamily, SettingsFontSize, SettingsState, SettingsThemeMode } from '@/store/slices/settings.slice'
+import type { SettingsState, SettingsThemeMode } from '@/store/slices/settings.slice'
 
 /** 预设主题色条目：color 为六位十六进制；labelKey 即中文 i18n key（规格 §12） */
 export interface ThemePresetColor {
@@ -129,27 +129,19 @@ export function resolveRuntimeThemeMode(mode: SettingsThemeMode, systemPrefersDa
   return 'light'
 }
 
-/** 字体族完整栈（规格 §10.1）：system=系统默认 / sans=无衬线 / serif=衬线 / mono=等宽 */
-export const THEME_FONT_FAMILY_STACKS: Record<SettingsFontFamily, string> = {
-  system: "system-ui, -apple-system, 'Segoe UI', Roboto, 'PingFang SC', 'Microsoft YaHei', sans-serif",
-  sans: "'Helvetica Neue', Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif",
-  serif: "Georgia, 'Times New Roman', 'Songti SC', SimSun, serif",
-  mono: "ui-monospace, SFMono-Regular, Consolas, 'Courier New', monospace",
-}
+/** 固定字体族（规格 §10.1，字体不提供设置项）：系统字体栈，antd token 与 body CSS 变量共用同一来源 */
+export const BASE_FONT_FAMILY =
+  "system-ui, -apple-system, 'Segoe UI', Roboto, 'PingFang SC', 'Microsoft YaHei', sans-serif"
 
-/** 字号档位到像素映射（规格 §10.1）：rem 基准（html font-size）与 antd fontSize 同值 */
-export const THEME_FONT_SIZE_PX: Record<SettingsFontSize, number> = {
-  small: 14,
-  medium: 16,
-  large: 18,
-}
+/** 固定基准字号（规格 §10.1）：rem 基准（html font-size）与 antd fontSize 同值，单位 px */
+export const BASE_FONT_SIZE_PX = 16
 
 /** 参与主题组装的设置子集：语言与面包屑不进入 antd token */
-export type ThemeSettings = Pick<SettingsState, 'colorPrimary' | 'fontSize' | 'fontFamily'>
+export type ThemeSettings = Pick<SettingsState, 'colorPrimary'>
 
 /**
  * 由设置实时组装 ConfigProvider theme（规格 §10.2，无「应用」按钮）：
- * 亮/暗经 algorithm、主题色经 colorPrimary、字体族经 fontFamily、字号经 fontSize。
+ * 亮/暗经 algorithm、主题色经 colorPrimary；字号与字体族为固定常量（规格 §10.1）。
  * antd v6 默认 CSS Variables 模式，无需显式开启，也不使用 v5 patch。
  *
  * 视觉令牌基线（SPEC-UI §4.1/§4.2）：
@@ -167,8 +159,8 @@ export function buildAntdThemeConfig(settings: ThemeSettings, resolvedMode: Reso
     algorithm,
     token: {
       colorPrimary: settings.colorPrimary,
-      fontSize: THEME_FONT_SIZE_PX[settings.fontSize],
-      fontFamily: THEME_FONT_FAMILY_STACKS[settings.fontFamily],
+      fontSize: BASE_FONT_SIZE_PX,
+      fontFamily: BASE_FONT_FAMILY,
       borderRadius: 6,
     },
     components: {
@@ -208,8 +200,8 @@ export function buildAntdThemeConfig(settings: ThemeSettings, resolvedMode: Reso
 /**
  * 把解析后的主题同步到文档（规格 §10.2/§8.3）：data-theme、color-scheme、
  * 初始背景色（html/body，取自当前算法的 colorBgLayout，与 index.html 启动镜像
- * 脚本写入的取值一致）、rem 基准（html font-size = 字号档位）与 body 文本色；
- * 字体族经 body CSS 变量 --app-font-family 供 globals.css 消费（规格 §10.1）。
+ * 脚本写入的取值一致）、rem 基准（html font-size = 固定基准字号）与 body 文本色；
+ * 固定字体族经 body CSS 变量 --app-font-family 供 globals.css 消费（规格 §10.1）。
  */
 export function applyThemeToDocument(settings: ThemeSettings, resolvedMode: ResolvedThemeMode): void {
   const tokens = theme.getDesignToken(buildAntdThemeConfig(settings, resolvedMode))
