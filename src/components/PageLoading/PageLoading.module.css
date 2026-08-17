@@ -1,8 +1,8 @@
-/* 页面加载占位：铺满父容器的居中加载态 */
+/* 页面加载占位（SPEC-UI §8）：铺满父容器的居中加载态，留白随字号档位缩放 */
 .pageLoading {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
-  min-height: 160px;
+  min-height: 12rem;
 }

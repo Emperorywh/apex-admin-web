@@ -19,7 +19,7 @@
   flex: none;
   width: 44px;
   height: 44px;
-  border-radius: 10px;
+  border-radius: var(--ant-border-radius-lg);
   color: var(--ant-color-primary);
   background: var(--ant-color-primary-bg);
 }

@@ -3,6 +3,8 @@
  * 选中项与祖先展开链由 Data Router 当前 match 派生（经 BasicLayout 注入 selectedKey/
  * ancestorOpenKeys），用户手动展开的目录与祖先链并集共存，选中项永远跟随路由。
  * 桌面侧边布局内嵌于侧栏（可折叠），窄视口（<768px）时同一组件承载于导航 Drawer。
+ * 视觉（SPEC-UI §5.1）：菜单底色透明透出侧栏中性灰；选中项 = 主题色浅底（Menu token）
+ * + 左侧 2px 主题色指示条（本组件 CSS），折叠态指示条保留。
  */
 import { Menu } from 'antd'
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -10,6 +12,7 @@ import { useTranslation } from 'react-i18next'
 import { MENU_NAMESPACE } from '@/i18n/i18n'
 import { buildNavMenuItems, mergeOpenKeys, type NavTranslate } from '@/layouts/BasicLayout/navTree'
 import type { NavTreeNode } from '@/layouts/BasicLayout/navModel'
+import styles from './SideMenu.module.css'
 
 export interface SideMenuProps {
   /** 已过滤导航树（router 注入 menuRoutes 投影） */
@@ -38,6 +41,7 @@ export function SideMenu({ items, selectedKey, ancestorOpenKeys, onNavigate, col
 
   return (
     <Menu
+      className={styles.menu}
       mode="inline"
       inlineCollapsed={collapsed}
       items={menuItems}

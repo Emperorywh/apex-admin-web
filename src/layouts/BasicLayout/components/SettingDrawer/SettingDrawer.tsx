@@ -32,6 +32,9 @@ export interface SettingDrawerProps {
   onClose: () => void
 }
 
+/** 抽屉宽度，单位 px（SPEC-UI §5.5：加宽保证控件标签与控件分行后不挤压） */
+const SETTING_DRAWER_WIDTH = 320
+
 export function SettingDrawer({ open, onClose }: SettingDrawerProps) {
   const { t } = useTranslation()
   const dispatch = useDispatch()
@@ -39,7 +42,7 @@ export function SettingDrawer({ open, onClose }: SettingDrawerProps) {
   const { fullscreen, toggle: toggleFullscreen } = useFullscreen()
 
   return (
-    <Drawer title={t('界面设置')} placement="right" width={300} open={open} onClose={onClose}>
+    <Drawer title={t('界面设置')} placement="right" width={SETTING_DRAWER_WIDTH} open={open} onClose={onClose}>
       {/* ── 主题：模式 + 主题色（规格 §10.2 分组） ── */}
       <section className={styles.settingGroup}>
         <h4 className={styles.groupTitle}>{t('主题')}</h4>
@@ -152,7 +155,7 @@ export function SettingDrawer({ open, onClose }: SettingDrawerProps) {
       {/* ── 界面元素：面包屑开关 + 全屏瞬时开关（规格 §10.2 分组） ── */}
       <section className={styles.settingGroup}>
         <h4 className={styles.groupTitle}>{t('界面元素')}</h4>
-        <div className={styles.settingRow}>
+        <div className={`${styles.settingRow} ${styles.settingRowInline}`}>
           <span className={styles.rowLabel}>{t('面包屑')}</span>
           <Switch
             aria-label={t('面包屑')}
@@ -160,7 +163,7 @@ export function SettingDrawer({ open, onClose }: SettingDrawerProps) {
             onChange={(checked) => dispatch(settingsChanged({ breadcrumbEnabled: checked }))}
           />
         </div>
-        <div className={styles.settingRow}>
+        <div className={`${styles.settingRow} ${styles.settingRowInline}`}>
           <span className={styles.rowLabel}>{t('全屏')}</span>
           {/* 全屏走 app slice（useFullscreen），不写入 settings、不持久化（规格 §10.1） */}
           <Switch aria-label={t('全屏')} checked={fullscreen} onChange={toggleFullscreen} />

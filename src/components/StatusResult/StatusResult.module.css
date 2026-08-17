@@ -1,0 +1,57 @@
+/*
+ * 状态结果页样式（SPEC-UI §8）：居中留白排版、主题色点缀、Lucide 插画级图标。
+ * 颜色一律来自 var(--ant-*) CSS 变量（规格 §10.2）；尺寸用 rem 随字号档位缩放（SPEC-UI §11）。
+ */
+
+.statusResult {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  padding: 3rem 1.5rem;
+  text-align: center;
+}
+
+/* 插画级图标徽章：主题色浅底大圆角方块 */
+.iconBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 5rem;
+  height: 5rem;
+  border-radius: var(--ant-border-radius-lg);
+  color: var(--ant-color-primary);
+  background: var(--ant-color-primary-bg);
+}
+
+/* 状态码点缀：主题色小号粗体 */
+.statusCode {
+  margin-top: 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ant-color-primary);
+}
+
+.title {
+  margin: 0.5rem 0 0;
+  font-size: 1.375rem;
+  font-weight: 600;
+  color: var(--ant-color-text-heading);
+}
+
+.subTitle {
+  max-width: 28rem;
+  margin: 0.75rem 0 0;
+  color: var(--ant-color-text-secondary);
+  /* 长诊断信息（路由错误文案）自动换行不破版 */
+  overflow-wrap: anywhere;
+}
+
+.extra {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1.75rem;
+}

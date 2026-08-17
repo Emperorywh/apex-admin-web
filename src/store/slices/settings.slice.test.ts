@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { DEFAULT_COLOR_PRIMARY } from '@/config/theme'
 import {
   SETTINGS_FONT_FAMILIES,
   SETTINGS_FONT_SIZES,
@@ -13,10 +14,10 @@ import {
 const { reducer } = settingsSlice
 
 describe('settings.slice', () => {
-  it('初始状态：跟随系统主题、antd 默认主题色、侧边布局、中字号、系统字体、面包屑开、zh-CN', () => {
+  it('初始状态：跟随系统主题、色板首项默认主题色（SPEC-UI §4.4 靛蓝）、侧边布局、中字号、系统字体、面包屑开、zh-CN', () => {
     expect(initialSettingsState).toEqual({
       themeMode: SETTINGS_THEME_MODES.SYSTEM,
-      colorPrimary: '#1677ff',
+      colorPrimary: DEFAULT_COLOR_PRIMARY,
       layout: SETTINGS_LAYOUTS.SIDE,
       fontSize: SETTINGS_FONT_SIZES.MEDIUM,
       fontFamily: SETTINGS_FONT_FAMILIES.SYSTEM,

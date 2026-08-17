@@ -1,0 +1,25 @@
+/*
+ * 登录页演示账号提示（SPEC-UI §6）：浮于品牌区装饰之上的细边框小卡片。
+ * 颜色一律来自 var(--ant-*) CSS 变量（规格 §10.2）。
+ */
+
+.hint {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 2px;
+  align-self: flex-start;
+  padding: 0.625rem 0.875rem;
+  border: 1px solid var(--ant-color-border-secondary);
+  border-radius: var(--ant-border-radius-lg);
+  background: var(--ant-color-bg-container);
+}
+
+.hintLabel {
+  font-size: 12px;
+  color: var(--ant-color-text-secondary);
+}
+
+.hintValue {
+  font-weight: 600;
+  color: var(--ant-color-text);
+}

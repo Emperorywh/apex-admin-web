@@ -19,18 +19,19 @@ export interface ThemePresetColor {
 }
 
 /**
- * 预设主题色（规格 §10.1 要求至少 6 个）：
+ * 预设主题色（规格 §10.1 要求至少 6 个；SPEC-UI §4.4 刷新为现代色板，共 8 个）：
  * 全部通过白字对比度校验（对比度见 theme.test.ts 逐项断言），保证实心按钮文字可读。
+ * 预设 key/labelKey 变化需同步 en-US 资源（common 命名空间）。
  */
 export const THEME_PRESET_COLORS: readonly ThemePresetColor[] = [
+  { key: 'indigo', color: '#4f46e5', labelKey: '靛蓝' },
   { key: 'azure', color: '#1677ff', labelKey: '湛蓝' },
-  { key: 'emerald', color: '#389e0d', labelKey: '翡翠绿' },
-  { key: 'violet', color: '#722ed1', labelKey: '酱紫' },
-  { key: 'sunset', color: '#d46b08', labelKey: '日暮橙' },
-  { key: 'crimson', color: '#f5222d', labelKey: '绯红' },
-  { key: 'teal', color: '#08979c', labelKey: '青碧' },
-  { key: 'magenta', color: '#c41d7f', labelKey: '洋红' },
-  { key: 'gold', color: '#ad6800', labelKey: '鎏金' },
+  { key: 'emerald', color: '#059669', labelKey: '翡冷翠' },
+  { key: 'violet', color: '#7c3aed', labelKey: '紫罗兰' },
+  { key: 'sunset', color: '#ea580c', labelKey: '落日橙' },
+  { key: 'crimson', color: '#dc2626', labelKey: '绯红' },
+  { key: 'teal', color: '#0d9488', labelKey: '青碧' },
+  { key: 'magenta', color: '#db2777', labelKey: '品红' },
 ]
 
 /** 默认主题色：第一个预设（settings 切片初始值引用，避免色值字面量散落） */
@@ -150,14 +151,56 @@ export type ThemeSettings = Pick<SettingsState, 'colorPrimary' | 'fontSize' | 'f
  * 由设置实时组装 ConfigProvider theme（规格 §10.2，无「应用」按钮）：
  * 亮/暗经 algorithm、主题色经 colorPrimary、字体族经 fontFamily、字号经 fontSize。
  * antd v6 默认 CSS Variables 模式，无需显式开启，也不使用 v5 patch。
+ *
+ * 视觉令牌基线（SPEC-UI §4.1/§4.2）：
+ * - 小圆角：borderRadius 6（SM 4 / LG 8 由 antd 派生，卡片/弹层 8 上限）；
+ * - 细边框优先于阴影：边框/分隔线/浮层阴影维持算法默认（亮 #d9d9d9/#f0f0f0，
+ *   暗 #424242/#303030，实测已属偏浅中性，亮暗各自正确）；
+ * - 组件级覆盖只从「当前算法 + 当前主题色」派生的 map token 取值，不写死色值，
+ *   亮/暗两套自动各自成立（SPEC-UI §4.3 色值纪律）。
  */
 export function buildAntdThemeConfig(settings: ThemeSettings, resolvedMode: ResolvedThemeMode): ThemeConfig {
+  const algorithm = resolvedMode === 'dark' ? theme.darkAlgorithm : theme.defaultAlgorithm
+  // 以当前算法 + 主题色预解析一轮派生 token，组件覆盖从派生值取（亮/暗各自正确）
+  const derived = theme.getDesignToken({ algorithm, token: { colorPrimary: settings.colorPrimary } })
   return {
-    algorithm: resolvedMode === 'dark' ? theme.darkAlgorithm : theme.defaultAlgorithm,
+    algorithm,
     token: {
       colorPrimary: settings.colorPrimary,
       fontSize: THEME_FONT_SIZE_PX[settings.fontSize],
       fontFamily: THEME_FONT_FAMILY_STACKS[settings.fontFamily],
+      borderRadius: 6,
+    },
+    components: {
+      // 菜单（SPEC-UI §4.2/§5.1）：悬浮圆角项 + 主题色浅底选中 + 中性 hover；
+      // itemBg/subMenuItemBg 透明使侧边栏中性灰底透出（弹层子菜单仍走 popupBg  elevated 底色）
+      Menu: {
+        itemBg: 'transparent',
+        subMenuItemBg: 'transparent',
+        itemBorderRadius: 6,
+        subMenuItemBorderRadius: 6,
+        itemMarginInline: 8,
+        itemMarginBlock: 6,
+        itemHeight: 38,
+        itemHoverBg: derived.colorFillTertiary,
+        itemSelectedBg: derived.colorPrimaryBg,
+        itemSelectedColor: derived.colorPrimary,
+        horizontalItemHoverBg: derived.colorFillTertiary,
+        horizontalItemSelectedBg: derived.colorPrimaryBg,
+        horizontalItemSelectedColor: derived.colorPrimary,
+        horizontalItemBorderRadius: 6,
+        activeBarBorderWidth: 2,
+      },
+      // 表格（SPEC-UI §4.2）：表头去灰底（与容器同色、细下边框分隔）、行高紧凑、行 hover 浅底
+      Table: {
+        headerBg: derived.colorBgContainer,
+        cellPaddingBlock: 12,
+        cellPaddingInline: 16,
+      },
+      // 卡片（SPEC-UI §4.1）：细边框小圆角（边框/圆角走全局 token），内边距收敛
+      Card: {
+        paddingLG: 20,
+      },
     },
   }
 }

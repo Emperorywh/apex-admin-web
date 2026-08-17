@@ -1,6 +1,6 @@
 /**
- * 统计卡片（规格 §14.2 Dashboard 统计卡片区）：图标 + 标题 + 数值。
- * 标题为中文文案 key，经 dashboard 命名空间翻译（规格 §12）；
+ * 统计卡片（规格 §14.2 Dashboard 统计卡片区；视觉 SPEC-UI §7）：图标 + 标题 + 数值，
+ * 细边框小圆角卡片（全局 Card token）。标题为中文文案 key，经 dashboard 命名空间翻译（规格 §12）；
  * 颜色一律来自 antd CSS 变量（规格 §10.2），样式见 OverviewCard.module.css。
  */
 import { Card, Skeleton } from 'antd'
@@ -23,7 +23,7 @@ export interface OverviewCardProps {
 export function OverviewCard({ title, value, icon: Icon, loading = false }: OverviewCardProps) {
   const { t } = useTranslation(DASHBOARD_I18N_NAMESPACE)
   return (
-    <Card className={styles.card} variant="borderless">
+    <Card className={styles.card}>
       <div className={styles.content}>
         <span className={styles.iconWrap} aria-hidden="true">
           <Icon size={20} />

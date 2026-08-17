@@ -229,18 +229,18 @@ export function Header({ trigger, navItems, onLogout, onOpenSettings, isMobile }
 
   const themeTriggerIcon =
     themeMode === SETTINGS_THEME_MODES.DARK ? (
-      <Moon size={18} />
+      <Moon size={16} />
     ) : themeMode === SETTINGS_THEME_MODES.LIGHT ? (
-      <Sun size={18} />
+      <Sun size={16} />
     ) : (
-      <Monitor size={18} />
+      <Monitor size={16} />
     )
 
   return (
     <header className={styles.header}>
       {trigger !== null && (
-        <Button type="text" className={styles.triggerButton} aria-label={trigger.label} onClick={trigger.onClick}>
-          <trigger.icon size={18} />
+        <Button type="text" className={styles.iconButton} aria-label={trigger.label} onClick={trigger.onClick}>
+          <trigger.icon size={16} />
         </Button>
       )}
       {breadcrumbEnabled && <Breadcrumb items={navItems} />}
@@ -254,18 +254,19 @@ export function Header({ trigger, navItems, onLogout, onOpenSettings, isMobile }
         )}
         {isMobile ? (
           <Dropdown menu={{ items: moreMenuItems }} trigger={['click']}>
-            <Button type="text" aria-label={translateCommon('更多')}>
-              <MoreHorizontal size={18} />
+            <Button type="text" className={styles.iconButton} aria-label={translateCommon('更多')}>
+              <MoreHorizontal size={16} />
             </Button>
           </Dropdown>
         ) : (
           <>
             <Button
               type="text"
+              className={styles.iconButton}
               aria-label={fullscreen ? translateCommon('退出全屏') : translateCommon('全屏')}
               onClick={toggleFullscreen}
             >
-              {fullscreen ? <Minimize size={18} /> : <Maximize size={18} />}
+              {fullscreen ? <Minimize size={16} /> : <Maximize size={16} />}
             </Button>
             <Dropdown
               menu={{
@@ -274,8 +275,8 @@ export function Header({ trigger, navItems, onLogout, onOpenSettings, isMobile }
               }}
               trigger={['click']}
             >
-              <Button type="text" aria-label={translateCommon('切换语言')}>
-                <Languages size={18} />
+              <Button type="text" className={styles.iconButton} aria-label={translateCommon('切换语言')}>
+                <Languages size={16} />
               </Button>
             </Dropdown>
             <Dropdown
@@ -285,7 +286,7 @@ export function Header({ trigger, navItems, onLogout, onOpenSettings, isMobile }
               }}
               trigger={['click']}
             >
-              <Button type="text" aria-label={translateCommon('切换主题')}>
+              <Button type="text" className={styles.iconButton} aria-label={translateCommon('切换主题')}>
                 {themeTriggerIcon}
               </Button>
             </Dropdown>
@@ -311,8 +312,8 @@ export function Header({ trigger, navItems, onLogout, onOpenSettings, isMobile }
             <span className={styles.userName}>{displayName}</span>
           </Button>
         </Dropdown>
-        <Button type="text" aria-label={translateCommon('打开界面设置')} onClick={onOpenSettings}>
-          <Settings size={18} />
+        <Button type="text" className={styles.iconButton} aria-label={translateCommon('打开界面设置')} onClick={onOpenSettings}>
+          <Settings size={16} />
         </Button>
       </div>
     </header>

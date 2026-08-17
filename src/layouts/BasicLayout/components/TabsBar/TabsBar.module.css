@@ -1,5 +1,9 @@
 /*
- * 页签栏（规格 §9.3/§11.3）：横向页签条 + 溢出滚动 + 左右箭头。
+ * 页签栏（规格 §9.3/§11.3；视觉 SPEC-UI §5.3）：下划线极简式——
+ * 页签为无框无底的纯文本 + 图标，当前页文字 colorText + 底部 2px 主题色指示线，
+ * 非当前页 colorTextSecondary；关闭按钮仅 hover/当前页/键盘焦点显现。
+ * 过渡只依赖纯 CSS transition（150–200ms，SPEC-UI §9），不引入任何依赖挂载
+ * Effect 的 JS 动效（Activity 隐藏页会被清理全部 Effect，主规格 §9）。
  * 颜色一律来自 var(--ant-*) CSS 变量（规格 §10.2）。
  */
 
@@ -21,6 +25,9 @@
   color: var(--ant-color-text-tertiary);
   cursor: pointer;
   padding: 0 6px;
+  transition:
+    color 150ms ease-out,
+    background-color 150ms ease-out;
 }
 
 .scrollButton[data-visible='true'] {
@@ -32,7 +39,8 @@
   background: var(--ant-color-fill-tertiary);
 }
 
-/* 页签条：横向滚动容器（规格 §9.3 溢出滚动） */
+/* 页签条：横向滚动容器（规格 §9.3 溢出滚动）；页签通高拉伸，
+ * 使当前页指示线落在栏底 1px 分隔线上（SPEC-UI §5.3 下划线式） */
 .list {
   display: flex;
   align-items: stretch;
@@ -41,36 +49,56 @@
   min-width: 0;
   overflow-x: auto;
   overflow-y: hidden;
-  padding: 4px 8px;
+  padding: 0 8px;
   scrollbar-width: thin;
 }
 
-/* 页签节点：外层为拖拽/焦点语义节点，内层 tabBody 铺满外层（display:contents） */
+/* 页签节点：无框无底纯文本；外层为拖拽/焦点语义节点，内层 tabBody 铺满外层（display:contents） */
 .tab {
   position: relative;
   display: inline-flex;
-  align-items: stretch;
+  align-items: center;
   flex: 0 0 auto;
-  min-height: 32px;
-  padding: 0 4px 0 10px;
-  border: 1px solid transparent;
-  border-radius: 6px;
+  padding: 0 12px;
   background: transparent;
-  color: var(--ant-color-text);
+  color: var(--ant-color-text-secondary);
   cursor: pointer;
   white-space: nowrap;
+  transition: color 150ms ease-out;
 }
 
 .tab:hover {
-  background: var(--ant-color-fill-tertiary);
+  color: var(--ant-color-text);
 }
 
 .tab[data-active='true'] {
-  background: var(--ant-color-bg-container);
-  border-color: var(--ant-color-border-secondary);
-  color: var(--ant-color-text-heading);
-  font-weight: 600;
-  box-shadow: inset 0 -2px 0 var(--ant-color-primary);
+  color: var(--ant-color-text);
+}
+
+/* 当前页指示线：底部 2px 主题色，与文字色一起 150–200ms 纯 CSS 过渡（SPEC-UI §5.3/§9） */
+.tab::after {
+  content: '';
+  position: absolute;
+  inset-inline: 12px;
+  bottom: 0;
+  height: 2px;
+  border-radius: 2px 2px 0 0;
+  background: var(--ant-color-primary);
+  opacity: 0;
+  transform: scaleX(0.6);
+  transition:
+    opacity 180ms ease-out,
+    transform 180ms ease-out;
+}
+
+.tab[data-active='true']::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+.tab:focus-visible {
+  outline: 2px solid var(--ant-color-primary);
+  outline-offset: -2px;
 }
 
 .tab[data-dragging='true'] {
@@ -91,12 +119,20 @@
   text-overflow: ellipsis;
 }
 
+/* affix 固定标记：默认弱化为三级文字色，当前页回升主题色 */
 .affixIcon {
   align-self: center;
   margin-right: 4px;
+  color: var(--ant-color-text-tertiary);
+  transition: color 150ms ease-out;
+}
+
+.tab[data-active='true'] .affixIcon {
   color: var(--ant-color-primary);
 }
 
+/* 关闭按钮：仅 hover/当前页/键盘焦点显现（SPEC-UI §5.3），以 opacity 隐藏
+ * 保持布局宽度稳定且指针/测试可点击 */
 .closeButton {
   display: inline-flex;
   align-items: center;
@@ -108,6 +144,17 @@
   background: transparent;
   color: var(--ant-color-text-tertiary);
   cursor: pointer;
+  opacity: 0;
+  transition:
+    opacity 150ms ease-out,
+    color 150ms ease-out,
+    background-color 150ms ease-out;
+}
+
+.tab:hover .closeButton,
+.tab:focus-within .closeButton,
+.tab[data-active='true'] .closeButton {
+  opacity: 1;
 }
 
 .closeButton:hover {

@@ -145,7 +145,9 @@ export function BasicLayout({ navItems, renderRoutes, affixTabRoutes, onLogout }
       data-layout-shell
     >
       <div className={styles.brand} data-collapsed={showSideNav && sidebarCollapsed}>
-        <LayoutGrid size={20} aria-hidden />
+        <span className={styles.brandMark} aria-hidden>
+          <LayoutGrid size={16} />
+        </span>
         <span className={styles.brandTitle}>{brandTitle}</span>
       </div>
       {showSideNav && (

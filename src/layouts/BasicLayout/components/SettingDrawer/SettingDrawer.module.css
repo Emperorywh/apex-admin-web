@@ -1,47 +1,74 @@
 /*
- * 界面设置抽屉样式（规格 §10.2）：
+ * 界面设置抽屉样式（规格 §10.2；视觉 SPEC-UI §5.5）：
+ * 分组带小标题与组间分隔线、充足间距；控件标签与控件分行（堆叠布局），
+ * 根除非控件挤压标签换行的问题；二元开关行（面包屑/全屏）保持左右横排。
  * 颜色一律来自 var(--ant-*) CSS 变量（规格 §10.2，色值字面量只允许出现在 src/config/theme.ts）。
  */
 
 .settingGroup {
-  margin-bottom: 24px;
+  padding: 4px 0 20px;
+}
+
+.settingGroup + .settingGroup {
+  border-top: 1px solid var(--ant-color-border-secondary);
+  padding-top: 20px;
 }
 
 .groupTitle {
-  margin: 0 0 12px;
-  font-size: 14px;
+  margin: 0 0 16px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--ant-color-text-heading);
 }
 
+/* 堆叠行：标签在上、控件在下，控件可用全部行宽（Radio.Group 不再挤压换行） */
 .settingRow {
   display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.settingRow:last-child {
+  margin-bottom: 0;
+}
+
+/* 二元开关行：标签与开关左右横排 */
+.settingRowInline {
+  flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  min-height: 32px;
-  margin-bottom: 8px;
 }
 
 .rowLabel {
-  color: var(--ant-color-text);
+  font-size: 13px;
+  color: var(--ant-color-text-secondary);
 }
 
-/* 预设色板：选中态以主题色描边并加对钩区域 */
+/* 预设色板：8 色单行网格（SPEC-UI §4.4/§5.5）；选中态以主题色描边 */
 .presetList {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
   gap: 8px;
 }
 
 .presetSwatch {
-  width: 24px;
-  height: 24px;
+  width: 100%;
+  aspect-ratio: 1;
   padding: 0;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--ant-border-radius-sm);
   cursor: pointer;
   /* 预设色值由内联 style 注入（来自 config/theme.ts），本文件不出现色值字面量 */
+  box-shadow: 0 0 0 1px var(--ant-color-border-secondary) inset;
+  transition:
+    transform 150ms ease-out,
+    box-shadow 150ms ease-out;
+}
+
+.presetSwatch:hover {
+  transform: scale(1.08);
   box-shadow: 0 0 0 1px var(--ant-color-border) inset;
 }
 
@@ -51,7 +78,7 @@
 }
 
 .contrastWarning {
-  margin-top: 8px;
+  margin: 4px 0 0;
   font-size: 12px;
   color: var(--ant-color-warning);
 }

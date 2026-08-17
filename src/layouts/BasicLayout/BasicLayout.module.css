@@ -4,6 +4,11 @@
  * 因此 settings.layout 热切换不会改变 React 树结构，页面缓存区与页签占位不重挂载。
  * 颜色一律来自 var(--ant-*) CSS 变量（规格 §10.2）。响应式断点统一由
  * LAYOUT_MOBILE_MEDIA_QUERY（matchMedia）驱动，本文件不维护第二份断点。
+ *
+ * 视觉基线（SPEC-UI §4.3/§5.1）：侧边栏为随主题的中性灰——以算法派生的
+ * colorFillQuaternary 叠于 shell 底色（亮 ≈ 浅灰 / 暗 ≈ 深炭灰，亮暗各自正确），
+ * 与内容区以 1px colorBorderSecondary 分隔，无阴影；品牌区在侧边布局下与菜单列
+ * 同色融合（去底部分隔线），顶部/窄视口布局保持与顶栏同色的通栏条。
  */
 
 .shell {
@@ -11,6 +16,8 @@
   height: 100%;
   min-height: 0;
   background: var(--ant-color-bg-layout);
+  /* 侧边栏中性灰底：算法派生半透明填充，叠于本壳层底色后亮/暗各自成立 */
+  --shell-nav-bg: var(--ant-color-fill-quaternary);
 }
 
 /* 侧边布局（桌面）：左列通栏为 品牌+垂直菜单，右列 顶栏/页签/内容 三行 */
@@ -43,21 +50,37 @@
     'content content';
 }
 
-/* 品牌区：侧边布局折叠时仅保留图标（与折叠菜单同宽对齐） */
+/* 品牌区：侧边布局折叠时仅保留图形标（与折叠菜单同宽对齐） */
 .brand {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 0.625rem;
   min-height: 48px;
-  padding: 0 16px;
+  padding: 0 1rem;
   font-weight: 600;
   color: var(--ant-color-text-heading);
   background: var(--ant-color-bg-container);
   border-bottom: 1px solid var(--ant-color-border-secondary);
 }
 
+/* 侧边布局（桌面）：品牌区与菜单列同色融合，仅保留与顶栏的分隔细边框 */
 .shell[data-layout-mode='side'][data-viewport='desktop'] .brand {
+  background: var(--shell-nav-bg);
+  border-bottom-color: transparent;
   border-right: 1px solid var(--ant-color-border-secondary);
+}
+
+/* 品牌图形标：主题色浅底小圆角方块（SPEC-UI §5.1 精修品牌区） */
+.brandMark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: var(--ant-border-radius);
+  color: var(--ant-color-primary);
+  background: var(--ant-color-primary-bg);
 }
 
 .brand[data-collapsed='true'] {
@@ -75,13 +98,14 @@
   text-overflow: ellipsis;
 }
 
-/* 垂直菜单列：宽/折叠两档宽度与 antd Menu 口径一致（224px / 80px） */
+/* 垂直菜单列：宽/折叠两档宽度与 antd Menu 口径一致（224px / 80px）；
+ * 底色为随主题中性灰（SPEC-UI §5.1），菜单本体透明（components.Menu token）透出灰底 */
 .sideNav {
   grid-area: nav;
   width: 224px;
   overflow-y: auto;
   overflow-x: hidden;
-  background: var(--ant-color-bg-container);
+  background: var(--shell-nav-bg);
   border-right: 1px solid var(--ant-color-border-secondary);
 }
 

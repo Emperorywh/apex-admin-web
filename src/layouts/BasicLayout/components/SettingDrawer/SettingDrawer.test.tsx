@@ -48,8 +48,8 @@ describe('SettingDrawer 设置实时派发（规格 §10.2，无「应用」按�
   it('点击预设色板立即写入 colorPrimary', async () => {
     const user = userEvent.setup()
     const { store } = renderWithProviders(<SettingDrawer open onClose={() => undefined} />)
-    await user.click(await screen.findByRole('button', { name: '翡翠绿' }))
-    expect(store.getState().settings.colorPrimary).toBe('#389e0d')
+    await user.click(await screen.findByRole('button', { name: '翡冷翠' }))
+    expect(store.getState().settings.colorPrimary).toBe('#059669')
   })
 
   it('布局、字体族、字号切换立即写入 settings', async () => {

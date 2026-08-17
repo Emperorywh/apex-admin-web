@@ -1,0 +1,33 @@
+/*
+ * 侧边菜单视觉（SPEC-UI §5.1）：几何与状态色由 components.Menu token 承载
+ * （圆角 6、主题色浅底选中、中性 hover、底色透明透出侧栏灰底，见 config/theme.ts）；
+ * 本文件只补 token 无法表达的部分：左侧 2px 主题色选中指示条与选中父级目录的主题色文字。
+ * 颜色一律来自 var(--ant-*) CSS 变量（规格 §10.2/SPEC-UI §4.3）。
+ */
+
+.menu :global(.ant-menu-item) {
+  position: relative;
+}
+
+/* 选中指示条：内缩成小圆角竖条而非通高硬边，折叠（icon only）态同样保留 */
+.menu :global(.ant-menu-item)::before {
+  content: '';
+  position: absolute;
+  inset-block: 8px;
+  inset-inline-start: 0;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--ant-color-primary);
+  opacity: 0;
+  transition: opacity 180ms ease-out;
+}
+
+.menu :global(.ant-menu-item-selected)::before {
+  opacity: 1;
+}
+
+/* 选中叶子的祖先目录：标题与图标用主题色标示选中链（不叠加指示条，避免噪声） */
+.menu :global(.ant-menu-submenu-selected > .ant-menu-submenu-title),
+.menu :global(.ant-menu-submenu-selected > .ant-menu-submenu-title .ant-menu-item-icon) {
+  color: var(--ant-color-primary);
+}

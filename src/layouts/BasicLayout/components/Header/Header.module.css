@@ -1,5 +1,7 @@
 /*
- * 顶栏样式（规格 §11.1/§11.2）：面包屑居左、操作区居右；
+ * 顶栏样式（规格 §11.1/§11.2；视觉 SPEC-UI §5.2）：面包屑居左、操作区居右；
+ * 底色 colorBgContainer + 底部 1px 细边框；工具图标统一 Lucide 16px + 统一 hover
+ * 浅底圆角方形容器；头像与用户名间距收紧。尺寸用 rem 随字号档位缩放（SPEC-UI §11）。
  * 颜色一律来自 var(--ant-*) CSS 变量（规格 §10.2，色值字面量只允许出现在 config/theme.ts）。
  */
 
@@ -22,18 +24,31 @@
 .actions {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
   margin-left: auto;
 }
 
-.triggerButton {
-  flex-shrink: 0;
+/* 图标按钮：统一 2rem 方形 hover 浅底圆角容器（SPEC-UI §5.2），antd text 按钮自带 hover 底色 */
+.iconButton {
+  flex: none;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border-radius: var(--ant-border-radius);
+  color: var(--ant-color-text-secondary);
+}
+
+.iconButton:hover {
+  color: var(--ant-color-text);
 }
 
 .userTrigger {
   display: inline-flex;
+  flex: none;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  padding-inline: 6px;
+  border-radius: var(--ant-border-radius);
 }
 
 .userName {

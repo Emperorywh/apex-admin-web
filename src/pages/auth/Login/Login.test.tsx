@@ -33,4 +33,10 @@ describe('登录页 /login（规格 §14.2）', () => {
     renderWithProviders(<Login />)
     expect(screen.getByText('/dashboard')).toBeInTheDocument()
   })
+
+  it('非 off 构建下品牌区展示演示账号提示（SPEC-UI §6）', async () => {
+    renderWithProviders(<Login />)
+    expect(await screen.findByText('演示账号')).toBeInTheDocument()
+    expect(screen.getByText(/admin \/ viewer/)).toHaveTextContent('admin / viewer · 密码任意')
+  })
 })

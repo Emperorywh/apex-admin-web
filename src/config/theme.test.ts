@@ -61,7 +61,7 @@ afterEach(() => {
   document.body.style.removeProperty('--app-font-family')
 })
 
-describe('预设主题色板（规格 §10.1 至少 6 个 + 自定义取色）', () => {
+describe('预设主题色板（规格 §10.1 至少 6 个 + 自定义取色；SPEC-UI §4.4 现代色板）', () => {
   it('至少 6 个预设，key 与色值各自唯一且均为合法六位十六进制', () => {
     expect(THEME_PRESET_COLORS.length).toBeGreaterThanOrEqual(6)
     expect(new Set(THEME_PRESET_COLORS.map((preset) => preset.key)).size).toBe(THEME_PRESET_COLORS.length)
@@ -69,6 +69,20 @@ describe('预设主题色板（规格 §10.1 至少 6 个 + 自定义取色）',
     for (const preset of THEME_PRESET_COLORS) {
       expect(isHexColor(preset.color)).toBe(true)
     }
+  })
+
+  it('SPEC-UI §4.4 现代色板落盘：8 色 key/色值固定，靛蓝为新默认', () => {
+    expect(THEME_PRESET_COLORS.map((preset) => [preset.key, preset.color])).toEqual([
+      ['indigo', '#4f46e5'],
+      ['azure', '#1677ff'],
+      ['emerald', '#059669'],
+      ['violet', '#7c3aed'],
+      ['sunset', '#ea580c'],
+      ['crimson', '#dc2626'],
+      ['teal', '#0d9488'],
+      ['magenta', '#db2777'],
+    ])
+    expect(DEFAULT_COLOR_PRIMARY).toBe('#4f46e5')
   })
 
   it('默认主题色为色板首项', () => {
@@ -137,6 +151,34 @@ describe('buildAntdThemeConfig 由设置实时组装（规格 §10.2）', () => 
       expect(config.token?.fontSize).toBe(THEME_FONT_SIZE_PX.medium)
       expect(config.token?.fontFamily).toBe(THEME_FONT_FAMILY_STACKS.serif)
     }
+  })
+
+  it('视觉令牌基线（SPEC-UI §4.1/§4.2）：小圆角 + 菜单/表格/卡片组件覆盖', () => {
+    const config = buildAntdThemeConfig(baseSettings, 'light')
+    expect(config.token?.borderRadius).toBe(6)
+    // 菜单：透明底色透出侧边栏中性灰、圆角 6、紧凑行高、主题色浅底选中
+    const menu = config.components?.Menu
+    expect(menu?.itemBg).toBe('transparent')
+    expect(menu?.subMenuItemBg).toBe('transparent')
+    expect(menu?.itemBorderRadius).toBe(6)
+    expect(menu?.itemHeight).toBe(38)
+    expect(menu?.activeBarBorderWidth).toBe(2)
+    // 表格：表头去灰底、行高紧凑
+    const table = config.components?.Table
+    expect(table?.cellPaddingBlock).toBe(12)
+  })
+
+  it('组件覆盖从当前算法派生：亮/暗各自取值（菜单选中浅底与表头底色随模式分化）', () => {
+    const light = buildAntdThemeConfig(baseSettings, 'light')
+    const dark = buildAntdThemeConfig(baseSettings, 'dark')
+    const lightDerived = theme.getDesignToken({ algorithm: theme.defaultAlgorithm, token: { colorPrimary: baseSettings.colorPrimary } })
+    const darkDerived = theme.getDesignToken({ algorithm: theme.darkAlgorithm, token: { colorPrimary: baseSettings.colorPrimary } })
+    expect(light.components?.Menu?.itemSelectedBg).toBe(lightDerived.colorPrimaryBg)
+    expect(dark.components?.Menu?.itemSelectedBg).toBe(darkDerived.colorPrimaryBg)
+    expect(light.components?.Table?.headerBg).toBe(lightDerived.colorBgContainer)
+    expect(dark.components?.Table?.headerBg).toBe(darkDerived.colorBgContainer)
+    // 亮/暗派生值确实不同（双主题独立成立，非简单同值）
+    expect(light.components?.Table?.headerBg).not.toBe(dark.components?.Table?.headerBg)
   })
 })
 
