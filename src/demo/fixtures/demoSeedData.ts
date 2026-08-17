@@ -99,8 +99,16 @@ export const DEMO_SEED_NEXT_ROLE_SEQUENCE = 1
  * routeId/path 只引用当前已注册的静态路由（ROUTE_IDS/ROUTE_PATHS 权威值）；
  * 多级菜单演示条目与路由定义同步注册（演示 > 多级菜单 > 三个层级页面，
  * 对应前端三级菜单，§14.2/§19.1）。button 类型仅展示权限资源关系。
+ *
+ * icon 为 demo fixture 私有演示字段（SPEC_UI2 §5.7：值 `local:` 图标名，
+ * 驱动菜单管理页图标列；MenuItem 契约不含该字段，按钮/层级叶子不带 icon，
+ * 演示「真实后端数据无该字段时图标列呈现占位」的路径）。
  */
-export const DEMO_SEED_MENUS: readonly MenuItem[] = [
+export interface DemoMenuSeedItem extends MenuItem {
+  icon?: string
+}
+
+export const DEMO_SEED_MENUS: readonly DemoMenuSeedItem[] = [
   {
     id: 'demo-menu-dashboard',
     parentId: null,
@@ -108,6 +116,7 @@ export const DEMO_SEED_MENUS: readonly MenuItem[] = [
     name: '仪表盘',
     routeId: ROUTE_IDS.DASHBOARD,
     path: ROUTE_PATHS.DASHBOARD,
+    icon: 'local:ic-dashboard',
     sort: 1,
     visible: true,
     status: 'enabled',
@@ -117,6 +126,7 @@ export const DEMO_SEED_MENUS: readonly MenuItem[] = [
     parentId: null,
     type: 'directory',
     name: '系统管理',
+    icon: 'local:ic-management',
     sort: 2,
     visible: true,
     status: 'enabled',
@@ -128,6 +138,7 @@ export const DEMO_SEED_MENUS: readonly MenuItem[] = [
     name: '用户管理',
     routeId: ROUTE_IDS.SYSTEM_USER,
     path: ROUTE_PATHS.SYSTEM_USER,
+    icon: 'local:ic-user',
     sort: 1,
     visible: true,
     status: 'enabled',
@@ -144,6 +155,7 @@ export const DEMO_SEED_MENUS: readonly MenuItem[] = [
     name: '角色管理',
     routeId: ROUTE_IDS.SYSTEM_ROLE,
     path: ROUTE_PATHS.SYSTEM_ROLE,
+    icon: 'local:ic-role',
     sort: 2,
     visible: true,
     status: 'enabled',
@@ -160,6 +172,7 @@ export const DEMO_SEED_MENUS: readonly MenuItem[] = [
     name: '菜单管理',
     routeId: ROUTE_IDS.SYSTEM_MENU,
     path: ROUTE_PATHS.SYSTEM_MENU,
+    icon: 'local:ic-menu',
     sort: 3,
     visible: true,
     status: 'enabled',
@@ -173,6 +186,7 @@ export const DEMO_SEED_MENUS: readonly MenuItem[] = [
     parentId: null,
     type: 'directory',
     name: '演示',
+    icon: 'local:ic-flask',
     sort: 3,
     visible: true,
     status: 'enabled',
@@ -182,6 +196,7 @@ export const DEMO_SEED_MENUS: readonly MenuItem[] = [
     parentId: 'demo-menu-demo',
     type: 'directory',
     name: '多级菜单',
+    icon: 'local:ic-menulevel',
     sort: 1,
     visible: true,
     status: 'enabled',

@@ -3,15 +3,24 @@
  * 预设色板、对比度校验、固定基准字号/字体族、antd theme 组装、文档属性同步与系统配色监听。
  */
 import { theme } from 'antd'
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   BASE_FONT_FAMILY,
   BASE_FONT_SIZE_PX,
+  CANVAS_BG_DARK,
+  CANVAS_BG_LIGHT,
+  CARD_BORDER_RADIUS,
+  CARD_SHADOW_DARK,
+  CARD_SHADOW_LIGHT,
+  CONTROL_BORDER_RADIUS,
   DEFAULT_COLOR_PRIMARY,
   PRIMARY_COLOR_MIN_CONTRAST_RATIO,
   THEME_PRESET_COLORS,
   applyThemeToDocument,
   buildAntdThemeConfig,
+  buildPrimaryGlowShadow,
   contrastRatio,
   getPrimaryContrastRatio,
   getPrimarySolidTextColor,
@@ -59,6 +68,7 @@ afterEach(() => {
   document.body.style.backgroundColor = ''
   document.body.style.color = ''
   document.body.style.removeProperty('--app-font-family')
+  document.body.style.removeProperty('--app-primary-glow')
 })
 
 describe('预设主题色板（规格 §10.1 至少 6 个 + 自定义取色；SPEC-UI §4.4 现代色板）', () => {
@@ -71,18 +81,18 @@ describe('预设主题色板（规格 §10.1 至少 6 个 + 自定义取色；SP
     }
   })
 
-  it('SPEC-UI §4.4 现代色板落盘：8 色 key/色值固定，靛蓝为新默认', () => {
+  it('SPEC-UI2 §4.4 色板调整落盘：8 色 key/色值固定，slash 招牌绿 meadow 置首为新默认', () => {
     expect(THEME_PRESET_COLORS.map((preset) => [preset.key, preset.color])).toEqual([
+      ['meadow', '#00a76f'],
       ['indigo', '#4f46e5'],
       ['azure', '#1677ff'],
-      ['emerald', '#059669'],
       ['violet', '#7c3aed'],
       ['sunset', '#ea580c'],
       ['crimson', '#dc2626'],
       ['teal', '#0d9488'],
       ['magenta', '#db2777'],
     ])
-    expect(DEFAULT_COLOR_PRIMARY).toBe('#4f46e5')
+    expect(DEFAULT_COLOR_PRIMARY).toBe('#00a76f')
   })
 
   it('默认主题色为色板首项', () => {
@@ -123,11 +133,12 @@ describe('对比度校验（WCAG 2.1 相对亮度，规格 §11.3）', () => {
   })
 })
 
-describe('固定基准字号与字体族（规格 §10.1，字体无设置项）', () => {
-  it('基准字号固定 16px，字体族固定系统字体栈', () => {
-    expect(BASE_FONT_SIZE_PX).toBe(16)
-    expect(BASE_FONT_FAMILY.length).toBeGreaterThan(0)
+describe('固定基准字号与字体族（规格 §10.1，字体无设置项；SPEC-UI2 §4.5）', () => {
+  it('基准字号固定 14px，字体族为 Inter Variable 自托管栈且含中文系统回退', () => {
+    expect(BASE_FONT_SIZE_PX).toBe(14)
+    expect(BASE_FONT_FAMILY).toContain("'Inter Variable'")
     expect(BASE_FONT_FAMILY).toContain('system-ui')
+    expect(BASE_FONT_FAMILY).toContain('PingFang SC')
   })
 })
 
@@ -146,32 +157,50 @@ describe('buildAntdThemeConfig 由设置实时组装（规格 §10.2）', () => 
     }
   })
 
-  it('视觉令牌基线（SPEC-UI §4.1/§4.2）：小圆角 + 菜单/表格/卡片组件覆盖', () => {
-    const config = buildAntdThemeConfig(baseSettings, 'light')
-    expect(config.token?.borderRadius).toBe(6)
-    // 菜单：透明底色透出侧边栏中性灰、圆角 6、紧凑行高、主题色浅底选中
-    const menu = config.components?.Menu
-    expect(menu?.itemBg).toBe('transparent')
-    expect(menu?.subMenuItemBg).toBe('transparent')
-    expect(menu?.itemBorderRadius).toBe(6)
-    expect(menu?.itemHeight).toBe(38)
-    expect(menu?.activeBarBorderWidth).toBe(2)
-    // 表格：表头去灰底、行高紧凑
-    const table = config.components?.Table
-    expect(table?.cellPaddingBlock).toBe(12)
+  it('视觉令牌基线 v2（SPEC-UI2 §4.1/§4.2）：大圆角体系 + 灰阶画布 + 柔和卡片阴影', () => {
+    const light = buildAntdThemeConfig(baseSettings, 'light')
+    const dark = buildAntdThemeConfig(baseSettings, 'dark')
+    expect(CONTROL_BORDER_RADIUS).toBe(6)
+    expect(CARD_BORDER_RADIUS).toBe(12)
+    for (const config of [light, dark]) {
+      expect(config.token?.borderRadius).toBe(CONTROL_BORDER_RADIUS)
+      expect(config.token?.borderRadiusLG).toBe(CARD_BORDER_RADIUS)
+      // 浮层阴影阶梯保留 antd 默认（不覆盖 boxShadowSecondary）
+      expect(config.token?.boxShadowSecondary).toBeUndefined()
+    }
+    // 灰阶画布：亮浅灰 / 暗 near-black，字面值经具名导出收敛（SPEC-UI2 §4.1/§4.3）
+    expect(light.token?.colorBgLayout).toBe(CANVAS_BG_LIGHT)
+    expect(dark.token?.colorBgLayout).toBe(CANVAS_BG_DARK)
+    // 柔和卡片浅阴影随模式分化（shadow-sm 级，SPEC-UI2 §4.1）
+    expect(light.token?.boxShadow).toBe(CARD_SHADOW_LIGHT)
+    expect(dark.token?.boxShadow).toBe(CARD_SHADOW_DARK)
+    // 壳层导航弃用 antd Menu（SPEC-UI2 §6.1 自绘），Menu 覆盖随之移除
+    expect(light.components?.Menu).toBeUndefined()
   })
 
-  it('组件覆盖从当前算法派生：亮/暗各自取值（菜单选中浅底与表头底色随模式分化）', () => {
+  it('组件覆盖从当前算法派生：亮/暗各自取值（表格表头纸面底与行 hover 随模式分化）', () => {
     const light = buildAntdThemeConfig(baseSettings, 'light')
     const dark = buildAntdThemeConfig(baseSettings, 'dark')
     const lightDerived = theme.getDesignToken({ algorithm: theme.defaultAlgorithm, token: { colorPrimary: baseSettings.colorPrimary } })
     const darkDerived = theme.getDesignToken({ algorithm: theme.darkAlgorithm, token: { colorPrimary: baseSettings.colorPrimary } })
-    expect(light.components?.Menu?.itemSelectedBg).toBe(lightDerived.colorPrimaryBg)
-    expect(dark.components?.Menu?.itemSelectedBg).toBe(darkDerived.colorPrimaryBg)
+    // 表格（SPEC-UI2 §4.2）：表头纸面底、14px 密度行高收敛、行 hover 浅底
+    expect(light.components?.Table?.cellPaddingBlock).toBe(10)
     expect(light.components?.Table?.headerBg).toBe(lightDerived.colorBgContainer)
     expect(dark.components?.Table?.headerBg).toBe(darkDerived.colorBgContainer)
+    expect(light.components?.Table?.rowHoverBg).toBe(lightDerived.colorFillQuaternary)
+    expect(dark.components?.Table?.rowHoverBg).toBe(darkDerived.colorFillQuaternary)
     // 亮/暗派生值确实不同（双主题独立成立，非简单同值）
     expect(light.components?.Table?.headerBg).not.toBe(dark.components?.Table?.headerBg)
+    // 按钮（SPEC-UI2 §4.2）：去实心按钮硬影基线，hover 发光经 CSS 变量叠加
+    expect(light.components?.Button?.primaryShadow).toBe('none')
+    expect(light.components?.Button?.defaultShadow).toBe('none')
+    // 卡片（SPEC-UI2 §4.2）：内边距节奏收敛
+    expect(light.components?.Card?.bodyPadding).toBe(24)
+  })
+
+  it('主色发光阴影从 colorPrimary 派生（SPEC-UI2 §4.1）：合法 hex 拼 24% alpha，非法色返回 none', () => {
+    expect(buildPrimaryGlowShadow('#00a76f')).toBe('0 4px 10px -2px #00a76f3D')
+    expect(buildPrimaryGlowShadow('not-a-color')).toBe('none')
   })
 })
 
@@ -194,13 +223,17 @@ describe('applyThemeToDocument 文档属性同步（规格 §10.2/§8.3）', () 
     expect(root.style.backgroundColor).toBe(normalizeCssColor('backgroundColor', darkTokens.colorBgLayout))
     expect(document.body.style.backgroundColor).toBe(normalizeCssColor('backgroundColor', darkTokens.colorBgLayout))
     expect(document.body.style.color).toBe(normalizeCssColor('color', darkTokens.colorText))
-    // rem 基准与 antd fontSize 同值（固定基准字号 16px，规格 §10.1）
-    expect(root.style.fontSize).toBe('16px')
+    // rem 基准与 antd fontSize 同值（固定基准字号 14px，规格 §10.1/SPEC-UI2 §4.5）
+    expect(root.style.fontSize).toBe('14px')
     // 固定字体族经 body CSS 变量消费（规格 §10.1）
     expect(document.body.style.getPropertyValue('--app-font-family')).toBe(BASE_FONT_FAMILY)
+    // 主色发光阴影经 body CSS 变量消费（SPEC-UI2 §4.1）
+    expect(document.body.style.getPropertyValue('--app-primary-glow')).toBe(
+      buildPrimaryGlowShadow(darkTokens.colorPrimary),
+    )
   })
 
-  it('亮色模式写入 light 属性，背景色与亮色 colorBgLayout 一致，rem 基准同为固定 16px', () => {
+  it('亮色模式写入 light 属性，背景色与亮色 colorBgLayout 一致，rem 基准同为固定 14px', () => {
     const lightSettings = { colorPrimary: DEFAULT_COLOR_PRIMARY }
     applyThemeToDocument(lightSettings, 'light')
     const lightTokens = theme.getDesignToken(buildAntdThemeConfig(lightSettings, 'light'))
@@ -208,7 +241,23 @@ describe('applyThemeToDocument 文档属性同步（规格 §10.2/§8.3）', () 
     expect(document.documentElement.style.backgroundColor).toBe(
       normalizeCssColor('backgroundColor', lightTokens.colorBgLayout),
     )
-    expect(document.documentElement.style.fontSize).toBe('16px')
+    expect(document.documentElement.style.fontSize).toBe('14px')
+  })
+})
+
+describe('启动镜像取值一致性（SPEC-UI2 §11 红线：首帧背景字面量与运行时画布色同源）', () => {
+  it('index.html 启动脚本的首帧背景字面量与 CANVAS_BG_LIGHT/CANVAS_BG_DARK 一致', () => {
+    const html = readFileSync(resolve(process.cwd(), 'index.html'), 'utf8')
+    expect(html).toContain(`'#F4F6F8'`)
+    expect(html).toContain(`'#09090B'`)
+    expect(html.toLowerCase()).not.toContain('#f5f5f5')
+  })
+
+  it('运行时 colorBgLayout 与镜像字面量一致（亮 #F4F6F8 / 暗 #09090B）', () => {
+    const lightTokens = theme.getDesignToken(buildAntdThemeConfig({ colorPrimary: DEFAULT_COLOR_PRIMARY }, 'light'))
+    const darkTokens = theme.getDesignToken(buildAntdThemeConfig({ colorPrimary: DEFAULT_COLOR_PRIMARY }, 'dark'))
+    expect(lightTokens.colorBgLayout.toLowerCase()).toBe(CANVAS_BG_LIGHT.toLowerCase())
+    expect(darkTokens.colorBgLayout.toLowerCase()).toBe(CANVAS_BG_DARK.toLowerCase())
   })
 })
 

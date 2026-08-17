@@ -1,0 +1,84 @@
+/*
+ * 自绘顶部导航样式（SPEC_UI2 §6.1）：顶级行与 SideNav 同一套选中语言——
+ * 主色浅底圆角 + 主色文字/图标；hover 中性浅底；200–300ms 纯 CSS 过渡。
+ * 颜色一律来自 var(--ant-*) CSS 变量（SPEC_UI2 §4.3 色值纪律）。
+ */
+
+.nav {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  height: 64px;
+  padding: 0 12px;
+}
+
+.menu {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* Dropdown 触发容器：透传布局不改盒子 */
+.itemWrap {
+  display: inline-flex;
+  flex: none;
+}
+
+.item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ant-color-text);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background-color 200ms ease-out,
+    color 200ms ease-out;
+}
+
+.item:hover {
+  background: var(--ant-color-fill-tertiary);
+}
+
+.item:focus-visible {
+  outline: 2px solid var(--ant-color-primary);
+  outline-offset: -2px;
+}
+
+.item[data-selected='true'] {
+  background: var(--ant-color-primary-bg);
+  color: var(--ant-color-primary);
+  font-weight: 600;
+}
+
+.itemIcon {
+  flex: none;
+}
+
+.itemTitle {
+  line-height: 18px;
+}
+
+.chevron {
+  color: var(--ant-color-text-tertiary);
+  transform: rotate(0deg);
+  transition: transform 200ms ease-out;
+}
+
+.chevron[data-open='true'] {
+  transform: rotate(180deg);
+}
+
+.item[data-selected='true'] .chevron {
+  color: var(--ant-color-primary);
+}

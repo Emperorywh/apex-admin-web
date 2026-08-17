@@ -7,11 +7,11 @@
  * router/router.types.ts 的 MenuRouteNode 以 extends 复用本形状并追加过滤输入字段，
  * 共享字段不在两处重复定义（规格 §3.4 单一权威定义）。
  */
-import type { LucideIcon } from 'lucide-react'
-
 /**
  * 布局消费的导航节点：由路由层从受保护根子树投影并过滤后注入。
  * path 为前端完整路径（本模板路由定义一律使用绝对路径），目录节点也携带自身路径。
+ * icon 为 `local:` 图标名字符串（SPEC_UI2 §5.4，渲染经 AppIcon 唯一封装）；
+ * caption 为菜单副标题 i18n key（SPEC_UI2 §6.1，投影进导航树供自绘菜单消费）。
  */
 export interface NavTreeNode {
   /** 对应路由定义的稳定唯一 id */
@@ -20,7 +20,9 @@ export interface NavTreeNode {
   path?: string
   /** 标题：中文文案 key，经 menu 命名空间翻译（规格 §12） */
   title: string
-  icon?: LucideIcon
+  icon?: string
+  /** 菜单副标题：中文文案 key，经 menu 命名空间翻译（SPEC_UI2 §6.1） */
+  caption?: string
   /**
    * 是否挂载页面组件（路由定义含 loadPage）：
    * 目录节点为 false，面包屑据此判定该层级不可点击（规格 §11.2）。

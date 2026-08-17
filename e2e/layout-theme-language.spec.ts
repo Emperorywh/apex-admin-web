@@ -7,9 +7,9 @@
 import { expect, test } from '@playwright/test'
 import { loginViaUi } from './helpers'
 
-/** 侧边（inline）/顶部（horizontal）菜单根节点的稳定判别选择器 */
-const INLINE_MENU = 'nav .ant-menu-root.ant-menu-inline'
-const HORIZONTAL_MENU = 'nav .ant-menu-root.ant-menu-horizontal'
+/** 侧边/顶部自绘导航根节点的稳定判别选择器（SPEC_UI2 §6.1 data-nav-mode） */
+const INLINE_MENU = 'nav[data-nav-mode="vertical"]'
+const HORIZONTAL_MENU = 'nav[data-nav-mode="horizontal"]'
 
 test('侧边 ↔ 顶部布局热切换不整页刷新（§11.1/§16.3 布局切换）', async ({ page }) => {
   await loginViaUi(page, 'admin')
@@ -43,10 +43,10 @@ test('窄视口（<768px）：侧边菜单折叠为导航 Drawer，次要操作�
   // 窄视口触发按钮：打开导航菜单
   await expect(page.getByRole('button', { name: '打开导航菜单' })).toBeVisible()
   await page.getByRole('button', { name: '打开导航菜单' }).click()
-  // 抽屉内垂直菜单可见，且可点击叶子项完成导航
-  const drawerMenu = page.locator('.ant-drawer .ant-menu-root.ant-menu-inline')
+  // 抽屉内垂直导航可见，且可点击叶子项完成导航
+  const drawerMenu = page.locator('.ant-drawer nav[data-nav-mode="vertical"]')
   await expect(drawerMenu).toBeVisible()
-  await page.locator('.ant-drawer .ant-menu-submenu-title', { hasText: '系统管理' }).click()
+  await page.locator('.ant-drawer').getByRole('menuitem', { name: '系统管理' }).click()
   await page.locator('.ant-drawer').getByRole('menuitem', { name: '用户管理' }).click()
   await expect(page).toHaveURL(/\/system\/user$/)
   // 次要操作（全屏/语言/主题）收入「更多」菜单（§11.1）
@@ -98,9 +98,10 @@ test('深色主题刷新不出现相反底色：首帧即深色背景（§8.3/§
     const root = document.documentElement
     return { theme: root.getAttribute('data-theme'), background: root.style.backgroundColor }
   })
-  // 首帧前内联脚本必须已设置深色（index.html 启动镜像）：data-theme=dark 且背景为深色
+  // 首帧前内联脚本必须已设置深色（index.html 启动镜像）：data-theme=dark 且背景为
+  // 深色（SPEC_UI2 §4.1 灰阶画布暗 #09090B）
   expect(boot.theme).toBe('dark')
-  expect(boot.background).toBe('rgb(0, 0, 0)')
+  expect(boot.background).toBe('rgb(9, 9, 11)')
   // 应用启动后主题保持深色（hydration 不产生相反主题切换）
   await expect(page.locator('nav[aria-label="导航菜单"]')).toBeVisible()
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')

@@ -5,10 +5,9 @@
  * 颜色一律来自 var(--ant-*) CSS 变量（规格 §10.2）。响应式断点统一由
  * LAYOUT_MOBILE_MEDIA_QUERY（matchMedia）驱动，本文件不维护第二份断点。
  *
- * 视觉基线（SPEC-UI §4.3/§5.1）：侧边栏为随主题的中性灰——以算法派生的
- * colorFillQuaternary 叠于 shell 底色（亮 ≈ 浅灰 / 暗 ≈ 深炭灰，亮暗各自正确），
- * 与内容区以 1px colorBorderSecondary 分隔，无阴影；品牌区在侧边布局下与菜单列
- * 同色融合（去底部分隔线），顶部/窄视口布局保持与顶栏同色的通栏条。
+ * 视觉基线 v2（SPEC_UI2 §4.1/§6.1）：灰阶画布（colorBgLayout）衬纸面白卡；
+ * 侧边栏纸面底 + 右缘 1px 虚线分隔（slash 签名）；宽度 260/88 两档；
+ * 品牌区 64px 与 Header 对齐；侧缘悬浮折叠球半压右缘。
  */
 
 .shell {
@@ -16,11 +15,9 @@
   height: 100%;
   min-height: 0;
   background: var(--ant-color-bg-layout);
-  /* 侧边栏中性灰底：算法派生半透明填充，叠于本壳层底色后亮/暗各自成立 */
-  --shell-nav-bg: var(--ant-color-fill-quaternary);
 }
 
-/* 侧边布局（桌面）：左列通栏为 品牌+垂直菜单，右列 顶栏/页签/内容 三行 */
+/* 侧边布局（桌面）：左列通栏为 品牌+垂直导航，右列 顶栏/页签/内容 三行 */
 .shell[data-layout-mode='side'] {
   grid-template-columns: auto minmax(0, 1fr);
   grid-template-rows: auto auto minmax(0, 1fr);
@@ -30,7 +27,7 @@
     'nav   content';
 }
 
-/* 顶部布局（桌面）：首行 品牌 | 水平菜单 | 顶栏（含用户区），页签与内容通栏不定宽 */
+/* 顶部布局（桌面）：首行 品牌 | 水平导航 | 顶栏（含用户区），页签与内容通栏不定宽 */
 .shell[data-layout-mode='top'] {
   grid-template-columns: auto minmax(0, 1fr) auto;
   grid-template-rows: auto auto minmax(0, 1fr);
@@ -50,35 +47,38 @@
     'content content';
 }
 
-/* 品牌区：侧边布局折叠时仅保留图形标（与折叠菜单同宽对齐） */
+/* 品牌区：64px 与 Header 对齐（SPEC_UI2 §6.1）；侧边布局折叠时仅保留图形标 */
 .brand {
   display: flex;
   align-items: center;
-  gap: 0.625rem;
-  min-height: 48px;
-  padding: 0 1rem;
+  gap: 10px;
+  min-height: 64px;
+  padding: 0 20px;
   font-weight: 600;
   color: var(--ant-color-text-heading);
   background: var(--ant-color-bg-container);
+}
+
+/* 侧边布局（桌面）：品牌区与导航列同为纸面底、右缘共用虚线分隔（slash 签名） */
+.shell[data-layout-mode='side'][data-viewport='desktop'] .brand {
+  border-right: 1px dashed var(--ant-color-border-secondary);
+}
+
+/* 顶部/窄视口布局：品牌区与顶栏同色通栏，底部细线对齐 Header 分隔 */
+.shell[data-layout-mode='top'] .brand,
+.shell[data-viewport='mobile'] .brand {
   border-bottom: 1px solid var(--ant-color-border-secondary);
 }
 
-/* 侧边布局（桌面）：品牌区与菜单列同色融合，仅保留与顶栏的分隔细边框 */
-.shell[data-layout-mode='side'][data-viewport='desktop'] .brand {
-  background: var(--shell-nav-bg);
-  border-bottom-color: transparent;
-  border-right: 1px solid var(--ant-color-border-secondary);
-}
-
-/* 品牌图形标：主题色浅底小圆角方块（SPEC-UI §5.1 精修品牌区） */
+/* 品牌图形标：主色浅底圆角方块（SPEC_UI2 §6.1 精修排版） */
 .brandMark {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex: none;
-  width: 1.75rem;
-  height: 1.75rem;
-  border-radius: var(--ant-border-radius);
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
   color: var(--ant-color-primary);
   background: var(--ant-color-primary-bg);
 }
@@ -98,26 +98,61 @@
   text-overflow: ellipsis;
 }
 
-/* 垂直菜单列：宽/折叠两档宽度与 antd Menu 口径一致（224px / 80px）；
- * 底色为随主题中性灰（SPEC-UI §5.1），菜单本体透明（components.Menu token）透出灰底 */
+/* 垂直导航列（SPEC_UI2 §6.1）：260px / mini 88px 两档；纸面底；右缘 1px 虚线分隔 */
 .sideNav {
+  position: relative;
   grid-area: nav;
-  width: 224px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  background: var(--shell-nav-bg);
-  border-right: 1px solid var(--ant-color-border-secondary);
+  width: 260px;
+  overflow: hidden;
+  background: var(--ant-color-bg-container);
+  border-right: 1px dashed var(--ant-color-border-secondary);
+  transition: width 240ms ease-out;
 }
 
 .sideNav[data-collapsed='true'] {
-  width: 80px;
+  width: 88px;
 }
 
-/* 水平菜单区：min-width 0 允许 antd 水平菜单溢出收纳 */
+/* 侧缘悬浮折叠球（slash 签名）：圆形小按钮半压侧栏右缘，垂直落在页签栏高度带 */
+.collapseBall {
+  position: absolute;
+  top: 72px;
+  left: calc(100% - 14px);
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--ant-color-border-secondary);
+  border-radius: 50%;
+  background: var(--ant-color-bg-container);
+  color: var(--ant-color-text-secondary);
+  cursor: pointer;
+  box-shadow: var(--ant-box-shadow);
+  transition:
+    color 200ms ease-out,
+    border-color 200ms ease-out,
+    left 240ms ease-out;
+}
+
+.collapseBall:hover {
+  color: var(--ant-color-primary);
+  border-color: var(--ant-color-primary);
+}
+
+.collapseBall:focus-visible {
+  outline: 2px solid var(--ant-color-primary);
+  outline-offset: 1px;
+}
+
+/* 水平导航区：min-width 0 允许横向收纳；纸面底与品牌区/顶栏同排（SPEC_UI2 §6.1） */
 .topNav {
   grid-area: nav;
   min-width: 0;
   background: var(--ant-color-bg-container);
+  border-bottom: 1px solid var(--ant-color-border-secondary);
 }
 
 .mainBar {

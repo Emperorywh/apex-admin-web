@@ -273,6 +273,7 @@ export function TabsBar({ pageContainerRef }: TabsBarProps) {
       <button
         type="button"
         className={styles.scrollButton}
+        data-side="left"
         data-visible={arrowState.left}
         aria-label={t('向左滚动', { ns: COMMON_NAMESPACE })}
         onClick={() => scrollByStep(-1)}
@@ -311,6 +312,7 @@ export function TabsBar({ pageContainerRef }: TabsBarProps) {
       <button
         type="button"
         className={styles.scrollButton}
+        data-side="right"
         data-visible={arrowState.right}
         aria-label={t('向右滚动', { ns: COMMON_NAMESPACE })}
         onClick={() => scrollByStep(1)}

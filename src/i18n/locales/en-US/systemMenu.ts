@@ -12,6 +12,7 @@ const systemMenu: Record<string, string> = {
   // 工具栏与表格列
   新增菜单: 'New Menu',
   类型: 'Type',
+  图标: 'Icon',
   名称: 'Name',
   '路由 ID': 'Route ID',
   路由路径: 'Route Path',

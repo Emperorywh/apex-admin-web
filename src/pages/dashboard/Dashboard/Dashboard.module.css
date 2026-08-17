@@ -5,7 +5,8 @@
 .dashboard {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  /* 间距节奏收紧（SPEC_UI2 §8） */
+  gap: 12px;
 }
 
 .chartCard {

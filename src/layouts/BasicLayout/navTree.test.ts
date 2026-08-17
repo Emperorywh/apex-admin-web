@@ -1,15 +1,13 @@
 /**
  * 导航树纯函数测试（规格 §11.2）：选中项与祖先展开链推导（含深层隐藏页回退、
  * 错误页无选中）、面包屑层级推导（handle.meta 标题、breadcrumb:false 与根路径
- * 排除、目录不可点击）、antd 菜单项构建（任意层级递归、aria-current、无 path 跳过）
- * 与展开链并集。
+ * 排除、目录不可点击）与展开链并集。
+ * （antd 菜单项构建已随 SPEC_UI2 §6.1 自绘导航移除，图标名契约见 AppIcon.test.tsx）
  */
 import { describe, expect, it } from 'vitest'
-import { LayoutGrid, Users } from 'lucide-react'
 import type { NavTreeNode } from './navModel'
 
 import {
-  buildNavMenuItems,
   buildNavPathIndex,
   deriveBreadcrumbCrumbs,
   deriveNavSelection,
@@ -26,7 +24,7 @@ function navTree(): NavTreeNode[] {
       title: '系统管理',
       hasPage: false,
       children: [
-        { id: 'system-user', path: '/system/user', title: '用户管理', hasPage: true, icon: Users },
+        { id: 'system-user', path: '/system/user', title: '用户管理', hasPage: true, icon: 'local:ic-user' },
         {
           id: 'system-role',
           path: '/system/role',
@@ -112,43 +110,6 @@ describe('deriveBreadcrumbCrumbs 面包屑层级（规格 §11.2/§4.2）', () =
   })
 })
 
-describe('buildNavMenuItems antd 菜单项构建（任意层级）', () => {
-  const identity = (key: string): string => key
-
-  it('目录成为子菜单、叶子为菜单项，key 为节点路径并翻译标题', () => {
-    const items = buildNavMenuItems(navTree(), identity)
-    expect(items).toHaveLength(3)
-    const system = items[1] as { key: string; label: { props: { children: string } }; children: unknown[] }
-    expect(system.key).toBe('/system')
-    expect(system.label.props.children).toBe('系统管理')
-    expect(system.children).toHaveLength(2)
-    const role = system.children[1] as { children: unknown[] }
-    expect(role.children).toHaveLength(1)
-  })
-
-  it('图标节点生成菜单图标；选中项 label 携带 aria-current="page"', () => {
-    const items = buildNavMenuItems(navTree(), identity, '/system/user')
-    const user = (items[1] as { children: Array<{ key: string; icon: object; label: { props: Record<string, unknown> } }> }).children[0]
-    expect(user.key).toBe('/system/user')
-    expect(user.icon).toBeDefined()
-    expect(user.label.props['aria-current']).toBe('page')
-    const dashboard = items[0] as { label: { props: Record<string, unknown> } }
-    expect(dashboard.label.props['aria-current']).toBeUndefined()
-  })
-
-  it('无 path 节点不生成菜单项，但其子节点照常生成', () => {
-    const items = buildNavMenuItems(navTree(), identity)
-    const odd = items[2] as { key: string; children: unknown[] }
-    expect(odd.key).toBe('/odd/child')
-    expect(odd.children).toBeUndefined()
-  })
-
-  it('翻译函数应用于标题（中文 key → 目标语言）', () => {
-    const items = buildNavMenuItems(navTree(), (key) => `${key}-en`)
-    expect((items[0] as { label: { props: { children: string } } }).label.props.children).toBe('仪表盘-en')
-  })
-})
-
 describe('mergeOpenKeys 展开链并集', () => {
   it('保留既有展开项并追加新祖先链，去重且保持出现顺序', () => {
     expect(mergeOpenKeys(['/a'], ['/b', '/a'])).toEqual(['/a', '/b'])
@@ -156,9 +117,17 @@ describe('mergeOpenKeys 展开链并集', () => {
   })
 })
 
-describe('图标组件引用（构建入参契约）', () => {
-  it('NavTreeNode.icon 接受 lucide 图标组件', () => {
-    const node: NavTreeNode = { id: 'x', path: '/x', title: 'X', hasPage: true, icon: LayoutGrid }
-    expect(node.icon).toBe(LayoutGrid)
+describe('图标名契约（SPEC_UI2 §5.4：meta.icon 字符串化投影进导航树）', () => {
+  it('NavTreeNode.icon 为 local: 图标名字符串，caption 为 i18n key', () => {
+    const node: NavTreeNode = {
+      id: 'x',
+      path: '/x',
+      title: 'X',
+      hasPage: true,
+      icon: 'local:ic-dashboard',
+      caption: '工作台',
+    }
+    expect(node.icon).toBe('local:ic-dashboard')
+    expect(node.caption).toBe('工作台')
   })
 })

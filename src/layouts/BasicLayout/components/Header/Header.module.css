@@ -1,40 +1,62 @@
 /*
- * 顶栏样式（规格 §11.1/§11.2；视觉 SPEC-UI §5.2）：面包屑居左、操作区居右；
- * 底色 colorBgContainer + 底部 1px 细边框；工具图标统一 Lucide 16px + 统一 hover
- * 浅底圆角方形容器；头像与用户名间距收紧。尺寸用 rem 随根 rem 基准排版（SPEC-UI §11）。
- * 颜色一律来自 var(--ant-*) CSS 变量（规格 §10.2，色值字面量只允许出现在 config/theme.ts）。
+ * 顶栏样式（规格 §11.1/§11.2；视觉 SPEC_UI2 §6.2）：
+ * 高度 48 → 64px；底色 colorBgContainer 60% + backdrop-filter blur 毛玻璃质感
+ * （滚动容器在各 Activity 页面内部，毛玻璃仅作半透明 + blur 质感呈现）；
+ * 底部 1px 细分隔线（colorBorderSecondary），无阴影；
+ * 工具图标统一 36px 圆形 hover 容器（slash 风）；面包屑 14px、hover 浅底圆角。
+ * 颜色一律来自 var(--ant-*) CSS 变量与 color-mix 派生（SPEC_UI2 §4.3，无色值字面量）。
  */
 
 .header {
   display: flex;
   align-items: center;
   gap: 8px;
-  min-height: 48px;
-  padding: 0 12px;
-  background: var(--ant-color-bg-container);
+  min-height: 64px;
+  padding: 0 16px;
+  /* 毛玻璃：纸面 60% 透明 + blur（SPEC_UI2 §6.2；暗色单独调至 78% 提高可读性） */
+  background: color-mix(in srgb, var(--ant-color-bg-container) 60%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--ant-color-border-secondary);
 }
 
-/* 面包屑占据触发按钮与操作区之间的剩余空间，过长时截断省略 */
+:global([data-theme='dark']) .header {
+  background: color-mix(in srgb, var(--ant-color-bg-container) 78%, transparent);
+}
+
+/* 面包屑占据触发按钮与操作区之间的剩余空间，过长时截断省略；14px 精修（SPEC_UI2 §6.4） */
 .header > :global(.ant-breadcrumb) {
   flex: 1;
   min-width: 0;
+  font-size: 14px;
+}
+
+/* 可点击面包屑层级：hover 浅底圆角（SPEC_UI2 §6.4） */
+.header :global(.ant-breadcrumb-link > a) {
+  padding: 2px 6px;
+  margin-inline: -6px;
+  border-radius: 6px;
+  transition: background-color 150ms ease-out;
+}
+
+.header :global(.ant-breadcrumb-link > a:hover) {
+  background: var(--ant-color-fill-tertiary);
 }
 
 .actions {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 4px;
   margin-left: auto;
 }
 
-/* 图标按钮：统一 2rem 方形 hover 浅底圆角容器（SPEC-UI §5.2），antd text 按钮自带 hover 底色 */
+/* 图标按钮：统一 36px 圆形 hover 浅底容器（SPEC_UI2 §6.2 slash 风） */
 .iconButton {
   flex: none;
-  width: 2rem;
-  height: 2rem;
+  width: 36px;
+  height: 36px;
   padding: 0;
-  border-radius: var(--ant-border-radius);
+  border-radius: 50%;
   color: var(--ant-color-text-secondary);
 }
 
@@ -47,8 +69,9 @@
   flex: none;
   align-items: center;
   gap: 6px;
-  padding-inline: 6px;
-  border-radius: var(--ant-border-radius);
+  height: 36px;
+  padding-inline: 8px;
+  border-radius: 18px;
 }
 
 .userName {

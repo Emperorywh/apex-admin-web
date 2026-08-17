@@ -47,11 +47,11 @@ describe('SettingDrawer 设置实时派发（规格 §10.2，无「应用」按�
     expect(store.getState().settings.themeMode).toBe('dark')
   })
 
-  it('点击预设色板立即写入 colorPrimary', async () => {
+  it('点击预设色条立即写入 colorPrimary（SPEC_UI2 §6.5 纵向色条选择器）', async () => {
     const user = userEvent.setup()
     const { store } = renderWithProviders(<SettingDrawer open onClose={() => undefined} />)
-    await user.click(await screen.findByRole('button', { name: '翡冷翠' }))
-    expect(store.getState().settings.colorPrimary).toBe('#059669')
+    await user.click(await screen.findByRole('radio', { name: '靛蓝' }))
+    expect(store.getState().settings.colorPrimary).toBe('#4f46e5')
   })
 
   it('布局切换立即写入 settings', async () => {

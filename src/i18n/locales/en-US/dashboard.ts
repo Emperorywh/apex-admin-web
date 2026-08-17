@@ -12,6 +12,9 @@ const dashboard: Record<string, string> = {
   用户增长: 'User Growth',
   角色分布: 'Role Distribution',
   概览数据加载失败: 'Failed to load overview data',
+  // 环比文案（SPEC_UI2 §8 统计卡）
+  '近{{days}}日 {{diff}}': '{{diff}} in {{days}} days',
+  '较昨日 {{diff}}': '{{diff}} vs yesterday',
   重试: 'Retry',
 }
 

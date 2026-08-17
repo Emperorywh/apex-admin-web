@@ -19,6 +19,10 @@ const menu: Record<string, string> = {
   无权限访问: 'Forbidden',
   页面不存在: 'Not Found',
   服务器错误: 'Server Error',
+  // 菜单副标题（SPEC_UI2 §6.1 caption，仅一级菜单展示）
+  工作台: 'Workbench',
+  组织与权限: 'Org & Permissions',
+  多级导航示例: 'Nested Navigation Demo',
 }
 
 export default menu

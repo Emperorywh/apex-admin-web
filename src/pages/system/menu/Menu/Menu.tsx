@@ -15,7 +15,9 @@ import { ListTree, Pencil, Plus, Trash2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { PERMISSIONS } from '@/constants/permission.constants'
 import { MENU_I18N_NAMESPACE, MENU_TYPES } from '@/constants/system/menu/menu.constants'
+import { AppIcon } from '@/components/AppIcon/AppIcon'
 import { Auth } from '@/components/Auth/Auth'
+import { PageCard } from '@/components/PageCard/PageCard'
 import { MenuForm } from '@/features/system/menu/components/MenuForm/MenuForm'
 import type { MenuFormMode, MenuFormSubmitPayload } from '@/features/system/menu/components/MenuForm/MenuForm.types'
 import { useMenuTree } from '@/features/system/menu/hooks/useMenuTree'
@@ -28,6 +30,13 @@ const TYPE_LABEL_KEYS: Record<MenuItem['type'], string> = {
   [MENU_TYPES.PAGE]: '页面',
   [MENU_TYPES.BUTTON]: '按钮',
 }
+
+/**
+ * 图标列的展示视图类型（SPEC_UI2 §5.7 本规格唯一列结构例外）：
+ * `icon` 为 demo fixture 私有演示字段（`local:` 图标名，种子数据在 src/demo/），
+ * 主规格 §14.1 MenuItem 契约不变；真实后端数据无该字段时图标列呈现占位。
+ */
+type MenuRowWithIcon = MenuItem & { icon?: string }
 
 /** 表单 Drawer 开合状态：mode + 编辑目标（创建模式 menu 为 null） */
 interface FormDrawerState {
@@ -98,6 +107,18 @@ export function Menu() {
       width: 90,
       render: (type: MenuItem['type']) => <Tag>{t(TYPE_LABEL_KEYS[type])}</Tag>,
     },
+    {
+      // 图标列（SPEC_UI2 §5.7）：demo fixture 私有 icon 字段驱动，渲染统一经 AppIcon；
+      // 缺省数据（真实后端契约无 icon）呈现占位
+      title: t('图标'),
+      key: 'icon',
+      width: 72,
+      render: (_, record) => {
+        const icon = (record as MenuRowWithIcon).icon
+        // 无图标数据（真实后端契约无 icon 字段）以中性占位符呈现
+        return icon !== undefined ? <AppIcon name={icon} size={20} /> : '-'
+      },
+    },
     { title: t('名称'), dataIndex: 'name', key: 'name' },
     {
       title: t('路由 ID'),
@@ -159,28 +180,34 @@ export function Menu() {
 
   return (
     <div>
-      {/* 固定说明文案（规格 §14.1/§14.2）：菜单管理不动态改变前端静态路由 */}
-      <Alert
-        type="info"
-        showIcon
-        icon={<ListTree size={16} />}
-        message={t('菜单管理仅维护后端菜单数据，不会动态改变前端静态路由')}
-        style={{ marginBottom: 16 }}
-      />
-      <div style={{ marginBottom: 16 }}>
-        <Auth code={PERMISSIONS.SYSTEM_MENU_CREATE}>
-          <Button type="primary" icon={<Plus size={14} />} onClick={() => setFormDrawer({ open: true, mode: 'create', menu: null })}>
-            {t('新增菜单')}
-          </Button>
-        </Auth>
-      </div>
-      <Table<MenuItem>
-        rowKey="id"
-        columns={columns}
-        dataSource={menus}
-        loading={loading}
-        pagination={false}
-      />
+      {/* 单卡片合并（SPEC_UI2 §7）：固定说明 + 工具栏 + 树表进同一张纸面白卡 */}
+      <PageCard
+        search={
+          <>
+            {/* 固定说明文案（规格 §14.1/§14.2）：菜单管理不动态改变前端静态路由 */}
+            <Alert
+              type="info"
+              showIcon
+              icon={<ListTree size={16} />}
+              message={t('菜单管理仅维护后端菜单数据，不会动态改变前端静态路由')}
+              style={{ marginBottom: 16 }}
+            />
+            <Auth code={PERMISSIONS.SYSTEM_MENU_CREATE}>
+              <Button type="primary" icon={<Plus size={14} />} onClick={() => setFormDrawer({ open: true, mode: 'create', menu: null })}>
+                {t('新增菜单')}
+              </Button>
+            </Auth>
+          </>
+        }
+      >
+        <Table<MenuItem>
+          rowKey="id"
+          columns={columns}
+          dataSource={menus}
+          loading={loading}
+          pagination={false}
+        />
+      </PageCard>
       <Drawer
         title={formDrawer.mode === 'create' ? t('新增菜单') : t('编辑菜单')}
         placement="right"

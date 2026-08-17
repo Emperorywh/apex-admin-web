@@ -9,7 +9,7 @@
  * 注意：Activity 隐藏实例的 DOM 仍保留在文档中，页面元素断言一律加 visible 过滤。
  */
 import { expect, test, type Page } from '@playwright/test'
-import { loginViaUi, openSystemPageViaMenu, spaNavigate } from './helpers'
+import { loginViaUi, openSystemPageViaMenu, settleRouter, spaNavigate } from './helpers'
 
 /** 页签条内按标题定位页签节点 */
 function tabByTitle(page: Page, title: string) {
@@ -97,6 +97,10 @@ test('第 11 个普通缓存触发 LRU：最久未激活页签被淘汰、页签
   // 第 11 个普通缓存：LRU 淘汰最久未激活的 case=1（页签保留，缓存实例销毁）
   await spaNavigate(page, '/demo/nested/level1?case=11')
   await expect(tabByTitle(page, '一级页面')).toHaveCount(11)
+  // 连发 spaNavigate 后路由 pending transition 可能尚未冲刷（helpers 警示 POP 处理
+  // 可能被打断），先以当前页可见输入框确认提交，再等路由冲刷后才进行页签点击
+  await expect(demoInput(page)).toBeVisible()
+  await settleRouter(page)
 
   // 未被淘汰的 case=2：缓存状态保留
   await tabByTitle(page, '一级页面').nth(1).click()

@@ -1079,8 +1079,8 @@ function handleDeleteMenu(config: InternalAxiosRequestConfig, params: Record<str
 
 // ── Dashboard 概览（规格 §14.3：GET /dashboard/overview → DashboardOverview） ─────────
 
-/** 概览趋势窗口天数：loginTrend/userGrowth 展示最近 7 天（演示数据口径） */
-const DEMO_OVERVIEW_TREND_DAYS = 7
+/** 概览趋势窗口天数：loginTrend/userGrowth 展示最近 14 天（SPEC_UI2 §8 补充时间序列，演示数据口径） */
+const DEMO_OVERVIEW_TREND_DAYS = 14
 
 /**
  * 概览数据全部由当前内存数据集推导，公式确定性、无随机数，测试与快照可复现；

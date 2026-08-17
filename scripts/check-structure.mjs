@@ -13,6 +13,7 @@
  *   unique-alias                   内部根级导入只能使用唯一的 @/ 别名
  *   dependency-direction           固定依赖方向、共享层反向依赖与业务域穿透导入
  *   case-mismatch                  导入路径大小写必须与磁盘完全一致
+ *   iconify-direct-import          @iconify/react 只能在 src/components/AppIcon/ 封装内直接导入
  *
  * 边界例外通过 scripts/check-structure.allowlist.json 记录，格式：
  *   { "<ruleId>": [{ "file": "<相对 src 的文件路径>", "owner": "...", "reason": "...", "cleanup": "..." }] }
@@ -36,6 +37,7 @@ export const RULE_IDS = [
   'unique-alias',
   'dependency-direction',
   'case-mismatch',
+  'iconify-direct-import',
 ]
 
 /** 不可通过 allowlist 豁免的硬约束 */
@@ -82,6 +84,9 @@ const FORBIDDEN_IN_FEATURES = [
 
 /** services 层中允许被 components/hooks 依赖的基础设施子目录（规格 §3.2） */
 const SERVICE_INFRA_DOMAINS = ['request', 'feedback']
+
+/** @iconify/react 唯一封装入口（SPEC_UI2 §5.3）：允许直接导入的目录前缀 */
+const ICONIFY_ALLOWED_PATH = 'components/AppIcon/'
 
 /** 解析无扩展名导入时的候选扩展；'' 表示允许目录导入以命中真实目录名 */
 const EXT_CANDIDATES = ['', '.ts', '.tsx', '.mts', '.js', '.jsx', '.mjs', '.cjs', '.css', '.json', '.svg', '.png']
@@ -398,6 +403,19 @@ export function checkStructure(srcDir, allowlistData = {}) {
       // no-deep-parent-import
       if (leadingParentCount(specifier) >= 2) {
         add('no-deep-parent-import', rel, `禁止 ../../ 及更深的父级相对导入：${specifier}`, line)
+      }
+
+      // iconify-direct-import：@iconify/react 仅允许 AppIcon 封装直接导入（SPEC_UI2 §5.3 红线）
+      if (
+        (specifier === '@iconify/react' || specifier.startsWith('@iconify/react/')) &&
+        !rel.startsWith(ICONIFY_ALLOWED_PATH)
+      ) {
+        add(
+          'iconify-direct-import',
+          rel,
+          `@iconify/react 只能在 src/components/AppIcon/ 封装内直接导入（SPEC_UI2 §5.3）：${specifier}`,
+          line,
+        )
       }
 
       // unique-alias：唯一 @/ 别名，禁止第二套别名与伪绝对路径

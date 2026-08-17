@@ -1,22 +1,24 @@
 /**
  * 基础布局（规格 §11.1/§11.2）：受保护根路由内唯一挂载的布局外壳。
- * - 侧边布局（Logo + 可折叠垂直菜单 + 顶栏 + 页签占位 + 页面缓存区）与
- *   顶部布局（Logo + 水平菜单 + 二级以下下拉子菜单 + 用户区）消费同一注入导航树，
+ * - 侧边布局（品牌 + 自绘垂直导航 SideNav + 顶栏 + 页签占位 + 页面缓存区）与
+ *   顶部布局（品牌 + 自绘水平导航 TopNav + 顶栏 + 用户区）消费同一注入导航树，
  *   经 settings.layout 无刷新热切换：五个区域的 DOM 结构在两种布局下保持不变，
  *   仅由 grid-area 重排，页面缓存区与页签占位不重挂载；
  * - 内容区通栏不定宽（不支持定宽开关）；
- * - 视口 <768px（LAYOUT_MOBILE_MEDIA_QUERY）：侧边菜单改 Drawer、顶部布局折叠为
- *   菜单按钮（同一 Drawer 承载垂直菜单），Header 次要操作由 Header 自身收入更多菜单；
+ * - 视口 <768px（LAYOUT_MOBILE_MEDIA_QUERY）：侧边导航改 Drawer、顶部布局折叠为
+ *   菜单按钮（同一 Drawer 承载垂直导航），Header 次要操作由 Header 自身收入更多菜单；
  * - 页面渲染（规格 §4.1/§9.1）：内容区经 PageCacheHost 的 Activity 缓存体系渲染所有
  *   缓存页签（CachedRouteView 以页签快照调用 useRoutes(renderRoutes, snapshot)），
  *   页签同步依据 Data Router 当前 location 完成；禁止缓存 <Outlet/> 或 useOutlet() 结果。
+ * - 壳层视觉（SPEC_UI2 §6.1）：侧栏纸面底 + 右缘 1px 虚线分隔（slash 签名）、
+ *   260/88px 两档宽度、侧缘悬浮折叠球；品牌区 64px 与 Header 对齐。
  */
 import { Drawer } from 'antd'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import { useMatches, useNavigate, type RouteObject } from 'react-router'
-import { LayoutGrid, Menu as MenuIcon, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
+import { ChevronsLeft, ChevronsRight, LayoutGrid, Menu as MenuIcon, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
 import { LAYOUT_MOBILE_MEDIA_QUERY } from '@/constants/app.constants'
 import { appI18n, COMMON_NAMESPACE, MENU_NAMESPACE, setDocumentTitle } from '@/i18n/i18n'
 import { readNavMatchMeta, type NavTreeNode } from '@/layouts/BasicLayout/navModel'
@@ -25,9 +27,9 @@ import { PAGE_CONTAINER_ID, type AffixTabRoute } from '@/layouts/BasicLayout/tab
 import { Header, type HeaderTrigger } from '@/layouts/BasicLayout/components/Header/Header'
 import { PageCacheHost } from '@/layouts/BasicLayout/components/PageCacheHost/PageCacheHost'
 import { SettingDrawer } from '@/layouts/BasicLayout/components/SettingDrawer/SettingDrawer'
-import { SideMenu } from '@/layouts/BasicLayout/components/SideMenu/SideMenu'
+import { SideNav } from '@/layouts/BasicLayout/components/SideNav/SideNav'
 import { TabsBar } from '@/layouts/BasicLayout/components/TabsBar/TabsBar'
-import { TopMenu } from '@/layouts/BasicLayout/components/TopMenu/TopMenu'
+import { TopNav } from '@/layouts/BasicLayout/components/TopNav/TopNav'
 import { sidebarCollapsedSet } from '@/store/slices/app.slice'
 import { SETTINGS_LAYOUTS } from '@/store/slices/settings.slice'
 import type { RootState } from '@/store/store'
@@ -114,7 +116,12 @@ export function BasicLayout({ navItems, renderRoutes, affixTabRoutes, onLogout }
     [navigate],
   )
 
-  // 左侧触发按钮：窄视口=打开导航 Drawer；侧边布局桌面=折叠/展开侧栏；顶部布局桌面无
+  const toggleSidebar = useCallback(() => {
+    dispatch(sidebarCollapsedSet({ collapsed: !sidebarCollapsed }))
+  }, [dispatch, sidebarCollapsed])
+
+  // 左侧触发按钮：窄视口=打开导航 Drawer；侧边布局桌面=折叠/展开侧栏（SPEC_UI2 §6.1
+  // Header 折叠钮保留，与侧缘折叠球并存）；顶部布局桌面无
   const trigger: HeaderTrigger | null = isMobile
     ? {
         icon: MenuIcon,
@@ -125,7 +132,7 @@ export function BasicLayout({ navItems, renderRoutes, affixTabRoutes, onLogout }
       ? {
           icon: sidebarCollapsed ? PanelLeftOpen : PanelLeftClose,
           label: t('切换侧边栏', { ns: COMMON_NAMESPACE }),
-          onClick: () => dispatch(sidebarCollapsedSet({ collapsed: !sidebarCollapsed })),
+          onClick: toggleSidebar,
         }
       : null
 
@@ -142,28 +149,53 @@ export function BasicLayout({ navItems, renderRoutes, affixTabRoutes, onLogout }
       className={styles.shell}
       data-layout-mode={layout}
       data-viewport={isMobile ? 'mobile' : 'desktop'}
+      data-sidebar-collapsed={showSideNav && sidebarCollapsed}
       data-layout-shell
     >
       <div className={styles.brand} data-collapsed={showSideNav && sidebarCollapsed}>
         <span className={styles.brandMark} aria-hidden>
-          <LayoutGrid size={16} />
+          <LayoutGrid size={18} />
         </span>
         <span className={styles.brandTitle}>{brandTitle}</span>
       </div>
       {showSideNav && (
-        <nav className={styles.sideNav} data-collapsed={sidebarCollapsed} aria-label={t('导航菜单', { ns: COMMON_NAMESPACE })}>
-          <SideMenu
+        <nav
+          className={styles.sideNav}
+          data-nav-mode="vertical"
+          data-collapsed={sidebarCollapsed}
+          aria-label={t('导航菜单', { ns: COMMON_NAMESPACE })}
+        >
+          <SideNav
             items={navItems}
             selectedKey={selection.selectedKey}
             ancestorOpenKeys={selection.openKeys}
             onNavigate={handleNavigate}
             collapsed={sidebarCollapsed}
           />
+          {/* 侧缘悬浮折叠球（SPEC_UI2 §6.1 slash 签名）：圆形小按钮半压侧栏右缘 */}
+          <button
+            type="button"
+            className={styles.collapseBall}
+            aria-label={t('切换侧边栏', { ns: COMMON_NAMESPACE })}
+            aria-pressed={sidebarCollapsed}
+            onClick={toggleSidebar}
+          >
+            {sidebarCollapsed ? <ChevronsRight size={14} aria-hidden /> : <ChevronsLeft size={14} aria-hidden />}
+          </button>
         </nav>
       )}
       {showTopNav && (
-        <nav className={styles.topNav} aria-label={t('导航菜单', { ns: COMMON_NAMESPACE })}>
-          <TopMenu items={navItems} selectedKey={selection.selectedKey} onNavigate={handleNavigate} />
+        <nav
+          className={styles.topNav}
+          data-nav-mode="horizontal"
+          aria-label={t('导航菜单', { ns: COMMON_NAMESPACE })}
+        >
+          <TopNav
+            items={navItems}
+            selectedKey={selection.selectedKey}
+            ancestorOpenKeys={selection.openKeys}
+            onNavigate={handleNavigate}
+          />
         </nav>
       )}
       <div className={styles.mainBar}>
@@ -181,7 +213,7 @@ export function BasicLayout({ navItems, renderRoutes, affixTabRoutes, onLogout }
       <main ref={pageContainerRef} id={PAGE_CONTAINER_ID} tabIndex={-1} className={styles.content}>
         <PageCacheHost renderRoutes={renderRoutes} affixTabRoutes={affixTabRoutes} />
       </main>
-      {/* 窄视口导航抽屉（规格 §11.1）：侧边与顶部布局共用，承载同一垂直菜单 */}
+      {/* 窄视口导航抽屉（规格 §11.1）：侧边与顶部布局共用，承载同一垂直导航 */}
       <Drawer
         placement="left"
         width={NAV_DRAWER_WIDTH}
@@ -189,12 +221,14 @@ export function BasicLayout({ navItems, renderRoutes, affixTabRoutes, onLogout }
         onClose={() => setNavDrawerOpen(false)}
         title={brandTitle}
       >
-        <SideMenu
-          items={navItems}
-          selectedKey={selection.selectedKey}
-          ancestorOpenKeys={selection.openKeys}
-          onNavigate={handleDrawerNavigate}
-        />
+        <nav data-nav-mode="vertical" aria-label={t('导航菜单', { ns: COMMON_NAMESPACE })}>
+          <SideNav
+            items={navItems}
+            selectedKey={selection.selectedKey}
+            ancestorOpenKeys={selection.openKeys}
+            onNavigate={handleDrawerNavigate}
+          />
+        </nav>
       </Drawer>
       <SettingDrawer open={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </div>

@@ -1,9 +1,10 @@
 /**
  * Dashboard 页面（规格 §14.2/§15）：唯一默认 affix 页签（规格 §4.2），页面权限 dashboard:view。
- * 统计卡片区（userCount/enabledUserCount/roleCount/todayLoginCount，OverviewCard）+
- * 三类图表（登录趋势折线、用户增长柱形、角色分布环形）；数据统一来自
- * GET /dashboard/overview（useDashboard），图表经 useECharts 渲染并随页签激活态与
- * 主题变化重建（规格 §9.2/§15）；标题文案经 dashboard 命名空间翻译（规格 §12）。
+ * 统计卡片区（userCount/enabledUserCount/roleCount/todayLoginCount，SPEC_UI2 §8 slash
+ * workbench 式：彩色浅底图标块 + 大数字 + 环比文案 + Sparkline 迷你趋势图，趋势序列
+ * 由 overview 既有时间序列推导）+ 三类图表（登录趋势折线、用户增长柱形、角色分布环形）；
+ * 数据统一来自 GET /dashboard/overview（useDashboard），图表经 useECharts 渲染并随页签
+ * 激活态与主题变化重建（规格 §9.2/§15）；标题文案经 dashboard 命名空间翻译（规格 §12）。
  */
 import { useMemo, useRef } from 'react'
 import { Button, Card, Col, Empty, Row, Spin, theme } from 'antd'
@@ -14,6 +15,7 @@ import { OverviewCard } from '@/features/dashboard/components/OverviewCard/Overv
 import { useDashboard } from '@/features/dashboard/hooks/useDashboard'
 import { useECharts } from '@/hooks/useECharts'
 import { usePageActive } from '@/hooks/usePageActive'
+import type { DashboardOverview } from '@/types/dashboard/dashboard.types'
 import type { EChartsCoreOption } from 'echarts/core'
 import {
   buildDashboardChartTheme,
@@ -32,6 +34,39 @@ function ChartPanel({ title, option, active }: { title: string; option: EChartsC
       <div ref={containerRef} className={styles.chartContainer} role="img" aria-label={title} />
     </Card>
   )
+}
+
+/** 序列取值数组：{ date, count }[] → number[]（按时间升序） */
+function seriesValues(series: ReadonlyArray<{ count: number }>): number[] {
+  return series.map((point) => point.count)
+}
+
+/** 带符号差值文案：如 +3 / -2 / +0（环比展示用） */
+function signedDiff(diff: number): string {
+  return `${diff >= 0 ? '+' : ''}${diff}`
+}
+
+/** 统计卡衍生数据：趋势序列与环比文案（全部由 overview 既有时间序列确定性推导） */
+function deriveStatTrends(overview: DashboardOverview, t: (key: string, options?: Record<string, unknown>) => string) {
+  const userGrowth = seriesValues(overview.userGrowth)
+  const loginTrend = seriesValues(overview.loginTrend)
+  // 启用用户无独立序列：按当前启用占比对增长序列等比缩放（演示口径的确定性推导）
+  const enabledRatio = overview.stats.userCount === 0 ? 0 : overview.stats.enabledUserCount / overview.stats.userCount
+  const enabledSeries = userGrowth.map((count) => Math.round(count * enabledRatio))
+  const growthDelta =
+    userGrowth.length >= 2 ? userGrowth[userGrowth.length - 1] - userGrowth[0] : 0
+  const loginDelta = loginTrend.length >= 2 ? loginTrend[loginTrend.length - 1] - loginTrend[loginTrend.length - 2] : 0
+  return {
+    userTrend: userGrowth,
+    userDelta: t('近{{days}}日 {{diff}}', { days: userGrowth.length, diff: signedDiff(growthDelta) }),
+    enabledTrend: enabledSeries,
+    enabledDelta: t('近{{days}}日 {{diff}}', {
+      days: enabledSeries.length,
+      diff: signedDiff(enabledSeries.length >= 2 ? enabledSeries[enabledSeries.length - 1] - enabledSeries[0] : 0),
+    }),
+    loginTrend,
+    loginDelta: t('较昨日 {{diff}}', { diff: signedDiff(loginDelta) }),
+  }
 }
 
 export function Dashboard() {
@@ -53,15 +88,19 @@ export function Dashboard() {
     () => (overview === null ? null : buildRoleDistributionOption(overview, chartTheme)),
     [overview, chartTheme],
   )
+  const statTrends = useMemo(() => (overview === null ? null : deriveStatTrends(overview, t)), [overview, t])
 
   return (
     <div className={styles.dashboard}>
-      <Row gutter={[16, 16]}>
+      <Row gutter={[12, 12]}>
         <Col xs={12} xl={6}>
           <OverviewCard
             title="用户总数"
             value={overview?.stats.userCount ?? 0}
             icon={UsersRound}
+            tone="primary"
+            trend={statTrends?.userTrend}
+            delta={statTrends?.userDelta}
             loading={loading && overview === null}
           />
         </Col>
@@ -70,6 +109,9 @@ export function Dashboard() {
             title="启用用户"
             value={overview?.stats.enabledUserCount ?? 0}
             icon={UserCheck}
+            tone="success"
+            trend={statTrends?.enabledTrend}
+            delta={statTrends?.enabledDelta}
             loading={loading && overview === null}
           />
         </Col>
@@ -78,6 +120,7 @@ export function Dashboard() {
             title="角色数量"
             value={overview?.stats.roleCount ?? 0}
             icon={ShieldCheck}
+            tone="warning"
             loading={loading && overview === null}
           />
         </Col>
@@ -86,6 +129,9 @@ export function Dashboard() {
             title="今日登录"
             value={overview?.stats.todayLoginCount ?? 0}
             icon={LogIn}
+            tone="error"
+            trend={statTrends?.loginTrend}
+            delta={statTrends?.loginDelta}
             loading={loading && overview === null}
           />
         </Col>
@@ -105,7 +151,7 @@ export function Dashboard() {
           </Card>
         )
       ) : (
-        <Row gutter={[16, 16]}>
+        <Row gutter={[12, 12]}>
           <Col xs={24} xl={16}>
             <ChartPanel title={t('登录趋势')} option={loginTrendOption} active={active} />
           </Col>

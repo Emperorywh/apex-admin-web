@@ -118,8 +118,8 @@ describe('ThemeProvider 实时组装（规格 §10.2，无「应用」按钮）'
     // useToken 返回算法加工后的 map token，与 getDesignToken 同口径比较
     const darkTokens = antdTheme.getDesignToken(buildAntdThemeConfig(settingsOf(renderedStore), 'dark'))
     expect(screen.getByTestId('probe-color-primary')).toHaveTextContent(darkTokens.colorPrimary)
-    // rem 基准为固定基准字号（16px，规格 §10.1），不随设置变化
-    expect(document.documentElement.style.fontSize).toBe('16px')
+    // rem 基准为固定基准字号（14px，规格 §10.1/SPEC_UI2 §4.5），不随设置变化
+    expect(document.documentElement.style.fontSize).toBe('14px')
   })
 
   it('固定字体族经 body CSS 变量生效（规格 §10.1，字体无设置项）', async () => {

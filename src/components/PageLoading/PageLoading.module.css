@@ -1,8 +1,8 @@
-/* 页面加载占位（SPEC-UI §8）：铺满父容器的居中加载态，留白随根 rem 基准排版 */
+/* 页面加载占位（SPEC-UI §8；SPEC_UI2 §4.5 rem 审计改 px）：铺满父容器的居中加载态 */
 .pageLoading {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
-  min-height: 12rem;
+  min-height: 192px;
 }

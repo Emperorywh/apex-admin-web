@@ -106,9 +106,21 @@ export async function spaNavigate(page: Page, path: string): Promise<void> {
   await expect(page).toHaveURL((url: URL) => url.pathname + url.search === path)
 }
 
-/** 展开侧边菜单的「系统管理」子菜单并点击目标叶子项（应用内导航，不整页刷新） */
+/**
+ * 等待路由彻底冲刷：连续 spaNavigate 后 React Router 的 pending transition
+ * 可能尚未完成（POP 处理可能被打断，后续 router.navigate 有被丢弃的窗口），
+ * 在依赖点击导航的断言前等两个动画帧让 React 提交全部过渡。
+ */
+export async function settleRouter(page: Page): Promise<void> {
+  await page.evaluate(
+    () => new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))),
+  )
+}
+
+/** 展开侧边导航的「系统管理」子菜单并点击目标叶子项（应用内导航，不整页刷新）；
+ *  自绘导航（SPEC_UI2 §6.1）目录与叶子同为 role=menuitem */
 export async function openSystemPageViaMenu(page: Page, itemText: string): Promise<void> {
   const nav = page.locator('nav[aria-label="导航菜单"]')
-  await nav.locator('.ant-menu-submenu-title', { hasText: '系统管理' }).click()
+  await nav.getByRole('menuitem', { name: '系统管理' }).click()
   await nav.getByRole('menuitem', { name: itemText }).click()
 }

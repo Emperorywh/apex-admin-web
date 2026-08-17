@@ -1,7 +1,8 @@
 /*
- * 登录页（SPEC-UI §6）：左右分栏版式——左品牌区（主题色派生装饰）+ 右登录区（无框表单）。
+ * 登录页（SPEC-UI §6；SPEC_UI2 §9 继承 token/卡片规范 + 入场动效、§4.5 rem 审计改 px）：
+ * 左右分栏版式——左品牌区（主题色派生装饰）+ 右登录区（无框表单）。
  * 颜色一律来自 antd CSS 变量 var(--ant-*)，装饰渐变/网格由主题色 token 派生，亮暗各自适配；
- * 尺寸用 rem 随根 rem 基准排版（SPEC-UI §11）。窄视口（<768px）品牌区隐藏退化为单列。
+ * 窄视口（<768px）品牌区隐藏退化为单列。
  */
 
 .loginPage {
@@ -16,11 +17,11 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  padding: 2.5rem 3rem;
+  padding: 40px 48px;
   overflow: hidden;
   background:
-    radial-gradient(38rem 38rem at 110% -20%, var(--ant-color-primary-border), transparent 65%),
-    radial-gradient(34rem 34rem at -20% 110%, var(--ant-color-primary-bg), transparent 60%),
+    radial-gradient(608px 608px at 110% -20%, var(--ant-color-primary-border), transparent 65%),
+    radial-gradient(544px 544px at -20% 110%, var(--ant-color-primary-bg), transparent 60%),
     var(--ant-color-bg-container);
   border-right: 1px solid var(--ant-color-border-secondary);
 }
@@ -33,7 +34,7 @@
   background-image:
     linear-gradient(var(--ant-color-border) 1px, transparent 1px),
     linear-gradient(90deg, var(--ant-color-border) 1px, transparent 1px);
-  background-size: 2.5rem 2.5rem;
+  background-size: 40px 40px;
   opacity: 0.3;
   pointer-events: none;
 }
@@ -47,7 +48,7 @@
   position: relative;
   display: flex;
   align-items: center;
-  gap: 0.625rem;
+  gap: 10px;
 }
 
 .brandMark {
@@ -55,9 +56,9 @@
   align-items: center;
   justify-content: center;
   flex: none;
-  width: 1.75rem;
-  height: 1.75rem;
-  border-radius: var(--ant-border-radius);
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
   color: var(--ant-color-primary);
   background: var(--ant-color-primary-bg);
 }
@@ -75,8 +76,8 @@
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
-  gap: 1rem;
-  max-width: 30rem;
+  gap: 16px;
+  max-width: 480px;
 }
 
 .brandEyebrow {
@@ -88,7 +89,7 @@
 
 .brandSlogan {
   margin: 0;
-  font-size: 2rem;
+  font-size: 32px;
   font-weight: 600;
   line-height: 1.4;
   color: var(--ant-color-text-heading);
@@ -101,23 +102,23 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2.5rem 2rem;
+  padding: 40px 32px;
 }
 
 .formBody {
   width: 100%;
-  max-width: 20rem;
+  max-width: 320px;
 }
 
 .welcome {
   margin: 0;
-  font-size: 1.375rem;
+  font-size: 22px;
   font-weight: 600;
   color: var(--ant-color-text-heading);
 }
 
 .welcomeHint {
-  margin: 0.5rem 0 1.75rem;
+  margin: 8px 0 28px;
   color: var(--ant-color-text-secondary);
 }
 

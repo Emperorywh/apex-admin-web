@@ -1,11 +1,62 @@
 /*
- * 界面设置抽屉样式（规格 §10.2；视觉 SPEC-UI §5.5）：
- * 分组带小标题与组间分隔线、充足间距；控件标签与控件分行（堆叠布局），
- * 根除非控件挤压标签换行的问题；二元开关行（面包屑/全屏）保持左右横排。
- * 颜色一律来自 var(--ant-*) CSS 变量（规格 §10.2，色值字面量只允许出现在 src/config/theme.ts）。
+ * 界面设置抽屉样式（规格 §10.2；视觉 SPEC_UI2 §6.5 slash 化四要素）：
+ * 毛玻璃（backdrop-filter blur + 半透明底）+ 右上/左下光斑装饰；布局缩略图卡片；
+ * 纵向色条选择器（选中横向拉宽 + 白色对勾，纯 CSS 宽度过渡）；主题模式图标卡片。
+ * 预设色值与光斑 PNG 经组件内联注入（色值来自 config/theme.ts，SPEC_UI2 §4.3）。
  */
 
+/* 抽屉内容层：毛玻璃 + 光斑承载容器（溢出裁剪保证光斑不出界） */
+.drawerContent {
+  position: relative;
+  overflow: hidden;
+  /* 毛玻璃：纸面半透明 + blur(20px)（SPEC_UI2 §6.5） */
+  background: color-mix(in srgb, var(--ant-color-bg-container) 72%, transparent) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.drawerHeader,
+.drawerBody {
+  position: relative;
+  z-index: 1;
+  background: transparent !important;
+}
+
+.drawerBody {
+  padding: 8px 20px 20px;
+}
+
+/* 光斑装饰：右上 cyan / 左下 red（PNG 本身即模糊光斑），暗色降透明度 */
+.spot {
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  pointer-events: none;
+  opacity: 0.55;
+  z-index: 0;
+}
+
+/* 光斑定位：背景图经组件内联 backgroundImage 注入（PNG import） */
+.spotCyan {
+  top: -60px;
+  right: -60px;
+}
+
+.spotRed {
+  bottom: -60px;
+  left: -60px;
+}
+
+:global([data-theme='dark']) .spot {
+  opacity: 0.24;
+}
+
 .settingGroup {
+  position: relative;
+  z-index: 1;
   padding: 4px 0 20px;
 }
 
@@ -15,13 +66,13 @@
 }
 
 .groupTitle {
-  margin: 0 0 16px;
+  margin: 0 0 14px;
   font-size: 13px;
   font-weight: 600;
   color: var(--ant-color-text-heading);
 }
 
-/* 堆叠行：标签在上、控件在下，控件可用全部行宽（Radio.Group 不再挤压换行） */
+/* 堆叠行：标签在上、控件在下 */
 .settingRow {
   display: flex;
   flex-direction: column;
@@ -46,39 +97,189 @@
   color: var(--ant-color-text-secondary);
 }
 
-/* 预设色板：8 色单行网格（SPEC-UI §4.4/§5.5）；选中态以主题色描边 */
-.presetList {
+/* ── 主题模式图标卡片：三张分段选择（SPEC_UI2 §6.5） ── */
+.modeCards {
   display: grid;
-  grid-template-columns: repeat(8, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 8px;
+  margin-bottom: 16px;
 }
 
-.presetSwatch {
-  width: 100%;
-  aspect-ratio: 1;
+.modeCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 8px;
+  border: 1px solid var(--ant-color-border-secondary);
+  border-radius: var(--ant-border-radius);
+  background: transparent;
+  color: var(--ant-color-text-secondary);
+  font-size: 12px;
+  cursor: pointer;
+  transition:
+    border-color 200ms ease-out,
+    background-color 200ms ease-out,
+    color 200ms ease-out;
+}
+
+.modeCard:hover {
+  background: var(--ant-color-fill-tertiary);
+}
+
+.modeCard[data-selected='true'] {
+  border-color: var(--ant-color-primary);
+  background: var(--ant-color-primary-bg);
+  color: var(--ant-color-primary);
+}
+
+.modeCard:focus-visible {
+  outline: 2px solid var(--ant-color-primary);
+  outline-offset: 1px;
+}
+
+.modeCardIcon {
+  display: inline-flex;
+}
+
+/* ── 纵向色条选择器：选中横向拉宽 + 白色对勾（slash 签名，纯 CSS 宽度过渡） ── */
+.presetBars {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  min-height: 44px;
+}
+
+.presetBar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 44px;
   padding: 0;
   border: none;
-  border-radius: var(--ant-border-radius-sm);
+  border-radius: 10px;
   cursor: pointer;
-  /* 预设色值由内联 style 注入（来自 config/theme.ts），本文件不出现色值字面量 */
-  box-shadow: 0 0 0 1px var(--ant-color-border-secondary) inset;
-  transition:
-    transform 150ms ease-out,
-    box-shadow 150ms ease-out;
+  transition: width 220ms ease-out;
+  /* 预设色值经内联 style 注入（config/theme.ts） */
 }
 
-.presetSwatch:hover {
-  transform: scale(1.08);
-  box-shadow: 0 0 0 1px var(--ant-color-border) inset;
+.presetBar:hover {
+  width: 28px;
 }
 
-.presetSwatchActive {
+.presetBar[data-selected='true'] {
+  width: 44px;
+}
+
+.presetBar:focus-visible {
   outline: 2px solid var(--ant-color-primary);
   outline-offset: 2px;
+}
+
+.presetCheck {
+  color: var(--ant-color-text-light-solid);
 }
 
 .contrastWarning {
   margin: 4px 0 0;
   font-size: 12px;
   color: var(--ant-color-warning);
+}
+
+/* ── 布局缩略图卡片：迷你线框（纯 CSS 绘制），选中主色描边 + 浅底 ── */
+.layoutCards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.layoutCard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--ant-color-border-secondary);
+  border-radius: var(--ant-border-radius);
+  background: transparent;
+  cursor: pointer;
+  transition:
+    border-color 200ms ease-out,
+    background-color 200ms ease-out;
+}
+
+.layoutCard:hover {
+  background: var(--ant-color-fill-tertiary);
+}
+
+.layoutCard[data-selected='true'] {
+  border-color: var(--ant-color-primary);
+  background: var(--ant-color-primary-bg);
+}
+
+.layoutCard:focus-visible {
+  outline: 2px solid var(--ant-color-primary);
+  outline-offset: 1px;
+}
+
+.layoutCardLabel {
+  font-size: 12px;
+  color: var(--ant-color-text);
+  text-align: center;
+}
+
+/* 迷你线框：16:10 画布内的导航/主区色块拼图（块色全 token 派生） */
+.thumbSide,
+.thumbTop {
+  display: flex;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--ant-color-fill-quaternary);
+  gap: 2px;
+  padding: 2px;
+}
+
+/* 侧边布局线框：左导航 + 右主区 */
+.thumbSide {
+  flex-direction: row;
+}
+
+/* 顶部布局线框：上导航 + 下主区 */
+.thumbTop {
+  flex-direction: column;
+}
+
+.thumbNav {
+  flex: none;
+  background: var(--ant-color-fill-secondary);
+}
+
+.thumbSide .thumbNav {
+  width: 28%;
+}
+
+.thumbTop .thumbNav {
+  height: 22%;
+}
+
+.thumbMain {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.thumbBar {
+  flex: none;
+  height: 22%;
+  background: var(--ant-color-fill-secondary);
+}
+
+.thumbBody {
+  flex: 1;
+  background: var(--ant-color-bg-container);
+  border-radius: 2px;
 }

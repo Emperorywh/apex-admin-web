@@ -30,3 +30,18 @@ export const PERMISSION_CHANGE_TIP_COOLDOWN_MS = 30_000
  * 布局响应式全部由该常量驱动的 matchMedia 判定，CSS 不另行维护第二份断点。
  */
 export const LAYOUT_MOBILE_MEDIA_QUERY = '(max-width: 767.98px)'
+
+/* ── 壳层几何常量（SPEC_UI2 §6）：仅收敛 TS 消费侧的尺寸；纯 CSS 尺寸
+ *（侧栏宽 260/88、Header 64px、行高 44px 等）直接落 CSS Modules 并注明出处 ── */
+
+/** 一级菜单彩色图标尺寸，单位 px（SPEC_UI2 §5.5：24px 彩色） */
+export const NAV_ICON_SIZE_PX = 24
+
+/** 子级菜单图标尺寸，单位 px（SPEC_UI2 §5.5：同风格 20px） */
+export const NAV_ICON_SIZE_SUB_PX = 20
+
+/** mini 折叠态标题字号，单位 px（SPEC_UI2 §6.1：12px 标题，内联样式消费） */
+export const NAV_MINI_TITLE_FONT_SIZE_PX = 12
+
+/** 界面设置抽屉宽度，单位 px（SPEC_UI2 §6.5：320 → 360，四要素控件加宽） */
+export const SETTING_DRAWER_WIDTH_PX = 360

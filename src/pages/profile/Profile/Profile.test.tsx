@@ -66,11 +66,11 @@ beforeEach(() => {
   serviceMocks.changePassword.mockReset()
 })
 
-/** 修改密码卡片：以卡片头标题定位（标题与表单提交按钮同名，getByText 会歧义） */
+/** 修改密码卡片：以 PageCard 标题定位（标题与表单提交按钮同名，getByText 会歧义；SPEC_UI2 §7） */
 function getPasswordCard(): HTMLElement | null {
-  return Array.from(document.querySelectorAll('.ant-card-head-title')).find(
+  return Array.from(document.querySelectorAll('h3')).find(
     (element) => element.textContent === '修改密码',
-  )?.closest('.ant-card') as HTMLElement | null
+  )?.closest('section') as HTMLElement | null
 }
 
 afterEach(() => {

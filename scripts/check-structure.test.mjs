@@ -22,6 +22,7 @@ const FAIL_CASES = [
   ['dependency-direction', 'dependency-direction'],
   ['case-mismatch', 'case-mismatch'],
   ['service-outside', 'service-file-outside-services'],
+  ['iconify-import', 'iconify-direct-import'],
 ]
 
 function runScript(srcDir) {

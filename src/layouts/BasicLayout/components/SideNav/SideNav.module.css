@@ -1,0 +1,193 @@
+/*
+ * 自绘垂直导航样式（SPEC_UI2 §6.1，取代 antd Menu）：
+ * 选中态 = 整行 6px 圆角 + 主色浅底 + 主色文字/图标（无左侧指示条）；
+ * hover = 中性浅底；展开/折叠经 grid-template-rows 0fr→1fr 纯 CSS 过渡；
+ * mini 折叠态 = 图标上 12px 标题下纵排，子菜单浮层卡片（圆角 12 + 浮层阴影阶梯）。
+ * 颜色一律来自 var(--ant-*) CSS 变量（SPEC_UI2 §4.3 色值纪律）。
+ */
+
+.nav {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+/* 菜单滚动容器：细滚动条走全局（globals.css） */
+.menu {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 8px;
+}
+
+/* ── 行（叶子与目录共用骨架）：行高 44px（SPEC_UI2 §6.1，常量注释放 CSS 侧） ── */
+.row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 44px;
+  margin: 2px 0;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ant-color-text);
+  font-size: 14px;
+  font-weight: 500;
+  text-align: start;
+  cursor: pointer;
+  transition:
+    background-color 200ms ease-out,
+    color 200ms ease-out,
+    border-radius 200ms ease-out;
+}
+
+.row:hover {
+  background: var(--ant-color-fill-tertiary);
+}
+
+.row:focus-visible {
+  outline: 2px solid var(--ant-color-primary);
+  outline-offset: -2px;
+}
+
+/* 选中态：主色浅底 + 主色文字/图标（图标色经 AppIcon color 覆盖），无左侧指示条 */
+.row[data-selected='true'] {
+  background: var(--ant-color-primary-bg);
+  color: var(--ant-color-primary);
+  font-weight: 600;
+}
+
+/* 子级缩进：按层级递增 */
+.row[data-level='1'] {
+  padding-inline-start: 44px;
+}
+
+.row[data-level='2'] {
+  padding-inline-start: 64px;
+}
+
+/* 标题 + 副标题纵排 */
+.rowText {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  flex: 1;
+}
+
+.rowTitle {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 18px;
+}
+
+/* 一级 caption：12px 灰色副标题（SPEC_UI2 §6.1） */
+.rowCaption {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 14px;
+  color: var(--ant-color-text-tertiary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.row[data-selected='true'] .rowCaption {
+  color: var(--ant-color-primary);
+  opacity: 0.72;
+}
+
+.rowIcon {
+  flex: none;
+}
+
+/* 展开箭头：90° 旋转过渡（SPEC_UI2 §6.1 层级） */
+.chevron {
+  flex: none;
+  color: var(--ant-color-text-tertiary);
+  transform: rotate(0deg);
+  transition: transform 200ms ease-out;
+}
+
+.chevron[data-open='true'] {
+  transform: rotate(90deg);
+}
+
+.row[data-selected='true'] .chevron {
+  color: var(--ant-color-primary);
+}
+
+/* ── 子菜单：grid 行高 0fr→1fr 纯 CSS 展开/收纳（200–300ms） ── */
+.branch {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 240ms ease-out;
+}
+
+.branch[data-open='false'] {
+  grid-template-rows: 0fr;
+}
+
+.submenu {
+  overflow: hidden;
+  min-height: 0;
+  visibility: visible;
+  transition: visibility 240ms;
+}
+
+.branch[data-open='false'] .submenu {
+  visibility: hidden;
+  transition: visibility 240ms;
+}
+
+/* ── mini 折叠态：图标上 12px 标题下纵排（宽 88px 由 BasicLayout 侧栏宽度决定） ── */
+.row[data-mini='true'] {
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  min-height: 56px;
+  padding: 8px 4px;
+  text-align: center;
+}
+
+.miniText {
+  max-width: 100%;
+  font-weight: 500;
+  line-height: 14px;
+  color: var(--ant-color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.row[data-mini='true'][data-selected='true'] .miniText {
+  color: var(--ant-color-primary);
+}
+
+/* ── mini 浮层卡片：fixed 定位（避开侧栏 overflow 裁剪），圆角 12 + 浮层阴影阶梯 ── */
+.miniPopup {
+  position: fixed;
+  z-index: 100;
+  min-width: 180px;
+  max-width: 240px;
+  max-height: min(70vh, 480px);
+  overflow-y: auto;
+  padding: 8px;
+  border-radius: var(--ant-border-radius-lg);
+  background: var(--ant-color-bg-elevated);
+  box-shadow: var(--ant-box-shadow-secondary);
+}
+
+.miniPopup .row[data-level='1'] {
+  padding-inline-start: 10px;
+}
+
+.miniPopup .row[data-level='2'] {
+  padding-inline-start: 30px;
+}

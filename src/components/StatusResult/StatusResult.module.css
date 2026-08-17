@@ -1,6 +1,7 @@
 /*
- * 状态结果页样式（SPEC-UI §8）：居中留白排版、主题色点缀、Lucide 插画级图标。
- * 颜色一律来自 var(--ant-*) CSS 变量（规格 §10.2）；尺寸用 rem 随根 rem 基准排版（SPEC-UI §11）。
+ * 状态结果页样式（SPEC-UI §8；SPEC_UI2 §4.5 rem 审计改 px）：居中留白排版、
+ * 主题色点缀、Lucide 插画级图标。
+ * 颜色一律来自 var(--ant-*) CSS 变量（规格 §10.2）。
  */
 
 .statusResult {
@@ -9,17 +10,17 @@
   align-items: center;
   justify-content: center;
   min-height: 100%;
-  padding: 3rem 1.5rem;
+  padding: 48px 24px;
   text-align: center;
 }
 
-/* 插画级图标徽章：主题色浅底大圆角方块 */
+/* 插画级图标徽章：主题色浅底大圆角方块（原 5rem→80px，14px rem 基准下保 px 语义） */
 .iconBadge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 5rem;
-  height: 5rem;
+  width: 80px;
+  height: 80px;
   border-radius: var(--ant-border-radius-lg);
   color: var(--ant-color-primary);
   background: var(--ant-color-primary-bg);
@@ -27,22 +28,23 @@
 
 /* 状态码点缀：主题色小号粗体 */
 .statusCode {
-  margin-top: 1.25rem;
-  font-size: 0.875rem;
+  display: inline-block;
+  margin-top: 20px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--ant-color-primary);
 }
 
 .title {
-  margin: 0.5rem 0 0;
-  font-size: 1.375rem;
+  margin: 8px 0 0;
+  font-size: 22px;
   font-weight: 600;
   color: var(--ant-color-text-heading);
 }
 
 .subTitle {
-  max-width: 28rem;
-  margin: 0.75rem 0 0;
+  max-width: 448px;
+  margin: 12px 0 0;
   color: var(--ant-color-text-secondary);
   /* 长诊断信息（路由错误文案）自动换行不破版 */
   overflow-wrap: anywhere;
@@ -52,6 +54,6 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 0.5rem;
-  margin-top: 1.75rem;
+  gap: 8px;
+  margin-top: 28px;
 }

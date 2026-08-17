@@ -97,7 +97,7 @@ const common: Record<string, string> = {
   '当前主题色对比度较低，可能影响可读性': 'This primary color has low contrast and may affect readability.',
   湛蓝: 'Azure',
   靛蓝: 'Indigo',
-  翡冷翠: 'Emerald',
+  原野绿: 'Meadow',
   紫罗兰: 'Violet',
   落日橙: 'Sunset',
   绯红: 'Crimson',

@@ -1,30 +1,42 @@
 /*
- * 页签栏（规格 §9.3/§11.3；视觉 SPEC-UI §5.3）：下划线极简式——
- * 页签为无框无底的纯文本 + 图标，当前页文字 colorText + 底部 2px 主题色指示线，
- * 非当前页 colorTextSecondary；关闭按钮仅 hover/当前页/键盘焦点显现。
- * 过渡只依赖纯 CSS transition（150–200ms，SPEC-UI §9），不引入任何依赖挂载
- * Effect 的 JS 动效（Activity 隐藏页会被清理全部 Effect，主规格 §9）。
+ * 页签栏（规格 §9.3/§11.3；视觉 SPEC_UI2 §6.3 圆角卡片式）：
+ * 非激活页签为灰阶浅底 + 次级文字；激活页签为纸面白底 + 主色文字的圆角顶卡片，
+ * 底部与内容区视觉相连（激活页签下无分隔线）；栏底色随画布灰。
+ * 交互零变更（红线）：dnd/右键/横滚/affix/roving tabindex 全保留；
+ * 过渡只依赖纯 CSS transition（150–250ms），不引入依赖挂载 Effect 的 JS 动效。
  * 颜色一律来自 var(--ant-*) CSS 变量（规格 §10.2）。
  */
 
+/* 栏高 44px 落卡片形态（SPEC_UI2 §6.3 40–48 区间定稿）；底色随画布灰 */
 .tabsBar {
+  position: relative;
   display: flex;
   align-items: stretch;
-  min-height: 40px;
-  background: var(--ant-color-bg-container);
+  min-height: 44px;
+  padding: 6px 8px 0;
+  background: var(--ant-color-bg-layout);
   border-bottom: 1px solid var(--ant-color-border-secondary);
 }
 
-/* 溢出箭头：仅溢出方向可见（jsdom 等无布局环境恒不可见） */
+/*
+ * 溢出箭头：仅溢出方向可见（jsdom 等无布局环境恒不可见）。
+ * 绝对定位于栏两端覆盖呈现，不参与 flex 布局——箭头显隐切换不改变页签几何，
+ * 消除点击页签时目标点位随布局横移落错位的竞态。
+ */
 .scrollButton {
   display: none;
-  flex: 0 0 auto;
+  position: absolute;
+  top: 6px;
+  bottom: 1px;
+  z-index: 2;
+  width: 28px;
   align-items: center;
+  justify-content: center;
   border: none;
-  background: transparent;
+  background: var(--ant-color-bg-layout);
   color: var(--ant-color-text-tertiary);
   cursor: pointer;
-  padding: 0 6px;
+  border-radius: 6px;
   transition:
     color 150ms ease-out,
     background-color 150ms ease-out;
@@ -34,13 +46,20 @@
   display: inline-flex;
 }
 
+.scrollButton[data-side='left'] {
+  left: 0;
+}
+
+.scrollButton[data-side='right'] {
+  right: 0;
+}
+
 .scrollButton:hover {
   color: var(--ant-color-text);
   background: var(--ant-color-fill-tertiary);
 }
 
-/* 页签条：横向滚动容器（规格 §9.3 溢出滚动）；页签通高拉伸，
- * 使当前页指示线落在栏底 1px 分隔线上（SPEC-UI §5.3 下划线式） */
+/* 页签条：横向滚动容器（规格 §9.3 溢出滚动）；页签以圆角顶卡片呈现 */
 .list {
   display: flex;
   align-items: stretch;
@@ -49,51 +68,50 @@
   min-width: 0;
   overflow-x: auto;
   overflow-y: hidden;
-  padding: 0 8px;
+  padding: 0 4px;
   scrollbar-width: thin;
 }
 
-/* 页签节点：无框无底纯文本；外层为拖拽/焦点语义节点，内层 tabBody 铺满外层（display:contents） */
+/* 页签节点：圆角顶卡片；非激活为灰阶浅底 + 次级文字，激活为纸面白底 + 主色文字 */
 .tab {
   position: relative;
   display: inline-flex;
   align-items: center;
   flex: 0 0 auto;
   padding: 0 12px;
-  background: transparent;
+  border: 1px solid transparent;
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  background: var(--ant-color-fill-quaternary);
   color: var(--ant-color-text-secondary);
   cursor: pointer;
   white-space: nowrap;
-  transition: color 150ms ease-out;
+  transition:
+    background-color 200ms ease-out,
+    color 200ms ease-out,
+    border-color 200ms ease-out;
 }
 
 .tab:hover {
+  background: var(--ant-color-fill-tertiary);
   color: var(--ant-color-text);
 }
 
 .tab[data-active='true'] {
-  color: var(--ant-color-text);
+  background: var(--ant-color-bg-container);
+  color: var(--ant-color-primary);
+  border-color: var(--ant-color-border-secondary);
+  font-weight: 500;
 }
 
-/* 当前页指示线：底部 2px 主题色，与文字色一起 150–200ms 纯 CSS 过渡（SPEC-UI §5.3/§9） */
-.tab::after {
+/* 激活页签与内容区视觉相连：白色贴片覆盖栏底分隔线（激活页签下无分隔线） */
+.tab[data-active='true']::after {
   content: '';
   position: absolute;
-  inset-inline: 12px;
-  bottom: 0;
+  inset-inline: 1px;
+  bottom: -1px;
   height: 2px;
-  border-radius: 2px 2px 0 0;
-  background: var(--ant-color-primary);
-  opacity: 0;
-  transform: scaleX(0.6);
-  transition:
-    opacity 180ms ease-out,
-    transform 180ms ease-out;
-}
-
-.tab[data-active='true']::after {
-  opacity: 1;
-  transform: scaleX(1);
+  background: var(--ant-color-bg-container);
 }
 
 .tab:focus-visible {
@@ -131,8 +149,8 @@
   color: var(--ant-color-primary);
 }
 
-/* 关闭按钮：仅 hover/当前页/键盘焦点显现（SPEC-UI §5.3），以 opacity 隐藏
- * 保持布局宽度稳定且指针/测试可点击 */
+/* 关闭按钮：仅 hover/当前页/键盘焦点显现（SPEC_UI2 §6.3 沿用 opacity 方案），
+ * 以 opacity 隐藏保持布局宽度稳定且指针/测试可点击 */
 .closeButton {
   display: inline-flex;
   align-items: center;

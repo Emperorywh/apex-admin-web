@@ -230,8 +230,8 @@ describe('BasicLayout 双布局热切换（规格 §11.1）', () => {
     expect(shell?.getAttribute('data-layout-mode')).toBe('side')
     // 品牌区（Logo + 标题）
     expect(screen.getByText('通用后台管理模板')).toBeInTheDocument()
-    // 垂直菜单（antd inline）与导航区域
-    expect(container.querySelector('.ant-menu-inline')).not.toBeNull()
+    // 垂直导航（自绘，SPEC_UI2 §6.1）与导航区域
+    expect(container.querySelector('nav[data-nav-mode="vertical"]')).not.toBeNull()
     expect(screen.getByRole('navigation', { name: '导航菜单' })).toBeInTheDocument()
     // 顶栏与页签占位、页面缓存区
     expect(screen.getByRole('banner')).toBeInTheDocument()
@@ -267,20 +267,21 @@ describe('BasicLayout 双布局热切换（规格 §11.1）', () => {
     expect(content.textContent).toBe(pathnameBefore)
     expect(probeMountCount).toBe(mountsBefore)
     expect(container.querySelector('[data-region="tabs-bar"]')).toBe(tabsRegion)
-    // 顶部布局：水平菜单渲染且顶级菜单项集合与侧边布局一致（同一 navItems）
-    expect(container.querySelector('.ant-menu-horizontal')).not.toBeNull()
-    expect(container.querySelector('.ant-menu-inline')).toBeNull()
+    // 顶部布局：水平导航渲染且垂直侧栏隐藏，顶级项集合与侧边布局一致（同一 navItems）
+    expect(container.querySelector('nav[data-nav-mode="horizontal"]')).not.toBeNull()
+    expect(container.querySelector('nav[data-nav-mode="vertical"]')).toBeNull()
     const topNav = screen.getByRole('navigation', { name: '导航菜单' })
     for (const title of ['仪表盘', '系统管理', '个人中心']) {
       expect(within(topNav).getByText(title)).toBeInTheDocument()
     }
   })
 
-  it('顶部布局二级以下呈现下拉子菜单：目录节点渲染为弹出子菜单（规格 §11.1）', () => {
-    const { container } = renderLayout({ initialPath: '/dashboard', layout: 'top' })
-    const submenuTitle = screen.getByText('系统管理')
-    expect(submenuTitle.closest('li')).not.toBeNull()
-    expect(container.querySelector('.ant-menu-submenu')).not.toBeNull()
+  it('顶部布局二级以下呈现下拉子菜单：目录节点渲染为浮层触发项（规格 §11.1/SPEC_UI2 §6.1）', () => {
+    renderLayout({ initialPath: '/dashboard', layout: 'top' })
+    // 目录节点为自绘触发按钮，携带 aria-haspopup/aria-expanded 浮层语义
+    const submenuTrigger = screen.getByRole('menuitem', { name: '系统管理' })
+    expect(submenuTrigger).toHaveAttribute('aria-haspopup', 'menu')
+    expect(submenuTrigger).toHaveAttribute('aria-expanded', 'false')
   })
 })
 
@@ -288,9 +289,9 @@ describe('菜单选中链与导航（规格 §11.2）', () => {
   it('选中项与祖先展开链由 Data Router 当前 match 决定：深层叶子选中且全部祖先展开', async () => {
     const { router } = renderLayout({ initialPath: '/dashboard' })
     await navigateTo(router, '/system/role/detail')
-    // 三级叶子选中：aria-current 标记当前项（规格 §11.3），祖先目录自动展开使子项可见
+    // 三级叶子选中：aria-current 标记当前项按钮（规格 §11.3），祖先目录自动展开使子项可见
     const selected = await within(sideNavRegion()).findByText('角色详情')
-    expect(selected).toHaveAttribute('aria-current', 'page')
+    expect(selected.closest('button')).toHaveAttribute('aria-current', 'page')
     await within(sideNavRegion()).findByText('用户管理')
     await within(sideNavRegion()).findByText('角色管理')
   })
@@ -361,9 +362,9 @@ describe('响应式断点 <768px（规格 §11.1，matchMedia stub）', () => {
     const user = userEvent.setup()
     installMatchMediaStub(true)
     const { container } = renderLayout({ initialPath: '/dashboard' })
-    // 侧边菜单不再内嵌渲染（收进 Drawer；面包屑仍显示当前页标题，不属于菜单）
+    // 侧边导航不再内嵌渲染（收进 Drawer；面包屑仍显示当前页标题，不属于菜单）
     expect(screen.queryByRole('navigation', { name: '导航菜单' })).not.toBeInTheDocument()
-    expect(container.querySelector('.ant-menu')).toBeNull()
+    expect(container.querySelector('[data-nav-mode]')).toBeNull()
     await user.click(screen.getByRole('button', { name: '打开导航菜单' }))
     const dialog = await screen.findByRole('dialog')
     expect(within(dialog).getByText('仪表盘')).toBeInTheDocument()
@@ -378,11 +379,11 @@ describe('响应式断点 <768px（规格 §11.1，matchMedia stub）', () => {
     })
   })
 
-  it('顶部布局折叠为菜单按钮：水平菜单不渲染，按钮打开同一 Drawer 菜单', async () => {
+  it('顶部布局折叠为菜单按钮：水平导航不渲染，按钮打开同一 Drawer 菜单', async () => {
     const user = userEvent.setup()
     installMatchMediaStub(true)
     const { container } = renderLayout({ initialPath: '/dashboard', layout: 'top' })
-    expect(container.querySelector('.ant-menu-horizontal')).toBeNull()
+    expect(container.querySelector('nav[data-nav-mode="horizontal"]')).toBeNull()
     await user.click(screen.getByRole('button', { name: '打开导航菜单' }))
     const dialog = await screen.findByRole('dialog')
     expect(within(dialog).getByText('系统管理')).toBeInTheDocument()
@@ -421,15 +422,26 @@ describe('响应式断点 <768px（规格 §11.1，matchMedia stub）', () => {
 })
 
 describe('Header 全功能与回调（规格 §11.2）', () => {
-  it('侧边布局桌面触发按钮折叠侧栏：写入 app.sidebarCollapsed 并驱动菜单折叠态', async () => {
+  it('侧边布局桌面触发按钮折叠侧栏：写入 app.sidebarCollapsed 并驱动导航折叠态（含侧缘折叠球）', async () => {
     const user = userEvent.setup()
     const { store, container } = renderLayout({ initialPath: '/dashboard' })
-    await user.click(screen.getByRole('button', { name: '切换侧边栏' }))
+    // Header 折叠钮与侧缘折叠球同名（SPEC_UI2 §6.1 并存）：按钮取 Header 触发钮
+    await user.click(screen.getAllByRole('button', { name: '切换侧边栏' })[0])
     await waitFor(() => {
       expect(store.getState().app.sidebarCollapsed).toBe(true)
     })
+    // 侧栏与内层导航进入 mini 折叠态（SPEC_UI2 §6.1：88px + 图标/标题纵排）
     await waitFor(() => {
-      expect(container.querySelector('.ant-menu-inline-collapsed')).not.toBeNull()
+      expect(container.querySelector('nav[data-collapsed="true"]')).not.toBeNull()
+    })
+    // 侧缘折叠球（aria-pressed 标识）再次点击可展开
+    const collapseBall = screen
+      .getAllByRole('button', { name: '切换侧边栏' })
+      .find((button) => button.hasAttribute('aria-pressed'))
+    expect(collapseBall).toBeDefined()
+    await user.click(collapseBall!)
+    await waitFor(() => {
+      expect(store.getState().app.sidebarCollapsed).toBe(false)
     })
   })
 

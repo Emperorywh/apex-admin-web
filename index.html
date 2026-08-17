@@ -10,7 +10,8 @@
       // data-theme、color-scheme 与初始背景色，避免刷新时出现相反主题底色。
       // 镜像由 src/store/themeBootMirror.ts 随 settings 写入（key: apex_boot_theme）；
       // 本脚本无法引用模块，背景色字面量与运行时 antd colorBgLayout 取值保持一致
-      // （亮 #f5f5f5 / 暗 #000000，运行时由 applyThemeToDocument 以真实 token 校正）。
+      // （SPEC-UI2 §4.1 灰阶画布：亮 #F4F6F8 / 暗 #09090B，与 config/theme.ts 的
+      // CANVAS_BG_LIGHT/CANVAS_BG_DARK 同源，运行时由 applyThemeToDocument 以真实 token 校正）。
       // 镜像缺失或损坏（首访/隐私模式）按「跟随系统」回退。
       ;(function () {
         var resolved = null
@@ -36,7 +37,7 @@
         var root = document.documentElement
         root.setAttribute('data-theme', resolved)
         root.style.colorScheme = resolved
-        root.style.backgroundColor = resolved === 'dark' ? '#000000' : '#f5f5f5'
+        root.style.backgroundColor = resolved === 'dark' ? '#09090B' : '#F4F6F8'
       })()
     </script>
   </head>

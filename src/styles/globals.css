@@ -10,6 +10,23 @@
   color-scheme: light;
 }
 
+/*
+ * Inter Variable 自托管（SPEC_UI2 §4.5）：仅拉丁子集经 @fontsource-variable/inter
+ * 的 woff2 资产注入（别名在 CSS url() 中由 Vite 解析并哈希打包），无 CDN 依赖；
+ * unicode-range 限定拉丁字母/数字/常用拉丁标点，中文按字体栈回退系统中文字体。
+ * 字体许可 SIL OFL（代码 MIT），随包分发，见 src/assets/NOTICE.md。
+ */
+@font-face {
+  font-family: 'Inter Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('@fontsource-variable/inter/files/inter-latin-wght-normal.woff2') format('woff2-variations');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 html,
 body,
 #root {
@@ -44,6 +61,58 @@ body {
 
 .app-shell {
   height: 100%;
+}
+
+/*
+ * 全局滚动条细化（SPEC-UI2 §4.1）：Chromium/WebKit 细轨 + 圆角灰色 thumb
+ * （slash ScrollArea 观感）；Firefox 以 scrollbar-width/scrollbar-color 对齐近似观感。
+ * 取色一律经 antd token 派生（var(--ant-*)），无色值字面量（SPEC-UI2 §4.3）。
+ */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--ant-color-fill-tertiary) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 3px;
+  background-color: var(--ant-color-fill-tertiary);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--ant-color-fill-secondary);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/*
+ * 实心主按钮 hover 主色发光阴影（SPEC-UI2 §4.2）：发光值由 config/theme.ts 的
+ * buildPrimaryGlowShadow 按 colorPrimary 派生、经 --app-primary-glow 变量写入，
+ * 此处只消费变量（SPEC-UI2 §4.3 色值纪律）。
+ */
+.ant-btn-primary:not(:disabled):hover {
+  box-shadow: var(--app-primary-glow, none);
+}
+
+/*
+ * Tag slash 式重制（SPEC-UI2 §4.2）：无边框、6px 圆角、语义色浅底 + 语义色文字
+ * （语义底/字色沿用 antd 预设，仅去边框与圆角节奏）。
+ */
+.ant-tag {
+  padding-inline: 8px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
 }
 
 /*

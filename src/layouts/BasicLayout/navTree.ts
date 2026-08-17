@@ -1,18 +1,10 @@
 /**
- * 导航树纯函数（规格 §11.2）：选中项与祖先展开链推导、面包屑层级推导、antd 菜单项构建。
- * SideMenu/TopMenu/Breadcrumb 共用本模块，不各自维护遍历逻辑；
+ * 导航树纯函数（规格 §11.2）：选中项与祖先展开链推导、面包屑层级推导。
+ * SideNav/TopNav/Breadcrumb 共用本模块，不各自维护遍历逻辑；
  * 全部函数只依赖注入的 NavTreeNode 树与 Data Router matches 的 pathname/handle，
  * 不读取 store、不感知路由实例，可直接单元测试。
  */
-import { createElement, type ReactNode } from 'react'
-import type { MenuProps } from 'antd'
 import { readNavMatchMeta, type NavTreeNode } from './navModel'
-
-/**
- * 菜单项标题翻译函数：调用方以 menu 命名空间绑定的 t 传入
- * （如 `useCallback((key) => t(key, { ns: MENU_NAMESPACE }), [t])`，规格 §12）。
- */
-export type NavTranslate = (key: string) => string
 
 /** 路径索引条目：节点与从根到其父级的全部祖先路径（antd Menu 以路径为 key） */
 export interface NavIndexEntry {
@@ -106,45 +98,6 @@ export function deriveBreadcrumbCrumbs(
     })
   }
   return crumbs
-}
-
-/** 选中项 label：显式携带 aria-current="page"，保证当前项 aria 状态可判定（规格 §11.3） */
-function buildMenuLabel(text: string, isSelected: boolean): ReactNode {
-  return createElement('span', isSelected ? { 'aria-current': 'page' } : undefined, text)
-}
-
-/**
- * 把导航树构建为 antd Menu items（任意层级递归，目录节点成为子菜单）：
- * - key 为节点路径（模板路由定义的路径全局唯一且为完整路径）；
- * - 选中项在 label 上标记 aria-current="page"（规格 §11.3）；
- * - 无 path 的节点不生成菜单项（不可寻址即不可导航）。
- * SideMenu（inline）与 TopMenu（horizontal）共用同一构建结果。
- */
-export function buildNavMenuItems(
-  nodes: readonly NavTreeNode[],
-  t: NavTranslate,
-  selectedKey?: string,
-): NonNullable<MenuProps['items']> {
-  const items: NonNullable<MenuProps['items']> = []
-  for (const node of nodes) {
-    if (node.path === undefined) {
-      // 无 path 的目录不生成菜单项，其可见子节点上提一级（与 buildNavPathIndex 口径一致）
-      if (node.children !== undefined && node.children.length > 0) {
-        items.push(...buildNavMenuItems(node.children, t, selectedKey))
-      }
-      continue
-    }
-    const isSelected = node.path === selectedKey
-    const label = buildMenuLabel(t(node.title), isSelected)
-    const icon = node.icon !== undefined ? createElement(node.icon) : undefined
-    if (node.children !== undefined && node.children.length > 0) {
-      // 目录节点：子菜单（SideMenu inline 子项 / TopMenu 二级以下下拉子菜单）
-      items.push({ key: node.path, icon, label, children: buildNavMenuItems(node.children, t, selectedKey) })
-      continue
-    }
-    items.push({ key: node.path, icon, label })
-  }
-  return items
 }
 
 /** 并集合并展开链：保留既有展开项，追加新选中项的祖先链（去重、保持出现顺序） */
