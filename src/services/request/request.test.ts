@@ -5,7 +5,6 @@
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AxiosError, type AxiosAdapter, type InternalAxiosRequestConfig } from 'axios'
-import { AUTH_ENDPOINTS } from '@/constants/auth/auth.constants'
 import { API_ERROR_CODES, GLOBAL_REQUEST_SCOPE, REQUEST_TIMEOUT_MS } from '@/constants/request.constants'
 import { registerUiFeedbackInstances, resetUiFeedbackInstances } from '@/services/feedback/uiFeedback'
 import type { UiFeedbackInstances } from '@/services/feedback/uiFeedback'
@@ -190,7 +189,7 @@ describe('401 刷新单飞与一次重放（规格 §6.2/§17.4）', () => {
   it('并发 401 只刷新一次，成功后全部重放并携带新 token', async () => {
     seedSession(ctx.store, { accessToken: 'at-1', refreshToken: 'rt-1' })
     ctx.adapter.respondWith((config) => {
-      if (config.url === AUTH_ENDPOINTS.REFRESH) {
+      if (config.url === '/auth/refresh') {
         return { status: 200, data: successEnvelope({ accessToken: 'at-2', refreshToken: 'rt-2' }) }
       }
       // 同一业务请求（同 url）首次 401，重放成功
@@ -205,7 +204,7 @@ describe('401 刷新单飞与一次重放（规格 §6.2/§17.4）', () => {
       ctx.runtime.request<string[]>({ url: '/logs' }),
     ])
     expect(results).toEqual([['ok'], ['ok'], ['ok']])
-    expect(ctx.adapter.countCalls(AUTH_ENDPOINTS.REFRESH)).toBe(1)
+    expect(ctx.adapter.countCalls('/auth/refresh')).toBe(1)
     // 重放读取替换后的新 token（规格 §7.4-2 当下 token）
     const userCalls = ctx.adapter.calls.filter((call) => call.url === '/users')
     expect(userCalls[0]?.headers?.Authorization).toBe('Bearer at-1')
@@ -222,7 +221,7 @@ describe('401 刷新单飞与一次重放（规格 §6.2/§17.4）', () => {
   it('每个业务请求最多重放一次：重放再遇 401 直接终态', async () => {
     seedSession(ctx.store, { accessToken: 'at-1', refreshToken: 'rt-1' })
     ctx.adapter.respondWith((config) => {
-      if (config.url === AUTH_ENDPOINTS.REFRESH) {
+      if (config.url === '/auth/refresh') {
         return { status: 200, data: successEnvelope({ accessToken: 'at-2', refreshToken: 'rt-2' }) }
       }
       return { status: 401, data: failureEnvelope(401, API_ERROR_CODES.AUTH_ACCESS_EXPIRED) }
@@ -231,7 +230,7 @@ describe('401 刷新单飞与一次重放（规格 §6.2/§17.4）', () => {
       httpStatus: 401,
       errorCode: API_ERROR_CODES.AUTH_ACCESS_EXPIRED,
     })
-    expect(ctx.adapter.countCalls(AUTH_ENDPOINTS.REFRESH)).toBe(1)
+    expect(ctx.adapter.countCalls('/auth/refresh')).toBe(1)
     expect(ctx.adapter.countCalls('/users')).toBe(2)
   })
 
@@ -246,7 +245,7 @@ describe('401 刷新单飞与一次重放（规格 §6.2/§17.4）', () => {
     })
     const caller = new AbortController()
     const pending = ctx.runtime.request({ url: '/users', signal: caller.signal })
-    await waitForMicrotaskCondition(() => ctx.adapter.countCalls(AUTH_ENDPOINTS.REFRESH) === 1)
+    await waitForMicrotaskCondition(() => ctx.adapter.countCalls('/auth/refresh') === 1)
     // refresh 在途时只有这一个逻辑请求在计数（只计一次）
     expect(ctx.store.getState().app.loadingCount).toBe(1)
     caller.abort()
@@ -266,7 +265,7 @@ describe('401 刷新单飞与一次重放（规格 §6.2/§17.4）', () => {
       return gate.promise.then(() => ({ status: 200, data: successEnvelope({ accessToken: 'at-2', refreshToken: 'rt-2' }) }))
     })
     const pending = ctx.runtime.request({ url: '/users' })
-    await waitForMicrotaskCondition(() => ctx.adapter.countCalls(AUTH_ENDPOINTS.REFRESH) === 1)
+    await waitForMicrotaskCondition(() => ctx.adapter.countCalls('/auth/refresh') === 1)
     ctx.store.dispatch({ type: 'user/sessionEpochIncremented' })
     gate.resolve()
     await expectCanceled(pending)
@@ -283,7 +282,7 @@ describe('401 刷新单飞与一次重放（规格 §6.2/§17.4）', () => {
       return gate.promise.then(() => ({ status: 200, data: successEnvelope({ accessToken: 'at-2', refreshToken: 'rt-2' }) }))
     })
     const pending = ctx.runtime.request({ url: '/users' })
-    await waitForMicrotaskCondition(() => ctx.adapter.countCalls(AUTH_ENDPOINTS.REFRESH) === 1)
+    await waitForMicrotaskCondition(() => ctx.adapter.countCalls('/auth/refresh') === 1)
     ctx.store.dispatch({ type: 'user/sessionEpochIncremented' })
     gate.resolve()
     await expectCanceled(pending)
@@ -296,7 +295,7 @@ describe('401 刷新单飞与一次重放（规格 §6.2/§17.4）', () => {
     ctx.store.dispatch(cacheEntryTouched({ key: '/dashboard' }))
     window.history.pushState({}, '', '/system/user?id=1')
     ctx.adapter.respondWith((config) => {
-      if (config.url === AUTH_ENDPOINTS.REFRESH) {
+      if (config.url === '/auth/refresh') {
         return { status: 401, data: failureEnvelope(401, API_ERROR_CODES.AUTH_REFRESH_EXPIRED) }
       }
       return { status: 401, data: failureEnvelope(401, API_ERROR_CODES.AUTH_ACCESS_EXPIRED) }
@@ -359,7 +358,7 @@ describe('401 刷新单飞与一次重放（规格 §6.2/§17.4）', () => {
       })
     })
     const pending = ctx.runtime.request({ url: '/users' }).catch((e) => e)
-    await waitForMicrotaskCondition(() => ctx.adapter.countCalls(AUTH_ENDPOINTS.REFRESH) === 1)
+    await waitForMicrotaskCondition(() => ctx.adapter.countCalls('/auth/refresh') === 1)
     // 模拟登出/切账号：epoch 递增且换上新 token
     ctx.store.dispatch({ type: 'user/sessionEpochIncremented' })
     seedSession(ctx.store, { accessToken: 'at-new', refreshToken: 'rt-new' })
@@ -375,7 +374,7 @@ describe('401 刷新单飞与一次重放（规格 §6.2/§17.4）', () => {
     await expect(ctx.runtime.request({ url: '/auth/login', method: 'post', skipAuthRefresh: true })).rejects.toMatchObject({
       errorCode: API_ERROR_CODES.AUTH_ACCESS_EXPIRED,
     })
-    expect(ctx.adapter.countCalls(AUTH_ENDPOINTS.REFRESH)).toBe(0)
+    expect(ctx.adapter.countCalls('/auth/refresh')).toBe(0)
     expect(ctx.messageError).toHaveBeenCalledWith('登录状态已过期，请重新登录')
   })
 
@@ -383,7 +382,7 @@ describe('401 刷新单飞与一次重放（规格 §6.2/§17.4）', () => {
     seedSession(ctx.store, { accessToken: 'at-1', refreshToken: 'rt-1' })
     ctx.adapter.respondWith(() => ({ status: 401, data: failureEnvelope(401, API_ERROR_CODES.AUTH_ACCESS_EXPIRED) }))
     await ctx.runtime.request({ url: '/users' }).catch(() => undefined)
-    const refreshCall = ctx.adapter.calls.find((call) => call.url === AUTH_ENDPOINTS.REFRESH)
+    const refreshCall = ctx.adapter.calls.find((call) => call.url === '/auth/refresh')
     expect(refreshCall?.headers?.Authorization).toBeUndefined()
   })
 })
@@ -492,7 +491,7 @@ describe('403 三类语义（规格 §5.4/§6.2）', () => {
     seedSession(ctx.store, { accessToken: 'at-1', refreshToken: 'rt-1' })
     ctx.adapter.respondWith(() => ({ status: 400, data: failureEnvelope(400, API_ERROR_CODES.VALIDATION_FAILED) }))
     await expect(ctx.runtime.request({ url: '/users' })).rejects.toMatchObject({ httpStatus: 400 })
-    expect(ctx.adapter.countCalls(AUTH_ENDPOINTS.REFRESH)).toBe(0)
+    expect(ctx.adapter.countCalls('/auth/refresh')).toBe(0)
     expect(ctx.navigator).not.toHaveBeenCalled()
     expect(ctx.messageError).toHaveBeenCalledWith('请求参数校验失败')
   })
@@ -667,7 +666,7 @@ describe('adapter 选择（规格 §6.2：主实例与 refresh 实例复用同�
       await ctx.runtime.request({ url: '/users' }).catch(() => undefined)
       // 主实例与 refresh 请求都命中动态 adapter
       expect(dynamicAdapter.countCalls('/users')).toBe(1)
-      expect(dynamicAdapter.countCalls(AUTH_ENDPOINTS.REFRESH)).toBe(1)
+      expect(dynamicAdapter.countCalls('/auth/refresh')).toBe(1)
     } finally {
       configureRequestAdapter(null)
     }

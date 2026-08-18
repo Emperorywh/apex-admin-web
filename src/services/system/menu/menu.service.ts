@@ -1,11 +1,10 @@
 /**
  * 菜单管理四接口（规格 §14.3）：GET /menus/tree 与 create/update/delete。
  * 每个函数显式声明入参与 Promise<T> 返回类型，经封装的 request<T>() 完成类型解包；
- * endpoint 一律引用 menu 域常量 MENU_ENDPOINTS，不在调用点内联字符串。
+ * 接口路径在请求调用点直接内联（规格 §14.3 v1.8）。
  * send 参数默认真实 request 传输；菜单树由页面 Hook 注入 usePageRequest() 的
  * 页签作用域请求函数（规格 §7.4-6），写操作默认走全局传输。
  */
-import { MENU_ENDPOINTS } from '@/constants/system/menu/menu.constants'
 import { request } from '@/services/request/request'
 import type { SendRequest } from '@/services/request/request.types'
 import type {
@@ -34,7 +33,7 @@ function fillMenuId(endpoint: string, menuId: string): string {
  */
 export function getMenuTree(send: SendRequest = request): Promise<MenuTreeResponseDto> {
   return send<MenuTreeResponseDto>({
-    url: MENU_ENDPOINTS.TREE,
+    url: '/menus/tree',
     method: 'get',
   })
 }
@@ -45,7 +44,7 @@ export function createMenu(
   options: MenuWriteOptions = {},
 ): Promise<MenuMutationResponseDto> {
   return request<MenuMutationResponseDto>({
-    url: MENU_ENDPOINTS.CREATE,
+    url: '/menus',
     method: 'post',
     data: dto,
     ...(options.silent === true ? { silent: true } : {}),
@@ -59,7 +58,7 @@ export function updateMenu(
   options: MenuWriteOptions = {},
 ): Promise<MenuMutationResponseDto> {
   return request<MenuMutationResponseDto>({
-    url: fillMenuId(MENU_ENDPOINTS.UPDATE, menuId),
+    url: fillMenuId('/menus/:id', menuId),
     method: 'put',
     data: dto,
     ...(options.silent === true ? { silent: true } : {}),
@@ -69,7 +68,7 @@ export function updateMenu(
 /** 删除菜单：DELETE /menus/:id；存在子节点时返回 RESOURCE_CONFLICT，响应 data 固定为 null */
 export function deleteMenu(menuId: string): Promise<null> {
   return request<null>({
-    url: fillMenuId(MENU_ENDPOINTS.DELETE, menuId),
+    url: fillMenuId('/menus/:id', menuId),
     method: 'delete',
   })
 }

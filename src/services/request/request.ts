@@ -18,7 +18,6 @@ import axios, {
   type InternalAxiosRequestConfig,
 } from 'axios'
 import type { UnknownAction } from '@reduxjs/toolkit'
-import { AUTH_ENDPOINTS } from '@/constants/auth/auth.constants'
 import { API_ERROR_CODES, API_SUCCESS_CODE, REQUEST_TIMEOUT_MS } from '@/constants/request.constants'
 import { showUiApiError } from '@/services/feedback/uiFeedback'
 import { loadingFinished, loadingStarted } from '@/store/slices/app.slice'
@@ -127,7 +126,7 @@ export function createRequestRuntime(store: RequestStore, options: CreateRequest
           message: '缺少可用的 refreshToken，会话已失效',
         })
       }
-      const response = await refreshInstance.post(AUTH_ENDPOINTS.REFRESH, { refreshToken })
+      const response = await refreshInstance.post('/auth/refresh', { refreshToken })
       const envelope: unknown = response.data
       const tokens =
         isRecord(envelope) && envelope.code === API_SUCCESS_CODE && isRecord(envelope.data) ? envelope.data : null

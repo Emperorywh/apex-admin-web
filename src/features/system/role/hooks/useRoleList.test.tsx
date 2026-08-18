@@ -10,7 +10,6 @@ import { act, renderHook, waitFor } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { RequestScopeProvider } from '@/components/RequestScopeProvider/RequestScopeProvider'
-import { ROLE_ENDPOINTS } from '@/constants/system/role/role.constants'
 import type { Role } from '@/types/system/role/role.types'
 import type { PageResult } from '@/types/system/user/user.types'
 import { useRoleList } from './useRoleList'
@@ -70,7 +69,7 @@ describe('useRoleList（规格 §14.3/§17.24）', () => {
     expect(result.current.roles.map((role) => role.code)).toEqual(['admin'])
     expect(result.current.total).toBe(1)
     const config = capturedConfig()
-    expect(config.url).toBe(ROLE_ENDPOINTS.LIST)
+    expect(config.url).toBe('/roles')
     expect(config.method).toBe('get')
     expect(config.params).toEqual({ page: 1, size: 10, keyword: '' })
     expect('sortBy' in (config.params ?? {})).toBe(false)

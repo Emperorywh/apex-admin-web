@@ -68,7 +68,7 @@ Node `>=22.22.0`，pnpm `11.21.0`（`packageManager` 锁定，建议 `corepack e
 - 依赖方向固定：`router → layouts/pages → features → components/hooks/services/store/types/constants`；service 不得导入 React UI；`components/`、`hooks/` 不得反向导入 `pages/`、`features/`；不同业务域的 feature 不得互相穿透导入。
 - `pages/`、`features/`、`services/`、`types/`、`constants/` 使用一致的业务域路径片段（如 `system/user`）。
 - 权限码集中在 `src/constants/permission.constants.ts`，页面禁止权限魔法字符串；按钮级权限用 `<Auth code={PERMISSIONS.…}>`（默认无权限隐藏）。
-- 魔法值（超时、容量、分页默认、Storage key、endpoint、sortBy 白名单等）必须收敛为具名常量，归属规则见 §3.6。
+- 魔法值（超时、容量、分页默认、Storage key、sortBy 白名单等）必须收敛为具名常量，归属规则见 §3.6；API endpoint 例外——接口路径由各 service 在请求调用点直接内联（§14.3 v1.8）。
 
 ## 测试约定（§16.3）
 

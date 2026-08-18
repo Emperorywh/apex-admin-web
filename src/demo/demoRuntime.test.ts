@@ -14,7 +14,6 @@
 import { AxiosError, AxiosHeaders } from 'axios'
 import type { ProfileData } from '@/types/auth/auth.types'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { AUTH_ENDPOINTS } from '@/constants/auth/auth.constants'
 import { API_ERROR_CODES } from '@/constants/request.constants'
 import { appI18n, COMMON_NAMESPACE } from '@/i18n/i18n'
 import { registerUiFeedbackInstances, resetUiFeedbackInstances, type UiFeedbackInstances } from '@/services/feedback/uiFeedback'
@@ -129,7 +128,7 @@ describe('fallback 登录（规格 §13.1/§13.2）', () => {
     const result = await login({ username: 'real-user', password: 'secret' })
     expect(result.accessToken).toBe('real-at-1')
     expect(real.calls.length).toBe(1)
-    expect(real.calls[0].url).toBe(AUTH_ENDPOINTS.LOGIN)
+    expect(real.calls[0].url).toBe('/auth/login')
     expect(getDefaultAppStore().store.getState().user.sessionSource).toBe('real')
   })
 
@@ -157,7 +156,7 @@ describe('fallback 登录（规格 §13.1/§13.2）', () => {
     const handle = registerRuntime()
     const real = createMockAdapter()
     real.respondWith((config) => {
-      if (config.url === AUTH_ENDPOINTS.LOGIN) {
+      if (config.url === '/auth/login') {
         return { status: 200, data: successEnvelope(REAL_LOGIN_DATA) }
       }
       // profile：模拟网络级失败（无 HTTP 响应）

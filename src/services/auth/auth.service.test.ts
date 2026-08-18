@@ -6,8 +6,6 @@
  */
 import type { InternalAxiosRequestConfig } from 'axios'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { AUTH_ENDPOINTS } from '@/constants/auth/auth.constants'
-import { PROFILE_ENDPOINTS } from '@/constants/profile/profile.constants'
 import { API_ERROR_CODES, GLOBAL_REQUEST_SCOPE } from '@/constants/request.constants'
 import { registerUiFeedbackInstances, resetUiFeedbackInstances } from '@/services/feedback/uiFeedback'
 import type { UiFeedbackInstances } from '@/services/feedback/uiFeedback'
@@ -72,7 +70,7 @@ describe('POST /auth/login（规格 §6.3）', () => {
     adapter.respondWith(() => ({ status: 200, data: successEnvelope(data) }))
     await expect(login({ username: 'admin', password: 'secret' })).resolves.toEqual(data)
     const config = firstCall()
-    expect(config.url).toBe(AUTH_ENDPOINTS.LOGIN)
+    expect(config.url).toBe('/auth/login')
     expect(config.method).toBe('post')
     expect(requestBody(config)).toEqual({ username: 'admin', password: 'secret' })
     expect(config.skipAuthRefresh).toBe(true)
@@ -101,7 +99,7 @@ describe('POST /auth/refresh（规格 §6.3）', () => {
     adapter.respondWith(() => ({ status: 200, data: successEnvelope(data) }))
     await expect(refreshTokens({ refreshToken: 'rt-1' })).resolves.toEqual(data)
     const config = firstCall()
-    expect(config.url).toBe(AUTH_ENDPOINTS.REFRESH)
+    expect(config.url).toBe('/auth/refresh')
     expect(config.method).toBe('post')
     expect(requestBody(config)).toEqual({ refreshToken: 'rt-1' })
     expect(config.skipAuthRefresh).toBe(true)
@@ -114,7 +112,7 @@ describe('POST /auth/logout（规格 §6.3）', () => {
     adapter.respondWith(() => ({ status: 200, data: successEnvelope(null) }))
     await expect(logout({ refreshToken: 'rt-1' })).resolves.toBeNull()
     const config = firstCall()
-    expect(config.url).toBe(AUTH_ENDPOINTS.LOGOUT)
+    expect(config.url).toBe('/auth/logout')
     expect(config.method).toBe('post')
     expect(requestBody(config)).toEqual({ refreshToken: 'rt-1' })
     expect(config.skipAuthRefresh).toBe(true)
@@ -128,7 +126,7 @@ describe('GET /auth/profile（规格 §6.3/§7.2/§7.4-6）', () => {
     adapter.respondWith(() => ({ status: 200, data: successEnvelope(profileFixture) }))
     await expect(getProfile()).resolves.toEqual(profileFixture)
     const config = firstCall()
-    expect(config.url).toBe(PROFILE_ENDPOINTS.GET_PROFILE)
+    expect(config.url).toBe('/auth/profile')
     expect(config.method).toBe('get')
     expect(config.silent).toBe(true)
     expect(config.scopeId).toBe(GLOBAL_REQUEST_SCOPE)
@@ -141,7 +139,7 @@ describe('PUT /auth/profile（规格 §6.3/§14.3）', () => {
     adapter.respondWith(() => ({ status: 200, data: successEnvelope(userFixture) }))
     await expect(updateProfile(dto)).resolves.toEqual(userFixture)
     const config = firstCall()
-    expect(config.url).toBe(PROFILE_ENDPOINTS.UPDATE_PROFILE)
+    expect(config.url).toBe('/auth/profile')
     expect(config.method).toBe('put')
     expect(requestBody(config)).toEqual(dto)
   })
@@ -153,7 +151,7 @@ describe('PUT /auth/password（规格 §6.3/§14.3）', () => {
     adapter.respondWith(() => ({ status: 200, data: successEnvelope(null) }))
     await expect(changePassword(dto)).resolves.toBeNull()
     const config = firstCall()
-    expect(config.url).toBe(PROFILE_ENDPOINTS.CHANGE_PASSWORD)
+    expect(config.url).toBe('/auth/password')
     expect(config.method).toBe('put')
     expect(requestBody(config)).toEqual(dto)
   })

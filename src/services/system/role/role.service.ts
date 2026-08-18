@@ -2,11 +2,10 @@
  * 角色管理六接口（规格 §14.3）：list/create/update/delete/assign-permissions
  * 与 GET /permissions/tree 权限树。
  * 每个函数显式声明入参与 Promise<T> 返回类型，经封装的 request<T>() 完成类型解包；
- * endpoint 一律引用 role 域常量 ROLE_ENDPOINTS / PERMISSION_TREE_ENDPOINT，不在调用点内联字符串。
+ * 接口路径在请求调用点直接内联（规格 §14.3 v1.8）。
  * send 参数默认真实 request 传输；列表查询与权限树由页面 Hook 注入 usePageRequest() 的
  * 页签作用域请求函数（规格 §7.4-6），写操作默认走全局传输。
  */
-import { PERMISSION_TREE_ENDPOINT, ROLE_ENDPOINTS } from '@/constants/system/role/role.constants'
 import { request } from '@/services/request/request'
 import type { SendRequest } from '@/services/request/request.types'
 import type {
@@ -39,7 +38,7 @@ export function listRoles(
   send: SendRequest = request,
 ): Promise<RoleListResponseDto> {
   return send<RoleListResponseDto>({
-    url: ROLE_ENDPOINTS.LIST,
+    url: '/roles',
     method: 'get',
     params,
   })
@@ -51,7 +50,7 @@ export function createRole(
   options: RoleWriteOptions = {},
 ): Promise<RoleMutationResponseDto> {
   return request<RoleMutationResponseDto>({
-    url: ROLE_ENDPOINTS.CREATE,
+    url: '/roles',
     method: 'post',
     data: dto,
     ...(options.silent === true ? { silent: true } : {}),
@@ -65,7 +64,7 @@ export function updateRole(
   options: RoleWriteOptions = {},
 ): Promise<RoleMutationResponseDto> {
   return request<RoleMutationResponseDto>({
-    url: fillRoleId(ROLE_ENDPOINTS.UPDATE, roleId),
+    url: fillRoleId('/roles/:id', roleId),
     method: 'put',
     data: dto,
     ...(options.silent === true ? { silent: true } : {}),
@@ -75,7 +74,7 @@ export function updateRole(
 /** 删除角色：DELETE /roles/:id；builtIn 或被用户引用时返回 RESOURCE_CONFLICT，响应 data 固定为 null */
 export function deleteRole(roleId: string): Promise<null> {
   return request<null>({
-    url: fillRoleId(ROLE_ENDPOINTS.DELETE, roleId),
+    url: fillRoleId('/roles/:id', roleId),
     method: 'delete',
   })
 }
@@ -87,7 +86,7 @@ export function assignRolePermissions(
   options: RoleWriteOptions = {},
 ): Promise<RoleMutationResponseDto> {
   return request<RoleMutationResponseDto>({
-    url: fillRoleId(ROLE_ENDPOINTS.ASSIGN_PERMISSIONS, roleId),
+    url: fillRoleId('/roles/:id/permissions', roleId),
     method: 'put',
     data: dto,
     ...(options.silent === true ? { silent: true } : {}),
@@ -97,7 +96,7 @@ export function assignRolePermissions(
 /** 权限树：GET /permissions/tree（规格 §14.1：仅叶子提供 permCode，checked 由 Role.permCodes 推导） */
 export function getPermissionTree(send: SendRequest = request): Promise<PermissionTreeResponseDto> {
   return send<PermissionTreeResponseDto>({
-    url: PERMISSION_TREE_ENDPOINT,
+    url: '/permissions/tree',
     method: 'get',
   })
 }

@@ -1,17 +1,7 @@
 import { describe, expect, test } from 'vitest'
-import { USER_EMAIL_PATTERN, USER_ENDPOINTS, USER_KEYWORD_FIELDS, USER_SORT_FIELDS } from './user.constants'
+import { USER_EMAIL_PATTERN, USER_KEYWORD_FIELDS, USER_SORT_FIELDS } from './user.constants'
 
 describe('user.constants', () => {
-  test('用户接口路径与 §14.3 一致', () => {
-    expect(USER_ENDPOINTS).toEqual({
-      LIST: '/users',
-      CREATE: '/users',
-      UPDATE: '/users/:id',
-      DELETE: '/users/:id',
-      ASSIGN_ROLES: '/users/:id/roles',
-    })
-  })
-
   test('sortBy 白名单恰为 username/displayName/status/createdAt 且无重复（§14.3）', () => {
     expect(USER_SORT_FIELDS).toEqual(['username', 'displayName', 'status', 'createdAt'])
     expect(new Set(USER_SORT_FIELDS).size).toBe(USER_SORT_FIELDS.length)

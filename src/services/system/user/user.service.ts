@@ -1,11 +1,10 @@
 /**
  * 用户管理五接口（规格 §14.3）：list/create/update/delete/assign-roles。
  * 每个函数显式声明入参与 Promise<T> 返回类型，经封装的 request<T>() 完成类型解包；
- * endpoint 一律引用 user 域常量 USER_ENDPOINTS，不在调用点内联字符串。
+ * 接口路径在请求调用点直接内联（规格 §14.3 v1.8）。
  * send 参数默认真实 request 传输；列表查询由页面 Hook 注入 usePageRequest() 的
  * 页签作用域请求函数（规格 §7.4-6），写操作默认走全局传输。
  */
-import { USER_ENDPOINTS } from '@/constants/system/user/user.constants'
 import { request } from '@/services/request/request'
 import type { SendRequest } from '@/services/request/request.types'
 import type {
@@ -34,7 +33,7 @@ function fillUserId(endpoint: string, userId: string): string {
 /** 分页查询用户：GET /users（规格 §14.3：keyword/sortBy/sortOrder/分页语义由后端实施） */
 export function listUsers(params: UserListQueryParams, send: SendRequest = request): Promise<UserListResponseDto> {
   return send<UserListResponseDto>({
-    url: USER_ENDPOINTS.LIST,
+    url: '/users',
     method: 'get',
     params,
   })
@@ -46,7 +45,7 @@ export function createUser(
   options: UserWriteOptions = {},
 ): Promise<UserMutationResponseDto> {
   return request<UserMutationResponseDto>({
-    url: USER_ENDPOINTS.CREATE,
+    url: '/users',
     method: 'post',
     data: dto,
     ...(options.silent === true ? { silent: true } : {}),
@@ -60,7 +59,7 @@ export function updateUser(
   options: UserWriteOptions = {},
 ): Promise<UserMutationResponseDto> {
   return request<UserMutationResponseDto>({
-    url: fillUserId(USER_ENDPOINTS.UPDATE, userId),
+    url: fillUserId('/users/:id', userId),
     method: 'put',
     data: dto,
     ...(options.silent === true ? { silent: true } : {}),
@@ -70,7 +69,7 @@ export function updateUser(
 /** 删除用户：DELETE /users/:id；响应 data 固定为 null */
 export function deleteUser(userId: string): Promise<null> {
   return request<null>({
-    url: fillUserId(USER_ENDPOINTS.DELETE, userId),
+    url: fillUserId('/users/:id', userId),
     method: 'delete',
   })
 }
@@ -82,7 +81,7 @@ export function assignUserRoles(
   options: UserWriteOptions = {},
 ): Promise<UserMutationResponseDto> {
   return request<UserMutationResponseDto>({
-    url: fillUserId(USER_ENDPOINTS.ASSIGN_ROLES, userId),
+    url: fillUserId('/users/:id/roles', userId),
     method: 'put',
     data: dto,
     ...(options.silent === true ? { silent: true } : {}),

@@ -6,7 +6,6 @@
  */
 import type { AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { DASHBOARD_ENDPOINTS } from '@/constants/dashboard/dashboard.constants'
 import { API_ERROR_CODES } from '@/constants/request.constants'
 import { configureRequestAdapter } from '@/services/request/request'
 import type { ApiError, SendRequest } from '@/services/request/request.types'
@@ -45,7 +44,7 @@ describe('GET /dashboard/overview（规格 §14.3）', () => {
     await expect(getDashboardOverview()).resolves.toEqual(overviewFixture)
     expect(adapter.calls.length).toBe(1)
     const config: InternalAxiosRequestConfig = adapter.calls[0]
-    expect(config.url).toBe(DASHBOARD_ENDPOINTS.OVERVIEW)
+    expect(config.url).toBe('/dashboard/overview')
     expect(config.method).toBe('get')
   })
 
@@ -70,7 +69,7 @@ describe('GET /dashboard/overview（规格 §14.3）', () => {
     }
     await getDashboardOverview(send)
     expect(sentConfigs).toHaveLength(1)
-    expect(sentConfigs[0]).toMatchObject({ url: DASHBOARD_ENDPOINTS.OVERVIEW, method: 'get' })
+    expect(sentConfigs[0]).toMatchObject({ url: '/dashboard/overview', method: 'get' })
     // 默认参数走真实 request 传输：上方两条用例已覆盖，此处不再经 mock adapter 发请求
     expect(adapter.calls.length).toBe(0)
   })

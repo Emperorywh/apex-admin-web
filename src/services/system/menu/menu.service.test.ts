@@ -6,7 +6,6 @@
 import type { InternalAxiosRequestConfig } from 'axios'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import type { AxiosRequestConfig } from 'axios'
-import { MENU_ENDPOINTS } from '@/constants/system/menu/menu.constants'
 import { configureRequestAdapter } from '@/services/request/request'
 import type { SendRequest } from '@/services/request/request.types'
 import { createMockAdapter, successEnvelope, type MockAdapter } from '@/test/requestTestHelpers'
@@ -43,7 +42,7 @@ describe('getMenuTree（规格 §14.3：GET /menus/tree，不分页）', () => {
     const tree = await getMenuTree()
     expect(tree).toEqual([menuFixture])
     const config: InternalAxiosRequestConfig = adapter.calls[0]
-    expect(config.url).toBe(MENU_ENDPOINTS.TREE)
+    expect(config.url).toBe('/menus/tree')
     expect(config.method).toBe('get')
     expect(config.params).toBeUndefined()
   })
@@ -56,7 +55,7 @@ describe('getMenuTree（规格 §14.3：GET /menus/tree，不分页）', () => {
     }
     await getMenuTree(send)
     expect(sentConfigs).toHaveLength(1)
-    expect(sentConfigs[0]).toMatchObject({ url: MENU_ENDPOINTS.TREE, method: 'get' })
+    expect(sentConfigs[0]).toMatchObject({ url: '/menus/tree', method: 'get' })
     expect(adapter.calls.length).toBe(0)
   })
 })
@@ -70,7 +69,7 @@ describe('createMenu（规格 §14.3：POST /menus）', () => {
     )
     expect(created).toEqual(menuFixture)
     const config: InternalAxiosRequestConfig = adapter.calls[0]
-    expect(config.url).toBe(MENU_ENDPOINTS.CREATE)
+    expect(config.url).toBe('/menus')
     expect(config.method).toBe('post')
     expect(JSON.parse(config.data as string)).toEqual({
       parentId: null,
@@ -129,7 +128,7 @@ describe('deleteMenu（规格 §14.3：DELETE /menus/:id）', () => {
     adapter.respondWith(() => ({ status: 200, data: successEnvelope(null) }))
     await expect(deleteMenu('m-1')).resolves.toBeNull()
     const config: InternalAxiosRequestConfig = adapter.calls[0]
-    expect(config.url).toBe(MENU_ENDPOINTS.DELETE.replace(':id', 'm-1'))
+    expect(config.url).toBe('/menus/:id'.replace(':id', 'm-1'))
     expect(config.method).toBe('delete')
   })
 })

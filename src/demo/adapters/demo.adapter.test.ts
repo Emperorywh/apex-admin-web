@@ -9,9 +9,7 @@
 import { AxiosHeaders } from 'axios'
 import type { AxiosError, InternalAxiosRequestConfig } from 'axios'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { AUTH_ENDPOINTS } from '@/constants/auth/auth.constants'
 import { PERMISSIONS } from '@/constants/permission.constants'
-import { PROFILE_ENDPOINTS } from '@/constants/profile/profile.constants'
 import { API_ERROR_CODES } from '@/constants/request.constants'
 import { ROUTE_IDS, ROUTE_PATHS } from '@/constants/route.constants'
 import { MENU_PAGE_ROUTE_IDS } from '@/constants/system/menu/menu.constants'
@@ -93,7 +91,7 @@ function envelopeData<T>(outcome: AdapterOutcome): T {
 
 async function loginDemo(username: string): Promise<LoginResponseDto> {
   const outcome = await callAdapter(
-    demoConfig({ method: 'post', url: AUTH_ENDPOINTS.LOGIN, data: { username, password: '任意密码' } }),
+    demoConfig({ method: 'post', url: '/auth/login', data: { username, password: '任意密码' } }),
   )
   return envelopeData<LoginResponseDto>(outcome)
 }
@@ -141,7 +139,7 @@ describe('登录端点（规格 §13.2：admin/viewer 密码任意）', () => {
 
   it('未知用户名返回 401 AUTH_INVALID_CREDENTIALS：业务错误，fallback 不得切换（规格 §13.1）', async () => {
     const { apiError } = await expectFailure(
-      demoConfig({ method: 'post', url: AUTH_ENDPOINTS.LOGIN, data: { username: 'nobody', password: 'x' } }),
+      demoConfig({ method: 'post', url: '/auth/login', data: { username: 'nobody', password: 'x' } }),
     )
     expect(apiError.httpStatus).toBe(401)
     expect(apiError.errorCode).toBe(API_ERROR_CODES.AUTH_INVALID_CREDENTIALS)
@@ -149,7 +147,7 @@ describe('登录端点（规格 §13.2：admin/viewer 密码任意）', () => {
 
   it('缺少 password 返回 400 VALIDATION_FAILED，details.fields 含 password', async () => {
     const { apiError, envelope } = await expectFailure(
-      demoConfig({ method: 'post', url: AUTH_ENDPOINTS.LOGIN, data: { username: 'admin' } }),
+      demoConfig({ method: 'post', url: '/auth/login', data: { username: 'admin' } }),
     )
     expect(apiError.httpStatus).toBe(400)
     expect(apiError.errorCode).toBe(API_ERROR_CODES.VALIDATION_FAILED)
@@ -204,7 +202,7 @@ describe('profile 端点（规格 §6.3/§5.3）', () => {
     const outcome = await callAdapter(
       demoConfig({
         method: 'put',
-        url: PROFILE_ENDPOINTS.UPDATE_PROFILE,
+        url: '/auth/profile',
         token: accessToken,
         data: { displayName: '演示访客·已改名', email: 'viewer2@apex.demo', phone: '13900000002' },
       }),
@@ -221,7 +219,7 @@ describe('profile 端点（规格 §6.3/§5.3）', () => {
     expect(updated.roleIds).toEqual(['demo-role-viewer'])
 
     const profile = envelopeData<ProfileData>(
-      await callAdapter(demoConfig({ url: PROFILE_ENDPOINTS.GET_PROFILE, token: accessToken })),
+      await callAdapter(demoConfig({ url: '/auth/profile', token: accessToken })),
     )
     expect(profile.user.displayName).toBe('演示访客·已改名')
 
@@ -237,7 +235,7 @@ describe('profile 端点（规格 §6.3/§5.3）', () => {
     const { envelope } = await expectFailure(
       demoConfig({
         method: 'put',
-        url: PROFILE_ENDPOINTS.UPDATE_PROFILE,
+        url: '/auth/profile',
         token: accessToken,
         data: { displayName: '', email: 'not-an-email' },
       }),
@@ -250,7 +248,7 @@ describe('profile 端点（规格 §6.3/§5.3）', () => {
     const outcome = await callAdapter(
       demoConfig({
         method: 'put',
-        url: PROFILE_ENDPOINTS.UPDATE_PROFILE,
+        url: '/auth/profile',
         token: accessToken,
         data: { displayName: '演示管理员', email: 'admin@apex.demo', phone: '' },
       }),
@@ -262,7 +260,7 @@ describe('profile 端点（规格 §6.3/§5.3）', () => {
     const { apiError } = await expectFailure(
       demoConfig({
         method: 'put',
-        url: PROFILE_ENDPOINTS.UPDATE_PROFILE,
+        url: '/auth/profile',
         token: null,
         data: { displayName: 'x', email: 'x@apex.demo' },
       }),
@@ -276,7 +274,7 @@ describe('profile 端点（规格 §6.3/§5.3）', () => {
     const outcome = await callAdapter(
       demoConfig({
         method: 'put',
-        url: PROFILE_ENDPOINTS.CHANGE_PASSWORD,
+        url: '/auth/password',
         token: accessToken,
         data: { oldPassword: '任意旧密码', newPassword: 'fresh12345' },
       }),
@@ -286,7 +284,7 @@ describe('profile 端点（规格 §6.3/§5.3）', () => {
     const weak = await expectFailure(
       demoConfig({
         method: 'put',
-        url: PROFILE_ENDPOINTS.CHANGE_PASSWORD,
+        url: '/auth/password',
         token: accessToken,
         data: { oldPassword: '任意旧密码', newPassword: 'short' },
       }),
@@ -298,7 +296,7 @@ describe('profile 端点（规格 §6.3/§5.3）', () => {
     const missing = await expectFailure(
       demoConfig({
         method: 'put',
-        url: PROFILE_ENDPOINTS.CHANGE_PASSWORD,
+        url: '/auth/password',
         token: accessToken,
         data: { newPassword: 'fresh12345' },
       }),
@@ -362,14 +360,14 @@ describe('refresh 端点（规格 §13.2：token 过期与旋转）', () => {
   it('刷新签发新双 token；旧 refreshToken 因旋转立即失效', async () => {
     const first = await loginDemo(DEMO_ACCOUNT_USERNAMES.ADMIN)
     const outcome = await callAdapter(
-      demoConfig({ method: 'post', url: AUTH_ENDPOINTS.REFRESH, data: { refreshToken: first.refreshToken } }),
+      demoConfig({ method: 'post', url: '/auth/refresh', data: { refreshToken: first.refreshToken } }),
     )
     const rotated = envelopeData<{ accessToken: string; refreshToken: string }>(outcome)
     expect(rotated.accessToken).not.toBe(first.accessToken)
     expect(rotated.refreshToken).not.toBe(first.refreshToken)
 
     const replay = await expectFailure(
-      demoConfig({ method: 'post', url: AUTH_ENDPOINTS.REFRESH, data: { refreshToken: first.refreshToken } }),
+      demoConfig({ method: 'post', url: '/auth/refresh', data: { refreshToken: first.refreshToken } }),
     )
     expect(replay.apiError.httpStatus).toBe(401)
     expect(replay.apiError.errorCode).toBe(API_ERROR_CODES.AUTH_REFRESH_EXPIRED)
@@ -378,7 +376,7 @@ describe('refresh 端点（规格 §13.2：token 过期与旋转）', () => {
   it('过期 refreshToken 返回 401 AUTH_REFRESH_EXPIRED', async () => {
     const expired = formatDemoRefreshToken(DEMO_ACCOUNT_USERNAMES.ADMIN, Date.now() - 1_000, Date.now() - 2_000)
     const { apiError } = await expectFailure(
-      demoConfig({ method: 'post', url: AUTH_ENDPOINTS.REFRESH, data: { refreshToken: expired } }),
+      demoConfig({ method: 'post', url: '/auth/refresh', data: { refreshToken: expired } }),
     )
     expect(apiError.errorCode).toBe(API_ERROR_CODES.AUTH_REFRESH_EXPIRED)
   })
@@ -387,14 +385,14 @@ describe('refresh 端点（规格 §13.2：token 过期与旋转）', () => {
     const { refreshToken } = await loginDemo(DEMO_ACCOUNT_USERNAMES.VIEWER)
     demoAdapterTestController.invalidateRefreshTokens()
     const { apiError } = await expectFailure(
-      demoConfig({ method: 'post', url: AUTH_ENDPOINTS.REFRESH, data: { refreshToken } }),
+      demoConfig({ method: 'post', url: '/auth/refresh', data: { refreshToken } }),
     )
     expect(apiError.errorCode).toBe(API_ERROR_CODES.AUTH_REFRESH_EXPIRED)
   })
 
   it('非 demo 格式 refreshToken 返回 401 AUTH_REFRESH_EXPIRED', async () => {
     const { apiError } = await expectFailure(
-      demoConfig({ method: 'post', url: AUTH_ENDPOINTS.REFRESH, data: { refreshToken: 'garbage-token' } }),
+      demoConfig({ method: 'post', url: '/auth/refresh', data: { refreshToken: 'garbage-token' } }),
     )
     expect(apiError.errorCode).toBe(API_ERROR_CODES.AUTH_REFRESH_EXPIRED)
   })
@@ -404,12 +402,12 @@ describe('logout 端点（规格 §6.3/§13.2）', () => {
   it('data 为 null，且该 refreshToken 随后不可再刷新', async () => {
     const { refreshToken } = await loginDemo(DEMO_ACCOUNT_USERNAMES.ADMIN)
     const outcome = await callAdapter(
-      demoConfig({ method: 'post', url: AUTH_ENDPOINTS.LOGOUT, data: { refreshToken } }),
+      demoConfig({ method: 'post', url: '/auth/logout', data: { refreshToken } }),
     )
     expect(envelopeData<null>(outcome)).toBeNull()
 
     const replay = await expectFailure(
-      demoConfig({ method: 'post', url: AUTH_ENDPOINTS.REFRESH, data: { refreshToken } }),
+      demoConfig({ method: 'post', url: '/auth/refresh', data: { refreshToken } }),
     )
     expect(replay.apiError.errorCode).toBe(API_ERROR_CODES.AUTH_REFRESH_EXPIRED)
   })
@@ -1129,7 +1127,7 @@ describe('测试控制器可观测性面（规格 §13.2：E2E 调用记录与�
     const refreshed = await callAdapter(
       demoConfig({
         method: 'post',
-        url: AUTH_ENDPOINTS.REFRESH,
+        url: '/auth/refresh',
         data: { refreshToken: login.refreshToken },
       }),
     )

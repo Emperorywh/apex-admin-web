@@ -1,22 +1,8 @@
 /**
- * 用户管理业务域常量（规格 §14.3）：endpoint、排序与查询字段白名单、字段约束。
+ * 用户管理业务域常量（规格 §14.3）：排序与查询字段白名单、字段约束。
  * 用户页面、feature 组件/Hook、user service 与 demo adapter 一律引用本文件，
- * 禁止在任意调用点重复这些字面量。
+ * 禁止在任意调用点重复这些字面量；接口路径由 user service 在调用点内联（规格 §14.3 v1.8）。
  */
-
-/** 用户接口路径模板（规格 §14.3）；:id 由 service 以真实用户 ID 替换 */
-export const USER_ENDPOINTS = {
-  /** 分页查询：GET → PageResult<User> */
-  LIST: '/users',
-  /** 创建用户：body { username, password, displayName, email, phone?, status, roleIds } */
-  CREATE: '/users',
-  /** 编辑用户：body { displayName, email, phone?, status }；不含 username/password/roleIds */
-  UPDATE: '/users/:id',
-  /** 删除用户：删除自己、删除最后一个 admin 均返回 RESOURCE_CONFLICT */
-  DELETE: '/users/:id',
-  /** 分配角色：body { roleIds } */
-  ASSIGN_ROLES: '/users/:id/roles',
-} as const
 
 /**
  * 用户列表 sortBy 白名单（规格 §14.3）。

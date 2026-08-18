@@ -1,12 +1,11 @@
 /**
  * 用户管理五接口测试（规格 §14.3/§7.1）：
- * endpoint 引用 USER_ENDPOINTS 域常量、:id 替换、写入契约 body、silent 选项透传
+ * 接口路径内联断言、:id 替换、写入契约 body、silent 选项透传
  * 与 envelope 解包；经 configureRequestAdapter 注入 mock adapter 走默认请求运行时。
  */
 import type { InternalAxiosRequestConfig } from 'axios'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { API_ERROR_CODES } from '@/constants/request.constants'
-import { USER_ENDPOINTS } from '@/constants/system/user/user.constants'
 import type { UserSortField } from '@/constants/system/user/user.constants'
 import { configureRequestAdapter } from '@/services/request/request'
 import type { ApiError } from '@/services/request/request.types'
@@ -47,7 +46,7 @@ describe('listUsers（规格 §14.3：GET /users）', () => {
     const page = await listUsers({ page: 2, size: 20, keyword: 'admin', sortBy: 'username', sortOrder: 'asc' })
     expect(page).toEqual({ list: [userFixture], total: 1, page: 1, size: 10 })
     const config: InternalAxiosRequestConfig = adapter.calls[0]
-    expect(config.url).toBe(USER_ENDPOINTS.LIST)
+    expect(config.url).toBe('/users')
     expect(config.method).toBe('get')
     expect(config.params).toEqual({ page: 2, size: 20, keyword: 'admin', sortBy: 'username', sortOrder: 'asc' })
   })
@@ -80,7 +79,7 @@ describe('createUser（规格 §14.3：POST /users）', () => {
     }
     await expect(createUser(dto)).resolves.toEqual(userFixture)
     const config: InternalAxiosRequestConfig = adapter.calls[0]
-    expect(config.url).toBe(USER_ENDPOINTS.CREATE)
+    expect(config.url).toBe('/users')
     expect(config.method).toBe('post')
     // axios 传输前已把 data 序列化为 JSON 字符串，解析后断言契约
     expect(JSON.parse(config.data as string)).toEqual(dto)
@@ -113,7 +112,7 @@ describe('deleteUser（规格 §14.3：DELETE /users/:id）', () => {
     adapter.respondWith(() => ({ status: 200, data: successEnvelope(null) }))
     await expect(deleteUser('u-1')).resolves.toBeNull()
     const config: InternalAxiosRequestConfig = adapter.calls[0]
-    expect(config.url).toBe(USER_ENDPOINTS.DELETE.replace(':id', 'u-1'))
+    expect(config.url).toBe('/users/:id'.replace(':id', 'u-1'))
     expect(config.method).toBe('delete')
   })
 })
@@ -123,7 +122,7 @@ describe('assignUserRoles（规格 §14.3：PUT /users/:id/roles）', () => {
     adapter.respondWith(() => ({ status: 200, data: successEnvelope(userFixture) }))
     await expect(assignUserRoles('u-1', { roleIds: ['r-2'] })).resolves.toEqual(userFixture)
     const config: InternalAxiosRequestConfig = adapter.calls[0]
-    expect(config.url).toBe(USER_ENDPOINTS.ASSIGN_ROLES.replace(':id', 'u-1'))
+    expect(config.url).toBe('/users/:id/roles'.replace(':id', 'u-1'))
     expect(config.method).toBe('put')
     expect(JSON.parse(config.data as string)).toEqual({ roleIds: ['r-2'] })
   })

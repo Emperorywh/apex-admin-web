@@ -17,9 +17,8 @@
 import { AxiosError, AxiosHeaders, CanceledError } from 'axios'
 import type { AxiosAdapter, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
 import dayjs from 'dayjs'
-import { DASHBOARD_DATE_FORMAT, DASHBOARD_ENDPOINTS } from '@/constants/dashboard/dashboard.constants'
-import { AUTH_ENDPOINTS, PASSWORD_MIN_LENGTH, PASSWORD_PATTERN } from '@/constants/auth/auth.constants'
-import { PROFILE_ENDPOINTS } from '@/constants/profile/profile.constants'
+import { DASHBOARD_DATE_FORMAT } from '@/constants/dashboard/dashboard.constants'
+import { PASSWORD_MIN_LENGTH, PASSWORD_PATTERN } from '@/constants/auth/auth.constants'
 import {
   API_ERROR_CODES,
   API_SUCCESS_CODE,
@@ -34,13 +33,11 @@ import {
 import { PERMISSIONS } from '@/constants/permission.constants'
 import {
   ADMIN_ROLE_CODE,
-  PERMISSION_TREE_ENDPOINT,
-  ROLE_ENDPOINTS,
   ROLE_KEYWORD_FIELDS,
   ROLE_SORT_FIELDS,
 } from '@/constants/system/role/role.constants'
-import { MENU_ENDPOINTS, MENU_PAGE_ROUTE_IDS, MENU_TYPES } from '@/constants/system/menu/menu.constants'
-import { USER_EMAIL_PATTERN, USER_ENDPOINTS, USER_KEYWORD_FIELDS, USER_SORT_FIELDS } from '@/constants/system/user/user.constants'
+import { MENU_PAGE_ROUTE_IDS, MENU_TYPES } from '@/constants/system/menu/menu.constants'
+import { USER_EMAIL_PATTERN, USER_KEYWORD_FIELDS, USER_SORT_FIELDS } from '@/constants/system/user/user.constants'
 import { hasPermissionCode } from '@/store/permissions'
 import { collectPermissionLeafCodes } from '@/utils/permissionTree'
 import type {
@@ -1136,31 +1133,35 @@ function route(method: string, path: string, handler: DemoRoute['handler']): Dem
   return { method, segments: path.split('/').filter((segment) => segment.length > 0), handler }
 }
 
+/**
+ * demo 路由表：路径字面量与 §14.3 接口契约一致，由各 service 在请求调用点内联同名路径
+ * （规格 §14.3 v1.8）；两侧一致性由 demo 构建的 E2E 回归保障，不在调用点外共享常量。
+ */
 const DEMO_ROUTES: readonly DemoRoute[] = [
-  route('post', AUTH_ENDPOINTS.LOGIN, handleLogin),
-  route('post', AUTH_ENDPOINTS.REFRESH, handleRefresh),
-  route('post', AUTH_ENDPOINTS.LOGOUT, handleLogout),
-  route('get', PROFILE_ENDPOINTS.GET_PROFILE, handleProfile),
-  route('put', PROFILE_ENDPOINTS.UPDATE_PROFILE, handleUpdateProfile),
-  route('put', PROFILE_ENDPOINTS.CHANGE_PASSWORD, handleChangePassword),
-  route('get', DASHBOARD_ENDPOINTS.OVERVIEW, handleDashboardOverview),
-  route('get', PERMISSION_TREE_ENDPOINT, handlePermissionTree),
-  route('get', MENU_ENDPOINTS.TREE, handleMenuTree),
-  route('post', MENU_ENDPOINTS.CREATE, handleCreateMenu),
-  route('put', MENU_ENDPOINTS.UPDATE, handleUpdateMenu),
-  route('delete', MENU_ENDPOINTS.DELETE, handleDeleteMenu),
-  route('get', ROLE_ENDPOINTS.LIST, handleListRoles),
-  route('post', ROLE_ENDPOINTS.CREATE, handleCreateRole),
+  route('post', '/auth/login', handleLogin),
+  route('post', '/auth/refresh', handleRefresh),
+  route('post', '/auth/logout', handleLogout),
+  route('get', '/auth/profile', handleProfile),
+  route('put', '/auth/profile', handleUpdateProfile),
+  route('put', '/auth/password', handleChangePassword),
+  route('get', '/dashboard/overview', handleDashboardOverview),
+  route('get', '/permissions/tree', handlePermissionTree),
+  route('get', '/menus/tree', handleMenuTree),
+  route('post', '/menus', handleCreateMenu),
+  route('put', '/menus/:id', handleUpdateMenu),
+  route('delete', '/menus/:id', handleDeleteMenu),
+  route('get', '/roles', handleListRoles),
+  route('post', '/roles', handleCreateRole),
   // /roles/:id/permissions（4 段）先于 /roles/:id（3 段）注册无歧义：按段数与字面量精确匹配
-  route('put', ROLE_ENDPOINTS.ASSIGN_PERMISSIONS, handleAssignRolePermissions),
-  route('put', ROLE_ENDPOINTS.UPDATE, handleUpdateRole),
-  route('delete', ROLE_ENDPOINTS.DELETE, handleDeleteRole),
-  route('get', USER_ENDPOINTS.LIST, handleListUsers),
-  route('post', USER_ENDPOINTS.CREATE, handleCreateUser),
+  route('put', '/roles/:id/permissions', handleAssignRolePermissions),
+  route('put', '/roles/:id', handleUpdateRole),
+  route('delete', '/roles/:id', handleDeleteRole),
+  route('get', '/users', handleListUsers),
+  route('post', '/users', handleCreateUser),
   // /users/:id/roles（4 段）先于 /users/:id（3 段）注册无歧义：按段数与字面量精确匹配
-  route('put', USER_ENDPOINTS.ASSIGN_ROLES, handleAssignUserRoles),
-  route('put', USER_ENDPOINTS.UPDATE, handleUpdateUser),
-  route('delete', USER_ENDPOINTS.DELETE, handleDeleteUser),
+  route('put', '/users/:id/roles', handleAssignUserRoles),
+  route('put', '/users/:id', handleUpdateUser),
+  route('delete', '/users/:id', handleDeleteUser),
 ]
 
 function dispatchRequest(config: InternalAxiosRequestConfig): DemoEndpointOutput {

@@ -1,18 +1,8 @@
 /**
- * 认证业务域常量（规格 §6）：登录/刷新/登出 endpoint、会话来源与凭据策略。
- * auth service、守卫与登录表单一律引用本文件。
- * /auth/profile 与 /auth/password 属个人中心业务域，见 profile.constants.ts。
+ * 认证业务域常量（规格 §6）：会话来源与凭据策略。
+ * 守卫与登录表单一律引用本文件；登录/刷新/登出接口路径由 auth service 在调用点内联
+ * （规格 §14.3 v1.8），/auth/profile 与 /auth/password 亦归 auth service 内联。
  */
-
-/** 认证接口路径模板（规格 §6.3 核心认证接口） */
-export const AUTH_ENDPOINTS = {
-  /** 登录：body { username, password } */
-  LOGIN: '/auth/login',
-  /** 刷新：body { refreshToken }；使用不安装业务响应拦截器的专用实例 */
-  REFRESH: '/auth/refresh',
-  /** 登出：body { refreshToken }；固定 skipAuthRefresh */
-  LOGOUT: '/auth/logout',
-} as const
 
 /**
  * 会话来源枚举（规格 §6.1）。

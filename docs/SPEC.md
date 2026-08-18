@@ -1,10 +1,12 @@
 # Apex Admin Web — 通用后台管理系统模板规格说明
 
-> 版本：v1.7 · 日期：2026-08-17 · 状态：已确认（§20 技术闸门已于 2026-08-15 验证通过）
+> 版本：v1.8 · 日期：2026-08-18 · 状态：已确认（§20 技术闸门已于 2026-08-15 验证通过）
 >
 > 本文档是实现候选基线。§20 技术闸门通过并记录结果后，状态才能改为「已确认」，届时本文档作为实现的唯一需求依据。技术闸门通过前，只允许完成基础工程和验证性 PoC，不进入全部业务页面开发。
 >
 > 所有标注「已定」的条目来自访谈结论；标注「默认」的条目为访谈未覆盖、按行业惯例选定的默认值。如需变更，必须先修改本文档及修订记录，不允许实现与文档长期分叉。
+>
+> v1.8 修订记录（2026-08-18）：API endpoint 不再收敛为业务域常量——各 service 在请求调用点直接内联接口路径字符串（URL 与请求函数同文件），`src/constants/<domain>/<domain>.constants.ts` 仅保留 sortBy 白名单、字段约束等其余业务域常量；`src/demo/adapters/` 路由表自持路径字面量，与真实 service 的一致性由 demo 构建的 E2E 回归保障；删除跨业务域 endpoint 唯一所有者测试（`src/constants/endpoints.test.ts`）。涉及 §3.6、§14.3。
 >
 > v1.7 修订记录（2026-08-17）：新增视觉第二轮专项子规格 `docs/SPEC_UI2.md`（v1.1），视觉呈现以 SPEC_UI2 为准（取代 `docs/SPEC_UI.md` 冲突条文，SPEC_UI 仅作历史留存），功能行为不变。随子规格同步修订：§2 图标栈改为「线性图标 lucide-react + 菜单彩色图标 @iconify/react（离线 `local:`）双轨」；§10.1 字体改为 Inter Variable 自托管 + 基准字号 14px、预设主题色默认色改为 meadow 原野绿；§4.2 `RouteMeta.icon` 由 LucideIcon 组件引用改为 `local:` 图标名字符串并新增 `caption?: string`；§16.2 check-structure 职责追加 `@iconify/react` 直接导入限制（唯一豁免 `src/components/AppIcon/`）。
 >
@@ -293,9 +295,9 @@ e2e/                                     # Playwright 跨业务场景
 
 ### 3.6 Constants 常量管理（已定）
 
-- 有业务或配置语义的魔法数字和字符串不得散落在实现中。请求超时、缓存容量、分页默认值、Storage key、路由 ID/路径、权限码、错误码、状态值、日期格式、正则、长度限制和 API endpoint 等必须使用具名常量。
+- 有业务或配置语义的魔法数字和字符串不得散落在实现中。请求超时、缓存容量、分页默认值、Storage key、路由 ID/路径、权限码、错误码、状态值、日期格式、正则、长度限制等必须使用具名常量。API endpoint 不在此列：接口路径由各 service 在请求调用点直接内联（§14.3），不收敛为具名常量。
 - 应用级稳定常量按关注点放在 `src/constants/*.constants.ts`；同一业务域跨页面、组件和 service 使用的常量放在 `src/constants/<domain>/<domain>.constants.ts`。权限码统一在 `src/constants/permission.constants.ts`，但 demo 账号和权限矩阵只能放在可剔除的 `src/demo/demo.constants.ts`。只供一个页面/组件使用的常量放在同目录 `<Name>.constants.ts`或实现文件顶部。
-- `src/features/<domain>/`根部不得放常量；组件/Hook 私有常量可以与实现紧邻共置。API endpoint、sortBy 白名单和跨层字段限制属于业务域常量，不得在页面、feature 和 service 各复制一份。
+- `src/features/<domain>/`根部不得放常量；组件/Hook 私有常量可以与实现紧邻共置。sortBy 白名单和跨层字段限制属于业务域常量，不得在页面、feature 和 service 各复制一份。
 - 常量必须遵循最小可见范围，不能为了“统一”把所有值堆入一个 `constants.ts`。跨层移动常量时同步移动测试并更新唯一所有者。
 - 基础常量使用 `UPPER_SNAKE_CASE`；成组枚举值使用 `as const`对象并从其值推导联合类型，避免另写一份可能漂移的字符串联合。
 - 用户可见静态文案仍按 §12 通过 i18n 管理，不复制到 constants；主题色、间距和断点优先使用 antd token/CSS 自定义属性；测试 fixture、协议规定的空字符串以及无业务语义的 `0`、`1`可直接使用，但一旦参与业务判断必须命名。
@@ -979,7 +981,7 @@ interface DashboardOverview {
 
 分页查询参数统一为：`page=1&size=10&keyword=&sortBy=&sortOrder=asc|desc`。用户列表的 sortBy 白名单为 `username/displayName/status/createdAt`，角色列表为 `code/name/status/createdAt`；未传 sortBy 时统一按 `createdAt desc`。keyword 去除首尾空白后，对用户名/显示名或角色 code/name 做不区分大小写的包含匹配。非法 page、size、sortBy、sortOrder 返回 VALIDATION_FAILED。菜单树不分页，兄弟节点按 `sort asc`、`id asc`稳定排序。
 
-实现时，共享分页默认值/上限由 `src/constants/request.constants.ts`统一定义；各资源的 sortBy 白名单、字段限制和 API endpoint 放在对应 `src/constants/<domain>/<domain>.constants.ts`，页面、feature 组件/Hook、真实 service 和 demo adapter 不得重复写这些字面量。
+实现时，共享分页默认值/上限由 `src/constants/request.constants.ts`统一定义；各资源的 sortBy 白名单与字段限制放在对应 `src/constants/<domain>/<domain>.constants.ts`，页面、feature 组件/Hook、真实 service 和 demo adapter 不得重复写这些字面量。
 
 ```
 GET    /users                         → PageResult<User>
@@ -1003,7 +1005,7 @@ DELETE /menus/:id                     → null
 GET    /dashboard/overview            → DashboardOverview
 ```
 
-上表路径是后端接口契约，不代表允许在调用点内联字符串；`src/constants/<domain>/<domain>.constants.ts`中的 endpoint 是前端唯一实现来源，真实 service 与 `src/demo/adapters/`直接引用。请求/响应 DTO 的权威定义位于 `src/services/<domain>/<name>.service.types.ts`，demo adapter 使用 `import type`引用；`src/demo/`不得导入 `src/pages/`或 `src/features/`中的 UI 实现。
+上表路径是后端接口契约：各 service 在请求调用点直接内联路径字符串，URL 与请求函数同文件定义，不收敛为具名常量；`src/demo/adapters/`路由表在 demo 模块内自持同名路径，与真实 service 的一致性由 demo 构建的 E2E 回归保障。请求/响应 DTO 的权威定义位于 `src/services/<domain>/<name>.service.types.ts`，demo adapter 使用 `import type`引用；`src/demo/`不得导入 `src/pages/`或 `src/features/`中的 UI 实现。
 
 写入契约：
 

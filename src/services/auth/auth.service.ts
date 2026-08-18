@@ -4,8 +4,6 @@
  * login/refresh/logout 固定 skipAuthRefresh（规格 §6.2），不能触发 401 刷新流程。
  * 跨切片会话编排（epoch、清理、导航意图）见 auth.session.ts，不在本文件重复。
  */
-import { AUTH_ENDPOINTS } from '@/constants/auth/auth.constants'
-import { PROFILE_ENDPOINTS } from '@/constants/profile/profile.constants'
 import { GLOBAL_REQUEST_SCOPE } from '@/constants/request.constants'
 import { request } from '@/services/request/request'
 import type { User } from '@/types/system/user/user.types'
@@ -53,7 +51,7 @@ export function registerLoginTransportExtension(extension: LoginTransportExtensi
  */
 export function loginViaTransport(dto: LoginRequestDto): Promise<LoginResponseDto> {
   return request<LoginResponseDto>({
-    url: AUTH_ENDPOINTS.LOGIN,
+    url: '/auth/login',
     method: 'post',
     data: dto,
     skipAuthRefresh: true,
@@ -94,7 +92,7 @@ export async function login(dto: LoginRequestDto): Promise<LoginResponseDto> {
  */
 export function refreshTokens(dto: RefreshTokensRequestDto): Promise<RefreshTokensResponseDto> {
   return request<RefreshTokensResponseDto>({
-    url: AUTH_ENDPOINTS.REFRESH,
+    url: '/auth/refresh',
     method: 'post',
     data: dto,
     skipAuthRefresh: true,
@@ -109,7 +107,7 @@ export function refreshTokens(dto: RefreshTokensRequestDto): Promise<RefreshToke
  */
 export function logout(dto: LogoutRequestDto): Promise<null> {
   return request<null>({
-    url: AUTH_ENDPOINTS.LOGOUT,
+    url: '/auth/logout',
     method: 'post',
     data: dto,
     skipAuthRefresh: true,
@@ -124,7 +122,7 @@ export function logout(dto: LogoutRequestDto): Promise<null> {
  */
 export function getProfile(): Promise<GetProfileResponseDto> {
   return request<GetProfileResponseDto>({
-    url: PROFILE_ENDPOINTS.GET_PROFILE,
+    url: '/auth/profile',
     method: 'get',
     silent: true,
     scopeId: GLOBAL_REQUEST_SCOPE,
@@ -143,7 +141,7 @@ export interface ProfileWriteOptions {
 /** 编辑个人资料：PUT /auth/profile（body 契约见规格 §14.3） */
 export function updateProfile(dto: UpdateProfileRequestDto, options: ProfileWriteOptions = {}): Promise<User> {
   return request<User>({
-    url: PROFILE_ENDPOINTS.UPDATE_PROFILE,
+    url: '/auth/profile',
     method: 'put',
     data: dto,
     ...(options.silent === true ? { silent: true } : {}),
@@ -153,7 +151,7 @@ export function updateProfile(dto: UpdateProfileRequestDto, options: ProfileWrit
 /** 修改密码：PUT /auth/password；新旧密码策略由表单校验（规格 §14.3） */
 export function changePassword(dto: ChangePasswordRequestDto, options: ProfileWriteOptions = {}): Promise<null> {
   return request<null>({
-    url: PROFILE_ENDPOINTS.CHANGE_PASSWORD,
+    url: '/auth/password',
     method: 'put',
     data: dto,
     ...(options.silent === true ? { silent: true } : {}),

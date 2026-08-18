@@ -7,7 +7,6 @@
 import type { InternalAxiosRequestConfig } from 'axios'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import type { AxiosRequestConfig } from 'axios'
-import { ROLE_ENDPOINTS, PERMISSION_TREE_ENDPOINT } from '@/constants/system/role/role.constants'
 import { configureRequestAdapter } from '@/services/request/request'
 import type { SendRequest } from '@/services/request/request.types'
 import { createMockAdapter, successEnvelope, type MockAdapter } from '@/test/requestTestHelpers'
@@ -53,7 +52,7 @@ describe('listRoles（规格 §14.3：GET /roles）', () => {
     const page = await listRoles({ page: 1, size: 100 })
     expect(page).toEqual({ list: [roleFixture], total: 1, page: 1, size: 100 })
     const config: InternalAxiosRequestConfig = adapter.calls[0]
-    expect(config.url).toBe(ROLE_ENDPOINTS.LIST)
+    expect(config.url).toBe('/roles')
     expect(config.method).toBe('get')
     expect(config.params).toEqual({ page: 1, size: 100 })
   })
@@ -66,7 +65,7 @@ describe('listRoles（规格 §14.3：GET /roles）', () => {
     }
     await listRoles({ keyword: 'admin' }, send)
     expect(sentConfigs).toHaveLength(1)
-    expect(sentConfigs[0]).toMatchObject({ url: ROLE_ENDPOINTS.LIST, method: 'get' })
+    expect(sentConfigs[0]).toMatchObject({ url: '/roles', method: 'get' })
     expect(adapter.calls.length).toBe(0)
   })
 })
@@ -80,7 +79,7 @@ describe('createRole（规格 §14.3：POST /roles）', () => {
     )
     expect(created).toEqual(roleFixture)
     const config: InternalAxiosRequestConfig = adapter.calls[0]
-    expect(config.url).toBe(ROLE_ENDPOINTS.CREATE)
+    expect(config.url).toBe('/roles')
     expect(config.method).toBe('post')
     expect(JSON.parse(config.data as string)).toEqual({ code: 'operator', name: '运营', status: 'enabled' })
     expect(config.silent).toBe(true)
@@ -123,7 +122,7 @@ describe('assignRolePermissions（规格 §14.3：PUT /roles/:id/permissions）'
     const updated = await assignRolePermissions('r-1', { permCodes: ['dashboard:view'] }, { silent: true })
     expect(updated).toEqual(roleFixture)
     const config: InternalAxiosRequestConfig = adapter.calls[0]
-    expect(config.url).toBe(ROLE_ENDPOINTS.ASSIGN_PERMISSIONS.replace(':id', 'r-1'))
+    expect(config.url).toBe('/roles/:id/permissions'.replace(':id', 'r-1'))
     expect(config.method).toBe('put')
     expect(JSON.parse(config.data as string)).toEqual({ permCodes: ['dashboard:view'] })
   })
@@ -136,7 +135,7 @@ describe('getPermissionTree（规格 §14.3：GET /permissions/tree）', () => {
     const tree = await getPermissionTree()
     expect(tree).toEqual(treeFixture)
     const config: InternalAxiosRequestConfig = adapter.calls[0]
-    expect(config.url).toBe(PERMISSION_TREE_ENDPOINT)
+    expect(config.url).toBe('/permissions/tree')
     expect(config.method).toBe('get')
   })
 
@@ -148,7 +147,7 @@ describe('getPermissionTree（规格 §14.3：GET /permissions/tree）', () => {
     }
     await getPermissionTree(send)
     expect(sentConfigs).toHaveLength(1)
-    expect(sentConfigs[0]).toMatchObject({ url: PERMISSION_TREE_ENDPOINT, method: 'get' })
+    expect(sentConfigs[0]).toMatchObject({ url: '/permissions/tree', method: 'get' })
     expect(adapter.calls.length).toBe(0)
   })
 })

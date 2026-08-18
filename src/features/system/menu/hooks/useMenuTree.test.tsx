@@ -10,7 +10,6 @@ import { act, renderHook, waitFor } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { RequestScopeProvider } from '@/components/RequestScopeProvider/RequestScopeProvider'
-import { MENU_ENDPOINTS } from '@/constants/system/menu/menu.constants'
 import type { MenuItem } from '@/types/system/menu/menu.types'
 import { useMenuTree } from './useMenuTree'
 
@@ -50,7 +49,7 @@ describe('useMenuTree（规格 §14.3/§17.24）', () => {
     await waitFor(() => expect(result.current.loading).toBe(false))
     expect(result.current.menus.map((menu) => menu.name)).toEqual(['系统管理'])
     const config = capturedConfig()
-    expect(config.url).toBe(MENU_ENDPOINTS.TREE)
+    expect(config.url).toBe('/menus/tree')
     expect(config.method).toBe('get')
     expect(config.params).toBeUndefined()
     // 请求绑定页签作用域：页签隐藏/关闭/淘汰时统一取消（规格 §7.4-6）

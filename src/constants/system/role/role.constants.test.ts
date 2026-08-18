@@ -1,25 +1,12 @@
 import { describe, expect, test } from 'vitest'
 import {
   ADMIN_ROLE_CODE,
-  PERMISSION_TREE_ENDPOINT,
-  ROLE_ENDPOINTS,
   ROLE_I18N_NAMESPACE,
   ROLE_KEYWORD_FIELDS,
   ROLE_SORT_FIELDS,
 } from './role.constants'
 
 describe('role.constants', () => {
-  test('角色接口路径与 §14.3 一致', () => {
-    expect(ROLE_ENDPOINTS).toEqual({
-      LIST: '/roles',
-      CREATE: '/roles',
-      UPDATE: '/roles/:id',
-      DELETE: '/roles/:id',
-      ASSIGN_PERMISSIONS: '/roles/:id/permissions',
-    })
-    expect(PERMISSION_TREE_ENDPOINT).toBe('/permissions/tree')
-  })
-
   test('sortBy 白名单恰为 code/name/status/createdAt 且无重复（§14.3）', () => {
     expect(ROLE_SORT_FIELDS).toEqual(['code', 'name', 'status', 'createdAt'])
     expect(new Set(ROLE_SORT_FIELDS).size).toBe(ROLE_SORT_FIELDS.length)
