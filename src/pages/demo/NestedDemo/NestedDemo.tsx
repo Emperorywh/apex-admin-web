@@ -12,15 +12,18 @@ import { Button, Form, Input, Space, Steps, Switch } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router'
 import { DEMO_NESTED_I18N_NAMESPACE } from '@/constants/demo/demo.constants'
-import { ROUTE_PATHS } from '@/constants/route.constants'
 import { MENU_NAMESPACE } from '@/i18n/i18n'
 import { PageCard } from '@/components/PageCard/PageCard'
 
-/** 层级描述：路由路径与标题文案 key 一一对应（顺序即层级顺序） */
+/**
+ * 层级描述：路由路径与标题文案 key 一一对应（顺序即层级顺序）。
+ * 路径字面量与 definitions.tsx 演示子树镜像（规格 §4.2 v1.10：业务路由 path 内联于路由定义，
+ * 单页面私有常量按 §3.6 共置于实现文件顶部）。
+ */
 const DEMO_NESTED_LEVELS = [
-  { path: ROUTE_PATHS.DEMO_NESTED_LEVEL1, titleKey: '一级页面' },
-  { path: ROUTE_PATHS.DEMO_NESTED_LEVEL2, titleKey: '二级页面' },
-  { path: ROUTE_PATHS.DEMO_NESTED_LEVEL3, titleKey: '三级页面' },
+  { path: '/demo/nested/level1', titleKey: '一级页面' },
+  { path: '/demo/nested/level1/level2', titleKey: '二级页面' },
+  { path: '/demo/nested/level1/level2/level3', titleKey: '三级页面' },
 ] as const
 
 /** 当前 pathname 对应的层级下标；路由保证命中三者之一，末尾斜杠按同一路径归一 */

@@ -149,8 +149,8 @@ oxlint 并执行全量 `pnpm check:structure`；pre-push 执行 `pnpm typecheck`
 3. **删除 demo 环境变量类型与校验**：`src/vite-env.d.ts` 的 `VITE_DEMO_MODE` 字段；`vite.config.ts` 的
    `DEMO_MODE_VALUES` 与 `assertEnv` 中对应校验；`.env.development` / `.env.production` / `.env.example` 中
    的 `VITE_DEMO_MODE` 行。
-4. **删除演示路由定义**：`src/router/definitions.tsx` 的「演示 > 多级菜单 > 一/二/三级页面」子树；
-   `src/constants/route.constants.ts` 的 `DEMO*` 路由 ID/路径；`src/constants/permission.constants.ts` 的
+4. **删除演示路由定义**：`src/router/definitions.tsx` 的「演示 > 多级菜单 > 一/二/三级页面」子树
+   （业务路由 id/path 已内联于该文件，无需另改 route.constants）；`src/constants/permission.constants.ts` 的
    `DEMO_NESTED_VIEW`；`src/constants/demo/` 目录（demoNested i18n 命名空间）与
    `src/i18n/locales/en-US/demoNested.ts` 资源文件。
 5. **清理周边**：`scripts/check-demo-off.mjs` 与 `package.json` 的 `check:demo-off` 脚本随之移除。

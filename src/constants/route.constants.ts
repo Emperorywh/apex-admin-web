@@ -1,10 +1,11 @@
 /**
- * 路由 ID、路径与稳定回退地址（规格 §3.6 所有权表、§4、§14.2）。
- * 路由定义、守卫、重定向与页签逻辑一律引用本文件；
+ * 框架核心路由 ID、路径与稳定回退地址（规格 §3.6 所有权表、§4、§14.2，v1.10 收缩）。
+ * 只负责被守卫、会话清理、回跳校验、错误页与布局等跨层机制消费的框架核心路由；
+ * 业务页面节点的 id/path 由 src/router/definitions.tsx 直接内联，不在本文件登记。
  * ID 必须全局唯一且稳定，路径为前端静态路由地址（与后端 API 路径无关）。
  */
 
-/** 路由节点 ID：路由树每个节点（含目录节点）的稳定唯一标识（规格 §4.1/§4.2） */
+/** 路由节点 ID：框架核心路由的稳定唯一标识（规格 §4.1/§4.2）；业务路由 id 内联于 definitions.tsx */
 export const ROUTE_IDS = {
   /** 受保护根（BasicLayout 挂载点） */
   ROOT: 'root',
@@ -12,17 +13,7 @@ export const ROUTE_IDS = {
   INDEX: 'index',
   LOGIN: 'login',
   DASHBOARD: 'dashboard',
-  /** 系统管理目录节点 */
-  SYSTEM: 'system',
-  SYSTEM_USER: 'system-user',
-  SYSTEM_ROLE: 'system-role',
-  SYSTEM_MENU: 'system-menu',
-  /** 演示模式目录节点 */
-  DEMO: 'demo',
-  DEMO_NESTED: 'demo-nested',
-  DEMO_NESTED_LEVEL1: 'demo-nested-level1',
-  DEMO_NESTED_LEVEL2: 'demo-nested-level2',
-  DEMO_NESTED_LEVEL3: 'demo-nested-level3',
+  /** 个人中心：仅要求登录、入口在 Header 用户菜单（规格 §14.2） */
   PROFILE: 'profile',
   /** 错误页：仅要求登录、无 permCode，防止错误页自身形成权限循环（规格 §4.2） */
   FORBIDDEN: 'forbidden',
@@ -32,22 +23,12 @@ export const ROUTE_IDS = {
   SERVER_ERROR: 'server-error',
 } as const
 
-/** 路由节点路径：前端静态路由地址（规格 §14.2） */
+/** 路由节点路径：框架核心路由的前端静态路由地址（规格 §14.2）；业务路由 path 内联于 definitions.tsx */
 export const ROUTE_PATHS = {
   /** 受保护根入口；其 index route 固定 replace 到 /dashboard */
   ROOT: '/',
   LOGIN: '/login',
   DASHBOARD: '/dashboard',
-  SYSTEM: '/system',
-  SYSTEM_USER: '/system/user',
-  SYSTEM_ROLE: '/system/role',
-  SYSTEM_MENU: '/system/menu',
-  DEMO: '/demo',
-  DEMO_NESTED: '/demo/nested',
-  DEMO_NESTED_LEVEL1: '/demo/nested/level1',
-  DEMO_NESTED_LEVEL2: '/demo/nested/level1/level2',
-  /** 三级导航叶子页（规格 §14.2：/demo/nested/level1/level2/level3） */
-  DEMO_NESTED_LEVEL3: '/demo/nested/level1/level2/level3',
   PROFILE: '/profile',
   FORBIDDEN: '/403',
   NOT_FOUND: '/404',

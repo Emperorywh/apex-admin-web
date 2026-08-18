@@ -2,6 +2,8 @@
  * 演示种子数据（规格 §13.2/§14.3）：用户/角色/菜单 CRUD 的初始内存数据集与快照恢复基准。
  * 只允许被 src/demo 内部与同目录测试引用；账号权限语义见 demo.constants.ts（§5.3 权威）。
  * 种子时间戳固定，保证快照测试与默认排序（createdAt desc、id asc）确定性。
+ * 业务路由 id/path 直接自持字面量（规格 §4.2 v1.10，同 demo adapter 路径自持先例），
+ * 仅框架核心路由（dashboard）引用 route.constants。
  */
 import { PERMISSIONS, PERMISSION_WILDCARD } from '@/constants/permission.constants'
 import { ROUTE_IDS, ROUTE_PATHS } from '@/constants/route.constants'
@@ -136,8 +138,8 @@ export const DEMO_SEED_MENUS: readonly DemoMenuSeedItem[] = [
     parentId: 'demo-menu-system',
     type: 'page',
     name: '用户管理',
-    routeId: ROUTE_IDS.SYSTEM_USER,
-    path: ROUTE_PATHS.SYSTEM_USER,
+    routeId: 'system-user',
+    path: '/system/user',
     icon: 'local:ic-user',
     sort: 1,
     visible: true,
@@ -153,8 +155,8 @@ export const DEMO_SEED_MENUS: readonly DemoMenuSeedItem[] = [
     parentId: 'demo-menu-system',
     type: 'page',
     name: '角色管理',
-    routeId: ROUTE_IDS.SYSTEM_ROLE,
-    path: ROUTE_PATHS.SYSTEM_ROLE,
+    routeId: 'system-role',
+    path: '/system/role',
     icon: 'local:ic-role',
     sort: 2,
     visible: true,
@@ -170,8 +172,8 @@ export const DEMO_SEED_MENUS: readonly DemoMenuSeedItem[] = [
     parentId: 'demo-menu-system',
     type: 'page',
     name: '菜单管理',
-    routeId: ROUTE_IDS.SYSTEM_MENU,
-    path: ROUTE_PATHS.SYSTEM_MENU,
+    routeId: 'system-menu',
+    path: '/system/menu',
     icon: 'local:ic-menu',
     sort: 3,
     visible: true,
@@ -206,8 +208,8 @@ export const DEMO_SEED_MENUS: readonly DemoMenuSeedItem[] = [
     parentId: 'demo-menu-nested',
     type: 'page',
     name: '一级页面',
-    routeId: ROUTE_IDS.DEMO_NESTED_LEVEL1,
-    path: ROUTE_PATHS.DEMO_NESTED_LEVEL1,
+    routeId: 'demo-nested-level1',
+    path: '/demo/nested/level1',
     sort: 1,
     visible: true,
     status: 'enabled',
@@ -217,8 +219,8 @@ export const DEMO_SEED_MENUS: readonly DemoMenuSeedItem[] = [
     parentId: 'demo-menu-nested',
     type: 'page',
     name: '二级页面',
-    routeId: ROUTE_IDS.DEMO_NESTED_LEVEL2,
-    path: ROUTE_PATHS.DEMO_NESTED_LEVEL2,
+    routeId: 'demo-nested-level2',
+    path: '/demo/nested/level1/level2',
     sort: 2,
     visible: true,
     status: 'enabled',
@@ -228,8 +230,8 @@ export const DEMO_SEED_MENUS: readonly DemoMenuSeedItem[] = [
     parentId: 'demo-menu-nested',
     type: 'page',
     name: '三级页面',
-    routeId: ROUTE_IDS.DEMO_NESTED_LEVEL3,
-    path: ROUTE_PATHS.DEMO_NESTED_LEVEL3,
+    routeId: 'demo-nested-level3',
+    path: '/demo/nested/level1/level2/level3',
     sort: 3,
     visible: true,
     status: 'enabled',

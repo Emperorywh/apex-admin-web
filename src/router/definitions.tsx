@@ -1,7 +1,9 @@
 /**
  * 路由定义唯一来源（规格 §4.1/§4.2）：
  * AppRouteDefinition[] 是 accessRoutes/renderRoutes/menuRoutes 三份投影的唯一输入，
- * 每个节点必须有稳定且全局唯一的 id；路由 ID、路径与回退地址一律引用 route.constants。
+ * 每个节点必须有稳定且全局唯一的 id；框架核心路由（受保护根、登录、仪表盘、个人中心、
+ * 错误页）的 ID/路径/回退地址引用 route.constants，业务页面节点的 id/path 在本文件
+ * 直接内联（规格 §4.2 v1.10），新增页面无需再改动 route.constants。
  *
  * loadPage 只允许 @/pages/... 具名实现路径懒加载（规格 §4.2），禁止从 features 加载页面
  * 或依赖 index 解析；结构门禁按 loadPage 内联动态导入的字面形态校验目标归属，
@@ -64,16 +66,16 @@ export const routeDefinitions: readonly AppRouteDefinition[] = [
       {
         // 系统管理目录节点（规格 §14.2）：无 permCode，仅承担菜单/面包屑分组；
         // 目录菜单只在自身权限满足且至少有一个可见子节点时保留（规格 §4.4）
-        id: ROUTE_IDS.SYSTEM,
-        path: ROUTE_PATHS.SYSTEM,
+        id: 'system',
+        path: '/system',
         meta: { title: '系统管理', icon: `${LOCAL_ICON_PREFIX}ic-management`, caption: '组织与权限' },
         children: [
           {
             // 用户管理（规格 §14.2/§14.3）：查询/分页/Drawer CRUD/角色分配；
             // 页面权限 system:user:list，按钮级权限由页内 <Auth> 门控；
             // i18nNamespaces 声明 user 命名空间（规格 §12）
-            id: ROUTE_IDS.SYSTEM_USER,
-            path: ROUTE_PATHS.SYSTEM_USER,
+            id: 'system-user',
+            path: '/system/user',
             loadPage: () => import('@/pages/system/user/User/User').then(({ User }) => ({ default: User })),
             meta: {
               title: '用户管理',
@@ -86,8 +88,8 @@ export const routeDefinitions: readonly AppRouteDefinition[] = [
             // 角色管理（规格 §14.2/§14.3）：CRUD/权限树分配；viewer 无 system:role:list，
             // 菜单隐藏且直达被守卫重定向 /403（规格 §5.3 矩阵）；
             // i18nNamespaces 声明 role 命名空间（规格 §12）
-            id: ROUTE_IDS.SYSTEM_ROLE,
-            path: ROUTE_PATHS.SYSTEM_ROLE,
+            id: 'system-role',
+            path: '/system/role',
             loadPage: () => import('@/pages/system/role/Role/Role').then(({ Role }) => ({ default: Role })),
             meta: {
               title: '角色管理',
@@ -100,8 +102,8 @@ export const routeDefinitions: readonly AppRouteDefinition[] = [
             // 菜单管理（规格 §14.2/§14.3）：树表维护后端菜单数据，明确不动态改变前端
             // 静态路由；viewer 无 system:menu:list，菜单隐藏且直达被守卫重定向 /403
             // （规格 §5.3 矩阵）；i18nNamespaces 声明 systemMenu 命名空间（规格 §12）
-            id: ROUTE_IDS.SYSTEM_MENU,
-            path: ROUTE_PATHS.SYSTEM_MENU,
+            id: 'system-menu',
+            path: '/system/menu',
             loadPage: () => import('@/pages/system/menu/Menu/Menu').then(({ Menu }) => ({ default: Menu })),
             meta: {
               title: '菜单管理',
@@ -118,30 +120,30 @@ export const routeDefinitions: readonly AppRouteDefinition[] = [
         // 注册于三个层级路由，由 pathname 识别层级，承担三级导航、面包屑链与页签缓存
         // 验证载体。子树权限 demo:nested:view 声明于多级菜单目录节点（规格 §4.4 权限继承：
         // 祖先与叶子 AND），admin/viewer 均持有（规格 §5.3 矩阵）。
-        id: ROUTE_IDS.DEMO,
-        path: ROUTE_PATHS.DEMO,
+        id: 'demo',
+        path: '/demo',
         meta: { title: '演示', icon: `${LOCAL_ICON_PREFIX}ic-flask`, caption: '多级导航示例' },
         children: [
           {
-            id: ROUTE_IDS.DEMO_NESTED,
-            path: ROUTE_PATHS.DEMO_NESTED,
+            id: 'demo-nested',
+            path: '/demo/nested',
             meta: { title: '多级菜单', icon: `${LOCAL_ICON_PREFIX}ic-menulevel`, permCode: PERMISSIONS.DEMO_NESTED_VIEW },
             children: [
               {
-                id: ROUTE_IDS.DEMO_NESTED_LEVEL1,
-                path: ROUTE_PATHS.DEMO_NESTED_LEVEL1,
+                id: 'demo-nested-level1',
+                path: '/demo/nested/level1',
                 loadPage: () => import('@/pages/demo/NestedDemo/NestedDemo').then(({ NestedDemo }) => ({ default: NestedDemo })),
                 meta: { title: '一级页面', i18nNamespaces: [DEMO_NESTED_I18N_NAMESPACE] },
               },
               {
-                id: ROUTE_IDS.DEMO_NESTED_LEVEL2,
-                path: ROUTE_PATHS.DEMO_NESTED_LEVEL2,
+                id: 'demo-nested-level2',
+                path: '/demo/nested/level1/level2',
                 loadPage: () => import('@/pages/demo/NestedDemo/NestedDemo').then(({ NestedDemo }) => ({ default: NestedDemo })),
                 meta: { title: '二级页面', i18nNamespaces: [DEMO_NESTED_I18N_NAMESPACE] },
               },
               {
-                id: ROUTE_IDS.DEMO_NESTED_LEVEL3,
-                path: ROUTE_PATHS.DEMO_NESTED_LEVEL3,
+                id: 'demo-nested-level3',
+                path: '/demo/nested/level1/level2/level3',
                 loadPage: () => import('@/pages/demo/NestedDemo/NestedDemo').then(({ NestedDemo }) => ({ default: NestedDemo })),
                 meta: { title: '三级页面', i18nNamespaces: [DEMO_NESTED_I18N_NAMESPACE] },
               },

@@ -1,10 +1,12 @@
 # Apex Admin Web — 通用后台管理系统模板规格说明
 
-> 版本：v1.9 · 日期：2026-08-18 · 状态：已确认（§20 技术闸门已于 2026-08-15 验证通过）
+> 版本：v1.10 · 日期：2026-08-18 · 状态：已确认（§20 技术闸门已于 2026-08-15 验证通过）
 >
 > 本文档是实现候选基线。§20 技术闸门通过并记录结果后，状态才能改为「已确认」，届时本文档作为实现的唯一需求依据。技术闸门通过前，只允许完成基础工程和验证性 PoC，不进入全部业务页面开发。
 >
 > 所有标注「已定」的条目来自访谈结论；标注「默认」的条目为访谈未覆盖、按行业惯例选定的默认值。如需变更，必须先修改本文档及修订记录，不允许实现与文档长期分叉。
+>
+> v1.10 修订记录（2026-08-18）：业务路由 id/path 不再收敛为 route.constants.ts 常量——与 v1.8 endpoint 内联同型，路由定义（definitions.tsx）直接内联业务节点 id/path 字面量；route.constants.ts 收缩为框架核心路由（受保护根、登录、仪表盘、个人中心、错误页）ID/路径与稳定回退地址的唯一所有者；菜单管理 routeId 可识别全集（MENU_PAGE_ROUTE_IDS）由 `Object.values(ROUTE_IDS)` 派生改为菜单域显式白名单（与 definitions.tsx 页面叶子镜像，剔除原派生混入的目录/登录/错误路由噪音）；demo 种子数据与多级演示页自持路由 id/path 字面量。涉及 §3.6、§4.2、§14.3。
 >
 > v1.9 修订记录（2026-08-18）：移除单元测试与 E2E 测试体系——Vitest/Testing Library/jsdom/@vitest/coverage-v8 与 Playwright 全部删除，质量门禁收敛为「结构检查 + oxlint + 类型检查 + 构建」（`pnpm check` = check:structure → lint → typecheck → build，CI 不再执行单测/E2E/demo-off）；demo 模块同步移除测试专用失效控制器、调用记录、人工延迟与 `window.__APEX_DEMO_E2E__` 可观测性桥；`check:demo-off` 保留为按需构建检查，不再纳入 CI。涉及 §2、§3.1、§3.2、§3.5、§4.4、§13.2、§13.3、§14.3、§16、§19.2、§20。
 >
@@ -283,7 +285,7 @@ scripts/
 
 ### 3.6 Constants 常量管理（已定）
 
-- 有业务或配置语义的魔法数字和字符串不得散落在实现中。请求超时、缓存容量、分页默认值、Storage key、路由 ID/路径、权限码、错误码、状态值、日期格式、正则、长度限制等必须使用具名常量。API endpoint 不在此列：接口路径由各 service 在请求调用点直接内联（§14.3），不收敛为具名常量。
+- 有业务或配置语义的魔法数字和字符串不得散落在实现中。请求超时、缓存容量、分页默认值、Storage key、框架核心路由 ID/路径、权限码、错误码、状态值、日期格式、正则、长度限制等必须使用具名常量。API endpoint 与业务路由 id/path 不在此列：接口路径由各 service 在请求调用点直接内联（§14.3，v1.8）；业务路由节点的 id/path 由路由定义 definitions.tsx 直接内联（§4.2，v1.10）。
 - 应用级稳定常量按关注点放在 `src/constants/*.constants.ts`；同一业务域跨页面、组件和 service 使用的常量放在 `src/constants/<domain>/<domain>.constants.ts`。权限码统一在 `src/constants/permission.constants.ts`，但 demo 账号和权限矩阵只能放在可剔除的 `src/demo/demo.constants.ts`。只供一个页面/组件使用的常量放在同目录 `<Name>.constants.ts`或实现文件顶部。
 - `src/features/<domain>/`根部不得放常量；组件/Hook 私有常量可以与实现紧邻共置。sortBy 白名单和跨层字段限制属于业务域常量，不得在页面、feature 和 service 各复制一份。
 - 常量必须遵循最小可见范围，不能为了“统一”把所有值堆入一个 `constants.ts`。跨层移动常量时同步移动测试并更新唯一所有者。
@@ -297,7 +299,7 @@ scripts/
 | --- | --- |
 | `src/constants/app.constants.ts` | 页签缓存容量、全局进度延迟和应用级容量/时间边界 |
 | `src/constants/request.constants.ts` | 请求超时、稳定错误码、请求协议默认值 |
-| `src/constants/route.constants.ts` | 路由 ID、路径和稳定回退地址 |
+| `src/constants/route.constants.ts` | 框架核心路由（受保护根、登录、仪表盘、个人中心、错误页）的 ID、路径和稳定回退地址；业务路由 id/path 由 definitions.tsx 内联 |
 | `src/constants/storage.constants.ts` | Storage key、前缀和持久化 schema 版本 |
 | `src/constants/permission.constants.ts` | 正式权限码；不得包含账号、假数据或 demo 权限矩阵 |
 
@@ -361,7 +363,7 @@ interface RouteMeta {
 - `meta`投影为 `handle: { meta }`，面包屑使用 Data Router 的 `useMatches()`读取。
 - 目录节点允许无 `loadPage`，只参与匹配、菜单和面包屑。
 - 叶子页面必须有 `loadPage`，由 `React.lazy` + `<Suspense fallback={<PageLoading />}>`加载。
-- `loadPage`必须通过 `@/pages/system/user/User/User`这类具名实现路径导入，禁止从 `features`加载页面、导入页面目录或依赖 `index.ts/index.tsx`解析；路由 ID、路径和回退地址引用 `src/constants/route.constants.ts`。
+- `loadPage`必须通过 `@/pages/system/user/User/User`这类具名实现路径导入，禁止从 `features`加载页面、导入页面目录或依赖 `index.ts/index.tsx`解析；框架核心路由的 ID、路径与回退地址引用 `src/constants/route.constants.ts`，业务页面节点的 `id`与 `path`直接内联于本文件，必须保持全局唯一且稳定。
 - `breadcrumb`默认 true；`hideInTabs`用于登录、错误页和不应生成页签的辅助路由。
 - `/`是受保护 index route，固定 `replace`重定向到 `/dashboard`。
 - 受保护根路由内的 `*`渲染 404；未登录访问任意受保护 URL 先跳登录，登录成功后回原地址并显示 404。
@@ -1002,7 +1004,7 @@ GET    /dashboard/overview            → DashboardOverview
 - 用户名全局唯一且创建后不可修改；email 格式校验；密码最少 8 位且同时含字母和数字。
 - 创建角色：`{ code, name, description?, status }`；编辑角色：`{ name, description?, status }`。code 全局唯一且创建后不可修改。
 - 分配权限：`{ permCodes: string[] }`；后端验证所有权限码存在。
-- 创建/编辑菜单：`{ parentId, type, name, routeId?, path?, permCode?, sort, visible, status }`；directory 不得设置 routeId，page 必须设置可识别的 routeId，button 必须设置 permCode。
+- 创建/编辑菜单：`{ parentId, type, name, routeId?, path?, permCode?, sort, visible, status }`；directory 不得设置 routeId，page 必须设置可识别的 routeId（可识别全集为菜单域显式白名单 `MENU_PAGE_ROUTE_IDS`，与 definitions.tsx 页面叶子镜像），button 必须设置 permCode。
 - 菜单删除存在子节点时返回 RESOURCE_CONFLICT；角色被用户引用或 builtIn 时禁止删除。
 - 用户删除自己、删除最后一个 admin、禁用当前账号均返回 RESOURCE_CONFLICT。
 
