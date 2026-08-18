@@ -163,6 +163,15 @@ export function selectCloseOthersKeys(items: readonly TabItem[], anchorKey: stri
   return items.filter((tab) => !tab.affix && tab.key !== anchorKey).map((tab) => tab.key)
 }
 
+/** 关闭左侧：锚点左侧的全部普通页签（与关闭右侧对称，规格 §9.3） */
+export function selectCloseLeftKeys(items: readonly TabItem[], anchorKey: string): string[] {
+  const anchorIndex = items.findIndex((tab) => tab.key === anchorKey)
+  if (anchorIndex < 0) {
+    return []
+  }
+  return items.filter((tab, index) => !tab.affix && index < anchorIndex).map((tab) => tab.key)
+}
+
 /** 关闭右侧：锚点右侧的全部普通页签 */
 export function selectCloseRightKeys(items: readonly TabItem[], anchorKey: string): string[] {
   const anchorIndex = items.findIndex((tab) => tab.key === anchorKey)

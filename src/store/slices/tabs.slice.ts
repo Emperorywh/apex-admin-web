@@ -65,7 +65,7 @@ export const tabsSlice = createSlice({
       }
     },
     /**
-     * 按 key 批量移除页签（关闭其他/关闭右侧/关闭全部都以此为原语）：
+     * 按 key 批量移除页签（关闭左侧/关闭右侧/关闭其他/关闭全部都以此为原语）：
      * affix 页签永不移除；激活页签被移除时 activeKey 置 null，
      * 由调用方按「右 → 左 → /dashboard」固定顺序决定后继激活（规格 §9.3）。
      */

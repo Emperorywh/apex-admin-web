@@ -1,6 +1,6 @@
 /**
  * 页签栏（规格 §9.3/§11.3）：页签渲染、激活导航与全部页签交互。
- * - 右键菜单四项（刷新当前/关闭其他/关闭右侧/关闭全部），批量关闭永不影响 affix；
+ * - 右键菜单五项（刷新当前/关闭左侧/关闭右侧/关闭其他/关闭全部），批量关闭永不影响 affix；
  *   ContextMenu 键 / Shift+F10 提供键盘等价触发（§11.3）；
  * - dnd-kit 拖拽排序：普通页签之间可拖，affix 禁拖且固定区边界由 computeTabsReorder
  *   最终校验；KeyboardSensor（Space 抬起/落下、方向键移动、Esc 取消）提供键盘拖拽，
@@ -52,6 +52,7 @@ import {
   computeTabsReorder,
   resolveCloseSuccessor,
   selectCloseAllKeys,
+  selectCloseLeftKeys,
   selectCloseOthersKeys,
   selectCloseRightKeys,
   tabLocationTarget,
@@ -64,11 +65,12 @@ const TAB_SCROLL_STEP_PX = 240
 /** 指针拖拽激活距离，单位 px：小于该位移视为点击，避免误触发拖拽 */
 const TAB_DRAG_ACTIVATION_DISTANCE_PX = 4
 
-/** 右键菜单动作 key（规格 §9.3：刷新当前、关闭其他、关闭右侧、关闭全部） */
+/** 右键菜单动作 key（规格 §9.3：刷新当前、关闭左侧、关闭右侧、关闭其他、关闭全部） */
 const TAB_MENU_ACTIONS = {
   REFRESH: 'refresh',
-  CLOSE_OTHERS: 'close-others',
+  CLOSE_LEFT: 'close-left',
   CLOSE_RIGHT: 'close-right',
+  CLOSE_OTHERS: 'close-others',
   CLOSE_ALL: 'close-all',
 } as const
 
@@ -203,6 +205,10 @@ export function TabsBar({ pageContainerRef }: TabsBarProps) {
         removeAndActivate(selectCloseOthersKeys(items, tab.key))
         return
       }
+      if (action === TAB_MENU_ACTIONS.CLOSE_LEFT) {
+        removeAndActivate(selectCloseLeftKeys(items, tab.key))
+        return
+      }
       if (action === TAB_MENU_ACTIONS.CLOSE_RIGHT) {
         removeAndActivate(selectCloseRightKeys(items, tab.key))
         return
@@ -259,8 +265,9 @@ export function TabsBar({ pageContainerRef }: TabsBarProps) {
   const menuItems = useMemo<MenuProps['items']>(
     () => [
       { key: TAB_MENU_ACTIONS.REFRESH, label: t('刷新当前') },
-      { key: TAB_MENU_ACTIONS.CLOSE_OTHERS, label: t('关闭其他') },
+      { key: TAB_MENU_ACTIONS.CLOSE_LEFT, label: t('关闭左侧') },
       { key: TAB_MENU_ACTIONS.CLOSE_RIGHT, label: t('关闭右侧') },
+      { key: TAB_MENU_ACTIONS.CLOSE_OTHERS, label: t('关闭其他') },
       { key: TAB_MENU_ACTIONS.CLOSE_ALL, label: t('关闭全部') },
     ],
     [t],

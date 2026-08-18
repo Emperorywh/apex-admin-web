@@ -1,6 +1,6 @@
 /*
- * 页签栏（规格 §9.3/§11.3；视觉 SPEC_UI2 §6.3 圆角卡片式）：
- * 非激活页签为灰阶浅底 + 次级文字；激活页签为纸面白底 + 主色文字的圆角顶卡片，
+ * 页签栏（规格 §9.3/§11.3；视觉 SPEC_UI2 §6.3 直角卡片式，v1.5 无圆角）：
+ * 非激活页签为灰阶浅底 + 次级文字；激活页签为纸面白底 + 主色文字的直角顶卡片，
  * 底部与内容区视觉相连（激活页签下无分隔线）；栏底色随画布灰。
  * 交互零变更（红线）：dnd/右键/横滚/affix/roving tabindex 全保留；
  * 过渡只依赖纯 CSS transition（150–250ms），不引入依赖挂载 Effect 的 JS 动效。
@@ -59,7 +59,7 @@
   background: var(--ant-color-fill-tertiary);
 }
 
-/* 页签条：横向滚动容器（规格 §9.3 溢出滚动）；页签以圆角顶卡片呈现 */
+/* 页签条：横向滚动容器（规格 §9.3 溢出滚动）；页签以直角顶卡片呈现 */
 .list {
   display: flex;
   align-items: stretch;
@@ -72,7 +72,7 @@
   scrollbar-width: thin;
 }
 
-/* 页签节点：圆角顶卡片；非激活为灰阶浅底 + 次级文字，激活为纸面白底 + 主色文字 */
+/* 页签节点：直角顶卡片（无圆角）；非激活为灰阶浅底 + 次级文字，激活为纸面白底 + 主色文字 */
 .tab {
   position: relative;
   display: inline-flex;
@@ -81,7 +81,7 @@
   padding: 0 12px;
   border: 1px solid transparent;
   border-bottom: none;
-  border-radius: 8px 8px 0 0;
+  border-radius: 0;
   background: var(--ant-color-fill-quaternary);
   color: var(--ant-color-text-secondary);
   cursor: pointer;

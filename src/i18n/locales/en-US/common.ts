@@ -79,8 +79,9 @@ const common: Record<string, string> = {
   // 页签栏（规格 §9.3/§11.3）
   页签: 'Tabs',
   刷新当前: 'Refresh Current',
-  关闭其他: 'Close Others',
+  关闭左侧: 'Close to the Left',
   关闭右侧: 'Close to the Right',
+  关闭其他: 'Close Others',
   关闭全部: 'Close All',
   向左滚动: 'Scroll Left',
   向右滚动: 'Scroll Right',
