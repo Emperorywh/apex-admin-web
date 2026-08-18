@@ -1,7 +1,7 @@
 /**
  * 用户管理接口请求/响应 DTO 权威定义（规格 §14.3）。
  * 用户 CRUD 与角色分配五个接口的 DTO 只在本文件定义一次，
- * 调用端（含 demo adapter）一律 import type 引用，不得复制接口；
+ * 调用端一律 import type 引用，不得复制接口；
  * 响应实体 User / PageResult<User> 是跨层业务实体，权威定义位于
  * src/types/system/user/user.types.ts，此处仅以别名声明 DTO 名称。
  */

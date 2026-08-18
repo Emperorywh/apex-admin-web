@@ -1,7 +1,7 @@
 /**
  * 认证接口请求/响应 DTO 权威定义（规格 §6.3）。
  * login/refresh/logout/profile/password 六个接口的 DTO 只在本文件定义一次，
- * 调用端（含 demo adapter）一律 import type 引用，不得复制接口；
+ * 调用端一律 import type 引用，不得复制接口；
  * GET /auth/profile 的返回实体 ProfileData 是跨层业务实体，权威定义位于
  * src/types/auth/auth.types.ts，此处仅引用。
  */

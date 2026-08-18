@@ -12,7 +12,6 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "check:structure": "node scripts/check-structure.mjs",
-    "check:demo-off": "node scripts/check-demo-off.mjs",
     "lint": "oxlint",
     "typecheck": "tsc -b --noEmit",
     "check": "pnpm check:structure && pnpm lint && pnpm typecheck && pnpm build",

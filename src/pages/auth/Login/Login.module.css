@@ -68,7 +68,7 @@
   color: var(--ant-color-text-heading);
 }
 
-/* 品牌区主体：垂直居中、左对齐；标语 + demo 账号提示 */
+/* 品牌区主体：垂直居中、左对齐；标语 */
 .brandBody {
   position: relative;
   display: flex;

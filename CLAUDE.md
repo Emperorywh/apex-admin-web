@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Apex Admin Web — 基于 React 19.2 + TypeScript + Vite 8 + antd v6 + react-router v8 的通用后台管理系统前端模板（RBAC、多页签保活、i18n、明暗主题、可剔除的演示模式）。
 
-**`docs/SPEC.md` 是唯一需求依据**（v1.9，状态：已确认）。实现不得与规格长期分叉：变更行为必须先改 SPEC 及修订记录，再改代码。规格条文在 README、代码注释中以 `§x.y` 引用；动手修改认证、路由、页签缓存等核心机制前必须先读对应章节。README.md 面向模板接入方（安全边界、部署、demo 移除步骤等），不重复于此。
+**`docs/SPEC.md` 是唯一需求依据**（v1.12，状态：已确认）。实现不得与规格长期分叉：变更行为必须先改 SPEC 及修订记录，再改代码。规格条文在 README、代码注释中以 `§x.y` 引用；动手修改认证、路由、页签缓存等核心机制前必须先读对应章节。README.md 面向模板接入方（安全边界、部署等），不重复于此。
 
 ## 环境与常用命令
 
@@ -18,7 +18,6 @@ Node `>=22.22.0`，pnpm `11.21.0`（`packageManager` 锁定，建议 `corepack e
 | `pnpm build` | `tsc -b && vite build` |
 | `pnpm lint` / `pnpm typecheck` | oxlint / `tsc -b --noEmit` 全项目引用检查 |
 | `pnpm check:structure` | 目录/命名/导入方向/大小写结构门禁（`scripts/check-structure.mjs`） |
-| `pnpm check:demo-off` | 强制 `VITE_DEMO_MODE=off` 构建并扫描产物，确认 demo 模块被整体剔除（按需执行，不进 CI） |
 | `pnpm check` | 完整质量链：structure → lint → typecheck → build（CI 强制执行） |
 
 提交钩子（Husky + lint-staged，全部只读、不 `--fix`）：pre-commit 对暂存 TS/TSX 跑 oxlint + 全量 check:structure；pre-push 跑 typecheck。**Commit message 必须使用简体中文。**
@@ -37,14 +36,14 @@ Node `>=22.22.0`，pnpm `11.21.0`（`packageManager` 锁定，建议 `corepack e
 
 ### 认证与请求状态机（§6、§7 —— 改动前必读原文）
 
-- user slice 是认证单一数据源；redux-persist 只持久化 `accessToken`/`refreshToken`/`sessionSource`（key 前缀 `apex_`），profile/角色/权限码每次整页启动经 `ensureProfile()`（single-flight）重新拉取，不复用旧快照。
+- user slice 是认证单一数据源；redux-persist 只持久化 `accessToken`/`refreshToken`（key 前缀 `apex_`），profile/角色/权限码每次整页启动经 `ensureProfile()`（single-flight）重新拉取，不复用旧快照。
 - 所有 auth loader 第一行必须 `await rehydratedPromise`（`src/store/persist.ts`），消除持久化恢复竞态；父子 loader 可能并行，各自调用同一个 `ensureProfile()`。
 - API 协议：成功 envelope 固定 `code === 0` 且 `data` 存在；失败 envelope 的 `errorCode` 是唯一的程序分支依据（`ApiErrorCode` 稳定枚举）。仅 HTTP 401 + `AUTH_ACCESS_EXPIRED` 触发 single-flight refresh，原请求以 `_authRetried` 标识最多重放一次；`sessionEpoch` 阻止旧会话异步回写新会话。
 - 反馈桥：禁止 antd message/Modal/notification 静态调用；`FeedbackBridge`（antd `App` 子组件）把 `App.useApp()` 实例注册到 `src/services/feedback/uiFeedback.ts`，axios 拦截器只能调用 `uiFeedback`。guard/profile 等早期请求固定 `silent: true`，错误由路由错误页展示。
 
-### 演示模式（三态枚举，非布尔，§13）
+### 演示模式（已于 v1.12 移除）
 
-`VITE_DEMO_MODE = off | force | fallback`，在 `vite.config.ts` 配置加载期校验（dev 与 build 均生效）。`off` 通过静态条件 + 动态 import 让 Rollup 整体剔除 `src/demo/`，`pnpm check:demo-off` 扫描产物哨兵 `APEX_DEMO_SENTINEL` 与 demo 账号数据。演示账号 admin/viewer（**密码任意**），权限差异严格符合 §5.3 矩阵；demo 账号/假数据只允许存在于 `src/demo/`。
+演示模式（`VITE_DEMO_MODE` 三态、`src/demo/` adapter、演示账号、`check:demo-off` 构建检查）已随规格 v1.12 接入真实后端整体移除，不得再引入 demo adapter、演示账号或假数据分支。
 
 ### 状态、持久化与主题（§8、§10）
 
@@ -69,7 +68,6 @@ Node `>=22.22.0`，pnpm `11.21.0`（`packageManager` 锁定，建议 `corepack e
 ## 质量门禁（§16.3）
 
 - 模板**不内置单元测试与 E2E 体系**（v1.9 移除）；质量保障依赖 `pnpm check` 四道静态门禁：结构检查、oxlint、`tsc -b --noEmit` 全项目引用类型检查、生产构建，CI 强制执行。
-- `check:demo-off` 为按需执行的构建产物完整性检查（off 构建剔除 demo 模块），不进 CI。
 - 接入方自建测试时，路径别名等配置须与 §3.5 保持一致。
 
 ## 技术栈红线（§2、§18）

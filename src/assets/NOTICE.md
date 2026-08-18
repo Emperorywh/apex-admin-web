@@ -5,7 +5,7 @@
 
 - `icons/*.svg`：复用自 slash-admin `src/assets/icons/`（MIT）。原文件以 `currentColor`
   着色（前层实色 + `opacity: 0.32` 底层构成双色面性观感，24px 画布）。
-  其中 `ic-role.svg`、`ic-flask.svg` 为本项目按同风格增补的自绘图标（无需第三方许可）。
+  其中 `ic-role.svg` 为本项目按同风格增补的自绘图标（无需第三方许可）。
 - `images/cyan-blur.png`、`images/red-blur.png`：复用自 slash-admin
   `src/assets/images/background/`（MIT），用于设置抽屉光斑装饰背景。
 - `icons/*.iconify.json`：由 `scripts/generate-icon-collection.mjs` 从同目录 SVG

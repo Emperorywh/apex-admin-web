@@ -50,7 +50,6 @@ export const SRC_TOP_LEVEL_NAMES = [
   'components',
   'config',
   'constants',
-  'demo',
   'features',
   'hooks',
   'i18n',
@@ -76,7 +75,6 @@ const FORBIDDEN_IN_FEATURES = [
   'utils',
   'config',
   'i18n',
-  'demo',
   'router',
   'layouts',
 ]
@@ -378,8 +376,7 @@ export function checkStructure(srcDir, allowlistData = {}) {
         add('feature-leaf-content', child, `叶子 feature 目录只允许 components/ 与 hooks/，出现子目录 ${name}`)
         continue
       }
-      // 实现目录名禁令只作用于业务域内部：features 根下的直接子目录是业务域本身，
-      // 其中 demo 域是规格 §13.3 约定的可整体剔除目录（src/features/demo），不受该禁令约束
+      // 实现目录名禁令只作用于业务域内部：features 根下的直接子目录是业务域本身
       if (dir !== 'features' && !isLeaf && FORBIDDEN_IN_FEATURES.includes(name)) {
         add('feature-leaf-content', child, `feature 任意层级不得出现 ${name}/ 目录`)
       }
@@ -471,9 +468,6 @@ export function checkStructure(srcDir, allowlistData = {}) {
       }
       if ((layer === 'pages' || layer === 'layouts') && targetLayer === 'router') {
         add('dependency-direction', rel, `${layer}/ 不得导入 router/：${specifier}`, line)
-      }
-      if (layer === 'demo' && (targetLayer === 'pages' || targetLayer === 'features')) {
-        add('dependency-direction', rel, `demo 不得导入 ${targetLayer}/ 中的 UI 实现：${specifier}`, line)
       }
     }
 

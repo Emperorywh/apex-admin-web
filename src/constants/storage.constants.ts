@@ -22,6 +22,7 @@ export const THEME_BOOT_STORAGE_KEY = 'apex_boot_theme'
  * 迁移失败时清认证字段、保留可解析的界面设置并提示一次恢复失败。
  *
  * 版本历史：v1 初始；v2（2026-08-17）settings 移除 fontSize/fontFamily（规格 v1.6 §10.1），
- * 迁移识别并丢弃这两个遗留字段。
+ * 迁移识别并丢弃这两个遗留字段；v3（2026-08-18）user 移除 sessionSource（规格 v1.12
+ * 演示模式移除），迁移识别并丢弃该遗留字段。
  */
-export const PERSIST_SCHEMA_VERSION = 2
+export const PERSIST_SCHEMA_VERSION = 3

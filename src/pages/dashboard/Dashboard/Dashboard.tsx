@@ -50,7 +50,7 @@ function signedDiff(diff: number): string {
 function deriveStatTrends(overview: DashboardOverview, t: (key: string, options?: Record<string, unknown>) => string) {
   const userGrowth = seriesValues(overview.userGrowth)
   const loginTrend = seriesValues(overview.loginTrend)
-  // 启用用户无独立序列：按当前启用占比对增长序列等比缩放（演示口径的确定性推导）
+  // 启用用户无独立序列：按当前启用占比对增长序列等比缩放（确定性推导）
   const enabledRatio = overview.stats.userCount === 0 ? 0 : overview.stats.enabledUserCount / overview.stats.userCount
   const enabledSeries = userGrowth.map((count) => Math.round(count * enabledRatio))
   const growthDelta =

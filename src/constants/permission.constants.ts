@@ -1,12 +1,11 @@
 /**
  * 正式权限码（规格 §3.6 所有权表、§5.1）。
  * 本文件是全部正式权限码的唯一所有者；页面、组件、守卫与菜单过滤一律引用此处，
- * 禁止出现权限魔法字符串。演示账号与权限矩阵只能放在可整体剔除的 src/demo/，
- * 本文件不得导出任何账号、假数据或 demo 权限矩阵。
+ * 禁止出现权限魔法字符串。
  */
 
 /**
- * 模板必须定义并使用的 16 个权限码（规格 §5.1），格式固定为 `<模块>:<资源>:<动作>`。
+ * 模板必须定义并使用的 15 个权限码（规格 §5.1），格式固定为 `<模块>:<资源>:<动作>`。
  * 前端权限仅改善 UX，后端始终承担最终鉴权。
  */
 export const PERMISSIONS = {
@@ -25,7 +24,6 @@ export const PERMISSIONS = {
   SYSTEM_MENU_CREATE: 'system:menu:create',
   SYSTEM_MENU_UPDATE: 'system:menu:update',
   SYSTEM_MENU_DELETE: 'system:menu:delete',
-  DEMO_NESTED_VIEW: 'demo:nested:view',
 } as const
 
 /** 正式权限码联合类型：由 PERMISSIONS 推导，避免另写一份可能漂移的字符串联合 */

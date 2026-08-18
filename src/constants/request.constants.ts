@@ -1,6 +1,6 @@
 /**
  * 请求协议常量：超时、稳定错误码与请求协议默认值（规格 §3.6 所有权表、§7、§14.3）。
- * axios 实例配置、业务 service 与 demo adapter 一律引用本文件，禁止在调用点内联这些值。
+ * axios 实例配置与业务 service 一律引用本文件，禁止在调用点内联这些值。
  */
 
 /** 请求超时时间，单位：毫秒（规格 §7.4）。axios 实例 timeout 与 refresh 专用实例共用。 */
@@ -11,7 +11,7 @@ export const API_SUCCESS_CODE = 0
 
 /**
  * 跨前后端稳定的机器可读错误码全集（规格 §7.1/§14.4）。
- * 新增错误码必须同步更新接口契约、i18n 映射、demo adapter 和测试；
+ * 新增错误码必须同步更新接口契约与 i18n 映射；
  * 程序分支只能依赖 errorCode，不得依赖 message 文案。
  */
 export const API_ERROR_CODES = {

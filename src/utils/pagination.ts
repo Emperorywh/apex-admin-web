@@ -1,6 +1,6 @@
 /**
  * 分页参数守卫（规格 §14.3）：无业务语义的纯工具。
- * 把任意输入归一化为合法分页参数，供列表查询、demo adapter 与 URL 参数解析共用；
+ * 把任意输入归一化为合法分页参数，供列表查询与 URL 参数解析共用；
  * 默认值与上限的唯一所有者是 request.constants.ts。
  */
 import { PAGE_DEFAULT, PAGE_SIZE_DEFAULT, PAGE_SIZE_MAX } from '@/constants/request.constants'

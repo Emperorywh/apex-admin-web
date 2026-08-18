@@ -1,10 +1,14 @@
 # Apex Admin Web — 通用后台管理系统模板规格说明
 
-> 版本：v1.11 · 日期：2026-08-18 · 状态：已确认（§20 技术闸门已于 2026-08-15 验证通过）
+> 版本：v1.13 · 日期：2026-08-18 · 状态：已确认（§20 技术闸门已于 2026-08-15 验证通过）
 >
 > 本文档是实现候选基线。§20 技术闸门通过并记录结果后，状态才能改为「已确认」，届时本文档作为实现的唯一需求依据。技术闸门通过前，只允许完成基础工程和验证性 PoC，不进入全部业务页面开发。
 >
 > 所有标注「已定」的条目来自访谈结论；标注「默认」的条目为访谈未覆盖、按行业惯例选定的默认值。如需变更，必须先修改本文档及修订记录，不允许实现与文档长期分叉。
+>
+> v1.13 修订记录（2026-08-18）：环境变量文件收敛——移除按模式拆分的 `.env.development` / `.env.production`，改为单一 `.env`（全模式生效：dev 与 build 均加载，入库）+ `.env.example`（模板，入库）；dev 与生产取值有差异时经 `.env.*.local`（不入库）或部署流水线变量覆盖。有效取值不变（dev 与生产原本同为 `/api`）。涉及 §16.1。
+>
+> v1.12 修订记录（2026-08-18）：接入真实后端，演示模式从源码整体移除——删除 `src/demo/`、`src/pages/demo/`、`src/features/demo/`、`src/constants/demo/`、demoNested i18n 资源、`demo:nested:view` 权限码与「演示 > 多级菜单」路由子树；`VITE_DEMO_MODE` 环境变量、`scripts/check-demo-off.mjs` 及请求层动态 adapter 解析器、登录传输扩展（fallback 重放）一并移除；`sessionSource` 字段随演示 adapter 选择机制移除，user 持久化白名单收缩为双 token，schema 版本升至 3（迁移丢弃 `sessionSource` 遗留字段）；§5.3 演示账号矩阵与 §13 整章随之作废；视觉子规格 SPEC_UI2 头部「演示模式标记」与登录页 demo 提示卡同步移除（菜单管理图标列保留，真实后端缺 `icon` 字段时呈现占位）。涉及 §1、§3.1、§3.2、§3.6、§4.3、§5.1、§5.3、§6.1、§6.2、§7、§13、§14.2、§14.3、§14.4、§15、§16.1、§17、§19。
 >
 > v1.11 修订记录（2026-08-18）：页签右键菜单由四项扩为五项——新增「关闭左侧」（关闭锚点页签左侧的全部普通页签，affix 永不受影响，与「关闭右侧」对称）；随主规格本条同步修订视觉子规格 SPEC_UI2 v1.5（页签卡片由圆角改为直角）。涉及 §9.3。
 >
@@ -32,7 +36,7 @@
 
 一个**通用后台管理系统前端模板**，开箱包含：明暗主题、界面设置面板、导航与多级菜单、多语言、Data Router、RBAC 权限、全局状态、axios 封装、多页签以及页面状态保活。
 
-模板不绑定特定后端：通过静态路由 + 权限码完成前端 UX 过滤，后端始终承担最终鉴权。项目内置可在构建时关闭并从产物剔除的演示模式。
+模板不绑定特定后端：通过静态路由 + 权限码完成前端 UX 过滤，后端始终承担最终鉴权。
 
 设计原则：
 
@@ -41,7 +45,7 @@
 - **时序显式**：持久化恢复、认证、刷新 token、权限更新和路由渲染必须按本文状态机执行。
 - **分层清晰**：页面入口、业务 UI、请求服务、类型和常量分别归入顶层目录；各层使用一致的业务域路径保持对应关系，`features`只承载业务组件与业务 Hook。
 - **模板即文档**：示例页面直接演示核心能力和边界处理。
-- **可裁剪**：演示模式、示例页面和图表可独立移除。
+- **可裁剪**：示例页面和图表可独立移除（演示模式已随 v1.12 移除）。
 
 ---
 
@@ -123,9 +127,6 @@ src/
 │   │   │   │       └── UserForm.types.ts
 │   │   │   └── hooks/
 │   │   │       └── useUserList.ts
-│   └── demo/
-│       └── components/
-│           └── DemoBadge/DemoBadge.tsx
 ├── pages/                                # 所有页面入口；按业务域分组
 │   ├── auth/
 │   │   └── Login/
@@ -139,8 +140,6 @@ src/
 │   │   ├── user/User/User.tsx
 │   │   ├── role/Role/Role.tsx
 │   │   └── menu/Menu/Menu.tsx
-│   ├── demo/
-│   │   └── NestedDemo/NestedDemo.tsx
 │   └── error/
 │       ├── Forbidden/Forbidden.tsx
 │       ├── NotFound/NotFound.tsx
@@ -169,11 +168,6 @@ src/
 │       └── menu/
 │           ├── menu.service.ts
 │           └── menu.service.types.ts
-├── demo/                                 # adapter、假数据和 demo 常量；可整体剔除
-│   ├── adapters/
-│   │   └── demo.adapter.ts
-│   ├── fixtures/
-│   └── demo.constants.ts                 # demo 账号与权限矩阵，仅 demo 动态入口引用
 ├── hooks/                                # 跨业务域共享且无单一业务所有者的 Hook
 │   ├── useAuth.ts
 │   ├── useECharts.ts
@@ -250,8 +244,7 @@ scripts/
 | 跨业务域共享组件/Hook | `src/components/`、`src/hooks/` | 必须无单一业务所有者，不得反向依赖页面或 feature |
 | 应用服务、HTTP 基础设施、业务请求、DTO | `src/services/` | 业务请求按同一业务域路径拆分；禁止在 feature 或页面目录定义 API adapter |
 | 跨层业务实体/模型 | `src/types/<domain>/` | 必须有明确业务所有者，不创建无边界 barrel |
-| 应用级/跨层业务常量 | `src/constants/` | 按关注点或业务域拆分；demo 数据除外 |
-| demo adapter、假数据、账号矩阵 | `src/demo/` | 只能由 demo 动态入口引用，并可在 off 构建中整体剔除 |
+| 应用级/跨层业务常量 | `src/constants/` | 按关注点或业务域拆分 |
 
 - 页面文件负责路由入口与业务组件编排，不在 `src/pages/`内建立通用组件库。只被一个页面使用但具有独立 React 组件身份的子组件，仍放入对应 `src/features/<domain>/components/<Name>/`；页面文件夹只共置页面自身的辅助文件。
 - 一个业务组件或 Hook 首次只服务单一业务域时放在该域的 feature 内；被两个或以上业务域直接复用时，必须在同一次变更中提升到 `src/components/`或 `src/hooks/`，补齐独立测试，并移除对原业务域内部状态和 service 的耦合。
@@ -288,7 +281,7 @@ scripts/
 ### 3.6 Constants 常量管理（已定）
 
 - 有业务或配置语义的魔法数字和字符串不得散落在实现中。请求超时、缓存容量、分页默认值、Storage key、框架核心路由 ID/路径、权限码、错误码、状态值、日期格式、正则、长度限制等必须使用具名常量。API endpoint 与业务路由 id/path 不在此列：接口路径由各 service 在请求调用点直接内联（§14.3，v1.8）；业务路由节点的 id/path 由路由定义 definitions.tsx 直接内联（§4.2，v1.10）。
-- 应用级稳定常量按关注点放在 `src/constants/*.constants.ts`；同一业务域跨页面、组件和 service 使用的常量放在 `src/constants/<domain>/<domain>.constants.ts`。权限码统一在 `src/constants/permission.constants.ts`，但 demo 账号和权限矩阵只能放在可剔除的 `src/demo/demo.constants.ts`。只供一个页面/组件使用的常量放在同目录 `<Name>.constants.ts`或实现文件顶部。
+- 应用级稳定常量按关注点放在 `src/constants/*.constants.ts`；同一业务域跨页面、组件和 service 使用的常量放在 `src/constants/<domain>/<domain>.constants.ts`。权限码统一在 `src/constants/permission.constants.ts`。只供一个页面/组件使用的常量放在同目录 `<Name>.constants.ts`或实现文件顶部。
 - `src/features/<domain>/`根部不得放常量；组件/Hook 私有常量可以与实现紧邻共置。sortBy 白名单和跨层字段限制属于业务域常量，不得在页面、feature 和 service 各复制一份。
 - 常量必须遵循最小可见范围，不能为了“统一”把所有值堆入一个 `constants.ts`。跨层移动常量时同步移动测试并更新唯一所有者。
 - 基础常量使用 `UPPER_SNAKE_CASE`；成组枚举值使用 `as const`对象并从其值推导联合类型，避免另写一份可能漂移的字符串联合。
@@ -303,7 +296,7 @@ scripts/
 | `src/constants/request.constants.ts` | 请求超时、稳定错误码、请求协议默认值 |
 | `src/constants/route.constants.ts` | 框架核心路由（受保护根、登录、仪表盘、个人中心、错误页）的 ID、路径和稳定回退地址；业务路由 id/path 由 definitions.tsx 内联 |
 | `src/constants/storage.constants.ts` | Storage key、前缀和持久化 schema 版本 |
-| `src/constants/permission.constants.ts` | 正式权限码；不得包含账号、假数据或 demo 权限矩阵 |
+| `src/constants/permission.constants.ts` | 正式权限码 |
 
 ---
 
@@ -392,7 +385,7 @@ Data Router 默认可能并行执行父子 loader，因此每个受保护 loader
 - 有 token → 必须完成本次启动的 profile；失败按 §6 状态机处理。
 - 匹配链中任一 `permCode`不满足 → `redirect('/403')`。
 - `/login` loader 发现 token 时先执行 `ensureProfile()`；认证有效才跳合法 redirect 或 `/dashboard`，token 无效并完成清理后继续显示登录页。
-- `/auth/profile`网络失败且当前不是 demo 会话 → 路由错误页提供「重试」和「退出登录」，不能把网络故障误判为未登录。
+- `/auth/profile`网络失败 → 路由错误页提供「重试」和「退出登录」，不能把网络故障误判为未登录。
 - 持久化数据解析或迁移失败 → 清理认证字段，保留可解析的界面设置，跳登录并显示一次恢复失败提示。
 
 登录回跳值按以下顺序验证：
@@ -436,7 +429,7 @@ User ──n:n── Role ──n:n── Permission(权限码)
 
 - 权限码格式：`<模块>:<资源>:<动作>`，例如 `system:user:create`。
 - 超级管理员角色标识固定为 `admin`，前端视作拥有 `*`；后端仍逐接口鉴权。
-- 所有正式权限码在 `src/constants/permission.constants.ts`定义，页面禁止出现权限魔法字符串；演示账号与权限矩阵按 §3.6 留在可剔除的 `src/demo/`。
+- 所有正式权限码在 `src/constants/permission.constants.ts`定义，页面禁止出现权限魔法字符串。
 - `/auth/profile`返回 `permissionVersion`。它只用于判断权限快照是否变化，不替代权限码校验。
 
 模板必须定义并使用以下权限码：
@@ -457,7 +450,6 @@ system:menu:list
 system:menu:create
 system:menu:update
 system:menu:delete
-demo:nested:view
 ```
 
 ### 5.2 页面与按钮权限
@@ -477,30 +469,9 @@ demo:nested:view
 - `<Auth>`默认 `mode="hidden"`；`disabled`模式必须由具体需求显式指定。
 - 前端权限仅改善 UX；README 必须醒目标明后端是最终安全边界。
 
-### 5.3 演示账号权限矩阵（验收固定）
+### 5.3 演示账号权限矩阵（已随演示模式于 v1.12 移除）
 
-| 能力 | admin | viewer |
-| --- | --- | --- |
-| Dashboard | ✅ | ✅ |
-| 用户列表/查询 | ✅ | ✅ |
-| 新增、编辑、删除用户 | ✅ | ❌，按钮隐藏 |
-| 分配用户角色 | ✅ | ❌，按钮隐藏 |
-| 角色管理 | ✅ | ❌，菜单隐藏且直达 403 |
-| 菜单管理 | ✅ | ❌，菜单隐藏且直达 403 |
-| 多级菜单演示 | ✅ | ✅ |
-| 个人中心查看/编辑 | ✅ | ✅ |
-
-viewer 的最小权限码固定为：
-
-```
-dashboard:view
-system:user:list
-demo:nested:view
-```
-
-个人中心仅要求登录，不分配额外 permCode。
-
-上述账号名、权限集合和矩阵的实现只能存在于 `src/demo/demo.constants.ts`及其同目录测试中，并由 demo 动态入口引用；正式权限常量文件不得导出任何演示账号数据。
+演示账号 admin/viewer、其权限集合与验收矩阵已随演示模式整体移除（v1.12）。权限判定语义不变：`admin` 角色按 `*` 通配，普通角色按实际 permCodes 判定；个人中心仅要求登录，不分配额外 permCode。
 
 ### 5.4 会话内权限变更
 
@@ -517,15 +488,14 @@ demo:nested:view
 
 ### 6.1 存储与启动
 
-- 双 token、`sessionSource`和 `sessionEpoch`位于 user slice，是认证信息的单一数据源。
-- redux-persist 只持久化 `accessToken`、`refreshToken`、`sessionSource`；用户资料、roles、permCodes、permissionVersion 每次整页启动重新拉取。
+- 双 token 和 `sessionEpoch`位于 user slice，是认证信息的单一数据源。
+- redux-persist 只持久化 `accessToken`、`refreshToken`；用户资料、roles、permCodes、permissionVersion 每次整页启动重新拉取。
 - token 默认落 localStorage。README 必须说明 XSS 风险、CSP 建议及 httpOnly Cookie 替代方案。
-- `sessionSource`取值 `real | demo`，在任何请求 adapter 选择之前完成恢复。
 - `sessionEpoch`每次登录、登出和切换账号时递增，用于阻止旧异步任务回写新会话；它本身不要求跨刷新延续。
 
 ### 6.2 登录、刷新和登出状态机
 
-- 登录：`POST /auth/login` → 保存 token/source、递增 epoch → `GET /auth/profile` → 生成菜单 → 合法 redirect 或 `/dashboard`。
+- 登录：`POST /auth/login` → 保存 token、递增 epoch → `GET /auth/profile` → 生成菜单 → 合法 redirect 或 `/dashboard`。
 - accessToken 失效的唯一触发条件：HTTP 401 且 `errorCode === 'AUTH_ACCESS_EXPIRED'`。
 - login、refresh、logout 请求固定 `skipAuthRefresh: true`，不能触发刷新流程。
 - refresh 使用不安装业务响应拦截器的专用 axios 实例，避免刷新请求再次进入自己；它仍复用 baseURL、timeout 和 sessionSource adapter 选择。
@@ -576,7 +546,7 @@ PUT /auth/password
 ```ts
 /**
  * errorCode 是跨前后端稳定的机器可读标识。
- * 新增错误码必须同步更新接口契约、i18n 映射、demo adapter 和测试。
+ * 新增错误码必须同步更新接口契约与 i18n 映射。
  */
 type ApiErrorCode =
   | 'VALIDATION_FAILED'
@@ -821,33 +791,9 @@ Fullscreen 是浏览器瞬时状态，明确属于 app slice，不属于 setting
 
 ---
 
-## 13. 演示模式
+## 13. 演示模式（已移除）
 
-### 13.1 构建模式
-
-`VITE_DEMO_MODE`不是布尔值，固定为：
-
-- `off`：不允许 demo；构建时不得包含 demo chunk、账号和假数据。
-- `force`：所有受支持请求直接走 demo adapter。
-- `fallback`：先请求真实登录；仅网络级失败时提示并切换 demo，再重放一次登录。业务错误不切换。
-
-开发环境默认 `fallback`，生产示例部署可用 `force`，真实生产默认 `off`。
-
-### 13.2 会话与 adapter
-
-- demo 提供 `admin`、`viewer`两个账号，密码任意；权限严格符合 §5.3。
-- 登录 API 服务负责 fallback：真实 adapter 网络失败后 dispatch `sessionSource = demo`，再以 demo adapter 重试一次。普通响应拦截器不得隐式切 adapter。
-- `sessionSource`随双 token 持久化。刷新页面后，首个 profile 请求之前已恢复来源，因此 demo 会话继续走 demo adapter。
-- demo refresh endpoint 支持 token 过期和旋转（401 single-flight 链路可手工验证）。
-- CRUD 修改内存数据并同步版本化 localStorage 快照；加载时校验 schemaVersion，损坏或旧版本无法迁移时恢复种子数据并提示。
-- 登出清 token、sessionSource 和 demo 数据运行态；settings 保留。是否清 CRUD 快照由登出确认框明确选择，默认保留以便继续演示。
-- 页面 Header 显示常驻「演示模式」Badge。
-
-### 13.3 可剔除
-
-- `VITE_DEMO_MODE=off`必须通过静态条件和动态 import 使 Rollup 完全移除 demo 模块。
-- README 另提供源码移除步骤：删除 `src/demo/`、`src/pages/demo/`和 `src/features/demo/`，再删除 adapter 注册入口、demo 环境变量类型与演示路由定义。
-- 提供按需执行的 off 构建检查脚本（`pnpm check:demo-off`）：产物不包含约定哨兵字符串 `APEX_DEMO_SENTINEL`和 demo 账号数据；v1.9 起不再纳入 CI，发布前按需执行。
+演示模式（`VITE_DEMO_MODE` 三态、demo adapter、演示账号、CRUD 快照、Header「演示模式」Badge、登录页演示账号提示、`check:demo-off` 构建检查）已随 v1.12 接入真实后端从源码整体移除。本章与 §5.3 仅作历史记录保留；`sessionSource` 及动态 adapter 解析器等支撑机制一并移除。
 
 ---
 
@@ -960,12 +906,11 @@ interface DashboardOverview {
 
 | 页面 | 路由 | 页面权限 | 要点 |
 | --- | --- | --- | --- |
-| 登录 | `/login` | 公开 | 表单、合法回跳、demo 提示 |
+| 登录 | `/login` | 公开 | 表单、合法回跳 |
 | Dashboard | `/dashboard` | `dashboard:view` | affix、统计卡和三类图表 |
 | 用户管理 | `/system/user` | `system:user:list` | 查询、分页、Drawer CRUD、角色分配 |
 | 角色管理 | `/system/role` | `system:role:list` | CRUD、权限树 |
 | 菜单管理 | `/system/menu` | `system:menu:list` | 树表；明确不改变前端静态路由 |
-| 多级菜单 | `/demo/nested/level1/level2/level3` | `demo:nested:view` | 三级导航、面包屑、缓存验证 |
 | 个人中心 | `/profile` | 仅登录 | 资料编辑、修改密码 |
 | 异常页 | `/403` `/404` `/500` | 仅登录、无 permCode | 守卫/未匹配/错误边界 |
 
@@ -973,7 +918,7 @@ interface DashboardOverview {
 
 分页查询参数统一为：`page=1&size=10&keyword=&sortBy=&sortOrder=asc|desc`。用户列表的 sortBy 白名单为 `username/displayName/status/createdAt`，角色列表为 `code/name/status/createdAt`；未传 sortBy 时统一按 `createdAt desc`。keyword 去除首尾空白后，对用户名/显示名或角色 code/name 做不区分大小写的包含匹配。非法 page、size、sortBy、sortOrder 返回 VALIDATION_FAILED。菜单树不分页，兄弟节点按 `sort asc`、`id asc`稳定排序。
 
-实现时，共享分页默认值/上限由 `src/constants/request.constants.ts`统一定义；各资源的 sortBy 白名单与字段限制放在对应 `src/constants/<domain>/<domain>.constants.ts`，页面、feature 组件/Hook、真实 service 和 demo adapter 不得重复写这些字面量。
+实现时，共享分页默认值/上限由 `src/constants/request.constants.ts`统一定义；各资源的 sortBy 白名单与字段限制放在对应 `src/constants/<domain>/<domain>.constants.ts`，页面、feature 组件/Hook 与 service 不得重复写这些字面量。
 
 ```
 GET    /users                         → PageResult<User>
@@ -997,7 +942,7 @@ DELETE /menus/:id                     → null
 GET    /dashboard/overview            → DashboardOverview
 ```
 
-上表路径是后端接口契约：各 service 在请求调用点直接内联路径字符串，URL 与请求函数同文件定义，不收敛为具名常量；`src/demo/adapters/`路由表在 demo 模块内自持同名路径，与真实 service 的一致性由「demo 路由表与 service 请求调用点同文件维护」的约定保障（v1.9 起无自动化回归）。请求/响应 DTO 的权威定义位于 `src/services/<domain>/<name>.service.types.ts`，demo adapter 使用 `import type`引用；`src/demo/`不得导入 `src/pages/`或 `src/features/`中的 UI 实现。
+上表路径是后端接口契约：各 service 在请求调用点直接内联路径字符串，URL 与请求函数同文件定义，不收敛为具名常量。请求/响应 DTO 的权威定义位于 `src/services/<domain>/<name>.service.types.ts`，调用端使用 `import type`引用，不得复制接口。
 
 写入契约：
 
@@ -1027,7 +972,7 @@ GET    /dashboard/overview            → DashboardOverview
 
 `VALIDATION_FAILED.details`固定为 `{ fields: Array<{ field: string; message: string }> }`。前端只把已知 field 映射到表单项；未知字段显示页面级错误。
 
-HTTP 401/403 之外即使 envelope 误带同名 errorCode，也不得触发认证状态机。demo adapter 必须使用相同 HTTP/errorCode/envelope 契约。
+HTTP 401/403 之外即使 envelope 误带同名 errorCode，也不得触发认证状态机。
 
 ---
 
@@ -1037,7 +982,7 @@ HTTP 401/403 之外即使 envelope 误带同名 errorCode，也不得触发认�
 - `useECharts(ref, option, { active })`负责 init/dispose、ResizeObserver、防抖 resize 和 Activity 恢复。
 - 图表颜色读取 antd token；主题切换时激活图表立即重建，隐藏图表标记后延迟到激活重建。
 - 容器从 `display:none`恢复后必须在下一 animation frame 调用 resize。
-- Dashboard 数据统一来自 `/dashboard/overview`，demo/真实接口形状一致。
+- Dashboard 数据统一来自 `/dashboard/overview`。
 
 ---
 
@@ -1048,10 +993,9 @@ HTTP 401/403 之外即使 envelope 误带同名 errorCode，也不得触发认�
 | 变量 | 暴露客户端 | 取值/用途 |
 | --- | --- | --- |
 | `VITE_API_BASE_URL` | 是 | 开发默认 `/api` |
-| `VITE_DEMO_MODE` | 是 | `off | force | fallback` |
 | `PROXY_TARGET` | 否 | 仅 Vite dev server 代理目标 |
 
-- 提供 `.env.development`、`.env.production`、`.env.example`，不提交 `.env.*.local`。
+- 提供全模式生效的 `.env` 与模板 `.env.example`（均入库），不提交 `.env.*.local`；dev 与生产取值有差异时经 `.env.*.local` 或部署流水线变量覆盖（v1.13 收敛，不再按模式拆分文件）。
 - Vite config 使用 `loadEnv(mode, process.cwd(), '')`读取 `PROXY_TARGET`，不能改名为 `VITE_PROXY_TARGET`。
 - `vite-env.d.ts`启用严格 ImportMetaEnv，所有枚举值在启动时校验；非法值使 dev/build 失败。
 - `/api`代理到 PROXY_TARGET，`changeOrigin: true`。
@@ -1101,7 +1045,7 @@ prepare     husky
 5. refresh 期间登出/切账号，旧结果因 epoch 不匹配被丢弃。
 6. 普通 403 不刷新 profile；AUTH_PERMISSION_CHANGED 才刷新且防递归。
 7. 权限收窄后立即关闭失权页签，当前页 replace 到 403。
-8. demo fallback 后刷新仍保持 demo adapter；off 构建无 demo 代码。
+8. ~~demo fallback 后刷新仍保持 demo adapter；off 构建无 demo 代码。~~（已随演示模式于 v1.12 移除，编号保留以稳定后续条文引用）
 9. 同路由不同 query 的页签分别读取自己的 location/search 和组件状态。
 10. hash 变化复用当前页签；search 规范化后决定是否复用。
 11. Activity 隐藏会清理 Effect；视频、iframe、Portal 等 DOM 副作用显式暂停/关闭。
@@ -1142,13 +1086,12 @@ prepare     husky
 
 ### 19.1 功能验收
 
-- [ ] 将 `VITE_DEMO_MODE`设为 `force`后执行 `pnpm dev`，可使用 admin/viewer 任意密码登录；权限差异严格符合 §5.3。
 - [ ] 登录 → 合法回跳 → 菜单过滤 → 用户 CRUD/角色分配 → 登出完整走通。
 - [ ] `/`固定 replace 到 `/dashboard`；刷新深层路由不先闪到登录页。
 - [ ] viewer 可进入用户列表但看不到新增、编辑、删除、分配角色；直达角色/菜单路由进入 403。
 - [ ] 亮/暗/跟随系统切换实时生效；刷新时不出现相反主题底色。
 - [ ] 所有设置实时生效并按 §8 白名单持久化；Fullscreen 不持久化。
-- [ ] 侧边/顶部布局热切换；三级菜单、面包屑和页签选中链一致。
+- [ ] 侧边/顶部布局热切换；面包屑和页签选中链一致。
 - [ ] `/system/user?id=1`与 `?id=2`可同时打开，分别保持表单状态，并分别读取正确 search params。
 - [ ] Activity 隐藏页 Effect 被清理、显示后恢复；视频/Portal/ECharts 不残留异常行为。
 - [ ] 普通缓存第 11 个触发 LRU；页签仍在，再激活时状态重置；affix 和当前页不淘汰。
@@ -1174,9 +1117,8 @@ prepare     husky
 - [ ] 魔法数字和字符串已按 §3.6 收敛到最小作用域的具名常量；不存在单体全局 `constants.ts`杂物桶。
 - [ ] package.json 声明 engines 与 packageManager，CI 使用 frozen lockfile。
 - [ ] Husky/lint-staged 对暂存 TS/TSX 执行 oxlint，并执行全量结构检查；所有钩子只读检查，不主动格式化或修改代码。
-- [ ] `VITE_DEMO_MODE=off`构建产物不含 `APEX_DEMO_SENTINEL`、demo 账号或 demo chunk。
 - [ ] 按 README 的生产服务器配置直接刷新 `/system/user`仍返回应用并正确路由。
-- [ ] README 包含后端最终鉴权、token XSS 风险、Activity 页面约束、环境变量、demo 模式及 SPA fallback 说明。
+- [ ] README 包含后端最终鉴权、token XSS 风险、Activity 页面约束、环境变量及 SPA fallback 说明。
 
 ---
 

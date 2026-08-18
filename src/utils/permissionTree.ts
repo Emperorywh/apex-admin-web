@@ -1,8 +1,7 @@
 /**
  * 权限树纯函数工具（规格 §14.1 PermissionNode）。
- * 叶子权限码收集被角色分配权限 Drawer（勾选初始值推导与提交载荷）与
- * demo adapter（分配权限的权限码存在性校验）共用；
- * 不依赖 React，保持纯函数以便跨层复用与独立测试。
+ * 叶子权限码收集被角色分配权限 Drawer（勾选初始值推导与提交载荷）使用；
+ * 不依赖 React，保持纯函数以便跨层复用。
  */
 import type { PermissionNode } from '@/types/system/role/role.types'
 

@@ -6,16 +6,14 @@
  * - 拦截器负责逐次尝试的横切逻辑（认证头、envelope→ApiError 归一、401/403 状态机与统一提示）；
  * - request() 包装负责每个逻辑请求的编排（去重、作用域、loading 租约、signal 合流），
  *   因此同一请求经历 401 等待与重放期间全局进度只计一次；
- * - refresh 使用不安装业务拦截器的专用实例，仍复用 baseURL、timeout 与 adapter 选择（规格 §6.2）；
+ * - refresh 使用不安装业务拦截器的专用实例，仍复用 baseURL 与 timeout（规格 §6.2）；
  * - 所有运行态编排在 createRequestRuntime 创建的实例内隔离，默认单例经 getDefaultRequestRuntime 懒创建。
  */
 import axios, {
   AxiosError,
-  type AxiosAdapter,
   type AxiosInstance,
   type AxiosRequestConfig,
   type AxiosResponse,
-  type InternalAxiosRequestConfig,
 } from 'axios'
 import type { UnknownAction } from '@reduxjs/toolkit'
 import { API_ERROR_CODES, API_SUCCESS_CODE, REQUEST_TIMEOUT_MS } from '@/constants/request.constants'
@@ -30,37 +28,19 @@ import { registerScopeController } from './requestScope'
 import type { RequestOptions, RequestStore } from './request.types'
 import { runSessionCleanup } from './sessionCleanup'
 
-/** 动态 adapter 选择器：按请求配置（含 sessionSource 恢复结果）选择 demo/真实 adapter；由演示模式任务注册 */
-export type RequestAdapterResolver = (config: InternalAxiosRequestConfig) => AxiosAdapter | undefined
-
-let requestAdapterResolver: RequestAdapterResolver | null = null
-
-/** 注册/清空动态 adapter 选择器；主实例与 refresh 实例共用同一选择结果（规格 §6.2） */
-export function configureRequestAdapter(resolver: RequestAdapterResolver | null): void {
-  requestAdapterResolver = resolver
-}
-
-/** 包装共享 adapter：每次请求先问解析器，未注册或未命中时回落显式 adapter 或 axios 默认实现 */
-function createSharedAdapter(fallback?: AxiosAdapter): AxiosAdapter {
-  return (config) => {
-    const resolved = requestAdapterResolver?.(config)
-    return (resolved ?? fallback ?? axios.getAdapter(axios.defaults.adapter))(config)
-  }
-}
-
 /** 请求运行时：绑定一个 store 的全部请求编排状态 */
 export interface RequestRuntime {
   /** 业务主实例：认证头拦截器 + envelope/状态机响应拦截器 */
   readonly instance: AxiosInstance
-  /** refresh 专用实例：不安装业务响应拦截器，复用 baseURL/timeout/adapter 选择 */
+  /** refresh 专用实例：不安装业务响应拦截器，复用 baseURL/timeout */
   readonly refreshInstance: AxiosInstance
   /** 发起一个业务请求：envelope 解包后返回 data */
   request<T>(config: AxiosRequestConfig): Promise<T>
 }
 
 export interface CreateRequestRuntimeOptions {
-  /** 显式 adapter（测试注入用）；与动态解析器同时存在时解析器优先 */
-  adapter?: AxiosAdapter
+  /** 显式 axios adapter（测试注入用）；缺省走 axios 默认实现 */
+  adapter?: AxiosRequestConfig['adapter']
 }
 
 /** 全局 loading 租约：逻辑 requestId 只登记一次，结束时删除；请求结束路径统一释放（规格 §7.4-8/§17.25） */
@@ -69,12 +49,11 @@ interface LoadingLease {
 }
 
 export function createRequestRuntime(store: RequestStore, options: CreateRequestRuntimeOptions = {}): RequestRuntime {
-  // 两实例共享同一份实例配置与 adapter 选择（规格 §6.2）
-  const sharedAdapter = createSharedAdapter(options.adapter)
+  // 两实例共享同一份实例配置（规格 §6.2）
   const sharedConfig = {
     baseURL: import.meta.env.VITE_API_BASE_URL,
     timeout: REQUEST_TIMEOUT_MS,
-    adapter: sharedAdapter,
+    ...(options.adapter !== undefined ? { adapter: options.adapter } : {}),
   }
   const instance = axios.create(sharedConfig)
   const refreshInstance = axios.create(sharedConfig)
@@ -119,8 +98,8 @@ export function createRequestRuntime(store: RequestStore, options: CreateRequest
     const startUser = store.getState().user
     const epochAtStart = startUser.sessionEpoch
     try {
-      const { refreshToken, sessionSource } = startUser
-      if (!refreshToken || !sessionSource) {
+      const { refreshToken } = startUser
+      if (!refreshToken) {
         throw createApiError({
           errorCode: API_ERROR_CODES.AUTH_REFRESH_EXPIRED,
           message: '缺少可用的 refreshToken，会话已失效',
@@ -140,7 +119,7 @@ export function createRequestRuntime(store: RequestStore, options: CreateRequest
       if (store.getState().user.sessionEpoch !== epochAtStart) {
         return
       }
-      store.dispatch(tokensStored({ accessToken, refreshToken: rotatedRefreshToken, sessionSource }) as UnknownAction)
+      store.dispatch(tokensStored({ accessToken, refreshToken: rotatedRefreshToken }) as UnknownAction)
     } catch (error) {
       // epoch 已变化说明登出/切账号已发生：只丢弃旧结果，不清理新会话（规格 §17.5）
       if (store.getState().user.sessionEpoch === epochAtStart) {

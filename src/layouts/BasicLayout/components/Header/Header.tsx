@@ -8,8 +8,8 @@
  * - 窄视口（<768px）时全屏/语言/主题三项收入「更多」菜单（规格 §11.1），
  *   用户菜单与设置入口保持直达。
  */
-import { App, Avatar, Button, Dropdown } from 'antd'
-import { lazy, Suspense, createElement, useCallback, useMemo, useState, type ReactNode } from 'react'
+import { Avatar, Button, Dropdown } from 'antd'
+import { createElement, useCallback, useMemo, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import { useMatches, useNavigate } from 'react-router'
@@ -27,7 +27,6 @@ import {
   User,
   type LucideIcon,
 } from 'lucide-react'
-import { SESSION_SOURCES } from '@/constants/auth/auth.constants'
 import { ROUTE_PATHS } from '@/constants/route.constants'
 import { appI18n, changeAppLanguage, COMMON_NAMESPACE, MENU_NAMESPACE } from '@/i18n/i18n'
 import { useFullscreen } from '@/hooks/useFullscreen'
@@ -43,17 +42,6 @@ import {
 } from '@/store/slices/settings.slice'
 import type { RootState } from '@/store/store'
 import styles from './Header.module.css'
-
-/**
- * 演示模式 Badge（规格 §13.2/§13.3）：off 构建下静态条件使动态 import 被 Rollup 剔除，
- * demo 模块完全不进入产物；force/fallback 构建懒加载组件（demo 会话时自渲染，否则 null）。
- */
-const DemoBadgeLazy =
-  import.meta.env.VITE_DEMO_MODE === 'off'
-    ? null
-    : lazy(() =>
-        import('@/features/demo/components/DemoBadge/DemoBadge').then((module) => ({ default: module.DemoBadge })),
-      )
 
 /** 左侧触发按钮配置：icon-only 按钮必须携带可访问名称（规格 §11.3） */
 export interface HeaderTrigger {
@@ -108,13 +96,10 @@ export function Header({ trigger, navItems, onLogout, onOpenSettings, isMobile }
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const matches = useMatches()
-  const { modal } = App.useApp()
   const themeMode = useSelector((state: RootState) => state.settings.themeMode)
   const breadcrumbEnabled = useSelector((state: RootState) => state.settings.breadcrumbEnabled)
   const language = useSelector((state: RootState) => state.settings.language)
   const displayName = useSelector((state: RootState) => state.user.user?.displayName)
-  const sessionSource = useSelector((state: RootState) => state.user.sessionSource)
-  const isDemoSession = sessionSource === SESSION_SOURCES.DEMO
   const { fullscreen, toggle: toggleFullscreen } = useFullscreen()
   const [loggingOut, setLoggingOut] = useState(false)
 
@@ -134,37 +119,17 @@ export function Header({ trigger, navItems, onLogout, onOpenSettings, isMobile }
     [extraNamespaces, dispatch],
   )
 
-  /** 执行登出；勾选清除时先移除 demo CRUD 快照并重置内存数据集（默认保留，规格 §13.2） */
-  const runLogout = useCallback(
-    async (clearDemoSnapshot: boolean): Promise<void> => {
+  /** 执行登出：登出请求进行中禁止重复触发（loading 态经 setLoggingOut 维持） */
+  const handleLogout = useCallback((): void => {
+    void (async () => {
       setLoggingOut(true)
       try {
-        if (import.meta.env.VITE_DEMO_MODE !== 'off' && clearDemoSnapshot) {
-          const { clearDemoDataOnLogout } = await import('@/demo/demoData')
-          clearDemoDataOnLogout()
-        }
         await onLogout()
       } finally {
         setLoggingOut(false)
       }
-    },
-    [onLogout],
-  )
-
-  const handleLogout = useCallback((): void => {
-    // demo 会话登出：确认框选择是否同时清除 CRUD 快照，默认保留（规格 §13.2）；
-    // off 构建下静态条件为假，动态 import 与确认框整体剔除（规格 §13.3）
-    if (import.meta.env.VITE_DEMO_MODE !== 'off' && isDemoSession) {
-      void (async () => {
-        const { confirmDemoLogout } = await import(
-          '@/features/demo/components/DemoLogoutConfirm/DemoLogoutConfirm'
-        )
-        confirmDemoLogout({ modal, onConfirm: (clearSnapshot) => runLogout(clearSnapshot) })
-      })()
-      return
-    }
-    void runLogout(false)
-  }, [isDemoSession, modal, runLogout])
+    })()
+  }, [onLogout])
 
   const translateCommon = useCallback((key: string): string => t(key, { ns: COMMON_NAMESPACE }), [t])
   const translateMenu = useCallback((key: string): string => t(key, { ns: MENU_NAMESPACE }), [t])
@@ -247,11 +212,6 @@ export function Header({ trigger, navItems, onLogout, onOpenSettings, isMobile }
       {/* 全局进度条（规格 §7.4-8）：fixed 定位，随顶栏挂载 */}
       <GlobalProgress />
       <div className={styles.actions}>
-        {DemoBadgeLazy !== null && (
-          <Suspense fallback={null}>
-            <DemoBadgeLazy />
-          </Suspense>
-        )}
         {isMobile ? (
           <Dropdown menu={{ items: moreMenuItems }} trigger={['click']}>
             <Button type="text" className={styles.iconButton} aria-label={translateCommon('更多')}>

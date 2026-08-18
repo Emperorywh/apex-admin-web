@@ -41,8 +41,6 @@ const common: Record<string, string> = {
   面向企业场景的现代后台管理起点: 'A modern starting point for enterprise admin systems',
   欢迎回来: 'Welcome back',
   使用账号密码登录: 'Sign in with your account and password',
-  演示账号: 'Demo accounts',
-  密码任意: 'any password',
   // API errorCode 本地化（规格 §7.1/§7.4）：键与 src/i18n/errorTexts.ts 的映射一一对应
   请求参数校验失败: 'Request validation failed',
   用户名或密码错误: 'Incorrect username or password',
@@ -114,14 +112,6 @@ const common: Record<string, string> = {
   当前浏览器不支持全屏功能: 'Fullscreen is not supported by this browser.',
   '无法切换全屏，可能被浏览器权限策略拒绝':
     'Unable to toggle fullscreen. It may be blocked by a browser permission policy.',
-  // 演示模式（规格 §13）
-  演示模式: 'Demo Mode',
-  '无法连接真实后端，已切换到演示模式': 'Real backend unreachable. Switched to demo mode.',
-  '演示数据快照不可用，已恢复初始演示数据': 'Demo data snapshot unavailable. Initial demo data restored.',
-  退出登录确认: 'Confirm Sign Out',
-  '演示会话数据（用户管理增删改快照）默认保留，可继续演示。':
-    'Demo session data (user CRUD snapshot) is kept by default so the demo can continue.',
-  同时清除演示数据快照: 'Also clear the demo data snapshot',
 }
 
 export default common

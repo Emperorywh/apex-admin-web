@@ -7,7 +7,7 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 
 /** 应用初始化状态：由 store 启动闸门写入，应用外壳消费（规格 §4.3/§8.2/§17.22） */
 export interface AppInitializationState {
-  /** 持久化恢复是否完成：auth loader 必须等待 rehydratedPromise 后才读取 token 与 sessionSource */
+  /** 持久化恢复是否完成：auth loader 必须等待 rehydratedPromise 后才读取 token */
   rehydrated: boolean
   /**
    * 上次持久化恢复是否发生降级（JSON 损坏/迁移抛错/storage 不可用）。

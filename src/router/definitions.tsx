@@ -12,7 +12,6 @@
  * 容器挂载 BasicLayout 承担渲染。
  */
 import { DASHBOARD_I18N_NAMESPACE } from '@/constants/dashboard/dashboard.constants'
-import { DEMO_NESTED_I18N_NAMESPACE } from '@/constants/demo/demo.constants'
 import { PERMISSIONS } from '@/constants/permission.constants'
 import { PROFILE_I18N_NAMESPACE } from '@/constants/profile/profile.constants'
 import { ROUTE_IDS, ROUTE_PATHS } from '@/constants/route.constants'
@@ -111,43 +110,6 @@ export const routeDefinitions: readonly AppRouteDefinition[] = [
               permCode: PERMISSIONS.SYSTEM_MENU_LIST,
               i18nNamespaces: [MENU_I18N_NAMESPACE],
             },
-          },
-        ],
-      },
-      {
-        // 多级菜单演示（规格 §14.2）：演示目录 > 多级菜单目录 > 三个层级叶子页面，
-        // 构成三级菜单（演示/多级菜单/层级页面，§19.1 验收项）；同一 NestedDemo 实现
-        // 注册于三个层级路由，由 pathname 识别层级，承担三级导航、面包屑链与页签缓存
-        // 验证载体。子树权限 demo:nested:view 声明于多级菜单目录节点（规格 §4.4 权限继承：
-        // 祖先与叶子 AND），admin/viewer 均持有（规格 §5.3 矩阵）。
-        id: 'demo',
-        path: '/demo',
-        meta: { title: '演示', icon: `${LOCAL_ICON_PREFIX}ic-flask`, caption: '多级导航示例' },
-        children: [
-          {
-            id: 'demo-nested',
-            path: '/demo/nested',
-            meta: { title: '多级菜单', icon: `${LOCAL_ICON_PREFIX}ic-menulevel`, permCode: PERMISSIONS.DEMO_NESTED_VIEW },
-            children: [
-              {
-                id: 'demo-nested-level1',
-                path: '/demo/nested/level1',
-                loadPage: () => import('@/pages/demo/NestedDemo/NestedDemo').then(({ NestedDemo }) => ({ default: NestedDemo })),
-                meta: { title: '一级页面', i18nNamespaces: [DEMO_NESTED_I18N_NAMESPACE] },
-              },
-              {
-                id: 'demo-nested-level2',
-                path: '/demo/nested/level1/level2',
-                loadPage: () => import('@/pages/demo/NestedDemo/NestedDemo').then(({ NestedDemo }) => ({ default: NestedDemo })),
-                meta: { title: '二级页面', i18nNamespaces: [DEMO_NESTED_I18N_NAMESPACE] },
-              },
-              {
-                id: 'demo-nested-level3',
-                path: '/demo/nested/level1/level2/level3',
-                loadPage: () => import('@/pages/demo/NestedDemo/NestedDemo').then(({ NestedDemo }) => ({ default: NestedDemo })),
-                meta: { title: '三级页面', i18nNamespaces: [DEMO_NESTED_I18N_NAMESPACE] },
-              },
-            ],
           },
         ],
       },

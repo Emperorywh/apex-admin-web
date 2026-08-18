@@ -1,6 +1,6 @@
 /**
  * Dashboard 业务域常量（规格 §14.1/§14.3）：图表日期格式。
- * dashboard service、图表组件与 demo adapter 一律引用本文件；
+ * dashboard service 与图表组件一律引用本文件；
  * 概览接口路径由 dashboard service 在调用点内联（规格 §14.3 v1.8）。
  */
 

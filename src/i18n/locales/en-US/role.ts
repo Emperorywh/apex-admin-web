@@ -47,14 +47,12 @@ const role: Record<string, string> = {
   目标角色: 'Target role',
   '权限分配失败，请稍后重试': 'Failed to assign permissions. Please try again later.',
   加载中: 'Loading',
-  // 权限树节点标题（demo 权限树 fixture 的 title 值，规格 §14.1）
+  // 权限树节点标题（后端返回的中文文案即 key，规格 §14.1）
   仪表盘: 'Dashboard',
   系统管理: 'System',
-  演示: 'Demo',
   用户管理: 'User Management',
   角色管理: 'Role Management',
   菜单管理: 'Menu Management',
-  多级菜单: 'Nested Menu',
   查看: 'View',
   查询: 'List',
   新增: 'Create',

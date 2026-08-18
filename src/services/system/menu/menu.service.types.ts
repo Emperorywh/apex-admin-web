@@ -1,7 +1,7 @@
 /**
  * 菜单管理接口请求/响应 DTO 权威定义（规格 §14.3）。
  * 菜单树/创建/编辑/删除接口的 DTO 只在本文件定义一次，
- * 调用端（含 demo adapter）一律 import type 引用，不得复制接口；
+ * 调用端一律 import type 引用，不得复制接口；
  * 响应实体 MenuItem 是跨层业务实体，权威定义位于 src/types/system/menu/menu.types.ts，
  * 此处仅以别名声明 DTO 名称。
  */

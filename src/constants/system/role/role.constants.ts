@@ -1,6 +1,6 @@
 /**
  * 角色管理业务域常量（规格 §5.1/§14.3）：排序与查询字段白名单、admin 标识。
- * 角色页面、feature 组件/Hook、role service 与 demo adapter 一律引用本文件；
+ * 角色页面、feature 组件/Hook 与 role service 一律引用本文件；
  * 接口路径（含 GET /permissions/tree）由 role service 在调用点内联（规格 §14.3 v1.8）。
  */
 

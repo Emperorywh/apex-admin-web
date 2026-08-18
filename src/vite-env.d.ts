@@ -8,8 +8,6 @@
 interface ImportMetaEnv {
   /** axios 实例 baseURL */
   readonly VITE_API_BASE_URL: string
-  /** 演示模式三态，见规格 §13.1 */
-  readonly VITE_DEMO_MODE: 'off' | 'force' | 'fallback'
 }
 
 interface ImportMeta {

@@ -33,8 +33,8 @@ const TYPE_LABEL_KEYS: Record<MenuItem['type'], string> = {
 
 /**
  * 图标列的展示视图类型（SPEC_UI2 §5.7 本规格唯一列结构例外）：
- * `icon` 为 demo fixture 私有演示字段（`local:` 图标名，种子数据在 src/demo/），
- * 主规格 §14.1 MenuItem 契约不变；真实后端数据无该字段时图标列呈现占位。
+ * `icon` 为后端菜单数据可选字段（`local:` 图标名），
+ * 主规格 §14.1 MenuItem 契约不变；后端数据无该字段时图标列呈现占位。
  */
 type MenuRowWithIcon = MenuItem & { icon?: string }
 
@@ -108,8 +108,8 @@ export function Menu() {
       render: (type: MenuItem['type']) => <Tag>{t(TYPE_LABEL_KEYS[type])}</Tag>,
     },
     {
-      // 图标列（SPEC_UI2 §5.7）：demo fixture 私有 icon 字段驱动，渲染统一经 AppIcon；
-      // 缺省数据（真实后端契约无 icon）呈现占位
+      // 图标列（SPEC_UI2 §5.7）：后端可选 icon 字段驱动，渲染统一经 AppIcon；
+      // 缺省数据（后端契约无 icon）呈现占位
       title: t('图标'),
       key: 'icon',
       width: 72,

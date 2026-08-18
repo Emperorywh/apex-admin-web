@@ -1,6 +1,6 @@
 /**
  * 用户管理业务域常量（规格 §14.3）：排序与查询字段白名单、字段约束。
- * 用户页面、feature 组件/Hook、user service 与 demo adapter 一律引用本文件，
+ * 用户页面、feature 组件/Hook 与 user service 一律引用本文件，
  * 禁止在任意调用点重复这些字面量；接口路径由 user service 在调用点内联（规格 §14.3 v1.8）。
  */
 
@@ -15,8 +15,7 @@ export type UserSortField = (typeof USER_SORT_FIELDS)[number]
 
 /**
  * 用户列表 keyword 匹配字段（规格 §14.3）。
- * keyword 去除首尾空白后，对这些字段做不区分大小写的包含匹配；
- * 真实 service 与 demo adapter 必须使用同一字段集合。
+ * keyword 去除首尾空白后，对这些字段做不区分大小写的包含匹配。
  */
 export const USER_KEYWORD_FIELDS = ['username', 'displayName'] as const
 

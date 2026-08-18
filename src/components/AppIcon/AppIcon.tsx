@@ -16,7 +16,7 @@
  */
 import { Icon as IconifyIcon, addCollection } from '@iconify/react'
 import type { IconifyJSON } from '@iconify/react'
-import { CircleDashed, LayoutDashboard, ListTree, Settings, ShieldCheck, UsersRound, FlaskConical, Layers, type LucideIcon } from 'lucide-react'
+import { CircleDashed, LayoutDashboard, ListTree, Settings, ShieldCheck, UsersRound, type LucideIcon } from 'lucide-react'
 import { deriveMenuIconAccentColor } from '@/config/theme'
 
 /** 唯一合法图标名前缀（SPEC-UI2 §5.1）：全部图标打进 bundle，仅支持本地 collection */
@@ -32,8 +32,6 @@ const LUCIDE_FALLBACKS: Readonly<Record<string, LucideIcon>> = {
   'ic-user': UsersRound,
   'ic-role': ShieldCheck,
   'ic-menu': ListTree,
-  'ic-flask': FlaskConical,
-  'ic-menulevel': Layers,
 }
 
 /** 无任何命中时的占位图标：保证缺失资产仍渲染等尺寸占位而非空节点 */

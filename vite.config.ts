@@ -2,20 +2,11 @@ import { fileURLToPath } from 'node:url'
 import react from '@vitejs/plugin-react'
 import { defineConfig, loadEnv } from 'vite'
 
-/** VITE_DEMO_MODE 合法取值，见规格 §13.1 */
-const DEMO_MODE_VALUES = ['off', 'force', 'fallback'] as const
-
 /**
- * 启动时校验枚举类环境变量；非法值使 dev/build 直接失败。
+ * 启动时校验环境变量；非法值使 dev/build 直接失败。
  * 校验发生在 Vite 配置加载阶段，dev 与 build 均会执行。
  */
 function assertEnv(env: Record<string, string>): void {
-  const demoMode = env.VITE_DEMO_MODE
-  if (demoMode !== undefined && !DEMO_MODE_VALUES.includes(demoMode as (typeof DEMO_MODE_VALUES)[number])) {
-    throw new Error(
-      `[env] VITE_DEMO_MODE 非法：${demoMode}，合法取值为 ${DEMO_MODE_VALUES.join(' | ')}`,
-    )
-  }
   const apiBaseUrl = env.VITE_API_BASE_URL
   if (apiBaseUrl !== undefined && !/^(\/|https?:\/\/)/.test(apiBaseUrl)) {
     throw new Error(`[env] VITE_API_BASE_URL 非法：${apiBaseUrl}，必须以 / 或 http(s):// 开头`)

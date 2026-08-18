@@ -10,7 +10,6 @@
 import { persistReducer } from 'redux-persist'
 import type { PersistConfig, PersistMigrate, PersistedState } from 'redux-persist'
 import { isHexColor } from '@/config/theme'
-import { SESSION_SOURCES, type SessionSource } from '@/constants/auth/auth.constants'
 import { PERSIST_SCHEMA_VERSION, STORAGE_KEY_PREFIX } from '@/constants/storage.constants'
 import { appSlice, type AppState } from '@/store/slices/app.slice'
 import {
@@ -243,22 +242,6 @@ function readOptionalEnum<T extends string>(
   return value as T
 }
 
-/** 读取可选的可空枚举字段：初始态会把 null 一并持久化（如 sessionSource），null 合法保留 */
-function readNullableEnum<T extends string>(
-  record: Record<string, unknown>,
-  field: string,
-  allowed: readonly T[],
-): T | null | undefined {
-  const value = readNullableString(record, field)
-  if (value === null || value === undefined) {
-    return value
-  }
-  if (!allowed.includes(value as T)) {
-    throw new Error(`字段 ${field} 不在允许取值 ${allowed.join(' | ')} 内`)
-  }
-  return value as T
-}
-
 /** 校验持久化记录不含白名单与 _persist 之外的未知字段（结构漂移即视为不可信数据） */
 function assertNoUnknownKeys(record: Record<string, unknown>, knownFields: readonly string[]): void {
   const known = new Set(knownFields)
@@ -280,19 +263,25 @@ function omitUndefined<T extends Record<string, unknown>>(fields: T): T {
   return result as T
 }
 
-/** user slice 持久化白名单：仅双 token + sessionSource（规格 §8.1/§8.2，禁止整 slice 入白名单） */
-export const USER_PERSIST_FIELDS = ['accessToken', 'refreshToken', 'sessionSource'] as const
+/** user slice 持久化白名单：仅双 token（规格 §8.1/§8.2，禁止整 slice 入白名单） */
+export const USER_PERSIST_FIELDS = ['accessToken', 'refreshToken'] as const
+
+/**
+ * v2 遗留字段：sessionSource（演示模式会话来源）已随规格 v1.12 移除、schema 升至 v3。
+ * 迁移时识别并直接丢弃（不读取、不校验取值），使旧数据双 token 照常恢复，
+ * 不触发「未知字段」结构漂移降级。
+ */
+const USER_LEGACY_FIELDS = ['sessionSource'] as const
 
 function migrateUserState(state: unknown, currentVersion: number) {
   const record = readPersistedRecord(state, currentVersion)
   if (!record) {
     return undefined
   }
-  assertNoUnknownKeys(record, [...USER_PERSIST_FIELDS, '_persist'])
+  assertNoUnknownKeys(record, [...USER_PERSIST_FIELDS, ...USER_LEGACY_FIELDS, '_persist'])
   return omitUndefined({
     accessToken: readNullableString(record, 'accessToken'),
     refreshToken: readNullableString(record, 'refreshToken'),
-    sessionSource: readNullableEnum(record, 'sessionSource', Object.values(SESSION_SOURCES) as SessionSource[]),
   })
 }
 

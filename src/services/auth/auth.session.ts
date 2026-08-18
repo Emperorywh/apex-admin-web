@@ -1,7 +1,7 @@
 /**
  * 认证会话编排（规格 §4.3/§5.4/§6.2）：
  * - ensureProfile 启动单飞：等待 rehydratedPromise 后复用单飞，一次整页启动最多一个 profile 请求；
- * - 登录状态机：login → 保存双 token/sessionSource + 递增 epoch → profile → 路由无关导航意图；
+ * - 登录状态机：login → 保存双 token + 递增 epoch → profile → 路由无关导航意图；
  * - 登出状态机：先递增 epoch、保存 refreshToken，POST /auth/logout，finally 本地清理（settings 保留）；
  * - 会话规则：profile 返回 AUTH_FORBIDDEN 或缺少 dashboard:view → 清理会话并回登录；
  *   网络失败原样上抛，不误清 token（路由错误页提供重试与退出登录）；
@@ -13,7 +13,6 @@
  * 两个导航通道完成最终跳转，本模块不读取路由、不校验回跳。
  */
 import type { UnknownAction } from '@reduxjs/toolkit'
-import { SESSION_SOURCES } from '@/constants/auth/auth.constants'
 import { PERMISSIONS } from '@/constants/permission.constants'
 import { API_ERROR_CODES } from '@/constants/request.constants'
 import { ROUTE_FALLBACK_PATH, ROUTE_PATHS } from '@/constants/route.constants'
@@ -201,16 +200,12 @@ export function createAuthSessionRuntime(options: CreateAuthSessionOptions): Aut
 
   async function loginWithCredentials(dto: LoginRequestDto): Promise<void> {
     const result = await api.login(dto)
-    // 会话切换：先递增 epoch 使旧会话在途任务失效，再保存双 token 与来源（规格 §6.1/§6.2）。
-    // 来源按登录实际承载通道写入：真实服务层在登录成功后已把来源归一写入 store
-    // （fallback 网络级失败切换 demo / force 全量走 demo 时为 demo，规格 §13.2）；
-    // 注入 api 的测试桩不写来源，回落 real 与纯真实登录一致
+    // 会话切换：先递增 epoch 使旧会话在途任务失效，再保存双 token（规格 §6.1/§6.2）
     store.dispatch(sessionEpochIncremented() as UnknownAction)
     store.dispatch(
       tokensStored({
         accessToken: result.accessToken,
         refreshToken: result.refreshToken,
-        sessionSource: store.getState().user.sessionSource ?? SESSION_SOURCES.REAL,
       }) as UnknownAction,
     )
     resetProfileSingleFlight()

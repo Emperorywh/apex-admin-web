@@ -16,8 +16,6 @@
 - [常用命令](#常用命令)
 - [安全边界与 Token 存储](#安全边界与-token-存储)
 - [环境变量](#环境变量)
-- [演示模式](#演示模式)
-- [移除演示模式源码](#移除演示模式源码)
 - [页面保活（Activity）对业务页面的约束](#页面保活activity对业务页面的约束)
 - [质量保障](#质量保障)
 - [构建与部署](#构建与部署)
@@ -40,14 +38,14 @@ pnpm install
 # 2. 启动开发服务器（默认 http://localhost:5173，/api 代理到 PROXY_TARGET）
 pnpm dev
 
-# 3. 登录：开发默认 VITE_DEMO_MODE=fallback，真实后端不可达时自动切换演示模式，
-#    使用演示账号 admin / viewer（密码任意）登录
+# 3. 登录：需要真实后端按规格 §6.3/§14.3 契约提供认证与业务接口；
+#    PROXY_TARGET 指向后端地址（默认 http://localhost:8080）
 ```
 
 生产构建与本地预览：
 
 ```bash
-pnpm build          # tsc -b && vite build，产物输出到 dist/（.env.production 默认 VITE_DEMO_MODE=off）
+pnpm build          # tsc -b && vite build，产物输出到 dist/
 pnpm preview        # vite preview 托管 dist/，自带 SPA fallback，可直接刷新深层路由验证部署行为
 ```
 
@@ -59,7 +57,6 @@ pnpm preview        # vite preview 托管 dist/，自带 SPA fallback，可直�
 | `pnpm build` | `tsc -b && vite build` 生产构建 |
 | `pnpm preview` | 预览 `dist/` 生产产物 |
 | `pnpm check:structure` | 目录/命名/导入方向/深层相对路径/大小写结构门禁 |
-| `pnpm check:demo-off` | 强制 `VITE_DEMO_MODE=off` 构建并扫描产物，确认 demo 模块被整体剔除 |
 | `pnpm lint` | oxlint |
 | `pnpm typecheck` | `tsc -b --noEmit` 全项目引用构建类型检查 |
 | `pnpm check` | `check:structure && lint && typecheck && build` 完整质量链 |
@@ -101,59 +98,19 @@ oxlint 并执行全量 `pnpm check:structure`；pre-push 执行 `pnpm typecheck`
 
 ## 环境变量
 
-完整定义见规格 §16.1；`.env.development` / `.env.production` / `.env.example` 已入库，`.env.*.local` 不提交。
+完整定义见规格 §16.1；全模式生效的 `.env` 与模板 `.env.example` 已入库，`.env.*.local` 不提交（本地覆盖用，优先级最高）。
 
 | 变量 | 暴露给客户端 | 取值 / 用途 |
 | --- | --- | --- |
 | `VITE_API_BASE_URL` | 是 | axios 实例 `baseURL`；开发默认 `/api`（走 dev server 代理），生产默认 `/api`（同源网关）或完整 `http(s)://` 地址 |
-| `VITE_DEMO_MODE` | 是 | `off` \| `force` \| `fallback`，见[演示模式](#演示模式) |
 | `PROXY_TARGET` | 否 | 仅 Vite dev server 使用：`/api` 以 `changeOrigin: true` 代理到该地址；不以 `VITE_` 前缀暴露 |
 
-- `vite.config.ts` 在配置加载阶段（dev 与 build 均生效）校验枚举：`VITE_DEMO_MODE` 非三态、`VITE_API_BASE_URL`
+- `vite.config.ts` 在配置加载阶段（dev 与 build 均生效）校验：`VITE_API_BASE_URL`
   不以 `/` 或 `http(s)://` 开头时直接失败；
 - `src/vite-env.d.ts` 启用严格 `ImportMetaEnv` 类型，新增变量必须同步更新类型与校验；
 - Vite 读取 `PROXY_TARGET` 使用 `loadEnv(mode, process.cwd(), '')`，变量名不可改为 `VITE_PROXY_TARGET`。
 
-## 演示模式
-
-`VITE_DEMO_MODE` 是三态枚举（规格 §13.1），不是布尔值：
-
-| 取值 | 行为 | 典型用途 |
-| --- | --- | --- |
-| `off` | 不允许 demo；构建时 Rollup 经静态条件 + 动态 import **整体剔除** demo 模块，产物零 demo 代码、零 demo 账号 | 真实生产（`.env.production` 默认值） |
-| `force` | 所有受支持请求直接走 demo adapter（内存数据 + 版本化 localStorage 快照） | 无后端的示例部署 |
-| `fallback` | 先请求真实登录；仅**网络级失败**时提示并切换 demo 重放一次登录；业务错误（如密码错误）不切换 | 开发默认（`.env.development` 默认值） |
-
-- 演示账号固定 `admin` / `viewer`（**密码任意**），权限差异严格符合规格 §5.3 矩阵：viewer 仅
-  `dashboard:view`、`system:user:list`、`demo:nested:view`，看不到用户写操作按钮，角色/菜单管理菜单隐藏且直达 403；
-- demo 会话来源随双 token 持久化，刷新页面后 profile/CRUD 继续走 demo adapter；
-- demo CRUD 写入内存并同步到 localStorage 快照（key：`apex_demo_data`，含 schemaVersion，损坏自动恢复种子）；
-  登出时可选择是否清空演示数据快照；
-- demo 模式下页面 Header 显示常驻「演示模式」Badge。
-
-**off 构建检查**：`pnpm check:demo-off` 以 `VITE_DEMO_MODE=off` 强制构建到临时目录，扫描全部 js/css/html 产物，
-出现约定哨兵 `APEX_DEMO_SENTINEL` 或任何 demo 账号/假数据标记即失败（规格 §13.3/§19.2）。按需在本地复跑（不进 CI）。
-
-## 移除演示模式源码
-
-模板接入真实后端后，可把演示模式从源码整体移除（规格 §13.3）。步骤如下，全部完成后以
-`pnpm check` 复核：
-
-1. **删除目录**：`src/demo/`（adapter、运行时、假数据、demo 账号矩阵）、`src/pages/demo/`（多级菜单演示页面）、
-   `src/features/demo/`（DemoBadge、DemoLogoutConfirm 组件）。
-2. **删除 adapter 注册入口**：
-   - `src/main.tsx` 中 `if (import.meta.env.VITE_DEMO_MODE !== 'off') { … setupDemoMode() }` 整块；
-   - `src/layouts/BasicLayout/components/Header/Header.tsx` 中对 `@/features/demo/components/DemoBadge/DemoBadge`
-     与 `@/features/demo/components/DemoLogoutConfirm/DemoLogoutConfirm` 的静态条件 + 动态 import 挂接，
-     以及登出流程里对 `@/demo/demoData`（`clearDemoDataOnLogout`）的引用。
-3. **删除 demo 环境变量类型与校验**：`src/vite-env.d.ts` 的 `VITE_DEMO_MODE` 字段；`vite.config.ts` 的
-   `DEMO_MODE_VALUES` 与 `assertEnv` 中对应校验；`.env.development` / `.env.production` / `.env.example` 中
-   的 `VITE_DEMO_MODE` 行。
-4. **删除演示路由定义**：`src/router/definitions.tsx` 的「演示 > 多级菜单 > 一/二/三级页面」子树
-   （业务路由 id/path 已内联于该文件，无需另改 route.constants）；`src/constants/permission.constants.ts` 的
-   `DEMO_NESTED_VIEW`；`src/constants/demo/` 目录（demoNested i18n 命名空间）与
-   `src/i18n/locales/en-US/demoNested.ts` 资源文件。
-5. **清理周边**：`scripts/check-demo-off.mjs` 与 `package.json` 的 `check:demo-off` 脚本随之移除。
+> 演示模式（`VITE_DEMO_MODE`、demo adapter、演示账号等）已随规格 v1.12 移除，本模板现在直连真实后端。
 
 ## 页面保活（Activity）对业务页面的约束
 
@@ -175,7 +132,6 @@ oxlint 并执行全量 `pnpm check:structure`；pre-push 执行 `pnpm typecheck`
 - 本模板**不内置单元测试与 E2E 测试体系**（规格 §16.3，v1.9 移除）。质量保障依赖 `pnpm check` 四道静态门禁：
   结构检查（`check:structure`）、oxlint、`tsc -b --noEmit` 全项目引用类型检查、`vite build` 生产构建，
   由 CI 强制执行；
-- `pnpm check:demo-off` 按需验证 off 构建对 demo 模块的整体剔除；
 - 接入方可按业务需要自建测试体系；自建时路径别名等配置须与规格 §3.5 保持一致。
 
 ## 构建与部署
@@ -279,7 +235,6 @@ src/
 ├── components/     # 跨业务域共享组件（Auth、FeedbackBridge、GlobalProgress 等）
 ├── config/         # 集中主题配置（唯一允许的色值集中地）
 ├── constants/      # 应用级与业务域常量（含权限码、路由 ID、Storage key）
-├── demo/           # 演示模式：adapter、假数据、demo 账号矩阵；可整体剔除
 ├── features/       # 业务组件与业务 Hook（只允许 components/ 与 hooks/）
 ├── hooks/          # 跨业务域共享 Hook（useAuth、useECharts、usePageActive 等）
 ├── i18n/           # i18next 初始化与 en-US 资源（中文文案即 key）
@@ -291,7 +246,7 @@ src/
 ├── styles/         # 全局样式
 ├── types/          # 跨层业务域实体类型
 └── utils/          # 无业务语义的纯工具
-scripts/            # check-structure / check-demo-off 结构与产物门禁
+scripts/            # check-structure 结构门禁
 ```
 
 分层边界、命名规则、常量与类型所有权等完整约定见 [docs/SPEC.md](docs/SPEC.md) §3。

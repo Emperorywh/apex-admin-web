@@ -9,11 +9,6 @@ const menu: Record<string, string> = {
   用户管理: 'User Management',
   角色管理: 'Role Management',
   菜单管理: 'Menu Management',
-  演示: 'Demo',
-  多级菜单: 'Nested Menu',
-  一级页面: 'Level 1 Page',
-  二级页面: 'Level 2 Page',
-  三级页面: 'Level 3 Page',
   个人中心: 'Profile',
   登录: 'Sign In',
   无权限访问: 'Forbidden',
@@ -22,7 +17,6 @@ const menu: Record<string, string> = {
   // 菜单副标题（SPEC_UI2 §6.1 caption，仅一级菜单展示）
   工作台: 'Workbench',
   组织与权限: 'Org & Permissions',
-  多级导航示例: 'Nested Navigation Demo',
 }
 
 export default menu

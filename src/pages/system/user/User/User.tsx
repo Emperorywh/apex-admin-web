@@ -62,7 +62,7 @@ export function User() {
   const { message, modal } = App.useApp()
   const pageRequest = usePageRequest()
   const list = useUserList()
-  // 可选角色集合：创建表单初始角色与分配角色 Drawer 共用；一次性加载（demo 种子角色数量远小于分页上限）
+  // 可选角色集合：创建表单初始角色与分配角色 Drawer 共用；一次性加载（角色数量远小于分页上限）
   const [roles, setRoles] = useState<Role[]>([])
   const [keywordDraft, setKeywordDraft] = useState('')
   const [formDrawer, setFormDrawer] = useState<FormDrawerState>(FORM_DRAWER_CLOSED)

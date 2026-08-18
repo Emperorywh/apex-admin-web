@@ -1,6 +1,6 @@
 /**
  * 菜单管理业务域常量（规格 §14.1/§14.3）：菜单类型枚举与可识别 routeId 全集。
- * 菜单页面、feature 组件/Hook、menu service 与 demo adapter 一律引用本文件；
+ * 菜单页面、feature 组件/Hook 与 menu service 一律引用本文件；
  * 接口路径由 menu service 在调用点内联（规格 §14.3 v1.8）。
  * 菜单管理只演示后端菜单数据维护，不动态改变前端静态路由。
  */
@@ -23,8 +23,7 @@ export type MenuType = (typeof MENU_TYPES)[keyof typeof MENU_TYPES]
  * 业务路由 id 已内联于 src/router/definitions.tsx（route.constants 只保留框架核心路由），
  * 且依赖方向禁止本文件反向导入 router，故改为菜单域显式白名单：只收录真正挂载页面
  * 组件的路由 id，与 definitions.tsx 的页面叶子镜像——新增页面需在菜单管理中作为
- * page 关联时同步本清单。菜单表单的 routeId 校验与 demo adapter 的写入校验共用
- * 同一判定，不在调用点各写一份白名单。
+ * page 关联时同步本清单。菜单表单的 routeId 校验使用同一判定，不在调用点另写白名单。
  */
 export const MENU_PAGE_ROUTE_IDS: readonly string[] = [
   'dashboard',
@@ -32,9 +31,6 @@ export const MENU_PAGE_ROUTE_IDS: readonly string[] = [
   'system-role',
   'system-menu',
   'profile',
-  'demo-nested-level1',
-  'demo-nested-level2',
-  'demo-nested-level3',
 ]
 
 /**
