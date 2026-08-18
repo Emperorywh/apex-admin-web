@@ -1,8 +1,9 @@
 /**
- * 用户管理五接口（规格 §14.3）：list/create/update/delete/assign-roles。
+ * 用户管理接口（对齐真实后端 identity 模块）：
+ * list/create/update/enable/disable/delete 与用户角色查询/分配。
  * 每个函数显式声明入参与 Promise<T> 返回类型，经封装的 request<T>() 完成类型解包；
  * 接口路径在请求调用点直接内联（规格 §14.3 v1.8）。
- * send 参数默认真实 request 传输；列表查询由页面 Hook 注入 usePageRequest() 的
+ * send 参数默认真实 request 传输；列表与角色查询由页面 Hook 注入 usePageRequest() 的
  * 页签作用域请求函数（规格 §7.4-6），写操作默认走全局传输。
  */
 import { request } from '@/services/request/request'
@@ -14,6 +15,7 @@ import type {
   UserListQueryParams,
   UserListResponseDto,
   UserMutationResponseDto,
+  UserRolesResponseDto,
 } from './user.service.types'
 
 /**
@@ -25,12 +27,12 @@ export interface UserWriteOptions {
   silent?: boolean
 }
 
-/** 以真实用户 ID 替换 endpoint 模板中的 :id 占位符 */
+/** 以真实用户 ID 替换 endpoint 模板中的 :userId 占位符 */
 function fillUserId(endpoint: string, userId: string): string {
-  return endpoint.replace(':id', encodeURIComponent(userId))
+  return endpoint.replace(':userId', encodeURIComponent(userId))
 }
 
-/** 分页查询用户：GET /users（规格 §14.3：keyword/sortBy/sortOrder/分页语义由后端实施） */
+/** 分页查询用户：GET /users（status 筛选 + sort 白名单排序，语义由后端实施） */
 export function listUsers(params: UserListQueryParams, send: SendRequest = request): Promise<UserListResponseDto> {
   return send<UserListResponseDto>({
     url: '/users',
@@ -39,7 +41,7 @@ export function listUsers(params: UserListQueryParams, send: SendRequest = reque
   })
 }
 
-/** 创建用户：POST /users（写入契约见 CreateUserRequestDto；用户名全局唯一） */
+/** 创建用户：POST /users（201 + Location；写入契约见 CreateUserRequestDto；用户名全局唯一） */
 export function createUser(
   dto: CreateUserRequestDto,
   options: UserWriteOptions = {},
@@ -52,36 +54,60 @@ export function createUser(
   })
 }
 
-/** 编辑用户：PUT /users/:id（编辑契约不含 username/password/roleIds） */
+/** 编辑用户资料：PUT /users/:userId（编辑契约不含 username/password/status） */
 export function updateUser(
   userId: string,
   dto: UpdateUserRequestDto,
   options: UserWriteOptions = {},
 ): Promise<UserMutationResponseDto> {
   return request<UserMutationResponseDto>({
-    url: fillUserId('/users/:id', userId),
+    url: fillUserId('/users/:userId', userId),
     method: 'put',
     data: dto,
     ...(options.silent === true ? { silent: true } : {}),
   })
 }
 
-/** 删除用户：DELETE /users/:id；响应 data 固定为 null */
+/** 启用用户：POST /users/:userId/enable（已启用返回 409 USER.ALREADY_ACTIVE） */
+export function enableUser(userId: string): Promise<UserMutationResponseDto> {
+  return request<UserMutationResponseDto>({
+    url: fillUserId('/users/:userId/enable', userId),
+    method: 'post',
+  })
+}
+
+/** 禁用用户：POST /users/:userId/disable（后端吊销该用户全部会话；已禁用返回 409 USER.ALREADY_DISABLED） */
+export function disableUser(userId: string): Promise<UserMutationResponseDto> {
+  return request<UserMutationResponseDto>({
+    url: fillUserId('/users/:userId/disable', userId),
+    method: 'post',
+  })
+}
+
+/** 删除用户：DELETE /users/:userId；响应 204 空体解包为 null */
 export function deleteUser(userId: string): Promise<null> {
   return request<null>({
-    url: fillUserId('/users/:id', userId),
+    url: fillUserId('/users/:userId', userId),
     method: 'delete',
   })
 }
 
-/** 分配用户角色：PUT /users/:id/roles（body { roleIds }） */
+/** 查询用户角色：GET /users/:userId/roles（响应键为 snake_case，见 UserRolesResponseDto） */
+export function getUserRoles(userId: string, send: SendRequest = request): Promise<UserRolesResponseDto> {
+  return send<UserRolesResponseDto>({
+    url: fillUserId('/users/:userId/roles', userId),
+    method: 'get',
+  })
+}
+
+/** 分配用户角色：PUT /users/:userId/roles（body { roleCodes }，角色编码全量替换） */
 export function assignUserRoles(
   userId: string,
   dto: AssignUserRolesRequestDto,
   options: UserWriteOptions = {},
-): Promise<UserMutationResponseDto> {
-  return request<UserMutationResponseDto>({
-    url: fillUserId('/users/:id/roles', userId),
+): Promise<UserRolesResponseDto> {
+  return request<UserRolesResponseDto>({
+    url: fillUserId('/users/:userId/roles', userId),
     method: 'put',
     data: dto,
     ...(options.silent === true ? { silent: true } : {}),

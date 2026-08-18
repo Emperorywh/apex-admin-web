@@ -1,10 +1,18 @@
 # Apex Admin Web — 通用后台管理系统模板规格说明
 
-> 版本：v1.13 · 日期：2026-08-18 · 状态：已确认（§20 技术闸门已于 2026-08-15 验证通过）
+> 版本：v1.16 · 日期：2026-08-18 · 状态：已确认（§20 技术闸门已于 2026-08-15 验证通过）
 >
 > 本文档是实现候选基线。§20 技术闸门通过并记录结果后，状态才能改为「已确认」，届时本文档作为实现的唯一需求依据。技术闸门通过前，只允许完成基础工程和验证性 PoC，不进入全部业务页面开发。
 >
 > 所有标注「已定」的条目来自访谈结论；标注「默认」的条目为访谈未覆盖、按行业惯例选定的默认值。如需变更，必须先修改本文档及修订记录，不允许实现与文档长期分叉。
+>
+> v1.16 修订记录（2026-08-18）：system 三域（user/role/menu）接口契约对齐真实后端（apex-admin，v1.14 遗留的"业务域接口保持 v1.13 形态"至此作废）——① 分页协议对齐后端 SPEC 9.4：查询参数 `size`→`pageSize`（默认 20）、`sortBy+sortOrder`→单参数 `sort`（逗号分隔 camelCase，`-` 前缀降序），响应 `{list,total,page,size}`→`{items,total,page,pageSize,pages}`；排序白名单收敛为后端声明（用户 username/displayName/createdAt/updatedAt、角色 code/displayName/createdAt/updatedAt）；列表搜索由 keyword 改为 `status`（active/disabled）筛选（后端无 keyword 参数）。② 实体字段对齐：User 增 `lastLoginAt/passwordUpdatedAt/department/posts`、`email/phone` 可空、状态编码 `enabled`→`active`、移除 `roleIds`（用户角色改由 GET /users/:id/roles 独立查询）；Role `name`→`displayName`、`builtIn`→`isBuiltin`、增 `sortOrder`、`permCodes` 移出列表实体（详情端点为 `permissionCodes`+`memberCount`）；MenuItem `type`→`menuType`（值域 directory/page/link，无 button）、`name`→`title`（另增独立路由名 `name`）、`sort`→`sortOrder`、增 `component/icon/createdAt/updatedAt`、移除 `routeId/permCode`。③ 写入契约对齐后端 extra="forbid" 模型：状态变更全部移出创建/编辑请求体，改走独立启停端点（POST /users|roles|menus/:id/enable|disable）；用户角色分配 `roleIds`→`roleCodes`（角色编码）；角色分配权限 `permCodes`→`permissionCodes`；角色创建/编辑增 `sortOrder`；菜单创建/编辑不再同构（编辑不含 parentId/menuType/sortOrder，层级与排序调整走 PUT /menus/:id/hierarchy）；密码策略对齐后端 SPEC 23.2（12-128 个 Unicode 字符，无复杂度要求）。④ 权限码对齐后端权限目录：`system:user:read/write`、`rbac:role:read/write`、`rbac:assignment:write`、`menu:menu:read/write`（后端动作为 read/write 两级，原 list/create/update/delete/assign-* 细分码废弃，前端多语义键可引用同一后端码）。⑤ 权限树端点（GET /permissions/tree）后端不存在，角色"分配权限"抽屉降级为只读"查看权限"（GET /roles/:id 详情），分配 service（PUT /roles/:id/permissions）保留待后端补齐权限目录端点后接入；随权限树移除 PermissionNode 实体与 collectPermissionLeafCodes 工具。涉及 §5.1、§14.1、§14.2、§14.3、§14.4。
+>
+> v1.15 修订记录（2026-08-18）：会话快照接口与菜单展示对齐真实后端 `/me` 端点——① 权限快照接口由 `GET /menus/me/permissions` 改为 `GET /me/permissions`（响应仍为 `{ permissions: string[] }`），并新增 `GET /me/menus` 当前用户菜单树并行拉取（§6.3）；② 菜单展示引入后端菜单树白名单：`ProfileData` 新增 `menuPaths`（菜单树节点 `path` 扁平化集合），侧边/顶部菜单在权限链过滤之外同时要求叶子页面全路径命中白名单，目录节点不直接比对白名单、经「至少一个可见子节点」间接保留（§4.1/§4.4/§14.1）；③ 超管体验由前端补齐：username 为 `admin` 的用户 roleCodes 固定注入 `admin`（复用 §4.4 通配语义，按钮/守卫/菜单全放行）且 `menuPaths` 固定 `null` 不受菜单树限制、直接展示全部菜单——后端 `/me` 端点按启用角色聚合，admin 用户无角色时返回空集合；其余用户 roleCodes 仍为空数组。菜单树仅控制前端展示，不改变 URL 可访问性与守卫判定，后端仍逐接口鉴权（§5.1/§5.2）。
+>
+> v1.15 修订记录（2026-08-18）：会话快照接口与菜单展示对齐真实后端 `/me` 端点——① 权限快照接口由 `GET /menus/me/permissions` 改为 `GET /me/permissions`（响应仍为 `{ permissions: string[] }`），并新增 `GET /me/menus` 当前用户菜单树并行拉取（§6.3）；② 菜单展示引入后端菜单树白名单：`ProfileData` 新增 `menuPaths`（菜单树节点 `path` 扁平化集合），侧边/顶部菜单在权限链过滤之外同时要求叶子页面全路径命中白名单，目录节点不直接比对白名单、经「至少一个可见子节点」间接保留（§4.1/§4.4/§14.1）；③ 超管体验由前端补齐：username 为 `admin` 的用户 roleCodes 固定注入 `admin`（复用 §4.4 通配语义，按钮/守卫/菜单全放行）且 `menuPaths` 固定 `null` 不受菜单树限制、直接展示全部菜单——后端 `/me` 端点按启用角色聚合，admin 用户无角色时返回空集合；其余用户 roleCodes 仍为空数组。菜单树仅控制前端展示，不改变 URL 可访问性与守卫判定，后端仍逐接口鉴权（§5.1/§5.2）。
+>
+> v1.14 修订记录（2026-08-18）：认证链路与请求协议对齐真实后端（apex-admin，`/api/v1` 前缀）——① 成功响应不再使用 `code === 0` envelope，HTTP 2xx 直接返回资源 JSON；失败响应统一为 RFC 9457 `application/problem+json`，稳定机器错误码取 body 的 `code` 字段，格式 `<MODULE>.<REASON>` 点分命名（§7.1/§14.4）；② refreshToken 改经 `__Host-apex_refresh` HttpOnly Cookie 下发与轮换，不进入 JSON、不落前端存储，user 持久化白名单收缩为 accessToken，schema 升至 4（迁移丢弃 `refreshToken` 遗留字段）（§6.1/§8.1/§8.2）；③ 认证六接口契约改写：login 响应只含 `{accessToken, tokenType, expiresIn}`，refresh 无请求体（Cookie 携带），logout 为认证请求且无请求体，profile 由 `GET /users/me` + `GET /menus/me/permissions` 聚合，自助资料/改密迁移至 `PUT /users/me*`（§6.3/§14.3）；④ accessToken 失效触发条件改为 HTTP 401 + `AUTH.UNAUTHENTICATED`（后端对缺失/无效/过期 token 统一返回该码）（§6.2）；⑤ 移除会话内权限变更机制（403 `AUTH_PERMISSION_CHANGED`/`AUTH_ACCOUNT_DISABLED`/`permissionVersion` 信号后端不存在；账号禁用后下一请求 401 走刷新失败清理路径），删除 profileRefresh 单飞与失权页签关闭接线（§5.4/§17）；⑥ 会话资格校验移除 `dashboard:view` 门槛，Dashboard 路由改为仅要求登录（后端无该权限码），`dashboard:view` 从权限码清单删除（§4.2/§5.1/§14.2）。业务域接口（user/role/menu/dashboard 列表契约）保持 v1.13 形态，随后续后端接口文档逐域对齐。
 >
 > v1.13 修订记录（2026-08-18）：环境变量文件收敛——移除按模式拆分的 `.env.development` / `.env.production`，改为单一 `.env`（全模式生效：dev 与 build 均加载，入库）+ `.env.example`（模板，入库）；dev 与生产取值有差异时经 `.env.*.local`（不入库）或部署流水线变量覆盖。有效取值不变（dev 与生产原本同为 `/api`）。涉及 §16.1。
 >
@@ -308,7 +316,7 @@ scripts/
 
 1. **accessRoutes**：全量注册给 `createBrowserRouter`。负责 URL 匹配、认证 loader、权限 loader、重定向和路由级错误；业务叶子节点只返回空锚点，不能直接渲染业务页。
 2. **renderRoutes**：不包含 loader/action，仅包含目录结构和 `React.lazy` 页面组件。`CachedRouteView` 使用 `useRoutes(renderRoutes, locationSnapshot)`渲染，从而让每个缓存页签获得自己的 `useLocation/useParams/useSearchParams`上下文。
-3. **menuRoutes**：按权限和 `hideInMenu`过滤，供侧边菜单、顶部菜单和快捷入口使用。
+3. **menuRoutes**：按权限、后端菜单树白名单和 `hideInMenu`过滤（v1.15），供侧边菜单、顶部菜单和快捷入口使用。
 
 三份投影和其中的 lazy component 都在模块初始化时只生成一次并保持引用稳定；不能在 `PageCacheHost`每次渲染时重建。列表中的每个页签由独立 `CachedRouteView`组件调用一次 `useRoutes`，禁止在循环体内直接调用 hook。
 
@@ -364,7 +372,7 @@ interface RouteMeta {
 - 受保护根路由内的 `*`渲染 404；未登录访问任意受保护 URL 先跳登录，登录成功后回原地址并显示 404。
 - `/403`和 `/500`需要登录但不要求 permCode，防止错误页自身形成权限循环。
 - `/404`既有可直达的显式路由，受保护根路由的 `*`也渲染同一组件；登录、403、404、500 固定设置 `hideInMenu/hideInTabs/noCache`，错误页 `breadcrumb: false`。
-- Dashboard 固定 `affixTab: true`，且是唯一默认 affix。所有可登录的正常账号都必须使 `hasAuth('dashboard:view')`为 true（admin 角色按通配处理）；不满足时前端按 `AUTH_FORBIDDEN`清理会话并返回登录页，避免首页和“关闭全部”没有合法落点。
+- Dashboard 固定 `affixTab: true`，且是唯一默认 affix。Dashboard 仅要求登录、不分配 permCode（v1.14：真实后端无 `dashboard:view` 权限码），保证登录后首页和“关闭全部”始终有合法落点。
 - 页面渲染错误由每个缓存实例外层 `PageErrorBoundary`显示 500 内容；guard/loader 错误由 Data Router 配置的 `RouterErrorBoundary`处理。
 
 ### 4.3 启动闸门与认证守卫（已定）
@@ -374,7 +382,7 @@ interface RouteMeta {
 1. 创建 store 与 persistor，并同时创建只会完成一次的 `rehydratedPromise`。
 2. `createBrowserRouter`可以在 React 树外创建，但所有 auth/permission loader 第一行必须 `await rehydratedPromise`。
 3. 持久化恢复完成后，loader 才读取 token 和 `sessionSource`。
-4. 有 token 时，通过 `profileSingleFlight`在每次整页启动首次受保护导航中拉取一次 `/auth/profile`；用户信息、角色和权限码不从上次会话直接复用。
+4. 有 token 时，通过 `profileSingleFlight`在每次整页启动首次受保护导航中拉取一次 profile 聚合（§6.3）；用户信息、角色和权限码不从上次会话直接复用。
 5. profile 成功后校验当前匹配链全部权限，再允许渲染。
 
 Data Router 默认可能并行执行父子 loader，因此每个受保护 loader 都必须调用同一个 `ensureProfile()`，不能假设父 loader 已先完成。`ensureProfile()`内部等待 rehydration 并复用 `profileSingleFlight`，一次启动最多发出一个 profile 请求。
@@ -385,7 +393,7 @@ Data Router 默认可能并行执行父子 loader，因此每个受保护 loader
 - 有 token → 必须完成本次启动的 profile；失败按 §6 状态机处理。
 - 匹配链中任一 `permCode`不满足 → `redirect('/403')`。
 - `/login` loader 发现 token 时先执行 `ensureProfile()`；认证有效才跳合法 redirect 或 `/dashboard`，token 无效并完成清理后继续显示登录页。
-- `/auth/profile`网络失败 → 路由错误页提供「重试」和「退出登录」，不能把网络故障误判为未登录。
+- profile 聚合请求网络失败 → 路由错误页提供「重试」和「退出登录」，不能把网络故障误判为未登录。
 - 持久化数据解析或迁移失败 → 清理认证字段，保留可解析的界面设置，跳登录并显示一次恢复失败提示。
 
 登录回跳值按以下顺序验证：
@@ -403,6 +411,8 @@ Data Router 默认可能并行执行父子 loader，因此每个受保护 loader
 - 路由没有 `permCode`表示所有已登录用户可访问，不表示公开路由。
 - 一个叶子页面需要同时满足从受保护根到叶子的全部 `permCode`，即祖先与叶子权限为 AND。
 - admin 角色拥有通配权限 `*`，`hasAuth('*')`和任意权限均返回 true。
+- 后端菜单树白名单（v1.15）：叶子页面还须累计全路径（`/`开头、去尾 `/`规范化）命中 `GET /me/menus` 树的 `path` 扁平化集合才在菜单展示；目录节点不直接比对白名单，经「至少一个可见子节点」间接保留（后端树父子连带，目录 `path` 可空）。username 为 `admin` 的超管用户白名单为 `null`，不受菜单树限制，叠加通配权限直接展示全部菜单。
+- 菜单树白名单与 `hideInMenu`同属展示控制：不改变 URL 可访问性、守卫与按钮权限判定（后端菜单仅为前端展示控制，后端仍逐接口鉴权）。
 - 目录菜单只有在自身权限满足且至少有一个可见子节点时保留。
 - `hideInMenu: true`隐藏该节点及其菜单子树，但不改变 URL 可访问性和权限校验；详情页应单独设为隐藏叶子节点，不把可见菜单放在隐藏目录下。
 - 菜单过滤和守卫必须调用同一个 `hasPermissionChain`函数。
@@ -430,12 +440,11 @@ User ──n:n── Role ──n:n── Permission(权限码)
 - 权限码格式：`<模块>:<资源>:<动作>`，例如 `system:user:create`。
 - 超级管理员角色标识固定为 `admin`，前端视作拥有 `*`；后端仍逐接口鉴权。
 - 所有正式权限码在 `src/constants/permission.constants.ts`定义，页面禁止出现权限魔法字符串。
-- `/auth/profile`返回 `permissionVersion`。它只用于判断权限快照是否变化，不替代权限码校验。
+- 会话权限快照来自 `GET /me/permissions`（返回启用角色权限点并集），菜单展示白名单来自 `GET /me/menus`（v1.15）；当前用户角色码后端暂不提供——username 为 `admin` 的超管用户由前端固定注入 `admin` 角色码（§4.4 通配语义），其余用户 roleCodes 为空数组。
 
-模板必须定义并使用以下权限码：
+模板当前定义以下权限码（v1.14 起待与真实后端逐域对齐——后端动作为 `read`/`write` 风格，如 `system:user:read`；`dashboard:view` 已移除，Dashboard 仅要求登录）：
 
 ```
-dashboard:view
 system:user:list
 system:user:create
 system:user:update
@@ -473,14 +482,13 @@ system:menu:delete
 
 演示账号 admin/viewer、其权限集合与验收矩阵已随演示模式整体移除（v1.12）。权限判定语义不变：`admin` 角色按 `*` 通配，普通角色按实际 permCodes 判定；个人中心仅要求登录，不分配额外 permCode。
 
-### 5.4 会话内权限变更
+### 5.4 会话内权限变更（已随 v1.14 移除）
 
-- 只有后端返回 HTTP 403 且 `errorCode === 'AUTH_PERMISSION_CHANGED'`时，才触发 `profileRefreshSingleFlight`。
-- 普通资源拒绝时返回 `AUTH_FORBIDDEN`，前端只提示无权操作，不刷新 profile。
-- `/auth/profile`自身永不触发权限刷新，防止递归。
-- 刷新完成后比较 `permissionVersion`，重算菜单；销毁并关闭不再可访问的普通页签及缓存。
-- 当前页失权时立即 `replace('/403')`；不能等到下次激活。
-- 多个并发权限变更响应共享一个 Promise，30 秒内相同版本不重复提示。
+真实后端不存在权限变更通知信号（无 `AUTH_PERMISSION_CHANGED` 等错误码，也不返回 `permissionVersion`），会话内权限变更机制（403 触发 profile 刷新单飞、比较权限版本、关闭失权页签与 `replace('/403')`）已随 v1.14 整体移除。现行语义：
+
+- 任意接口返回 HTTP 403 + `AUTH.FORBIDDEN`时前端只提示无权操作，不刷新 profile、不清会话。
+- 权限变化的生效时机：下一次整页启动重新拉取 profile（§6.1），或用户重新登录；服务端始终逐接口鉴权，前端权限仅改善 UX。
+- 账号被禁用/会话被吊销后，下一业务请求返回 401 `AUTH.UNAUTHENTICATED`，经刷新失败路径执行一次会话清理并跳登录（§6.2）。
 
 ---
 
@@ -488,52 +496,64 @@ system:menu:delete
 
 ### 6.1 存储与启动
 
-- 双 token 和 `sessionEpoch`位于 user slice，是认证信息的单一数据源。
-- redux-persist 只持久化 `accessToken`、`refreshToken`；用户资料、roles、permCodes、permissionVersion 每次整页启动重新拉取。
-- token 默认落 localStorage。README 必须说明 XSS 风险、CSP 建议及 httpOnly Cookie 替代方案。
+- `accessToken` 和 `sessionEpoch`位于 user slice，是前端认证状态的单一数据源；refreshToken 是 `__Host-apex_refresh` HttpOnly Secure SameSite=Strict Cookie（由后端经 Set-Cookie 下发与轮换），前端不可读、不落任何存储，刷新/登出请求由浏览器自动携带。
+- redux-persist 只持久化 `accessToken`；用户资料、roles、permCodes 每次整页启动重新拉取。
+- accessToken 默认落 localStorage。README 必须说明 XSS 风险与 CSP 建议；refreshToken 已由 Cookie 承载，不在 JS 可读范围内。
 - `sessionEpoch`每次登录、登出和切换账号时递增，用于阻止旧异步任务回写新会话；它本身不要求跨刷新延续。
 
 ### 6.2 登录、刷新和登出状态机
 
-- 登录：`POST /auth/login` → 保存 token、递增 epoch → `GET /auth/profile` → 生成菜单 → 合法 redirect 或 `/dashboard`。
-- accessToken 失效的唯一触发条件：HTTP 401 且 `errorCode === 'AUTH_ACCESS_EXPIRED'`。
-- login、refresh、logout 请求固定 `skipAuthRefresh: true`，不能触发刷新流程。
-- refresh 使用不安装业务响应拦截器的专用 axios 实例，避免刷新请求再次进入自己；它仍复用 baseURL、timeout 和 sessionSource adapter 选择。
+- 登录：`POST /auth/login` → 保存 accessToken、递增 epoch、（refreshToken 已由 Set-Cookie 落地）→ profile 聚合拉取（§6.3）→ 生成菜单 → 合法 redirect 或 `/dashboard`。
+- accessToken 失效的唯一触发条件：HTTP 401 且 `code === 'AUTH.UNAUTHENTICATED'`（后端对无 token、token 无效/过期统一返回该码）；登录失败 401 `AUTH.INVALID_CREDENTIALS` 不触发刷新。
+- login、refresh 请求固定 `skipAuthRefresh: true` 且 `skipAuthHeader: true`；logout 是认证请求（携带 Authorization），固定 `skipAuthRefresh: true`，均不能触发刷新流程。
+- refresh 使用不安装业务响应拦截器的专用 axios 实例，避免刷新请求再次进入自己；它仍复用 baseURL 与 timeout。refresh 无请求体，refreshToken Cookie 由浏览器自动携带；后端校验 Origin 精确匹配白名单（浏览器对 POST 自动携带 Origin 头）。
 - 每个业务请求最多自动重放一次，以内部 `_authRetried`标识防循环。
-- 并发 401 共享一个 refresh Promise；refresh 成功后原子替换旋转后的双 token。
+- 并发 401 共享一个 refresh Promise；refresh 成功后只回写新 accessToken（新 refreshToken 经 Set-Cookie 轮换，前端无感知）。
 - 等待期间若原请求 signal 已 abort，或当前 `sessionEpoch`与请求创建时不同，该请求直接以取消错误结束，不得重放。
-- refresh 返回 `AUTH_REFRESH_EXPIRED`、网络失败或协议错误：只执行一次会话清理，销毁 tabs/pageCache，跳登录并带合法当前地址。
-- 任意接口返回 HTTP 403 + `AUTH_ACCOUNT_DISABLED`时不刷新 profile，直接执行一次会话清理并跳登录。
-- `/auth/profile`返回 `AUTH_FORBIDDEN`，或成功数据使 `hasAuth('dashboard:view')`为 false 时，视为会话不满足模板基本访问条件，清理会话并返回登录页；其他业务接口的 `AUTH_FORBIDDEN`只提示，不清会话。
-- 登出时先递增 epoch、阻止新业务请求并保存待提交的 refreshToken；`POST /auth/logout`使用 `skipAuthRefresh`，无论成功、失败或超时都在 `finally`本地清理。settings 保留。
+- refresh 失败（401 `AUTH.REFRESH_FAILED`、网络失败或协议错误）：只执行一次会话清理，销毁 tabs/pageCache，跳登录并带合法当前地址。
+- profile 聚合拉取成功即视为会话有效（v1.14 移除 `dashboard:view` 会话资格门槛）；聚合中任一请求失败按 §17.3 处理——网络失败原样上抛不误清 token，401 走刷新状态机。
+- 登出时先递增 epoch、阻止旧异步任务回写；有 accessToken 时 `POST /auth/logout`（Cookie 由浏览器携带、后端吊销会话并删除 Cookie），无论成功、失败或超时都在 `finally`本地清理。settings 保留。
 - refresh Promise 完成后必须再次核对 epoch；账号已经切换时丢弃结果。
 
 ### 6.3 核心认证接口
 
+真实后端契约（apex-admin，全部位于 `/api/v1` 之下；成功响应为资源 JSON 本体，无 envelope；登录/刷新响应带 `Cache-Control: no-store`）：
+
 ```
 POST /auth/login
-  body: { username, password }
-  data: { accessToken, refreshToken, user: User }
+  body: { username, password, device? }
+  200: { accessToken, tokenType: 'Bearer', expiresIn } + Set-Cookie（refreshToken）
 
 POST /auth/refresh
-  body: { refreshToken }
-  data: { accessToken, refreshToken }
+  （无请求体；__Host-apex_refresh Cookie 携带 refreshToken）
+  200: { accessToken, tokenType: 'Bearer', expiresIn } + Set-Cookie（轮换）
 
 POST /auth/logout
-  body: { refreshToken }
-  data: null
+  （认证请求，无请求体）
+  200: { revokedCount } + 删除 Cookie
 
-GET /auth/profile
-  data: ProfileData
+GET /users/me
+  200: UserResponse（id/username/displayName/status/phone?/email?/lastLoginAt?/
+      passwordUpdatedAt?/createdAt/updatedAt/department?/posts[]）
 
-PUT /auth/profile
-  body: { displayName, email, phone? }
-  data: User
+GET /me/menus
+  200: MenuTreeNode[]（当前用户启用角色聚合的可访问菜单树，无角色返回 []；
+      id/parentId/menuType/title/name?/path?/component?/icon?/sortOrder/
+      visible/status/children[]；path 为前端路由路径，可空）
 
-PUT /auth/password
+GET /me/permissions
+  200: { permissions: string[] }
+
+PUT /users/me
+  body: { displayName, phone?, email? }
+  200: UserResponse
+
+PUT /users/me/password
   body: { oldPassword, newPassword }
-  data: null
+  204: 无响应体
 ```
+
+profile 聚合：`GET /users/me`、`GET /me/menus` 与 `GET /me/permissions` 并行请求组装为 `ProfileData`（v1.15）：菜单树节点 `path` 递归扁平化为 `menuPaths`；username 为 `admin` 的超管用户 `roleCodes` 固定注入 `admin`、`menuPaths` 固定 `null`（后端按角色聚合，admin 无角色时 `/me` 端点返回空集合，超管体验由前端补齐）。UserResponse → User 前端实体的字段适配在 auth service 内完成（status `active`/`disabled` 映射为 `enabled`/`disabled`，roleIds 暂空，业务管理域随后续接口对齐）。
 
 ---
 
@@ -541,62 +561,58 @@ PUT /auth/password
 
 ### 7.1 响应协议
 
-除文件流外，所有接口使用 JSON envelope：
+除文件流外，所有接口遵循「成功直返资源 JSON、失败统一 problem+json」（真实后端 apex-admin 契约，v1.14）：
 
 ```ts
 /**
- * errorCode 是跨前后端稳定的机器可读标识。
+ * 稳定机器错误码全集：取失败响应 body 的 code 字段，
+ * 格式 <MODULE>.<REASON>（仅大写字母、数字、下划线与一个点）。
  * 新增错误码必须同步更新接口契约与 i18n 映射。
  */
 type ApiErrorCode =
-  | 'VALIDATION_FAILED'
-  | 'AUTH_INVALID_CREDENTIALS'
-  | 'AUTH_ACCOUNT_DISABLED'
-  | 'AUTH_ACCESS_EXPIRED'
-  | 'AUTH_REFRESH_EXPIRED'
-  | 'AUTH_PERMISSION_CHANGED'
-  | 'AUTH_FORBIDDEN'
-  | 'RESOURCE_NOT_FOUND'
-  | 'RESOURCE_CONFLICT'
-  | 'INTERNAL_ERROR'
+  | 'PARAMETER.INVALID'
+  | 'VALIDATION.FAILED'
+  | 'AUTH.INVALID_CREDENTIALS'
+  | 'AUTH.UNAUTHENTICATED'
+  | 'AUTH.REFRESH_FAILED'
+  | 'AUTH.SESSION_NOT_FOUND'
+  | 'AUTH.FORBIDDEN'
+  | 'AUTH.LAST_SUPER_ADMIN'
+  | 'COMMON.NOT_FOUND'
+  | 'COMMON.CONFLICT'
+  | 'DB.UNIQUE_VIOLATION'
+  | 'DB.CONNECTION_ERROR'
+  | 'SYSTEM.INTERNAL'
 
 /**
- * 成功 envelope 固定使用字面量 0，data 必须存在。
- * requestId 可同时由响应头返回，前端优先使用 envelope 中的值。
+ * 失败响应：RFC 9457 application/problem+json。
+ * 稳定错误码在 code 字段；detail 仅供诊断与未知错误兜底，
+ * 程序分支只能依赖 code。requestId 优先取 body，其次 X-Request-Id 响应头。
  */
-interface ApiSuccess<T> {
-  code: 0
-  message: string
-  data: T
+interface ApiProblem {
+  type: string          // urn:apex:problem:<小写错误码>
+  title: string
+  status: number
+  detail: string
+  instance: string
+  code: ApiErrorCode
   requestId?: string
+  errors?: Array<{ field: string; reason: string; message: string }>
 }
 
 /**
- * 失败 envelope 的 data 固定为 null，errorCode 必须存在。
- * message 只用于诊断和未知错误兜底，程序分支只能依赖 errorCode。
+ * 成功响应：HTTP 2xx 直接返回资源 JSON 本体，无 envelope；
+ * 无返回值接口使用 204（响应体为空，解包为 null）。
+ * 文件流（blob/arraybuffer）成功响应同样原样返回。
  */
-interface ApiFailure {
-  code: number
-  message: string
-  data: null
-  errorCode: ApiErrorCode
-  requestId?: string
-  details?: unknown
-}
-
-/**
- * HTTP 状态和业务 code 不互相替代，调用端先判断 HTTP 再解析该联合类型。
- * 文件下载成功响应不使用此 envelope，下载失败仍返回 ApiFailure JSON。
- */
-type ApiEnvelope<T> = ApiSuccess<T> | ApiFailure
 
 /**
  * 业务层统一捕获该错误，不直接依赖 AxiosError 的内部结构。
+ * errorCode 承载 problem+json 的 code 字段；details 承载 errors 数组。
  * canceled 为 true 时禁止弹出全局错误提示。
  */
 interface ApiError extends Error {
   httpStatus?: number
-  code?: number
   errorCode?: ApiErrorCode
   requestId?: string
   details?: unknown
@@ -604,7 +620,7 @@ interface ApiError extends Error {
 }
 ```
 
-成功条件固定为 HTTP 2xx 且 `code === 0`，不再兼容 envelope `code === 200`。删除、登出等无返回值接口仍返回 `data: null`，不用 204。
+成功条件固定为 HTTP 2xx（响应体原样解包，空体归一为 null）；业务失败经 HTTP 状态码 + problem+json 表达，前端不再兼容 `code === 0` envelope。
 
 业务 service 模块中的每个导出函数必须显式声明入参和 `Promise<T>`返回类型，并通过封装的 `request<T>()`完成类型解包；不能把 AxiosInstance 全局伪装成已解包类型。
 
@@ -640,7 +656,7 @@ interface RequestOptions {
 
 1. **自动解包**：成功返回 `data`；协议不合法转换为 `ApiError`。
 2. **认证头**：请求发送前从 store 读取当下 accessToken，并写入 `Authorization: Bearer <token>`；token 不进入 URL、日志或去重 key。login/refresh 可显式关闭认证头。
-3. **统一提示**：已知 `errorCode`映射为前端 i18n 文案；未知错误显示「请求失败，请稍后重试」和 requestId，不直接把后端 message 当作已翻译文案。
+3. **统一提示**：已知错误码（problem+json 的 `code`）映射为前端 i18n 文案；未知错误显示「请求失败，请稍后重试」和 requestId，不直接把后端 `detail` 当作已翻译文案。
 4. **401 刷新重放**：严格执行 §6.2。
 5. **重复 GET 取消**：默认取消前一个。key 包含 method、规范化 baseURL/url、稳定序列化 params、responseType、Accept 头、scopeId 和 sessionEpoch；不同页签、身份或响应类型不得碰撞。稳定序列化递归排序对象 key、保持数组及同名查询参数的原顺序，并拒绝函数/循环引用。写操作默认不去重。
 6. **页面请求作用域**：`usePageRequest()`自动附加页签 scopeId；页签 Activity 隐藏、页签关闭和缓存淘汰都会 abort 该 scope。全局 profile/权限刷新使用 `scopeId: 'global'`。
@@ -660,7 +676,7 @@ interface RequestOptions {
 
 | 切片 | 内容 | 持久化 |
 | --- | --- | --- |
-| `user`（应用级 `store/slices/user.slice.ts`） | 双 token、sessionSource、sessionEpoch、用户信息、角色、permCodes、permissionVersion | 仅双 token + sessionSource |
+| `user`（应用级 `store/slices/user.slice.ts`） | accessToken、sessionEpoch、用户信息、角色、permCodes、菜单路径白名单 | 仅 accessToken |
 | `settings`（应用级） | 主题选择、主题色、布局、面包屑、语言 | ✅ |
 | `tabs`（应用级） | 页签 key、location 快照、title、affix、排序 | ❌ |
 | `pageCache`（应用级） | 缓存 key、revision、LRU 顺序 | ❌ |
@@ -864,14 +880,15 @@ interface PageResult<T> {
 }
 
 /**
- * profile 使用角色 code 判定 admin，避免把完整角色管理字段耦合到认证接口。
- * permissionVersion 每次权限集合变化时都必须变化。
+ * 会话权限快照：permCodes 来自 GET /me/permissions，user 来自 GET /users/me，
+ * menuPaths 来自 GET /me/menus（菜单树节点 path 扁平化集合，null 表示不受菜单树限制）。
+ * username 为 admin 的超管用户由前端注入 roleCodes ['admin']（通配语义），其余为空数组（v1.15）。
  */
 interface ProfileData {
   user: User
   roleCodes: string[]
   permCodes: string[]
-  permissionVersion: string
+  menuPaths: string[] | null
 }
 
 /**
@@ -907,7 +924,7 @@ interface DashboardOverview {
 | 页面 | 路由 | 页面权限 | 要点 |
 | --- | --- | --- | --- |
 | 登录 | `/login` | 公开 | 表单、合法回跳 |
-| Dashboard | `/dashboard` | `dashboard:view` | affix、统计卡和三类图表 |
+| Dashboard | `/dashboard` | 仅登录 | affix、统计卡和三类图表 |
 | 用户管理 | `/system/user` | `system:user:list` | 查询、分页、Drawer CRUD、角色分配 |
 | 角色管理 | `/system/role` | `system:role:list` | CRUD、权限树 |
 | 菜单管理 | `/system/menu` | `system:menu:list` | 树表；明确不改变前端静态路由 |
@@ -957,22 +974,27 @@ GET    /dashboard/overview            → DashboardOverview
 
 ### 14.4 HTTP 与稳定错误码
 
-| HTTP | errorCode | 语义 |
+失败响应统一为 RFC 9457 `application/problem+json`，稳定错误码在 body 的 `code` 字段（`<MODULE>.<REASON>` 点分格式）：
+
+| HTTP | code | 语义 |
 | --- | --- | --- |
-| 400 | `VALIDATION_FAILED` | 入参错误，details 含字段错误 |
-| 401 | `AUTH_INVALID_CREDENTIALS` | 用户名或密码错误，不触发 token 刷新 |
-| 401 | `AUTH_ACCESS_EXPIRED` | 仅 accessToken 可刷新失效 |
-| 401 | `AUTH_REFRESH_EXPIRED` | refreshToken 失效 |
-| 403 | `AUTH_ACCOUNT_DISABLED` | 账号被禁用，清理本地会话 |
-| 403 | `AUTH_PERMISSION_CHANGED` | 权限快照变化，需刷新 profile |
-| 403 | `AUTH_FORBIDDEN` | 权限未变化的普通拒绝 |
-| 404 | `RESOURCE_NOT_FOUND` | 资源不存在 |
-| 409 | `RESOURCE_CONFLICT` | 唯一性、引用或状态冲突 |
-| 500 | `INTERNAL_ERROR` | 服务端异常 |
+| 400 | `PARAMETER.INVALID` | 请求参数格式或基本值不合法（非字段级） |
+| 422 | `VALIDATION.FAILED` | 字段校验失败，errors 数组含 field/reason/message |
+| 401 | `AUTH.INVALID_CREDENTIALS` | 登录凭据无效（防枚举统一响应），不触发 token 刷新 |
+| 401 | `AUTH.UNAUTHENTICATED` | 请求缺少有效认证凭证（无/无效/过期 accessToken），触发刷新状态机 |
+| 401 | `AUTH.REFRESH_FAILED` | 刷新失败（refreshToken 不存在、已轮换、已吊销或过期） |
+| 401 | `AUTH.SESSION_NOT_FOUND` | 会话不存在 |
+| 403 | `AUTH.FORBIDDEN` | 已认证但无权执行所请求的操作，仅提示 |
+| 409 | `AUTH.LAST_SUPER_ADMIN` | 最后超管保护，拒绝使系统失去最后一个超管的操作 |
+| 404 | `COMMON.NOT_FOUND` | 资源不存在 |
+| 409 | `COMMON.CONFLICT` | 状态冲突 |
+| 409 | `DB.UNIQUE_VIOLATION` | 唯一约束冲突 |
+| 503 | `DB.CONNECTION_ERROR` | 数据库连接错误 |
+| 500 | `SYSTEM.INTERNAL` | 系统内部错误 |
 
-`VALIDATION_FAILED.details`固定为 `{ fields: Array<{ field: string; message: string }> }`。前端只把已知 field 映射到表单项；未知字段显示页面级错误。
+`VALIDATION.FAILED`的 `errors` 数组元素固定为 `{ field, reason, message }`。前端只把已知 field 映射到表单项；未知字段显示页面级错误。
 
-HTTP 401/403 之外即使 envelope 误带同名 errorCode，也不得触发认证状态机。
+HTTP 401 之外即使 problem+json 误带同名 code，也不得触发认证刷新状态机。
 
 ---
 
@@ -992,7 +1014,7 @@ HTTP 401/403 之外即使 envelope 误带同名 errorCode，也不得触发认�
 
 | 变量 | 暴露客户端 | 取值/用途 |
 | --- | --- | --- |
-| `VITE_API_BASE_URL` | 是 | 开发默认 `/api` |
+| `VITE_API_BASE_URL` | 是 | 默认 `/api/v1`（真实后端 API 前缀，v1.14） |
 | `PROXY_TARGET` | 否 | 仅 Vite dev server 代理目标 |
 
 - 提供全模式生效的 `.env` 与模板 `.env.example`（均入库），不提交 `.env.*.local`；dev 与生产取值有差异时经 `.env.*.local` 或部署流水线变量覆盖（v1.13 收敛，不再按模式拆分文件）。
@@ -1043,8 +1065,8 @@ prepare     husky
 3. profile 网络失败显示可重试错误，不误清 token；401 按状态机处理。
 4. 并发 401 只刷新一次；每个请求最多重放一次。
 5. refresh 期间登出/切账号，旧结果因 epoch 不匹配被丢弃。
-6. 普通 403 不刷新 profile；AUTH_PERMISSION_CHANGED 才刷新且防递归。
-7. 权限收窄后立即关闭失权页签，当前页 replace 到 403。
+6. ~~普通 403 不刷新 profile；AUTH_PERMISSION_CHANGED 才刷新且防递归。~~（已随 v1.14 移除会话内权限变更机制，编号保留以稳定后续条文引用）
+7. ~~权限收窄后立即关闭失权页签，当前页 replace 到 403。~~（已随 v1.14 移除，编号保留以稳定后续条文引用）
 8. ~~demo fallback 后刷新仍保持 demo adapter；off 构建无 demo 代码。~~（已随演示模式于 v1.12 移除，编号保留以稳定后续条文引用）
 9. 同路由不同 query 的页签分别读取自己的 location/search 和组件状态。
 10. hash 变化复用当前页签；search 规范化后决定是否复用。
@@ -1100,7 +1122,7 @@ prepare     husky
 - [ ] 中英切换前加载所有已打开页签命名空间；全站静态文案经过 i18n，antd/dayjs/html lang/title 同步。
 - [ ] access 过期的并发请求只刷新一次并成功重放；refresh 失效只跳登录一次。
 - [ ] refresh 期间切换账号不会把旧 token 写回。
-- [ ] 普通 403 不刷新 profile；权限变更 403 只刷新一次并立即清失权页签。
+- [ ] 普通 403 只提示无权操作，不刷新 profile、不清会话。
 - [ ] 重复 GET、页面隐藏和路由切换正确取消请求；全局进度条最终归零。
 - [ ] `/403`、不存在路径 404、直接 `/500`和注入渲染错误均有正确结果。
 - [ ] 三类恶意外站 redirect 和 `/\\evil.example`均不能离开当前 origin。

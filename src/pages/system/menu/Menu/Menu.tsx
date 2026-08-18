@@ -1,18 +1,19 @@
 /**
- * 菜单管理页面（规格 §14.2/§14.3）：路由 /system/menu，页面权限 system:menu:list。
- * 树表展示（type/name/routeId/path/permCode/sort/visible/status，不分页）由 useMenuTree
- * 承担（§17.24 竞态防护 + 页签作用域）；创建/编辑共用 MenuForm（按类型条件校验，
- * directory 不得设 routeId、page 必须设可识别 routeId、button 必须设 permCode）；
- * 删除存在子节点返回 RESOURCE_CONFLICT，冲突提示由请求层统一弹出（非 silent）。
- * 页面固定呈现说明文案：菜单管理不动态改变前端静态路由（规格 §14.1/§14.2）；
- * 新增/编辑/删除按钮由 <Auth> 按钮级门控（规格 §5.2），viewer 下隐藏，
+ * 菜单管理页面（对齐真实后端 menu 接口）：路由 /system/menu，页面权限 menu:menu:read。
+ * 树表展示（menuType/title/name/path/sortOrder/visible/status，不分页）由 useMenuTree 承担
+ * （§17.24 竞态防护 + 页签作用域）；创建/编辑共用 MenuForm（编辑与创建不同构：基本信息走
+ * PUT /menus/:id，parentId/sortOrder 变化追加 PUT /menus/:id/hierarchy；link 类型必须设置 path）；
+ * 状态变更走 POST /menus/:id/enable|disable；删除存在子菜单返回 409，冲突提示由请求层
+ * 统一弹出（非 silent）。页面固定呈现说明文案：菜单管理不动态改变前端静态路由；
+ * 新增/编辑/启停用/删除按钮由 <Auth> 按钮级门控（规格 §5.2），viewer 下隐藏，
  * 权限码一律引用 PERMISSIONS 常量，页面不出现权限魔法字符串。
  */
 import { useState } from 'react'
 import { Alert, App, Button, Drawer, Space, Table, Tag } from 'antd'
 import type { TableProps } from 'antd'
-import { ListTree, Pencil, Plus, Trash2 } from 'lucide-react'
+import { CircleCheck, CircleSlash, ListTree, Pencil, Plus, Trash2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import dayjs from 'dayjs'
 import { PERMISSIONS } from '@/constants/permission.constants'
 import { MENU_I18N_NAMESPACE, MENU_TYPES } from '@/constants/system/menu/menu.constants'
 import { AppIcon } from '@/components/AppIcon/AppIcon'
@@ -21,22 +22,18 @@ import { PageCard } from '@/components/PageCard/PageCard'
 import { MenuForm } from '@/features/system/menu/components/MenuForm/MenuForm'
 import type { MenuFormMode, MenuFormSubmitPayload } from '@/features/system/menu/components/MenuForm/MenuForm.types'
 import { useMenuTree } from '@/features/system/menu/hooks/useMenuTree'
-import { createMenu, deleteMenu, updateMenu } from '@/services/system/menu/menu.service'
+import { adjustMenuHierarchy, createMenu, deleteMenu, disableMenu, enableMenu, updateMenu } from '@/services/system/menu/menu.service'
 import type { MenuItem } from '@/types/system/menu/menu.types'
 
-/** 类型列文案 key：与 MENU_TYPES 一一对应（规格 §14.1 菜单类型枚举） */
-const TYPE_LABEL_KEYS: Record<MenuItem['type'], string> = {
+/** 类型列文案 key：与 MENU_TYPES 一一对应（目录/页面/外链） */
+const TYPE_LABEL_KEYS: Record<MenuItem['menuType'], string> = {
   [MENU_TYPES.DIRECTORY]: '目录',
   [MENU_TYPES.PAGE]: '页面',
-  [MENU_TYPES.BUTTON]: '按钮',
+  [MENU_TYPES.LINK]: '外链',
 }
 
-/**
- * 图标列的展示视图类型（SPEC_UI2 §5.7 本规格唯一列结构例外）：
- * `icon` 为后端菜单数据可选字段（`local:` 图标名），
- * 主规格 §14.1 MenuItem 契约不变；后端数据无该字段时图标列呈现占位。
- */
-type MenuRowWithIcon = MenuItem & { icon?: string }
+/** 列表时间列展示格式（dayjs）；页面私有常量（规格 §3.6） */
+const MENU_TABLE_DATETIME_FORMAT = 'YYYY-MM-DD HH:mm'
 
 /** 表单 Drawer 开合状态：mode + 编辑目标（创建模式 menu 为 null） */
 interface FormDrawerState {
@@ -61,14 +58,18 @@ export function Menu() {
   const handleFormSubmit = async (payload: MenuFormSubmitPayload): Promise<void> => {
     setSubmitting(true)
     try {
+      // silent：字段映射与页面级错误由 MenuForm 呈现（规格 §7.4-3/§14.4）
       if (payload.mode === 'create') {
-        // silent：字段映射与页面级错误由 MenuForm 呈现（规格 §7.4-3/§14.4）
         await createMenu(payload.dto, { silent: true })
         message.success(t('创建菜单成功'))
       } else {
         const target = formDrawer.menu
         if (target !== null) {
           await updateMenu(target.id, payload.dto, { silent: true })
+          // parentId/sortOrder 有变化：追加独立层级调整端点（成环由后端 409 拒绝）
+          if (payload.hierarchy !== null) {
+            await adjustMenuHierarchy(target.id, payload.hierarchy, { silent: true })
+          }
           message.success(t('保存成功'))
         }
       }
@@ -79,16 +80,32 @@ export function Menu() {
     }
   }
 
+  const toggleStatus = (target: MenuItem): void => {
+    // 非 silent：启停用失败由请求层统一弹出错误提示
+    const action =
+      target.status === 'active'
+        ? disableMenu(target.id).then(() => t('禁用成功'))
+        : enableMenu(target.id).then(() => t('启用成功'))
+    void action
+      .then((successText) => {
+        message.success(successText)
+        reload()
+      })
+      .catch(() => {
+        // 吞掉 rejection；失败提示已由请求层弹出
+      })
+  }
+
   const confirmDelete = (target: MenuItem): void => {
     modal.confirm({
       title: t('删除菜单'),
-      content: t('确定要删除菜单「{{name}}」吗？删除后不可恢复。', { name: target.name }),
+      content: t('确定要删除菜单「{{name}}」吗？删除后不可恢复。', { name: target.title }),
       okText: t('确认删除'),
       okButtonProps: { danger: true },
       cancelText: t('取消'),
       onOk: async () => {
         try {
-          // 非 silent：删除冲突（存在子节点 RESOURCE_CONFLICT）由请求层统一弹出错误提示
+          // 非 silent：删除冲突（存在子菜单 409）由请求层统一弹出错误提示
           await deleteMenu(target.id)
           message.success(t('删除成功'))
           reload()
@@ -102,43 +119,34 @@ export function Menu() {
   const columns: TableProps<MenuItem>['columns'] = [
     {
       title: t('类型'),
-      dataIndex: 'type',
-      key: 'type',
+      dataIndex: 'menuType',
+      key: 'menuType',
       width: 90,
-      render: (type: MenuItem['type']) => <Tag>{t(TYPE_LABEL_KEYS[type])}</Tag>,
+      render: (menuType: MenuItem['menuType']) => <Tag>{t(TYPE_LABEL_KEYS[menuType], { context: 'menuType' })}</Tag>,
     },
     {
-      // 图标列（SPEC_UI2 §5.7）：后端可选 icon 字段驱动，渲染统一经 AppIcon；
-      // 缺省数据（后端契约无 icon）呈现占位
+      // 图标列（SPEC_UI2 §5.7 本规格唯一列结构例外）：后端可选 icon 字段（`local:` 图标名），
+      // 渲染统一经 AppIcon；无图标呈现占位
       title: t('图标'),
+      dataIndex: 'icon',
       key: 'icon',
       width: 72,
-      render: (_, record) => {
-        const icon = (record as MenuRowWithIcon).icon
-        // 无图标数据（真实后端契约无 icon 字段）以中性占位符呈现
-        return icon !== undefined ? <AppIcon name={icon} size={20} /> : '-'
-      },
+      render: (icon: string | null) => (icon !== null && icon !== '' ? <AppIcon name={icon} size={20} /> : '-'),
     },
-    { title: t('名称'), dataIndex: 'name', key: 'name' },
+    { title: t('标题'), dataIndex: 'title', key: 'title' },
     {
-      title: t('路由 ID'),
-      dataIndex: 'routeId',
-      key: 'routeId',
-      render: (routeId: string | undefined) => routeId ?? '-',
+      title: t('路由名称'),
+      dataIndex: 'name',
+      key: 'name',
+      render: (name: string | null) => name ?? '-',
     },
     {
       title: t('路由路径'),
       dataIndex: 'path',
       key: 'path',
-      render: (path: string | undefined) => path ?? '-',
+      render: (path: string | null) => path ?? '-',
     },
-    {
-      title: t('权限码'),
-      dataIndex: 'permCode',
-      key: 'permCode',
-      render: (permCode: string | undefined) => permCode ?? '-',
-    },
-    { title: t('排序'), dataIndex: 'sort', key: 'sort', width: 80 },
+    { title: t('排序值'), dataIndex: 'sortOrder', key: 'sortOrder', width: 90 },
     {
       title: t('是否可见'),
       dataIndex: 'visible',
@@ -152,20 +160,35 @@ export function Menu() {
       key: 'status',
       width: 90,
       render: (status: MenuItem['status']) => (
-        <Tag color={status === 'enabled' ? 'success' : 'error'}>
-          {status === 'enabled' ? t('启用', { context: 'status' }) : t('禁用', { context: 'status' })}
+        <Tag color={status === 'active' ? 'success' : 'error'}>
+          {status === 'active' ? t('启用', { context: 'status' }) : t('禁用', { context: 'status' })}
         </Tag>
       ),
     },
     {
+      title: t('更新时间'),
+      dataIndex: 'updatedAt',
+      key: 'updatedAt',
+      render: (updatedAt: string) => dayjs(updatedAt).format(MENU_TABLE_DATETIME_FORMAT),
+    },
+    {
       title: t('操作'),
       key: 'actions',
-      width: 140,
+      width: 200,
       render: (_, record) => (
         <Space size={0}>
           <Auth code={PERMISSIONS.SYSTEM_MENU_UPDATE}>
             <Button type="link" icon={<Pencil size={14} />} onClick={() => setFormDrawer({ open: true, mode: 'edit', menu: record })}>
               {t('编辑')}
+            </Button>
+          </Auth>
+          <Auth code={PERMISSIONS.SYSTEM_MENU_UPDATE}>
+            <Button
+              type="link"
+              icon={record.status === 'active' ? <CircleSlash size={14} /> : <CircleCheck size={14} />}
+              onClick={() => toggleStatus(record)}
+            >
+              {record.status === 'active' ? t('禁用', { context: 'button' }) : t('启用', { context: 'button' })}
             </Button>
           </Auth>
           <Auth code={PERMISSIONS.SYSTEM_MENU_DELETE}>
@@ -184,7 +207,7 @@ export function Menu() {
       <PageCard
         search={
           <>
-            {/* 固定说明文案（规格 §14.1/§14.2）：菜单管理不动态改变前端静态路由 */}
+            {/* 固定说明文案：菜单管理不动态改变前端静态路由 */}
             <Alert
               type="info"
               showIcon

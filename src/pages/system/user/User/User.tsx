@@ -1,18 +1,18 @@
 /**
- * 用户管理页面（规格 §14.2/§14.3）：路由 /system/user，页面权限 system:user:list。
- * keyword 查询（去空白、不区分大小写包含 username/displayName）+ sortBy/sortOrder 白名单排序
- * + 分页（默认 10、最大 100、未传 sortBy 按 createdAt desc）由 useUserList 承担（§17.24 竞态防护）；
- * 表格 + Drawer CRUD（创建/编辑契约差异见 UserForm），分配角色独立 Drawer（PUT /users/:id/roles）；
- * 新增/编辑/删除/分配角色按钮由 <Auth> 按钮级门控（规格 §5.2），viewer 下隐藏，
+ * 用户管理页面（对齐真实后端 identity 接口）：路由 /system/user，页面权限 system:user:read。
+ * status 筛选 + sort 白名单排序 + 分页（默认 20、最大 100、前端显式 createdAt desc）由 useUserList
+ * 承担（§17.24 竞态防护）；表格 + Drawer CRUD（创建/编辑契约差异见 UserForm，状态变更走
+ * POST /users/:id/enable|disable），分配角色独立 Drawer（PUT /users/:id/roles，roleCodes 全量替换）；
+ * 新增/编辑/启停用/删除/分配角色按钮由 <Auth> 按钮级门控（规格 §5.2），viewer 下隐藏，
  * 权限码一律引用 PERMISSIONS 常量，页面不出现权限魔法字符串。
  */
 import { useEffect, useState } from 'react'
-import { App, Button, Drawer, Input, Select, Space, Table, Tag } from 'antd'
+import { App, Button, Drawer, Select, Space, Table, Tag } from 'antd'
 import type { TableProps } from 'antd'
-import { Pencil, Plus, ShieldCheck, Trash2 } from 'lucide-react'
+import { CircleCheck, CircleSlash, Pencil, Plus, ShieldCheck, Trash2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
-import { PAGE_SIZE_MAX, SORT_ORDERS } from '@/constants/request.constants'
+import { DEFAULT_SORT_BY, DEFAULT_SORT_ORDER, PAGE_SIZE_MAX, SORT_ORDERS } from '@/constants/request.constants'
 import type { SortOrder as ListSortOrder } from '@/constants/request.constants'
 import { PERMISSIONS } from '@/constants/permission.constants'
 import { USER_I18N_NAMESPACE, USER_SORT_FIELDS } from '@/constants/system/user/user.constants'
@@ -29,24 +29,32 @@ import {
   assignUserRoles,
   createUser,
   deleteUser,
+  disableUser,
+  enableUser,
   updateUser,
 } from '@/services/system/user/user.service'
 import type { Role } from '@/types/system/role/role.types'
-import type { User as UserEntity } from '@/types/system/user/user.types'
+import type { User as UserEntity, UserStatus } from '@/types/system/user/user.types'
 
-/** 列表创建时间列展示格式（dayjs）；页面私有常量（规格 §3.6） */
+/** 列表时间列展示格式（dayjs）；页面私有常量（规格 §3.6） */
 const USER_TABLE_DATETIME_FORMAT = 'YYYY-MM-DD HH:mm'
 
-/** 每页条数可选项：全部不超过分页上限（规格 §14.3 size 最大 100） */
+/** 每页条数可选项：全部不超过分页上限（后端 pageSize 最大 100） */
 const USER_PAGE_SIZE_OPTIONS = ['10', '20', '50', '100']
 
-/** 排序字段选项文案 key：与 USER_SORT_FIELDS 白名单一一对应（规格 §14.3） */
+/** 排序字段选项文案 key：与 USER_SORT_FIELDS 白名单一一对应 */
 const SORT_FIELD_LABEL_KEYS: Record<UserSortField, string> = {
   username: '用户名',
   displayName: '显示名称',
-  status: '状态',
   createdAt: '创建时间',
+  updatedAt: '更新时间',
 }
+
+/** 状态筛选选项：值即后端稳定编码 */
+const STATUS_OPTIONS: Array<{ label: string; value: UserStatus }> = [
+  { label: '启用', value: 'active' },
+  { label: '禁用', value: 'disabled' },
+]
 
 /** 表单 Drawer 开合状态：mode + 编辑目标（创建模式 user 为 null） */
 interface FormDrawerState {
@@ -62,9 +70,8 @@ export function User() {
   const { message, modal } = App.useApp()
   const pageRequest = usePageRequest()
   const list = useUserList()
-  // 可选角色集合：创建表单初始角色与分配角色 Drawer 共用；一次性加载（角色数量远小于分页上限）
+  // 可选角色集合：分配角色 Drawer 共用；一次性加载（角色数量远小于分页上限）
   const [roles, setRoles] = useState<Role[]>([])
-  const [keywordDraft, setKeywordDraft] = useState('')
   const [formDrawer, setFormDrawer] = useState<FormDrawerState>(FORM_DRAWER_CLOSED)
   const [roleDrawerUser, setRoleDrawerUser] = useState<UserEntity | null>(null)
   const [submitting, setSubmitting] = useState(false)
@@ -72,10 +79,10 @@ export function User() {
 
   useEffect(() => {
     let alive = true
-    void listRoles({ page: 1, size: PAGE_SIZE_MAX }, pageRequest)
+    void listRoles({ page: 1, pageSize: PAGE_SIZE_MAX }, pageRequest)
       .then((page) => {
         if (alive) {
-          setRoles(page.list)
+          setRoles(page.items)
         }
       })
       .catch(() => {
@@ -111,20 +118,36 @@ export function User() {
     }
   }
 
-  const handleAssignRoles = async (roleIds: string[]): Promise<void> => {
+  const handleAssignRoles = async (roleCodes: string[]): Promise<void> => {
     const target = roleDrawerUser
     if (target === null) {
       return
     }
     setRoleSubmitting(true)
     try {
-      await assignUserRoles(target.id, { roleIds }, { silent: true })
+      await assignUserRoles(target.id, { roleCodes }, { silent: true })
       message.success(t('保存成功'))
       setRoleDrawerUser(null)
       list.reload()
     } finally {
       setRoleSubmitting(false)
     }
+  }
+
+  const toggleStatus = (target: UserEntity): void => {
+    // 非 silent：启停用失败（如重复启停 409）由请求层统一弹出错误提示
+    const action =
+      target.status === 'active'
+        ? disableUser(target.id).then(() => t('禁用成功'))
+        : enableUser(target.id).then(() => t('启用成功'))
+    void action
+      .then((successText) => {
+        message.success(successText)
+        list.reload()
+      })
+      .catch(() => {
+        // 吞掉 rejection；失败提示已由请求层弹出
+      })
   }
 
   const confirmDelete = (target: UserEntity): void => {
@@ -150,20 +173,32 @@ export function User() {
   const columns: TableProps<UserEntity>['columns'] = [
     { title: t('用户名'), dataIndex: 'username', key: 'username' },
     { title: t('显示名称'), dataIndex: 'displayName', key: 'displayName' },
-    { title: t('邮箱'), dataIndex: 'email', key: 'email' },
+    {
+      title: t('邮箱'),
+      dataIndex: 'email',
+      key: 'email',
+      render: (email: string | null) => email ?? '-',
+    },
     {
       title: t('手机号'),
       dataIndex: 'phone',
       key: 'phone',
-      render: (phone: string | undefined) => phone ?? '-',
+      render: (phone: string | null) => phone ?? '-',
+    },
+    {
+      title: t('最近登录'),
+      dataIndex: 'lastLoginAt',
+      key: 'lastLoginAt',
+      render: (lastLoginAt: string | null) =>
+        lastLoginAt !== null ? dayjs(lastLoginAt).format(USER_TABLE_DATETIME_FORMAT) : '-',
     },
     {
       title: t('状态'),
       dataIndex: 'status',
       key: 'status',
       render: (status: UserEntity['status']) => (
-        <Tag color={status === 'enabled' ? 'success' : 'error'}>
-          {status === 'enabled' ? t('启用', { context: 'status' }) : t('禁用', { context: 'status' })}
+        <Tag color={status === 'active' ? 'success' : 'error'}>
+          {status === 'active' ? t('启用', { context: 'status' }) : t('禁用', { context: 'status' })}
         </Tag>
       ),
     },
@@ -181,6 +216,15 @@ export function User() {
           <Auth code={PERMISSIONS.SYSTEM_USER_UPDATE}>
             <Button type="link" icon={<Pencil size={14} />} onClick={() => setFormDrawer({ open: true, mode: 'edit', user: record })}>
               {t('编辑')}
+            </Button>
+          </Auth>
+          <Auth code={PERMISSIONS.SYSTEM_USER_UPDATE}>
+            <Button
+              type="link"
+              icon={record.status === 'active' ? <CircleSlash size={14} /> : <CircleCheck size={14} />}
+              onClick={() => toggleStatus(record)}
+            >
+              {record.status === 'active' ? t('禁用', { context: 'button' }) : t('启用', { context: 'button' })}
             </Button>
           </Auth>
           <Auth code={PERMISSIONS.SYSTEM_USER_ASSIGN_ROLE}>
@@ -204,26 +248,24 @@ export function User() {
       <PageCard
         search={
           <Space wrap>
-            <Input.Search
+            <Select<UserStatus | undefined>
               allowClear
-              placeholder={t('搜索用户名或显示名称')}
-              value={keywordDraft}
-              onChange={(event) => setKeywordDraft(event.target.value)}
-              onSearch={(value) => list.searchKeyword(value)}
-              style={{ width: 240 }}
+              placeholder={t('全部状态')}
+              value={list.query.status}
+              onChange={(value) => list.changeStatus(value)}
+              style={{ width: 140 }}
+              options={STATUS_OPTIONS.map((option) => ({ label: t(option.label, { context: 'status' }), value: option.value }))}
             />
-            <Select<UserSortField | undefined>
-              allowClear
-              placeholder={t('默认排序（创建时间倒序）')}
+            <Select<UserSortField>
+              placeholder={t('排序字段')}
               value={list.query.sortBy}
               onChange={(value) => list.changeSort(value, list.query.sortOrder)}
-              style={{ width: 180 }}
+              style={{ width: 160 }}
               options={USER_SORT_FIELDS.map((field) => ({ label: t(SORT_FIELD_LABEL_KEYS[field]), value: field }))}
             />
             <Select<ListSortOrder>
               placeholder={t('排序方向')}
-              value={list.query.sortBy === undefined ? undefined : list.query.sortOrder}
-              disabled={list.query.sortBy === undefined}
+              value={list.query.sortOrder}
               onChange={(value) => list.changeSort(list.query.sortBy, value)}
               style={{ width: 120 }}
               options={[
@@ -233,9 +275,8 @@ export function User() {
             />
             <Button
               onClick={() => {
-                setKeywordDraft('')
-                list.searchKeyword('')
-                list.changeSort(undefined, list.query.sortOrder)
+                list.changeStatus(undefined)
+                list.changeSort(DEFAULT_SORT_BY as UserSortField, DEFAULT_SORT_ORDER)
               }}
             >
               {t('重置')}
@@ -255,11 +296,11 @@ export function User() {
           loading={list.loading}
           pagination={{
             current: list.query.page,
-            pageSize: list.query.size,
+            pageSize: list.query.pageSize,
             total: list.total,
             showSizeChanger: true,
             pageSizeOptions: USER_PAGE_SIZE_OPTIONS,
-            onChange: (page, size) => list.changePagination(page, size),
+            onChange: (page, pageSize) => list.changePagination(page, pageSize),
           }}
         />
       </PageCard>
@@ -274,13 +315,12 @@ export function User() {
         <UserForm
           mode={formDrawer.mode}
           user={formDrawer.user}
-          roles={roles}
           submitting={submitting}
           onSubmit={handleFormSubmit}
           onCancel={closeFormDrawer}
         />
       </Drawer>
-      {/* key 按目标用户重建抽屉组件：勾选初始值随目标用户的当前角色重置 */}
+      {/* key 按目标用户重建抽屉组件：初始勾选随目标用户当前角色重置 */}
       <UserRoleDrawer
         key={roleDrawerUser?.id ?? 'closed'}
         open={roleDrawerUser !== null}

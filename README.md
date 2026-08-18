@@ -70,10 +70,12 @@ oxlint 并执行全量 `pnpm check:structure`；pre-push 执行 `pnpm typecheck`
 
 ### token 存 localStorage 的 XSS 风险
 
-本模板的 accessToken/refreshToken 默认持久化在 **localStorage**（redux-persist，key 前缀 `apex_`，规格 §6.1）。
-这是一次显式取舍：localStorage 让「刷新后保持登录」实现简单且跨标签页可用，但代价是——
+本模板的 accessToken 持久化在 **localStorage**（redux-persist，key 前缀 `apex_`，规格 §6.1 v1.14）；
+refreshToken 已由后端经 `__Host-apex_refresh` HttpOnly Secure SameSite=Strict Cookie 下发与轮换，
+不进入 JSON 响应、不落前端任何存储，刷新/登出请求由浏览器自动携带。
+对 accessToken，这是一次显式取舍：localStorage 让「刷新后保持登录」实现简单且跨标签页可用，但代价是——
 
-- **任何成功的 XSS 攻击都可以直接读取双 token**，进而在 token 有效期内完全冒充用户；
+- **任何成功的 XSS 攻击都可以直接读取 accessToken**，进而在 token 有效期内完全冒充用户；
 - localStorage 无法像 Cookie 一样设置 HttpOnly 标记，脚本可读性不可关闭。
 
 使用本模板接入真实生产时，请至少做到：
@@ -84,17 +86,18 @@ oxlint 并执行全量 `pnpm check:structure`；pre-push 执行 `pnpm typecheck`
 3. 保持依赖可复现（lockfile）并定期审计供应链；
 4. accessToken 保持短有效期 + 刷新旋转（后端契约已按此设计，规格 §6.2）。
 
-### 更稳妥的替代方案：httpOnly Cookie
+### 更稳妥的替代方案：accessToken 也走 httpOnly Cookie
 
-若威胁模型不允许 token 被脚本读取，建议改造为后端在 `Set-Cookie` 中签发 `HttpOnly; Secure; SameSite=Strict`
-的 token Cookie，前端改动集中在：
+refreshToken 已按 Cookie 方案落地（v1.14）；若威胁模型不允许 accessToken 被脚本读取，
+可进一步改造为后端在 `Set-Cookie` 中签发 `HttpOnly; Secure; SameSite=Strict` 的 accessToken Cookie，
+前端改动集中在：
 
-- 移除 user slice 中双 token 的持久化白名单（规格 §8.1），登录态改为「有 Cookie 即有会话」；
+- 移除 user slice 中 accessToken 的持久化白名单（规格 §8.1），登录态改为「有 Cookie 即有会话」；
 - 请求层不再手写 `Authorization` 头，改为依赖 Cookie（`withCredentials`）；
 - **必须同时补齐 CSRF 防护**（如 `SameSite=Strict` + 自定义头双重校验或 token 同步模式）——这是从
   localStorage 迁移到 Cookie 时新引入的风险面，不能省略。
 
-本模板默认维持 localStorage 方案；上述替代属于接入方的架构决策，规格不承诺开箱支持。
+本模板默认对 accessToken 维持 localStorage 方案；上述替代属于接入方的架构决策，规格不承诺开箱支持。
 
 ## 环境变量
 

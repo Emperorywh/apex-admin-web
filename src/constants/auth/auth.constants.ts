@@ -5,16 +5,29 @@
  */
 
 /**
- * 账号密码最小长度，单位：字符（规格 §14.3）。
- * 密码最少 8 位且必须同时包含字母和数字；该策略同时约束创建用户与个人中心修改密码，
- * 对应校验规则由表单实现，登录接口不做该前置校验。
+ * 账号密码最小长度，单位：字符（后端 SPEC 23.2：密码为 12-128 个 Unicode 字符）。
+ * 该策略同时约束创建用户与个人中心修改密码，对应校验规则由表单实现，
+ * 登录接口不做该前置校验。
  */
-export const PASSWORD_MIN_LENGTH = 8
+export const PASSWORD_MIN_LENGTH = 12
 
 /**
- * 密码强度正则（规格 §14.3）：至少一位字母且至少一位数字，总长不小于 PASSWORD_MIN_LENGTH。
+ * 账号密码最大长度，单位：字符（后端 SPEC 23.2：密码为 12-128 个 Unicode 字符）。
+ */
+export const PASSWORD_MAX_LENGTH = 128
+
+/**
+ * 密码强度正则（后端 SPEC 23.2 仅约束长度，无复杂度要求）：
+ * 总长在 [PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH] 内。
  * 创建用户表单与个人中心修改密码表单的前置校验共用，
  * 唯一权威定义，不在调用点复制正则字面量。
  */
-export const PASSWORD_PATTERN = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/
+export const PASSWORD_PATTERN = /^.{12,128}$/
+
+/**
+ * 超级管理员用户名（规格 §5.1/§6.3 v1.15）：username 等于该值的用户由前端固定注入
+ * admin 角色码（通配语义，§4.4）且菜单不受后端菜单树白名单限制——后端 /me 端点按
+ * 启用角色聚合，admin 用户无角色时返回空集合，超管体验由前端补齐；后端仍逐接口鉴权。
+ */
+export const SUPER_ADMIN_USERNAME = 'admin'
 

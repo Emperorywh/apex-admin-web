@@ -6,7 +6,8 @@
  *    重定向与路由级错误；受保护业务叶子只返回空锚点，不直接渲染业务页；
  * 2. renderRoutes——不含 loader/action，仅目录结构与 React.lazy 页面组件；
  *    以 useRoutes(renderRoutes, locationSnapshot) 渲染，让每个缓存页签获得独立路由上下文；
- * 3. menuRoutes——受保护根子树的菜单形态投影，按权限与 hideInMenu 过滤后供侧边/顶部菜单使用。
+ * 3. menuRoutes——受保护根子树的菜单形态投影，按权限、后端菜单树白名单与 hideInMenu
+ *    过滤后供侧边/顶部菜单使用（§4.4 v1.15）。
  */
 import { lazy, Suspense, createElement, useMemo, type ComponentType, type LazyExoticComponent, type ReactNode } from 'react'
 import { Outlet, type RouteObject } from 'react-router'
@@ -63,8 +64,9 @@ function findProtectedRoot(defs: readonly AppRouteDefinition[]): AppRouteDefinit
 /**
  * 受保护根容器（规格 §4.1/§11.1）：BasicLayout 在受保护根路由内只挂载一次的唯一装配点。
  * 布局层不得反向导入 router/（依赖方向固定为 router → layouts），因此由本容器读取
- * user 切片权限快照、复用 filterMenuRoutes 与守卫同一个 hasPermissionChain 判定完成
- * 菜单过滤（权限/hideInMenu/目录保留，规格 §4.4），并把 navItems、纯渲染投影与
+ * user 切片权限快照与菜单路径白名单、复用 filterMenuRoutes 与守卫同一个
+ * hasPermissionChain 判定完成菜单过滤（权限/菜单树/hideInMenu/目录保留，规格 §4.4 v1.15），
+ * 并把 navItems、纯渲染投影与
  * 登出状态机经 props 注入 BasicLayout；页面渲染由 BasicLayout 内的
  * useRoutes(renderRoutes) 以 Data Router 当前 location 承担（规格 §4.1）。
  */
@@ -74,13 +76,15 @@ const logoutFromUserMenu = (): Promise<void> => getDefaultAuthSessionRuntime().l
 // 容器与投影构建器同文件：路由装配文件不做 Fast Refresh，局部禁用该告警
 // oxlint-disable-next-line react/only-export-components
 function ProtectedRoot(): ReactNode {
-  // 分别订阅两个数组引用：避免整对象选择器因每次返回新引用导致任意 dispatch 都重渲染
+  // 分别订阅数组/白名单引用：避免整对象选择器因每次返回新引用导致任意 dispatch 都重渲染
   const permCodes = useSelector((state: RootState) => state.user.permCodes)
   const roleCodes = useSelector((state: RootState) => state.user.roles)
-  const navItems = useMemo(
-    () => filterMenuRoutes(menuRoutes, { permCodes, roleCodes }),
-    [permCodes, roleCodes],
-  )
+  const menuPaths = useSelector((state: RootState) => state.user.menuPaths)
+  const navItems = useMemo(() => {
+    // 菜单树白名单规范化为 Set：null（admin 超管）表示不受菜单树限制（规格 §4.4 v1.15）
+    const menuPathSet = menuPaths === null ? null : new Set(menuPaths.map(normalizeMenuPath))
+    return filterMenuRoutes(menuRoutes, { permCodes, roleCodes }, menuPathSet)
+  }, [permCodes, roleCodes, menuPaths])
   return (
     <BasicLayout
       navItems={navItems}
@@ -242,50 +246,53 @@ export function buildAffixTabRoutes(defs: readonly AppRouteDefinition[]): AffixT
 }
 
 /**
- * 菜单过滤（规格 §4.4）：与守卫共用 hasPermissionChain 单一判定。
- * - hideInMenu 隐藏该节点及其菜单子树，但不改变 URL 可访问性（accessRoutes 不受影响）；
- * - 无 permCode 的节点对所有已登录用户可见；
- * - 目录菜单仅在自身权限满足且至少有一个可见子节点时保留。
+ * 规范化菜单路径（规格 §4.4 v1.15）：补齐开头 `/`、去除末尾多余 `/`（根路径除外），
+ * 空串归一为 `/`。后端菜单树 path 白名单与静态路由累计全路径统一经本函数比对，
+ * 不得在调用点另写一份规范化。
  */
-export function filterMenuRoutes(nodes: readonly MenuRouteNode[], input: PermissionInput): MenuRouteNode[] {
-  const visible: MenuRouteNode[] = []
-  for (const node of nodes) {
-    if (node.hideInMenu === true) {
-      continue
-    }
-    const selfPermitted = hasPermissionChain(node.permChain, input)
-    if (node.children !== undefined && node.children.length > 0) {
-      const visibleChildren = filterMenuRoutes(node.children, input)
-      if (selfPermitted && visibleChildren.length > 0) {
-        visible.push({ ...node, children: visibleChildren })
-      }
-      continue
-    }
-    if (selfPermitted) {
-      visible.push(node)
-    }
-  }
-  return visible
+function normalizeMenuPath(path: string): string {
+  const withLeading = path === '' ? '/' : path.startsWith('/') ? path : `/${path}`
+  return withLeading.length > 1 && withLeading.endsWith('/') ? withLeading.slice(0, -1) : withLeading
 }
 
-/** 路由路径 → 从受保护根到该节点的累计权限码链：失权页签判定与守卫共用同一来源 */
-export const routePermissionChains: ReadonlyMap<string, readonly string[]> = (() => {
-  const chains = new Map<string, readonly string[]>()
-  const visit = (def: AppRouteDefinition, inherited: readonly string[]): void => {
-    const chain = accumulateChain(inherited, def)
-    // * 是匹配模式而非可寻址路径，不登记
-    if (def.path !== undefined && def.path !== '*') {
-      chains.set(def.path, chain)
+/**
+ * 菜单过滤（规格 §4.4 v1.15）：与守卫共用 hasPermissionChain 单一判定。
+ * - hideInMenu 隐藏该节点及其菜单子树，但不改变 URL 可访问性（accessRoutes 不受影响）；
+ * - 无 permCode 的节点对所有已登录用户可见；
+ * - 后端菜单树白名单（menuPaths，来自 GET /me/menus）只约束叶子页面：累计全路径
+ *   命中白名单才展示；目录不直接比对（后端树父子连带、目录 path 可空），经可见子节点
+ *   间接保留。menuPaths 为 null（admin 超管）表示不受菜单树限制，直接展示全部菜单；
+ * - 目录菜单仅在自身权限满足且至少有一个可见子节点时保留。
+ */
+export function filterMenuRoutes(
+  nodes: readonly MenuRouteNode[],
+  input: PermissionInput,
+  menuPaths: ReadonlySet<string> | null,
+): MenuRouteNode[] {
+  const filterNodes = (list: readonly MenuRouteNode[], parentPath: string): MenuRouteNode[] => {
+    const visible: MenuRouteNode[] = []
+    for (const node of list) {
+      if (node.hideInMenu === true) {
+        continue
+      }
+      const fullPath = normalizeMenuPath(joinRoutePath(parentPath, node.path))
+      const treeAllowed = menuPaths === null || node.hasPage !== true || menuPaths.has(fullPath)
+      const selfPermitted = treeAllowed && hasPermissionChain(node.permChain, input)
+      if (node.children !== undefined && node.children.length > 0) {
+        const visibleChildren = filterNodes(node.children, fullPath)
+        if (selfPermitted && visibleChildren.length > 0) {
+          visible.push({ ...node, children: visibleChildren })
+        }
+        continue
+      }
+      if (selfPermitted) {
+        visible.push(node)
+      }
     }
-    for (const child of def.children ?? []) {
-      visit(child, chain)
-    }
+    return visible
   }
-  for (const def of routeDefinitions) {
-    visit(def, [])
-  }
-  return chains
-})()
+  return filterNodes(nodes, '')
+}
 
 /** 三投影常量：模块初始化时生成一次，引用稳定（规格 §4.1）；affixTabRoutes 为页签重建附属投影 */
 export const accessRoutes: RouteObject[] = buildAccessRoutes(routeDefinitions)

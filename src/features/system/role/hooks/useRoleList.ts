@@ -1,6 +1,6 @@
 /**
- * 角色列表数据 Hook（规格 §14.2/§14.3、§17.24）：
- * keyword/sortBy/sortOrder/分页条件驱动的列表查询，请求经 usePageRequest() 注入
+ * 角色列表数据 Hook（对齐真实后端 GET /roles）：
+ * status 筛选 + sort 白名单排序 + 分页条件驱动的列表查询，请求经 usePageRequest() 注入
  * 页签作用域（规格 §7.4-6），页签隐藏/关闭/淘汰时统一取消。
  *
  * 竞态防护（§17.24：快速查询/分页时前请求被取消且不覆盖后请求结果）：
@@ -9,31 +9,36 @@
  */
 import { useCallback, useEffect, useState } from 'react'
 import type { AxiosRequestConfig } from 'axios'
-import { DEFAULT_SORT_ORDER, PAGE_DEFAULT, PAGE_SIZE_DEFAULT } from '@/constants/request.constants'
+import { DEFAULT_SORT_BY, DEFAULT_SORT_ORDER, PAGE_DEFAULT, PAGE_SIZE_DEFAULT } from '@/constants/request.constants'
 import type { SortOrder } from '@/constants/request.constants'
 import type { RoleSortField } from '@/constants/system/role/role.constants'
 import { usePageRequest } from '@/hooks/usePageRequest'
 import { normalizePagination } from '@/utils/pagination'
+import { buildSortParam } from '@/utils/sortParam'
 import { listRoles } from '@/services/system/role/role.service'
-import type { Role } from '@/types/system/role/role.types'
+import type { Role, RoleStatus } from '@/types/system/role/role.types'
+// PageResult 是跨业务域共享的分页实体，权威定义位于 user 域（TASK-003 所有权划分）
 import type { PageResult } from '@/types/system/user/user.types'
 
-/** 列表查询条件：keyword 为已提交值；sortBy 未选时不发送，由后端按 createdAt desc（规格 §14.3） */
+/**
+ * 列表查询条件：status 为 undefined 表示全部；sortBy/sortOrder 组合为后端 sort 单参数
+ * （后端未传 sort 时不排序，故初始即按 createdAt desc 显式发送）。
+ */
 export interface RoleListQuery {
-  keyword: string
-  sortBy: RoleSortField | undefined
+  status: RoleStatus | undefined
+  sortBy: RoleSortField
   sortOrder: SortOrder
   page: number
-  size: number
+  pageSize: number
 }
 
-/** 初始查询条件：第 1 页、默认每页条数、默认排序（未传 sortBy） */
+/** 初始查询条件：第 1 页、默认每页条数、createdAt 降序 */
 const INITIAL_ROLE_LIST_QUERY: RoleListQuery = {
-  keyword: '',
-  sortBy: undefined,
+  status: undefined,
+  sortBy: DEFAULT_SORT_BY as RoleSortField,
   sortOrder: DEFAULT_SORT_ORDER,
   page: PAGE_DEFAULT,
-  size: PAGE_SIZE_DEFAULT,
+  pageSize: PAGE_SIZE_DEFAULT,
 }
 
 export interface UseRoleListResult {
@@ -41,16 +46,16 @@ export interface UseRoleListResult {
   query: RoleListQuery
   /** 当前页角色列表 */
   roles: Role[]
-  /** 过滤条件后的总数（规格 §14.1 PageResult.total） */
+  /** 过滤条件后的总数（PageResult.total） */
   total: number
   /** 列表加载中 */
   loading: boolean
-  /** 提交关键字搜索：重置回第 1 页（发送前统一去空白） */
-  searchKeyword: (keyword: string) => void
-  /** 更新排序：重置回第 1 页；sortBy 传 undefined 恢复默认排序 */
-  changeSort: (sortBy: RoleSortField | undefined, sortOrder: SortOrder) => void
+  /** 按状态筛选：重置回第 1 页；undefined 表示全部 */
+  changeStatus: (status: RoleStatus | undefined) => void
+  /** 更新排序：重置回第 1 页 */
+  changeSort: (sortBy: RoleSortField, sortOrder: SortOrder) => void
   /** 翻页或修改每页条数（antd Table 分页变更） */
-  changePagination: (page: number, size: number) => void
+  changePagination: (page: number, pageSize: number) => void
   /** 按当前条件重新加载（写操作成功后刷新列表用） */
   reload: () => void
 }
@@ -72,12 +77,11 @@ export function useRoleList(): UseRoleListResult {
 
     void listRoles(
       {
-        // page/size 经守卫归一：非法值回退默认、size 截断到上限（规格 §14.3）
-        ...normalizePagination({ page: query.page, size: query.size }),
-        // keyword 去首尾空白后发送（规格 §14.3）
-        keyword: query.keyword.trim(),
-        // sortBy 未选时不发送：后端统一按 createdAt desc
-        ...(query.sortBy !== undefined ? { sortBy: query.sortBy, sortOrder: query.sortOrder } : {}),
+        // page/pageSize 经守卫归一：非法值回退默认、pageSize 截断到上限
+        ...normalizePagination({ page: query.page, pageSize: query.pageSize }),
+        // status 为 undefined（全部）时不发送该参数
+        ...(query.status !== undefined ? { status: query.status } : {}),
+        sort: buildSortParam(query.sortBy, query.sortOrder),
       },
       sendWithSignal,
     )
@@ -103,13 +107,13 @@ export function useRoleList(): UseRoleListResult {
     }
   }, [pageRequest, query, reloadToken])
 
-  const searchKeyword = useCallback((keyword: string) => {
+  const changeStatus = useCallback((status: RoleStatus | undefined) => {
     setQuery((prev) =>
-      prev.keyword === keyword && prev.page === PAGE_DEFAULT ? prev : { ...prev, keyword, page: PAGE_DEFAULT },
+      prev.status === status && prev.page === PAGE_DEFAULT ? prev : { ...prev, status, page: PAGE_DEFAULT },
     )
   }, [])
 
-  const changeSort = useCallback((sortBy: RoleSortField | undefined, sortOrder: SortOrder) => {
+  const changeSort = useCallback((sortBy: RoleSortField, sortOrder: SortOrder) => {
     setQuery((prev) =>
       prev.sortBy === sortBy && prev.sortOrder === sortOrder && prev.page === PAGE_DEFAULT
         ? prev
@@ -117,8 +121,8 @@ export function useRoleList(): UseRoleListResult {
     )
   }, [])
 
-  const changePagination = useCallback((page: number, size: number) => {
-    setQuery((prev) => (prev.page === page && prev.size === size ? prev : { ...prev, page, size }))
+  const changePagination = useCallback((page: number, pageSize: number) => {
+    setQuery((prev) => (prev.page === page && prev.pageSize === pageSize ? prev : { ...prev, page, pageSize }))
   }, [])
 
   const reload = useCallback(() => {
@@ -127,10 +131,10 @@ export function useRoleList(): UseRoleListResult {
 
   return {
     query,
-    roles: pageResult?.list ?? [],
+    roles: pageResult?.items ?? [],
     total: pageResult?.total ?? 0,
     loading,
-    searchKeyword,
+    changeStatus,
     changeSort,
     changePagination,
     reload,

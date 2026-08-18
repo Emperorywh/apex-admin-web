@@ -41,16 +41,19 @@ const common: Record<string, string> = {
   面向企业场景的现代后台管理起点: 'A modern starting point for enterprise admin systems',
   欢迎回来: 'Welcome back',
   使用账号密码登录: 'Sign in with your account and password',
-  // API errorCode 本地化（规格 §7.1/§7.4）：键与 src/i18n/errorTexts.ts 的映射一一对应
+  // API errorCode 本地化（规格 §7.1/§7.4 v1.14）：键与 src/i18n/errorTexts.ts 的映射一一对应
+  请求参数不合法: 'Invalid request parameters.',
   请求参数校验失败: 'Request validation failed',
   用户名或密码错误: 'Incorrect username or password',
-  '账号已被禁用，请联系管理员': 'This account has been disabled. Please contact your administrator.',
   '登录状态已过期，请重新登录': 'Your session has expired. Please sign in again.',
   '登录已失效，请重新登录': 'Your sign-in is no longer valid. Please sign in again.',
-  '权限已变更，请刷新后重试': 'Your permissions have changed. Please refresh and try again.',
+  '会话不存在，请重新登录': 'Your session no longer exists. Please sign in again.',
   没有权限执行此操作: 'You do not have permission to perform this action.',
+  '无法移除最后一个可用的超级管理员': 'The last available super admin cannot be removed.',
   请求的资源不存在: 'The requested resource was not found.',
   '操作与当前状态冲突，请刷新后重试': 'The operation conflicts with the current state. Please refresh and try again.',
+  '数据已存在，请检查后重试': 'The data already exists. Please check and try again.',
+  '数据库暂时不可用，请稍后重试': 'The database is temporarily unavailable. Please try again later.',
   '服务器内部错误，请稍后重试': 'Internal server error. Please try again later.',
   '请求失败，请稍后重试': 'Request failed. Please try again later.',
   // 错误页与路由错误边界文案（规格 §14.2/§4.3）

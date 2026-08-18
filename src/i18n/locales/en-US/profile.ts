@@ -21,8 +21,8 @@ const profile: Record<string, string> = {
   请输入原密码: 'Please enter the current password',
   请输入新密码: 'Please enter the new password',
   请再次输入新密码: 'Please re-enter the new password',
-  '密码最少 {{min}} 位且必须同时包含字母和数字':
-    'Password must be at least {{min}} characters and contain both letters and numbers',
+  '密码长度需在 {{min}}-{{max}} 位之间':
+    'Password must be {{min}}-{{max}} characters long',
   两次输入的密码不一致: 'The two passwords do not match',
   原密码不正确: 'Current password is incorrect',
   密码修改成功: 'Password changed',

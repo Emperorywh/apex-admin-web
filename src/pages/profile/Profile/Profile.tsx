@@ -1,10 +1,10 @@
 /**
  * 个人中心页面（规格 §14.2）：路由 /profile，仅要求登录、不分配 permCode（规格 §5.3），
  * 入口为 Header 用户菜单，路由 meta 设 hideInMenu。
- * 基本资料查看/编辑（PUT /auth/profile）与修改密码（PUT /auth/password）复用
- * auth.service 已实现的个人中心端点（规格 §6.3，DTO 权威定义唯一，不另建 profile service）。
+ * 基本资料查看/编辑（PUT /users/me）与修改密码（PUT /users/me/password）复用
+ * auth.service 已实现的个人中心端点（规格 §6.3 v1.14，DTO 权威定义唯一，不另建 profile service）。
  * 资料保存成功后经 profileLoaded 把最新用户写回会话切片，Header 显示名随之同步；
- * 角色与权限快照原样透传，不改变 auth 状态机（登录/登出/刷新编排不受影响）。
+ * 角色、权限与菜单路径白名单快照原样透传，不改变 auth 状态机（登录/登出/刷新编排不受影响）。
  */
 import { useState } from 'react'
 import { App, Space } from 'antd'
@@ -27,7 +27,7 @@ export function Profile() {
   const user = useSelector((state: RootState) => state.user.user)
   const roles = useSelector((state: RootState) => state.user.roles)
   const permCodes = useSelector((state: RootState) => state.user.permCodes)
-  const permissionVersion = useSelector((state: RootState) => state.user.permissionVersion)
+  const menuPaths = useSelector((state: RootState) => state.user.menuPaths)
   const [profileSubmitting, setProfileSubmitting] = useState(false)
   const [passwordSubmitting, setPasswordSubmitting] = useState(false)
 
@@ -38,9 +38,7 @@ export function Profile() {
       const updated = await updateProfile(dto, { silent: true })
       message.success(t('资料已更新'))
       // 最新用户写回会话切片：Header 显示名与用户菜单随保存即时同步
-      if (permissionVersion !== null) {
-        dispatch(profileLoaded({ user: updated, roles, permCodes, permissionVersion }))
-      }
+      dispatch(profileLoaded({ user: updated, roles, permCodes, menuPaths }))
     } finally {
       setProfileSubmitting(false)
     }

@@ -47,9 +47,9 @@ export const routeDefinitions: readonly AppRouteDefinition[] = [
         meta: { title: '首页', hideInMenu: true, hideInTabs: true },
       },
       {
-        // Dashboard（规格 §4.2/§14.2）：唯一默认 affix 页签；所有可登录账号必须持有
-        // dashboard:view（admin 通配），否则会话资格校验按 AUTH_FORBIDDEN 清理会话；
-        // i18nNamespaces 声明 dashboard 命名空间（规格 §12）。
+        // Dashboard（规格 §4.2/§14.2 v1.14）：唯一默认 affix 页签；仅要求登录、不分配
+        // permCode（真实后端无 dashboard:view 权限码），保证登录后首页与「关闭全部」
+        // 始终有合法落点；i18nNamespaces 声明 dashboard 命名空间（规格 §12）。
         id: ROUTE_IDS.DASHBOARD,
         path: ROUTE_PATHS.DASHBOARD,
         loadPage: () => import('@/pages/dashboard/Dashboard/Dashboard').then(({ Dashboard }) => ({ default: Dashboard })),
@@ -57,7 +57,6 @@ export const routeDefinitions: readonly AppRouteDefinition[] = [
           title: '仪表盘',
           icon: `${LOCAL_ICON_PREFIX}ic-dashboard`,
           caption: '工作台',
-          permCode: PERMISSIONS.DASHBOARD_VIEW,
           affixTab: true,
           i18nNamespaces: [DASHBOARD_I18N_NAMESPACE],
         },
@@ -71,7 +70,7 @@ export const routeDefinitions: readonly AppRouteDefinition[] = [
         children: [
           {
             // 用户管理（规格 §14.2/§14.3）：查询/分页/Drawer CRUD/角色分配；
-            // 页面权限 system:user:list，按钮级权限由页内 <Auth> 门控；
+            // 页面权限 system:user:read，按钮级权限由页内 <Auth> 门控；
             // i18nNamespaces 声明 user 命名空间（规格 §12）
             id: 'system-user',
             path: '/system/user',
@@ -84,7 +83,7 @@ export const routeDefinitions: readonly AppRouteDefinition[] = [
             },
           },
           {
-            // 角色管理（规格 §14.2/§14.3）：CRUD/权限树分配；viewer 无 system:role:list，
+            // 角色管理（规格 §14.2/§14.3）：CRUD/权限查看；viewer 无 rbac:role:read，
             // 菜单隐藏且直达被守卫重定向 /403（规格 §5.3 矩阵）；
             // i18nNamespaces 声明 role 命名空间（规格 §12）
             id: 'system-role',
@@ -99,7 +98,7 @@ export const routeDefinitions: readonly AppRouteDefinition[] = [
           },
           {
             // 菜单管理（规格 §14.2/§14.3）：树表维护后端菜单数据，明确不动态改变前端
-            // 静态路由；viewer 无 system:menu:list，菜单隐藏且直达被守卫重定向 /403
+            // 静态路由；viewer 无 menu:menu:read，菜单隐藏且直达被守卫重定向 /403
             // （规格 §5.3 矩阵）；i18nNamespaces 声明 systemMenu 命名空间（规格 §12）
             id: 'system-menu',
             path: '/system/menu',

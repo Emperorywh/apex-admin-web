@@ -9,20 +9,23 @@ import { COMMON_NAMESPACE, appI18n } from './i18n'
 
 /**
  * 已知 errorCode 的中文文案 key 全集。
- * Record<ApiErrorCode, string> 保证覆盖 §7.1 全部错误码，缺一即编译失败；
+ * Record<ApiErrorCode, string> 保证覆盖 §7.1 全部错误码（v1.14 真实后端点分码），缺一即编译失败；
  * 新增错误码必须同步更新 request.constants.ts、本映射与 en-US 资源文件。
  */
 export const API_ERROR_MESSAGE_KEYS: Record<ApiErrorCode, string> = {
+  [API_ERROR_CODES.PARAMETER_INVALID]: '请求参数不合法',
   [API_ERROR_CODES.VALIDATION_FAILED]: '请求参数校验失败',
   [API_ERROR_CODES.AUTH_INVALID_CREDENTIALS]: '用户名或密码错误',
-  [API_ERROR_CODES.AUTH_ACCOUNT_DISABLED]: '账号已被禁用，请联系管理员',
-  [API_ERROR_CODES.AUTH_ACCESS_EXPIRED]: '登录状态已过期，请重新登录',
-  [API_ERROR_CODES.AUTH_REFRESH_EXPIRED]: '登录已失效，请重新登录',
-  [API_ERROR_CODES.AUTH_PERMISSION_CHANGED]: '权限已变更，请刷新后重试',
+  [API_ERROR_CODES.AUTH_UNAUTHENTICATED]: '登录状态已过期，请重新登录',
+  [API_ERROR_CODES.AUTH_REFRESH_FAILED]: '登录已失效，请重新登录',
+  [API_ERROR_CODES.AUTH_SESSION_NOT_FOUND]: '会话不存在，请重新登录',
   [API_ERROR_CODES.AUTH_FORBIDDEN]: '没有权限执行此操作',
-  [API_ERROR_CODES.RESOURCE_NOT_FOUND]: '请求的资源不存在',
-  [API_ERROR_CODES.RESOURCE_CONFLICT]: '操作与当前状态冲突，请刷新后重试',
-  [API_ERROR_CODES.INTERNAL_ERROR]: '服务器内部错误，请稍后重试',
+  [API_ERROR_CODES.AUTH_LAST_SUPER_ADMIN]: '无法移除最后一个可用的超级管理员',
+  [API_ERROR_CODES.COMMON_NOT_FOUND]: '请求的资源不存在',
+  [API_ERROR_CODES.COMMON_CONFLICT]: '操作与当前状态冲突，请刷新后重试',
+  [API_ERROR_CODES.DB_UNIQUE_VIOLATION]: '数据已存在，请检查后重试',
+  [API_ERROR_CODES.DB_CONNECTION_ERROR]: '数据库暂时不可用，请稍后重试',
+  [API_ERROR_CODES.SYSTEM_INTERNAL]: '服务器内部错误，请稍后重试',
 }
 
 /** 未知错误或缺失 errorCode 的固定兜底文案（规格 §7.4） */

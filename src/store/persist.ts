@@ -263,15 +263,16 @@ function omitUndefined<T extends Record<string, unknown>>(fields: T): T {
   return result as T
 }
 
-/** user slice 持久化白名单：仅双 token（规格 §8.1/§8.2，禁止整 slice 入白名单） */
-export const USER_PERSIST_FIELDS = ['accessToken', 'refreshToken'] as const
+/** user slice 持久化白名单：仅 accessToken（规格 §8.1/§8.2 v1.14，禁止整 slice 入白名单） */
+export const USER_PERSIST_FIELDS = ['accessToken'] as const
 
 /**
- * v2 遗留字段：sessionSource（演示模式会话来源）已随规格 v1.12 移除、schema 升至 v3。
- * 迁移时识别并直接丢弃（不读取、不校验取值），使旧数据双 token 照常恢复，
+ * 历史遗留字段：sessionSource 已随规格 v1.12 移除（schema v3）；refreshToken 已随
+ * 规格 v1.14 改由 HttpOnly Cookie 承载、不再持久化（schema v4）。迁移时识别并直接
+ * 丢弃（不读取、不校验取值），使旧数据 accessToken 照常恢复，
  * 不触发「未知字段」结构漂移降级。
  */
-const USER_LEGACY_FIELDS = ['sessionSource'] as const
+const USER_LEGACY_FIELDS = ['sessionSource', 'refreshToken'] as const
 
 function migrateUserState(state: unknown, currentVersion: number) {
   const record = readPersistedRecord(state, currentVersion)
@@ -281,7 +282,6 @@ function migrateUserState(state: unknown, currentVersion: number) {
   assertNoUnknownKeys(record, [...USER_PERSIST_FIELDS, ...USER_LEGACY_FIELDS, '_persist'])
   return omitUndefined({
     accessToken: readNullableString(record, 'accessToken'),
-    refreshToken: readNullableString(record, 'refreshToken'),
   })
 }
 

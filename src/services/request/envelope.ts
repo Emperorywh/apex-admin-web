@@ -1,15 +1,11 @@
 /**
- * envelope 解析与 ApiError 构造（规格 §7.1/§7.4）：
- * 成功条件固定为 HTTP 2xx 且 code === 0 并解包 data；
- * 协议不合法、业务失败、HTTP 错误、网络失败与全部取消统一转换为 ApiError。
- * 文件流（blob/arraybuffer）成功响应不经过 envelope，原样返回。
+ * problem+json 解析与 ApiError 构造（规格 §7.1/§7.4，v1.14 对齐真实后端）：
+ * 成功条件为 HTTP 2xx，响应体即资源 JSON 本体（无 envelope），空响应体归一为 null；
+ * 失败统一为 RFC 9457 application/problem+json（稳定错误码在 code 字段），
+ * 协议不合法、HTTP 错误、网络失败与全部取消统一转换为 ApiError。
  */
 import axios, { AxiosError, type AxiosResponse } from 'axios'
-import { API_SUCCESS_CODE } from '@/constants/request.constants'
-import type { ApiError, ApiFailure } from './request.types'
-
-/** 未收到业务失败 envelope 时的协议错误提示 */
-export const ENVELOPE_PROTOCOL_MESSAGE = '接口响应协议不合法'
+import type { ApiError, ApiProblem } from './request.types'
 
 /** 请求超时提示（axios 超时错误码 ECONNABORTED） */
 export const REQUEST_TIMEOUT_MESSAGE = '请求超时，请稍后重试'
@@ -20,7 +16,7 @@ export const REQUEST_NETWORK_MESSAGE = '网络错误，请求未送达'
 /** 所有 abort 统一使用的取消提示；canceled 请求禁止弹全局错误提示 */
 export const REQUEST_CANCELED_MESSAGE = '请求已取消'
 
-/** 响应头中的请求追踪标识（规格 §7.1：优先使用 envelope 中的值） */
+/** 响应头中的请求追踪标识（规格 §7.1：优先使用 problem body 中的值） */
 const REQUEST_ID_HEADER = 'x-request-id'
 
 export function isRecord(value: unknown): value is Record<string, unknown> {
@@ -31,8 +27,7 @@ export function isRecord(value: unknown): value is Record<string, unknown> {
 export interface ApiErrorInit {
   message: string
   httpStatus?: number
-  code?: number
-  errorCode?: ApiFailure['errorCode']
+  errorCode?: ApiProblem['code']
   requestId?: string
   details?: unknown
   canceled?: boolean
@@ -43,7 +38,6 @@ export function createApiError(init: ApiErrorInit): ApiError {
   const error = new Error(init.message) as ApiError
   error.name = 'ApiError'
   error.httpStatus = init.httpStatus
-  error.code = init.code
   error.errorCode = init.errorCode
   error.requestId = init.requestId
   error.details = init.details
@@ -61,26 +55,19 @@ export function createCanceledApiError(): ApiError {
   return createApiError({ message: REQUEST_CANCELED_MESSAGE, canceled: true })
 }
 
-/** 文件流响应类型：成功响应不经 envelope 解包（规格 §7.1） */
-function isFileStreamResponseType(responseType?: string): boolean {
-  return responseType === 'blob' || responseType === 'arraybuffer'
-}
-
-/** 从 envelope 对象读取失败字段；非 envelope 形状返回 null */
-function readFailureEnvelope(body: unknown): Omit<ApiErrorInit, 'message' | 'httpStatus'> | null {
+/** 从 problem+json 对象读取失败字段；非 problem 形状（无字符串 code）返回 null */
+function readProblemBody(body: unknown): Omit<ApiErrorInit, 'message' | 'httpStatus'> | null {
   if (!isRecord(body)) {
     return null
   }
-  const code = typeof body.code === 'number' ? body.code : undefined
-  const errorCode = typeof body.errorCode === 'string' ? body.errorCode : undefined
-  if (code === undefined || errorCode === undefined) {
+  const errorCode = typeof body.code === 'string' ? body.code : undefined
+  if (errorCode === undefined) {
     return null
   }
   return {
-    code,
-    errorCode: errorCode as ApiFailure['errorCode'],
+    errorCode: errorCode as ApiProblem['code'],
     requestId: typeof body.requestId === 'string' ? body.requestId : undefined,
-    details: 'details' in body ? body.details : undefined,
+    details: Array.isArray(body.errors) ? body.errors : undefined,
   }
 }
 
@@ -99,34 +86,16 @@ export function readRequestIdHeader(headers: unknown): string | undefined {
 }
 
 /**
- * 成功响应解包（HTTP 2xx）：
- * - 文件流响应原样返回 data；
- * - code === 0 且 data 键存在时返回 envelope.data；
- * - 其余（业务失败 envelope 或协议不合法）抛出 ApiError。
+ * 成功响应解包（HTTP 2xx，规格 §7.1 v1.14）：
+ * 响应体即资源 JSON 本体，原样返回；204 等空响应体（'' / null / undefined）归一为 null。
+ * 文件流（blob/arraybuffer）同为原样返回，不再单列分支。
  */
 export function unwrapSuccessResponse(response: AxiosResponse): unknown {
-  const { data: body, status, config } = response
-  if (isFileStreamResponseType(config?.responseType)) {
-    return body
+  const { data: body } = response
+  if (body === undefined || body === null || body === '') {
+    return null
   }
-  if (isRecord(body) && body.code === API_SUCCESS_CODE && 'data' in body) {
-    return body.data
-  }
-  const failure = readFailureEnvelope(body)
-  if (failure) {
-    const envelopeMessage = isRecord(body) && typeof body.message === 'string' ? body.message : ''
-    throw createApiError({
-      httpStatus: status,
-      ...failure,
-      message: envelopeMessage.length > 0 ? envelopeMessage : `业务失败（code ${failure.code}）`,
-    })
-  }
-  throw createApiError({
-    httpStatus: status,
-    code: isRecord(body) && typeof body.code === 'number' ? body.code : undefined,
-    requestId: isRecord(body) && typeof body.requestId === 'string' ? body.requestId : undefined,
-    message: ENVELOPE_PROTOCOL_MESSAGE,
-  })
+  return body
 }
 
 /** 跨 realm 识别 ArrayBuffer（Object.prototype.toString 读取内部槽，不受构造器 realm 影响） */
@@ -134,7 +103,7 @@ function isArrayBufferLike(value: unknown): value is ArrayBuffer {
   return Object.prototype.toString.call(value) === '[object ArrayBuffer]'
 }
 
-/** 尽力解析错误响应体中的失败 envelope：Blob/ArrayBuffer 先解码文本再 JSON 解析（文件下载失败仍返回 ApiFailure JSON） */
+/** 尽力解析错误响应体中的 problem+json：Blob/ArrayBuffer 先解码文本再 JSON 解析（文件下载失败仍返回 problem JSON） */
 async function parseErrorBody(data: unknown): Promise<Omit<ApiErrorInit, 'message' | 'httpStatus'> | null> {
   let body: unknown = data
   if (typeof Blob !== 'undefined' && body instanceof Blob) {
@@ -151,13 +120,13 @@ async function parseErrorBody(data: unknown): Promise<Omit<ApiErrorInit, 'messag
       return null
     }
   }
-  return readFailureEnvelope(body)
+  return readProblemBody(body)
 }
 
 /**
  * 把 AxiosError 转换为 ApiError：
  * - 全部取消（含页签作用域 abort、重复 GET 取消、调用方 signal）→ canceled: true；
- * - 收到 HTTP 错误响应 → 解析失败 envelope，取 httpStatus/errorCode/requestId/details；
+ * - 收到 HTTP 错误响应 → 解析 problem+json，取 httpStatus/errorCode/requestId/errors；
  * - 网络失败/超时 → 无 httpStatus 的 ApiError。
  */
 export async function axiosErrorToApiError(error: AxiosError): Promise<ApiError> {
@@ -166,14 +135,14 @@ export async function axiosErrorToApiError(error: AxiosError): Promise<ApiError>
   }
   const response = error.response
   if (response) {
-    const failure = await parseErrorBody(response.data)
-    if (failure) {
-      const rawMessage = isRecord(response.data) && typeof response.data.message === 'string' ? response.data.message : ''
+    const problem = await parseErrorBody(response.data)
+    if (problem) {
+      const rawDetail = isRecord(response.data) && typeof response.data.detail === 'string' ? response.data.detail : ''
       return createApiError({
         httpStatus: response.status,
-        ...failure,
-        requestId: failure.requestId ?? readRequestIdHeader(response.headers),
-        message: rawMessage.length > 0 ? rawMessage : `请求失败（HTTP ${response.status}）`,
+        ...problem,
+        requestId: problem.requestId ?? readRequestIdHeader(response.headers),
+        message: rawDetail.length > 0 ? rawDetail : `请求失败（HTTP ${response.status}）`,
       })
     }
     return createApiError({

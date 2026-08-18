@@ -1,7 +1,7 @@
 /**
- * 菜单树数据 Hook（规格 §14.2/§14.3、§17.24）：
- * 挂载与 reload 时请求 GET /menus/tree（不分页），请求经 usePageRequest() 注入
- * 页签作用域（规格 §7.4-6），页签隐藏/关闭/淘汰时统一取消。
+ * 菜单树数据 Hook（对齐真实后端 GET /menus/tree、§17.24）：
+ * 挂载与 reload 时请求菜单树（不分页，include_disabled=true 管理端全量），
+ * 请求经 usePageRequest() 注入页签作用域（规格 §7.4-6），页签隐藏/关闭/淘汰时统一取消。
  *
  * 竞态防护（§17.24：快速刷新时前请求被取消且不覆盖后请求结果）：
  * Effect 清理 abort 上一个在途请求，并以调用方 signal 丢弃迟到的陈旧响应；
@@ -14,7 +14,7 @@ import { getMenuTree } from '@/services/system/menu/menu.service'
 import type { MenuItem } from '@/types/system/menu/menu.types'
 
 export interface UseMenuTreeResult {
-  /** 菜单树（兄弟节点按 sort asc、id asc 稳定排序，由后端契约保证） */
+  /** 菜单树（兄弟节点按 sortOrder asc 稳定排序，由后端契约保证） */
   menus: MenuItem[]
   /** 树加载中 */
   loading: boolean

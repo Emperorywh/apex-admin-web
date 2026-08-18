@@ -1,54 +1,54 @@
 /**
- * 角色管理接口请求/响应 DTO 权威定义（规格 §14.3）。
- * 角色 CRUD、分配权限与权限树接口的 DTO 只在本文件定义一次，
- * 调用端一律 import type 引用，不得复制接口；
- * 响应实体 Role / PermissionNode 是跨层业务实体，权威定义位于
+ * 角色管理接口请求/响应 DTO 权威定义（对齐真实后端 rbac 模块，apex-admin SPEC 9.3/9.4/13.2）。
+ * DTO 只在本文件定义一次，调用端一律 import type 引用，不得复制接口；
+ * 响应实体 Role / RoleDetail 是跨层业务实体，权威定义位于
  * src/types/system/role/role.types.ts，此处仅以别名声明 DTO 名称。
  */
-import type { SortOrder } from '@/constants/request.constants'
-import type { RoleSortField } from '@/constants/system/role/role.constants'
-import type { PermissionNode, Role } from '@/types/system/role/role.types'
+import type { Role, RoleDetail, RoleStatus } from '@/types/system/role/role.types'
 // PageResult 是跨业务域共享的分页实体，权威定义位于 user 域（TASK-003 所有权划分），
 // 此处按单一权威定义规则 import type 引用，不复制接口（规格 §3.4）
 import type { PageResult } from '@/types/system/user/user.types'
 
 /**
- * GET /roles 分页查询参数（规格 §14.3）。
- * sortBy 白名单见 ROLE_SORT_FIELDS；keyword 对 code/name 做不区分大小写包含匹配。
+ * GET /roles 分页查询参数（后端 SPEC 9.4）。
+ * sort 为逗号分隔 camelCase 字段，`-` 前缀降序，白名单由 ROLE_SORT_FIELDS 约束；
+ * status 筛选值为后端稳定编码 active / disabled。
  */
 export interface RoleListQueryParams {
   page?: number
-  size?: number
-  keyword?: string
-  sortBy?: RoleSortField
-  sortOrder?: SortOrder
+  pageSize?: number
+  status?: RoleStatus
+  sort?: string
 }
 
-/** POST /roles 请求体（创建契约，规格 §14.3）：code 全局唯一且创建后不可修改 */
+/** POST /roles 请求体（RoleCreateRequest，后端 extra="forbid"）：code 全局唯一且创建后不可修改，`^[a-z][a-z0-9_]*$` */
 export interface CreateRoleRequestDto {
   code: string
-  name: string
+  displayName: string
   description?: string
-  status: Role['status']
+  sortOrder: number
 }
 
-/** PUT /roles/:id 请求体（编辑契约，规格 §14.3）：不含 code，code 创建后不可修改 */
+/** PUT /roles/:roleId 请求体（RoleUpdateRequest，后端 extra="forbid"）：不含 code/status/sortOrder 之外的可变字段；启停用走独立端点 */
 export interface UpdateRoleRequestDto {
-  name: string
+  displayName: string
   description?: string
-  status: Role['status']
+  sortOrder: number
 }
 
-/** PUT /roles/:id/permissions 请求体（分配权限契约，规格 §14.3）：后端验证所有权限码存在 */
+/** PUT /roles/:roleId/permissions 请求体（AssignPermissionsRequest）：权限编码全量替换，空列表表示清除全部 */
 export interface AssignRolePermissionsRequestDto {
-  permCodes: string[]
+  permissionCodes: string[]
 }
 
-/** GET /roles 响应 data：分页角色列表 */
+/** GET /roles 响应：分页角色列表 */
 export type RoleListResponseDto = PageResult<Role>
 
-/** POST /roles、PUT /roles/:id、PUT /roles/:id/permissions 响应 data：变更后的角色实体 */
+/** GET /roles/:roleId 响应：角色详情（含权限码全集与成员数） */
+export type RoleDetailResponseDto = RoleDetail
+
+/** POST /roles、PUT /roles/:roleId、POST /roles/:roleId/enable|disable 响应：变更后的角色实体 */
 export type RoleMutationResponseDto = Role
 
-/** GET /permissions/tree 响应 data：权限树（checked 状态由 Role.permCodes 推导，规格 §14.1） */
-export type PermissionTreeResponseDto = PermissionNode[]
+/** PUT /roles/:roleId/permissions 响应：分配后的角色详情 */
+export type AssignRolePermissionsResponseDto = RoleDetail

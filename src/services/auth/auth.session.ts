@@ -1,44 +1,39 @@
 /**
- * 认证会话编排（规格 §4.3/§5.4/§6.2）：
- * - ensureProfile 启动单飞：等待 rehydratedPromise 后复用单飞，一次整页启动最多一个 profile 请求；
- * - 登录状态机：login → 保存双 token + 递增 epoch → profile → 路由无关导航意图；
- * - 登出状态机：先递增 epoch、保存 refreshToken，POST /auth/logout，finally 本地清理（settings 保留）；
- * - 会话规则：profile 返回 AUTH_FORBIDDEN 或缺少 dashboard:view → 清理会话并回登录；
+ * 认证会话编排（规格 §4.3/§6.2，v1.14）：
+ * - ensureProfile 启动单飞：等待 rehydratedPromise 后复用单飞，一次整页启动最多一个 profile 聚合请求；
+ * - 登录状态机：login → 保存 accessToken + 递增 epoch（refreshToken 经 Set-Cookie 落地）→
+ *   profile 聚合 → 路由无关导航意图；
+ * - 登出状态机：先递增 epoch，POST /auth/logout（认证请求，Cookie 由浏览器携带），
+ *   finally 本地清理（settings 保留）；
+ * - 会话规则：profile 聚合拉取成功即视为会话有效（v1.14 移除 dashboard:view 门槛）；
  *   网络失败原样上抛，不误清 token（路由错误页提供重试与退出登录）；
- * - 权限变更闭环：403 AUTH_PERMISSION_CHANGED 单飞完成后比较 permissionVersion、
- *   重算权限派生数据并关闭失权普通页签与缓存，当前页失权产出 replace('/403') 意图。
+ *   401 由请求层刷新状态机处理（AUTH.UNAUTHENTICATED → Cookie 刷新 → 失败清理回登录）。
  *
  * 运行态编排在 createAuthSessionRuntime 创建的实例内隔离（与 createRequestRuntime 同构），
  * 默认单例经 getDefaultAuthSessionRuntime 懒创建；路由任务消费 authNavigation/sessionCleanup
  * 两个导航通道完成最终跳转，本模块不读取路由、不校验回跳。
  */
 import type { UnknownAction } from '@reduxjs/toolkit'
-import { PERMISSIONS } from '@/constants/permission.constants'
-import { API_ERROR_CODES } from '@/constants/request.constants'
 import { ROUTE_FALLBACK_PATH, ROUTE_PATHS } from '@/constants/route.constants'
-import { createApiError, createCanceledApiError, isApiError } from '@/services/request/envelope'
-import { registerProfileRefreshFetcher } from '@/services/request/profileRefresh'
+import { createApiError, createCanceledApiError } from '@/services/request/envelope'
 import type { RequestStore } from '@/services/request/request.types'
-import { performSessionCleanup, runSessionCleanup } from '@/services/request/sessionCleanup'
+import { performSessionCleanup } from '@/services/request/sessionCleanup'
 import { getDefaultAppStore } from '@/store/store'
-import { hasPermissionChain, hasPermissionCode } from '@/store/permissions'
-import { cacheEntriesRemoved } from '@/store/slices/pageCache.slice'
-import { tabsRemoved } from '@/store/slices/tabs.slice'
-import { profileLoaded, sessionEpochIncremented, tokensStored } from '@/store/slices/user.slice'
+import { accessTokenStored, profileLoaded, sessionEpochIncremented } from '@/store/slices/user.slice'
 import type { ProfileData } from '@/types/auth/auth.types'
 import { getProfile as getProfileRequest, login as loginRequest, logout as logoutRequest } from './auth.service'
 import type {
   GetProfileResponseDto,
   LoginRequestDto,
   LoginResponseDto,
-  LogoutRequestDto,
+  LogoutResponseDto,
 } from './auth.service.types'
 import { emitAuthNavigation } from './authNavigation'
 
 /** 会话编排消费的认证接口子集；测试注入桩实现以隔离网络 */
 export interface AuthSessionApi {
   login(dto: LoginRequestDto): Promise<LoginResponseDto>
-  logout(dto: LogoutRequestDto): Promise<null>
+  logout(): Promise<LogoutResponseDto>
   getProfile(): Promise<GetProfileResponseDto>
 }
 
@@ -63,21 +58,6 @@ export interface AuthSessionRuntime {
   logoutSession(): Promise<void>
   /** 清除 profile 单飞缓存：登录/登出内部调用；测试用于隔离启动态 */
   resetProfileSingleFlight(): void
-  /** 权限变更 profile 刷新（规格 §5.4）：请求层 403 AUTH_PERMISSION_CHANGED 单飞的执行器 */
-  refreshProfileAfterPermissionChange(): Promise<void>
-}
-
-/** 页签路径 → 从受保护根到叶子的全部所需权限码（规格 §4.4 AND 语义） */
-export type TabPermissionResolver = (pathname: string) => readonly string[]
-
-let tabPermissionResolver: TabPermissionResolver | null = null
-
-/**
- * 注册/清空页签权限解析器：路由任务是路由定义的唯一所有者，在启动时把
- * pathname → 权限码全集的映射注册进来；未注册时权限收窄无法判定路径归属，不关闭任何页签。
- */
-export function registerTabPermissionResolver(resolver: TabPermissionResolver | null): void {
-  tabPermissionResolver = resolver
 }
 
 export function createAuthSessionRuntime(options: CreateAuthSessionOptions): AuthSessionRuntime {
@@ -95,40 +75,23 @@ export function createAuthSessionRuntime(options: CreateAuthSessionOptions): Aut
   }
 
   /**
-   * profile 拉取核心：请求、epoch 防陈旧回写、会话资格校验与派生数据写入。
-   * 网络失败原样上抛（路由错误页可重试）；会话不满足条件时清理会话并以 AUTH_FORBIDDEN 结束。
+   * profile 聚合拉取核心：请求、epoch 防陈旧回写与派生数据写入。
+   * 网络失败原样上抛（路由错误页可重试）；401 由请求层刷新状态机处理，
+   * 刷新失败的会话清理已在该路径完成（规格 §6.2）。
    */
   async function loadProfileCore(): Promise<ProfileData> {
     const epochAtStart = store.getState().user.sessionEpoch
-    let profile: ProfileData
-    try {
-      profile = await api.getProfile()
-    } catch (error) {
-      // /auth/profile 自身返回 AUTH_FORBIDDEN：会话不满足模板基本访问条件，清理会话并回登录（规格 §6.2）
-      if (isApiError(error) && error.httpStatus === 403 && error.errorCode === API_ERROR_CODES.AUTH_FORBIDDEN) {
-        runSessionCleanup(store)
-      }
-      throw error
-    }
+    const profile = await api.getProfile()
     // 等待期间会话已切换/登出：丢弃结果，不回写新会话（规格 §6.1）
     if (store.getState().user.sessionEpoch !== epochAtStart) {
       throw createCanceledApiError()
-    }
-    // 成功数据使 hasAuth('dashboard:view') 为 false（admin 按 * 通配）→ 清理会话并回登录（规格 §6.2/§4.2）
-    if (!hasPermissionCode(profile.permCodes, profile.roleCodes, PERMISSIONS.DASHBOARD_VIEW)) {
-      runSessionCleanup(store)
-      throw createApiError({
-        httpStatus: 403,
-        errorCode: API_ERROR_CODES.AUTH_FORBIDDEN,
-        message: '会话不满足模板基本访问条件（缺少 dashboard:view）',
-      })
     }
     store.dispatch(
       profileLoaded({
         user: profile.user,
         roles: profile.roleCodes,
         permCodes: profile.permCodes,
-        permissionVersion: profile.permissionVersion,
+        menuPaths: profile.menuPaths,
       }) as UnknownAction,
     )
     return profile
@@ -152,62 +115,12 @@ export function createAuthSessionRuntime(options: CreateAuthSessionOptions): Aut
     return profileFlight
   }
 
-  /** 权限收窄：关闭不再可访问的普通页签与缓存；当前页失权时产出 replace('/403') 意图（规格 §5.4） */
-  function closeInaccessibleTabs(): void {
-    const resolver = tabPermissionResolver
-    if (!resolver) {
-      return
-    }
-    const { user, tabs } = store.getState()
-    const removedKeys: string[] = []
-    let currentTabLostAccess = false
-    for (const tab of tabs.items) {
-      // affix 页签（Dashboard）永不移除（规格 §9.3）；其失权由会话资格校验走清理回登录路径
-      if (tab.affix) {
-        continue
-      }
-      const required = resolver(tab.location.pathname)
-      const accessible = hasPermissionChain(required, { permCodes: user.permCodes, roleCodes: user.roles })
-      if (!accessible) {
-        removedKeys.push(tab.key)
-        if (tab.key === tabs.activeKey) {
-          currentTabLostAccess = true
-        }
-      }
-    }
-    if (removedKeys.length > 0) {
-      store.dispatch(tabsRemoved({ keys: removedKeys }) as UnknownAction)
-      store.dispatch(cacheEntriesRemoved({ keys: removedKeys }) as UnknownAction)
-    }
-    // 当前页失权：立即产出导航意图，由路由任务 replace('/403')，不能等到下次激活（规格 §5.4）
-    if (currentTabLostAccess) {
-      emitAuthNavigation({ kind: 'route-forbidden', target: ROUTE_PATHS.FORBIDDEN })
-    }
-  }
-
-  async function refreshProfileAfterPermissionChange(): Promise<void> {
-    // 刷新前版本：与刷新结果比较，版本变化才收窄页签（规格 §5.4）
-    const previousVersion = store.getState().user.permissionVersion
-    const profile = await loadProfileCore()
-    if (profile.permissionVersion !== previousVersion) {
-      closeInaccessibleTabs()
-    }
-  }
-
-  // 注册为请求层 403 AUTH_PERMISSION_CHANGED 单飞的执行器（规格 §5.4）；
-  // 注册表是全局唯一入口，最后创建的运行时生效——生产只有一个默认运行时
-  registerProfileRefreshFetcher(refreshProfileAfterPermissionChange)
-
   async function loginWithCredentials(dto: LoginRequestDto): Promise<void> {
     const result = await api.login(dto)
-    // 会话切换：先递增 epoch 使旧会话在途任务失效，再保存双 token（规格 §6.1/§6.2）
+    // 会话切换：先递增 epoch 使旧会话在途任务失效，再保存 accessToken（规格 §6.1/§6.2）；
+    // refreshToken 经 Set-Cookie 落地，前端无感知
     store.dispatch(sessionEpochIncremented() as UnknownAction)
-    store.dispatch(
-      tokensStored({
-        accessToken: result.accessToken,
-        refreshToken: result.refreshToken,
-      }) as UnknownAction,
-    )
+    store.dispatch(accessTokenStored({ accessToken: result.accessToken }) as UnknownAction)
     resetProfileSingleFlight()
     const profile = await ensureProfile()
     if (profile === null) {
@@ -220,13 +133,14 @@ export function createAuthSessionRuntime(options: CreateAuthSessionOptions): Aut
   }
 
   async function logoutSession(): Promise<void> {
-    // 先保存待提交的 refreshToken；无 token 时跳过网络调用，仅做本地清理（规格 §6.2）
-    const { refreshToken } = store.getState().user
+    const hasAccessToken = store.getState().user.accessToken !== null
     // 先递增 epoch：阻止旧异步任务回写新会话与在途请求重放（规格 §6.2）
     store.dispatch(sessionEpochIncremented() as UnknownAction)
     try {
-      if (refreshToken !== null) {
-        await api.logout({ refreshToken })
+      // 无 accessToken 时跳过网络调用，仅做本地清理；Cookie 由浏览器自动携带、
+      // 后端吊销当前会话并删除 Cookie（规格 §6.2）
+      if (hasAccessToken) {
+        await api.logout()
       }
     } finally {
       // 无论成功、失败或超时：销毁页签与页面缓存、清空认证；settings 不在清理范围（规格 §6.2）
@@ -242,7 +156,6 @@ export function createAuthSessionRuntime(options: CreateAuthSessionOptions): Aut
     loginWithCredentials,
     logoutSession,
     resetProfileSingleFlight,
-    refreshProfileAfterPermissionChange,
   }
 }
 

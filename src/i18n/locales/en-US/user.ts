@@ -6,9 +6,8 @@
  */
 const user: Record<string, string> = {
   // 查询工具栏
-  搜索用户名或显示名称: 'Search username or display name',
-  默认排序: 'Default Sort',
-  '默认排序（创建时间倒序）': 'Default sort (created time, newest first)',
+  全部状态: 'All Statuses',
+  排序字段: 'Sort Field',
   排序方向: 'Sort Direction',
   升序: 'Ascending',
   降序: 'Descending',
@@ -19,25 +18,27 @@ const user: Record<string, string> = {
   显示名称: 'Display Name',
   邮箱: 'Email',
   手机号: 'Phone',
+  最近登录: 'Last Login',
   状态: 'Status',
   创建时间: 'Created At',
   操作: 'Actions',
   编辑: 'Edit',
   删除: 'Delete',
   分配角色: 'Assign Roles',
-  // 语境差异（固定 context 名，规格 §12）
+  // 语境差异（固定 context 名，规格 §12）：status 为状态标签、button 为动作按钮
   启用_status: 'Enabled',
+  启用_button: 'Enable',
   禁用_status: 'Disabled',
+  禁用_button: 'Disable',
+  启用成功: 'Enabled successfully',
+  禁用成功: 'Disabled successfully',
   // 表单字段
   密码: 'Password',
-  角色: 'Roles',
   请输入用户名: 'Please enter a username',
   请输入密码: 'Please enter a password',
   请输入显示名称: 'Please enter a display name',
-  请输入邮箱: 'Please enter an email address',
-  请选择角色: 'Please select roles',
-  '密码最少 {{min}} 位且必须同时包含字母和数字':
-    'Password must be at least {{min}} characters and contain both letters and numbers',
+  '密码长度需在 {{min}}-{{max}} 位之间':
+    'Password must be {{min}}-{{max}} characters long',
   邮箱格式不正确: 'Invalid email address format',
   选填: 'Optional',
   取消: 'Cancel',
@@ -52,7 +53,7 @@ const user: Record<string, string> = {
   保存成功: 'Saved successfully',
   删除成功: 'Deleted successfully',
   目标用户: 'Target user',
-  角色分配失败: 'Failed to assign roles',
+  '角色加载失败，请关闭后重试': 'Failed to load roles. Please close and try again.',
   '角色分配失败，请稍后重试': 'Failed to assign roles. Please try again later.',
 }
 

@@ -16,14 +16,13 @@ import axios, {
   type AxiosResponse,
 } from 'axios'
 import type { UnknownAction } from '@reduxjs/toolkit'
-import { API_ERROR_CODES, API_SUCCESS_CODE, REQUEST_TIMEOUT_MS } from '@/constants/request.constants'
+import { API_ERROR_CODES, REQUEST_TIMEOUT_MS } from '@/constants/request.constants'
 import { showUiApiError } from '@/services/feedback/uiFeedback'
 import { loadingFinished, loadingStarted } from '@/store/slices/app.slice'
-import { tokensStored } from '@/store/slices/user.slice'
+import { accessTokenStored } from '@/store/slices/user.slice'
 import { getDefaultAppStore } from '@/store/store'
 import { buildDedupeKey } from './dedupe'
 import { axiosErrorToApiError, coerceApiError, createApiError, createCanceledApiError, isRecord, unwrapSuccessResponse } from './envelope'
-import { createProfileRefreshSingleFlight } from './profileRefresh'
 import { registerScopeController } from './requestScope'
 import type { RequestOptions, RequestStore } from './request.types'
 import { runSessionCleanup } from './sessionCleanup'
@@ -85,8 +84,7 @@ export function createRequestRuntime(store: RequestStore, options: CreateRequest
     cleanedAtEpoch = store.getState().user.sessionEpoch
   }
 
-  // ── refresh 单飞：并发 401 共享一个 Promise，成功后原子替换双 token（规格 §6.2） ──
-  const profileRefresh = createProfileRefreshSingleFlight(store)
+  // ── refresh 单飞：并发 401 共享一个 Promise，成功后原子回写新 accessToken（规格 §6.2） ──
   let refreshInFlight: Promise<void> | null = null
 
   function refreshTokens(): Promise<void> {
@@ -95,31 +93,22 @@ export function createRequestRuntime(store: RequestStore, options: CreateRequest
   }
 
   async function executeRefresh(): Promise<void> {
-    const startUser = store.getState().user
-    const epochAtStart = startUser.sessionEpoch
+    const epochAtStart = store.getState().user.sessionEpoch
     try {
-      const { refreshToken } = startUser
-      if (!refreshToken) {
-        throw createApiError({
-          errorCode: API_ERROR_CODES.AUTH_REFRESH_EXPIRED,
-          message: '缺少可用的 refreshToken，会话已失效',
-        })
-      }
-      const response = await refreshInstance.post('/auth/refresh', { refreshToken })
-      const envelope: unknown = response.data
-      const tokens =
-        isRecord(envelope) && envelope.code === API_SUCCESS_CODE && isRecord(envelope.data) ? envelope.data : null
-      const accessToken = tokens !== null && typeof tokens.accessToken === 'string' ? tokens.accessToken : undefined
-      const rotatedRefreshToken =
-        tokens !== null && typeof tokens.refreshToken === 'string' ? tokens.refreshToken : undefined
-      if (!accessToken || !rotatedRefreshToken) {
+      // refreshToken 经 __Host-apex_refresh HttpOnly Cookie 由浏览器自动携带（规格 §6.1 v1.14）；
+      // 无请求体，Origin 头由浏览器对 POST 自动携带、后端校验白名单
+      const response = await refreshInstance.post('/auth/refresh')
+      const body: unknown = response.data
+      const accessToken = isRecord(body) && typeof body.accessToken === 'string' ? body.accessToken : undefined
+      if (!accessToken) {
         throw createApiError({ httpStatus: response.status, message: '刷新响应协议不合法' })
       }
       // refresh Promise 完成后必须再次核对 epoch；账号已经切换时丢弃结果（规格 §6.2）
       if (store.getState().user.sessionEpoch !== epochAtStart) {
         return
       }
-      store.dispatch(tokensStored({ accessToken, refreshToken: rotatedRefreshToken }) as UnknownAction)
+      // 新 refreshToken 经 Set-Cookie 轮换，前端无感知，只回写 accessToken
+      store.dispatch(accessTokenStored({ accessToken }) as UnknownAction)
     } catch (error) {
       // epoch 已变化说明登出/切账号已发生：只丢弃旧结果，不清理新会话（规格 §17.5）
       if (store.getState().user.sessionEpoch === epochAtStart) {
@@ -145,10 +134,11 @@ export function createRequestRuntime(store: RequestStore, options: CreateRequest
       throw apiError
     }
 
-    // 401 + AUTH_ACCESS_EXPIRED 是 accessToken 失效的唯一触发条件；skipAuthRefresh/已重放过的请求直接终态
+    // 401 + AUTH.UNAUTHENTICATED 是 accessToken 失效的唯一触发条件（后端对无/无效/过期 token 统一返回该码，
+    // 规格 §6.2 v1.14）；登录失败 401 AUTH.INVALID_CREDENTIALS 不匹配此分支；skipAuthRefresh/已重放过的请求直接终态
     if (
       apiError.httpStatus === 401 &&
-      apiError.errorCode === API_ERROR_CODES.AUTH_ACCESS_EXPIRED &&
+      apiError.errorCode === API_ERROR_CODES.AUTH_UNAUTHENTICATED &&
       !config.skipAuthRefresh &&
       !config._authRetried
     ) {
@@ -171,20 +161,8 @@ export function createRequestRuntime(store: RequestStore, options: CreateRequest
       return { replay: true }
     }
 
-    if (apiError.httpStatus === 403) {
-      if (apiError.errorCode === API_ERROR_CODES.AUTH_ACCOUNT_DISABLED) {
-        // 账号禁用：不刷新 profile，直接一次会话清理并跳登录（规格 §6.2）
-        clearSessionOnce(config._sessionEpoch)
-        throw apiError
-      }
-      if (apiError.errorCode === API_ERROR_CODES.AUTH_PERMISSION_CHANGED) {
-        // 权限变更：触发 profile 刷新单飞；用户提示由单飞完成后的冷却判定统一负责（规格 §5.4），
-        // 单飞自身的失败已在 profile 请求的错误路径提示，这里不再重复弹错
-        void profileRefresh.trigger().catch(() => undefined)
-        throw apiError
-      }
-      // 普通 AUTH_FORBIDDEN 仅提示，不刷新 profile（规格 §5.4）
-    }
+    // 真实后端 403 统一为 AUTH.FORBIDDEN：仅提示无权操作，不刷新 profile、不清会话（规格 §5.4 v1.14；
+    // 会话内权限变更机制已随 v1.14 移除，权限变化在下次整页启动 profile 重拉时生效）
 
     if (!config.silent) {
       showUiApiError(apiError)

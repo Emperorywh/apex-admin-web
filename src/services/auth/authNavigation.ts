@@ -1,6 +1,6 @@
 /**
- * 认证导航意图通道（规格 §6.2/§5.4）：
- * 会话编排产出「路由无关」的导航意图，路由任务（TASK-008）经 registerAuthNavigator
+ * 认证导航意图通道（规格 §6.2）：
+ * 会话编排产出「路由无关」的导航意图，路由任务经 registerAuthNavigator
  * 注册回调后接线消费并执行最终跳转；本模块不读取路由、不校验回跳、不执行导航。
  * 会话过期跳登录已有独立通道（sessionCleanup.registerSessionExpiredNavigator），此处不重复。
  */
@@ -15,11 +15,6 @@ export type AuthNavigationIntent =
   | {
       /** 主动登出完成：回登录页，不携带 redirect 参数（用户显式离开，不回跳原地址） */
       kind: 'post-logout'
-      target: string
-    }
-  | {
-      /** 当前页失权：消费方执行 replace('/403')（规格 §5.4） */
-      kind: 'route-forbidden'
       target: string
     }
 

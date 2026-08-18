@@ -9,7 +9,7 @@
 import { useState } from 'react'
 import { Alert, Button, Form, Input, theme } from 'antd'
 import { useTranslation } from 'react-i18next'
-import { PASSWORD_MIN_LENGTH, PASSWORD_PATTERN } from '@/constants/auth/auth.constants'
+import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH, PASSWORD_PATTERN } from '@/constants/auth/auth.constants'
 import { PROFILE_I18N_NAMESPACE } from '@/constants/profile/profile.constants'
 import { API_ERROR_CODES } from '@/constants/request.constants'
 import { getApiErrorText } from '@/i18n/errorTexts'
@@ -99,11 +99,11 @@ export function PasswordForm({ submitting, onSubmit }: PasswordFormProps) {
         label={t('新密码')}
         rules={[
           { required: true, message: t('请输入新密码') },
-          // 密码策略与创建用户同一权威来源（规格 §14.3：最少 8 位且同时含字母和数字）
-          { pattern: PASSWORD_PATTERN, message: t('密码最少 {{min}} 位且必须同时包含字母和数字', { min: PASSWORD_MIN_LENGTH }) },
+          // 密码策略与创建用户同一权威来源（后端 SPEC 23.2：12-128 个 Unicode 字符）
+          { pattern: PASSWORD_PATTERN, message: t('密码长度需在 {{min}}-{{max}} 位之间', { min: PASSWORD_MIN_LENGTH, max: PASSWORD_MAX_LENGTH }) },
         ]}
       >
-        <Input.Password placeholder={t('密码最少 {{min}} 位且必须同时包含字母和数字', { min: PASSWORD_MIN_LENGTH })} autoComplete="new-password" />
+        <Input.Password placeholder={t('密码长度需在 {{min}}-{{max}} 位之间', { min: PASSWORD_MIN_LENGTH, max: PASSWORD_MAX_LENGTH })} autoComplete="new-password" />
       </Form.Item>
       <Form.Item
         name="confirmPassword"

@@ -1,10 +1,10 @@
 /**
- * 请求层类型契约（规格 §7.1/§7.3）：JSON envelope、ApiError 与请求扩展配置。
+ * 请求层类型契约（规格 §7.1/§7.3，v1.14）：problem+json 失败协议、ApiError 与请求扩展配置。
  *
- * - 成功条件固定为 HTTP 2xx 且 code === 0，不再兼容 envelope code === 200；
- *   删除、登出等无返回值接口仍返回 data: null，不用 204。
- * - errorCode 是跨前后端稳定的机器可读标识，程序分支只能依赖 errorCode，
- *   message 只用于诊断和未知错误兜底。
+ * - 成功条件固定为 HTTP 2xx，响应体即资源 JSON 本体（无 envelope）；
+ *   无返回值接口使用 204，空响应体解包为 null。
+ * - 失败响应统一为 RFC 9457 application/problem+json，稳定错误码在 code 字段；
+ *   程序分支只能依赖 errorCode，detail 只用于诊断和未知错误兜底。
  * - 通过 module augmentation 把 RequestOptions 合并进 AxiosRequestConfig，
  *   业务模块不能用类型断言绕过配置类型。
  */
@@ -16,29 +16,21 @@ import type { PageCacheState } from '@/store/slices/pageCache.slice'
 import type { TabsState } from '@/store/slices/tabs.slice'
 import type { UserState } from '@/store/slices/user.slice'
 
-/** 成功 envelope：code 固定字面量 0，data 必须存在；requestId 优先取 envelope 中的值（规格 §7.1） */
-export interface ApiSuccess<T> {
-  code: 0
-  message: string
-  data: T
-  requestId?: string
-}
-
-/** 失败 envelope：data 固定为 null，errorCode 必须存在 */
-export interface ApiFailure {
-  code: number
-  message: string
-  data: null
-  errorCode: ApiErrorCode
-  requestId?: string
-  details?: unknown
-}
-
 /**
- * 调用端先判断 HTTP 状态再解析该联合类型（规格 §7.1）。
- * 文件下载成功响应不使用此 envelope，下载失败仍返回 ApiFailure JSON。
+ * 失败响应体：RFC 9457 application/problem+json（规格 §7.1）。
+ * type 为 urn:apex:problem:<小写错误码>；requestId 优先取 body，其次 X-Request-Id 响应头；
+ * errors 仅 VALIDATION.FAILED 携带（field/reason/message 三元组）。
  */
-export type ApiEnvelope<T> = ApiSuccess<T> | ApiFailure
+export interface ApiProblem {
+  type: string
+  title: string
+  status: number
+  detail: string
+  instance: string
+  code: ApiErrorCode
+  requestId?: string
+  errors?: Array<{ field: string; reason: string; message: string }>
+}
 
 /**
  * 业务层统一捕获的错误形状，不直接依赖 AxiosError 内部结构（规格 §7.1）。
@@ -47,13 +39,11 @@ export type ApiEnvelope<T> = ApiSuccess<T> | ApiFailure
 export interface ApiError extends Error {
   /** HTTP 状态码；网络失败/超时等未收到响应时缺失 */
   httpStatus?: number
-  /** envelope 业务码；协议不合法或无 envelope 时缺失 */
-  code?: number
-  /** 跨前后端稳定错误码；协议不合法或未知错误码时缺失 */
+  /** 跨前后端稳定错误码（problem+json 的 code 字段）；非 problem 形状失败时缺失 */
   errorCode?: ApiErrorCode
-  /** 请求追踪标识：优先取 envelope，其次响应头 X-Request-Id */
+  /** 请求追踪标识：优先取 problem body，其次响应头 X-Request-Id */
   requestId?: string
-  /** 失败 envelope 的 details 原样透传，供调用端按需窄化 */
+  /** problem+json 的 errors 数组原样透传，供调用端按需窄化 */
   details?: unknown
   /** 所有 abort（页签作用域、重复 GET 取消、调用方 signal）统一转换为 true */
   canceled: boolean

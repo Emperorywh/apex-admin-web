@@ -23,6 +23,7 @@ export const THEME_BOOT_STORAGE_KEY = 'apex_boot_theme'
  *
  * 版本历史：v1 初始；v2（2026-08-17）settings 移除 fontSize/fontFamily（规格 v1.6 §10.1），
  * 迁移识别并丢弃这两个遗留字段；v3（2026-08-18）user 移除 sessionSource（规格 v1.12
- * 演示模式移除），迁移识别并丢弃该遗留字段。
+ * 演示模式移除），迁移识别并丢弃该遗留字段；v4（2026-08-18）user 移除 refreshToken
+ * （规格 v1.14 改由 HttpOnly Cookie 承载），迁移识别并丢弃该遗留字段。
  */
-export const PERSIST_SCHEMA_VERSION = 3
+export const PERSIST_SCHEMA_VERSION = 4

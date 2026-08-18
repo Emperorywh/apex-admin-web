@@ -6,20 +6,20 @@
  * 通用文案在命名空间内自持（与 user/role 命名空间同一取舍，单一命名空间调用）。
  */
 const systemMenu: Record<string, string> = {
-  // 固定说明文案（规格 §14.1/§14.2：菜单管理不动态改变前端静态路由）
+  // 固定说明文案：菜单管理不动态改变前端静态路由
   '菜单管理仅维护后端菜单数据，不会动态改变前端静态路由':
     'Menu management only maintains backend menu data; it never changes frontend static routes',
   // 工具栏与表格列
   新增菜单: 'New Menu',
   类型: 'Type',
   图标: 'Icon',
-  名称: 'Name',
-  '路由 ID': 'Route ID',
+  标题: 'Title',
+  路由名称: 'Route Name',
   路由路径: 'Route Path',
-  权限码: 'Permission Code',
-  排序: 'Sort',
+  排序值: 'Sort Order',
   是否可见: 'Visible',
   状态: 'Status',
+  更新时间: 'Updated At',
   操作: 'Actions',
   编辑: 'Edit',
   删除: 'Delete',
@@ -28,22 +28,26 @@ const systemMenu: Record<string, string> = {
   // 菜单类型（语境差异：固定 context 名 menuType，规格 §12）
   目录_menuType: 'Directory',
   页面_menuType: 'Page',
-  按钮_menuType: 'Button',
-  // 语境差异（固定 context 名 status，规格 §12）
+  外链_menuType: 'Link',
+  // 语境差异（固定 context 名 status/button，规格 §12）
   启用_status: 'Enabled',
+  启用_button: 'Enable',
   禁用_status: 'Disabled',
+  禁用_button: 'Disable',
+  启用成功: 'Enabled successfully',
+  禁用成功: 'Disabled successfully',
   // 表单字段
   编辑菜单: 'Edit Menu',
   上级菜单: 'Parent Menu',
   留空为根级菜单: 'Leave empty for a root menu',
   请选择菜单类型: 'Please select a menu type',
-  请输入菜单名称: 'Please enter a menu name',
-  'page 类型必须设置路由 ID': 'A page menu requires a route ID',
-  '路由 ID 必须是已注册的路由 ID': 'The route ID must be a registered route ID',
-  '请选择路由 ID': 'Please select a route ID',
-  '选填：默认展示路由路径': 'Optional: the route path to display',
-  'button 类型必须设置权限码': 'A button menu requires a permission code',
-  请选择权限码: 'Please select a permission code',
+  请输入菜单标题: 'Please enter a menu title',
+  'link 类型必须设置路由路径': 'A link menu requires a route path',
+  请输入外部链接地址: 'Please enter the external URL',
+  '选填：前端路由名称': 'Optional: the frontend route name',
+  '选填：前端路由路径': 'Optional: the frontend route path',
+  '选填：前端组件标识': 'Optional: the frontend component identifier',
+  '选填：图标标识': 'Optional: the icon identifier',
   请输入排序值: 'Please enter a sort value',
   取消: 'Cancel',
   保存: 'Save',

@@ -37,18 +37,20 @@ export function ProfileForm({ user, submitting, onSubmit }: ProfileFormProps) {
 
   const initialValues: ProfileFormValues = {
     displayName: user.displayName,
-    email: user.email,
+    email: user.email ?? '',
     phone: user.phone ?? '',
   }
 
   const handleFinish = async (values: ProfileFormValues): Promise<void> => {
     setPageError(null)
-    // phone 去空白，空串按契约省略（规格 §14.3 phone?）
+    // email/phone 去空白，空串按契约省略（后端可选字段）
+    const trimmedEmail = values.email?.trim()
+    const optionalEmail = trimmedEmail !== undefined && trimmedEmail.length > 0 ? { email: trimmedEmail } : {}
     const trimmedPhone = values.phone?.trim()
     const optionalPhone = trimmedPhone !== undefined && trimmedPhone.length > 0 ? { phone: trimmedPhone } : {}
     const payload: ProfileFormSubmitPayload = {
       displayName: values.displayName.trim(),
-      email: values.email.trim(),
+      ...optionalEmail,
       ...optionalPhone,
     }
     try {
@@ -107,17 +109,16 @@ export function ProfileForm({ user, submitting, onSubmit }: ProfileFormProps) {
         name="email"
         label={t('邮箱')}
         rules={[
-          { required: true, message: t('请输入邮箱') },
           {
-            // 与提交载荷一致：先 trim 再做格式校验（规格 §14.3 email 格式校验）
+            // 与提交载荷一致：先 trim 再做格式校验（选填字段空值放行）
             validator: (_rule, value: string) =>
-              value === undefined || value.length === 0 || USER_EMAIL_PATTERN.test(value.trim())
+              value === undefined || value.trim().length === 0 || USER_EMAIL_PATTERN.test(value.trim())
                 ? Promise.resolve()
                 : Promise.reject(new Error(t('邮箱格式不正确'))),
           },
         ]}
       >
-        <Input placeholder={t('请输入邮箱')} allowClear />
+        <Input placeholder={t('选填')} allowClear />
       </Form.Item>
       <Form.Item name="phone" label={t('手机号')}>
         <Input placeholder={t('选填')} allowClear />
