@@ -13,6 +13,8 @@ const dashboard: Record<string, string> = {
   角色分布: 'Role Distribution',
   概览数据加载失败: 'Failed to load overview data',
   重试: 'Retry',
+  // 统计卡环比文案（SPEC_UI2 §8）
+  '较上期 {{percent}}%': '{{percent}}% vs previous period',
 }
 
 export default dashboard

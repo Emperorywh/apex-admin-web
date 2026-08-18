@@ -13,6 +13,7 @@
  *   unique-alias                   内部根级导入只能使用唯一的 @/ 别名
  *   dependency-direction           固定依赖方向、共享层反向依赖与业务域穿透导入
  *   case-mismatch                  导入路径大小写必须与磁盘完全一致
+ *   iconify-only-in-appicon        @iconify/react 只允许在 src/components/AppIcon/ 内导入（SPEC_UI2 §5.3）
  *
  * 边界例外通过 scripts/check-structure.allowlist.json 记录，格式：
  *   { "<ruleId>": [{ "file": "<相对 src 的文件路径>", "owner": "...", "reason": "...", "cleanup": "..." }] }
@@ -36,6 +37,7 @@ export const RULE_IDS = [
   'unique-alias',
   'dependency-direction',
   'case-mismatch',
+  'iconify-only-in-appicon',
 ]
 
 /** 不可通过 allowlist 豁免的硬约束 */
@@ -395,6 +397,11 @@ export function checkStructure(srcDir, allowlistData = {}) {
     const domain = layer === 'features' ? featureDomain(rel) : null
 
     for (const { specifier, line } of imports) {
+      // iconify-only-in-appicon：@iconify/* 只允许 AppIcon 封装内导入（SPEC_UI2 §5.3 离线红线）
+      if (specifier.startsWith('@iconify/') && !rel.startsWith('components/AppIcon/')) {
+        add('iconify-only-in-appicon', rel, `@iconify/* 只允许在 src/components/AppIcon/ 内导入：${specifier}`, line)
+      }
+
       // no-deep-parent-import
       if (leadingParentCount(specifier) >= 2) {
         add('no-deep-parent-import', rel, `禁止 ../../ 及更深的父级相对导入：${specifier}`, line)

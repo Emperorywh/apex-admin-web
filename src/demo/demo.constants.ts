@@ -165,9 +165,10 @@ export const DEMO_SNAPSHOT_STORAGE_KEY = `${STORAGE_KEY_PREFIX}demo_data`
  * demo CRUD 快照 schema 版本（规格 §13.2）。
  * 加载时校验；损坏或旧版本无迁移映射时恢复种子数据并提示一次。
  * v2：快照结构加入角色集合（roles/nextRoleSequence）；v3：加入菜单集合
- * （menus/nextMenuSequence）；v1/v2 快照按旧版本降级恢复种子。
+ * （menus/nextMenuSequence）；v4：菜单条目加入 demo 私有 icon 演示字段
+ * （SPEC_UI2 §5.7 菜单管理图标列）；v1–v3 快照按旧版本降级恢复种子。
  */
-export const DEMO_SNAPSHOT_SCHEMA_VERSION = 3
+export const DEMO_SNAPSHOT_SCHEMA_VERSION = 4
 
 /** demo accessToken 有效期，单位：毫秒；到期由 adapter 返回 401 AUTH_ACCESS_EXPIRED 触发刷新单飞 */
 export const DEMO_ACCESS_TOKEN_TTL_MS = 5 * 60_000

@@ -25,9 +25,9 @@ import { PAGE_CONTAINER_ID, type AffixTabRoute } from '@/layouts/BasicLayout/tab
 import { Header, type HeaderTrigger } from '@/layouts/BasicLayout/components/Header/Header'
 import { PageCacheHost } from '@/layouts/BasicLayout/components/PageCacheHost/PageCacheHost'
 import { SettingDrawer } from '@/layouts/BasicLayout/components/SettingDrawer/SettingDrawer'
-import { SideMenu } from '@/layouts/BasicLayout/components/SideMenu/SideMenu'
+import { SideNav } from '@/layouts/BasicLayout/components/SideNav/SideNav'
 import { TabsBar } from '@/layouts/BasicLayout/components/TabsBar/TabsBar'
-import { TopMenu } from '@/layouts/BasicLayout/components/TopMenu/TopMenu'
+import { TopNav } from '@/layouts/BasicLayout/components/TopNav/TopNav'
 import { sidebarCollapsedSet } from '@/store/slices/app.slice'
 import { SETTINGS_LAYOUTS } from '@/store/slices/settings.slice'
 import type { RootState } from '@/store/store'
@@ -152,18 +152,24 @@ export function BasicLayout({ navItems, renderRoutes, affixTabRoutes, onLogout }
       </div>
       {showSideNav && (
         <nav className={styles.sideNav} data-collapsed={sidebarCollapsed} aria-label={t('导航菜单', { ns: COMMON_NAMESPACE })}>
-          <SideMenu
+          <SideNav
             items={navItems}
             selectedKey={selection.selectedKey}
             ancestorOpenKeys={selection.openKeys}
             onNavigate={handleNavigate}
             collapsed={sidebarCollapsed}
+            onToggleCollapse={() => dispatch(sidebarCollapsedSet({ collapsed: !sidebarCollapsed }))}
           />
         </nav>
       )}
       {showTopNav && (
         <nav className={styles.topNav} aria-label={t('导航菜单', { ns: COMMON_NAMESPACE })}>
-          <TopMenu items={navItems} selectedKey={selection.selectedKey} onNavigate={handleNavigate} />
+          <TopNav
+            items={navItems}
+            selectedKey={selection.selectedKey}
+            ancestorOpenKeys={selection.openKeys}
+            onNavigate={handleNavigate}
+          />
         </nav>
       )}
       <div className={styles.mainBar}>
@@ -189,11 +195,12 @@ export function BasicLayout({ navItems, renderRoutes, affixTabRoutes, onLogout }
         onClose={() => setNavDrawerOpen(false)}
         title={brandTitle}
       >
-        <SideMenu
+        <SideNav
           items={navItems}
           selectedKey={selection.selectedKey}
           ancestorOpenKeys={selection.openKeys}
           onNavigate={handleDrawerNavigate}
+          inDrawer
         />
       </Drawer>
       <SettingDrawer open={settingsOpen} onClose={() => setSettingsOpen(false)} />

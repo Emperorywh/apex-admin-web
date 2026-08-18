@@ -11,7 +11,7 @@
  * 菜单权限/hideInMenu/目录保留过滤的判定测试位于 router/projections.test.tsx
  * （filterMenuRoutes 与守卫共用 hasPermissionChain），此处验证布局消费注入结果。
  */
-import { act, screen, waitFor, within } from '@testing-library/react'
+import { act, fireEvent, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Outlet, RouterProvider, createMemoryRouter, useLocation, type RouteObject } from 'react-router'
 import { useEffect } from 'react'
@@ -230,8 +230,8 @@ describe('BasicLayout 双布局热切换（规格 §11.1）', () => {
     expect(shell?.getAttribute('data-layout-mode')).toBe('side')
     // 品牌区（Logo + 标题）
     expect(screen.getByText('通用后台管理模板')).toBeInTheDocument()
-    // 垂直菜单（antd inline）与导航区域
-    expect(container.querySelector('.ant-menu-inline')).not.toBeNull()
+    // 垂直导航（SPEC_UI2 §6.1 自绘，role=menu）与导航区域
+    expect(within(screen.getByRole('navigation', { name: '导航菜单' })).getByRole('menu')).not.toBeNull()
     expect(screen.getByRole('navigation', { name: '导航菜单' })).toBeInTheDocument()
     // 顶栏与页签占位、页面缓存区
     expect(screen.getByRole('banner')).toBeInTheDocument()
@@ -267,20 +267,25 @@ describe('BasicLayout 双布局热切换（规格 §11.1）', () => {
     expect(content.textContent).toBe(pathnameBefore)
     expect(probeMountCount).toBe(mountsBefore)
     expect(container.querySelector('[data-region="tabs-bar"]')).toBe(tabsRegion)
-    // 顶部布局：水平菜单渲染且顶级菜单项集合与侧边布局一致（同一 navItems）
-    expect(container.querySelector('.ant-menu-horizontal')).not.toBeNull()
-    expect(container.querySelector('.ant-menu-inline')).toBeNull()
+    // 顶部布局：横向自绘 menubar 渲染且顶级菜单项集合与侧边布局一致（同一 navItems）
+    expect(within(screen.getByRole('navigation', { name: '导航菜单' })).getByRole('menubar')).not.toBeNull()
+    expect(container.querySelector('[role="menu"]')).toBeNull()
     const topNav = screen.getByRole('navigation', { name: '导航菜单' })
     for (const title of ['仪表盘', '系统管理', '个人中心']) {
       expect(within(topNav).getByText(title)).toBeInTheDocument()
     }
   })
 
-  it('顶部布局二级以下呈现下拉子菜单：目录节点渲染为弹出子菜单（规格 §11.1）', () => {
-    const { container } = renderLayout({ initialPath: '/dashboard', layout: 'top' })
-    const submenuTitle = screen.getByText('系统管理')
-    expect(submenuTitle.closest('li')).not.toBeNull()
-    expect(container.querySelector('.ant-menu-submenu')).not.toBeNull()
+  it('顶部布局二级以下呈现下拉子菜单：目录节点为 aria-haspopup 触发项，hover 弹出自绘浮层（规格 §11.1/SPEC_UI2 §6.1）', async () => {
+    renderLayout({ initialPath: '/dashboard', layout: 'top' })
+    const topNav = screen.getByRole('navigation', { name: '导航菜单' })
+    const submenuTrigger = within(topNav).getByRole('menuitem', { name: /系统管理/ })
+    expect(submenuTrigger).toHaveAttribute('aria-haspopup', 'true')
+    // hover 弹出下拉浮层，呈现二级项
+    fireEvent.mouseEnter(submenuTrigger)
+    const popup = await screen.findByRole('menu', { name: '系统管理' })
+    expect(within(popup).getByText('用户管理')).toBeInTheDocument()
+    fireEvent.mouseLeave(submenuTrigger)
   })
 })
 
@@ -290,7 +295,8 @@ describe('菜单选中链与导航（规格 §11.2）', () => {
     await navigateTo(router, '/system/role/detail')
     // 三级叶子选中：aria-current 标记当前项（规格 §11.3），祖先目录自动展开使子项可见
     const selected = await within(sideNavRegion()).findByText('角色详情')
-    expect(selected).toHaveAttribute('aria-current', 'page')
+    // aria-current 标记在自绘菜单项行上（SPEC_UI2 §6.1）
+    expect(selected.closest('[role="menuitem"]')).toHaveAttribute('aria-current', 'page')
     await within(sideNavRegion()).findByText('用户管理')
     await within(sideNavRegion()).findByText('角色管理')
   })
@@ -421,15 +427,18 @@ describe('响应式断点 <768px（规格 §11.1，matchMedia stub）', () => {
 })
 
 describe('Header 全功能与回调（规格 §11.2）', () => {
-  it('侧边布局桌面触发按钮折叠侧栏：写入 app.sidebarCollapsed 并驱动菜单折叠态', async () => {
+  it('侧边布局桌面触发按钮折叠侧栏：写入 app.sidebarCollapsed 并驱动导航 mini 态', async () => {
     const user = userEvent.setup()
     const { store, container } = renderLayout({ initialPath: '/dashboard' })
     await user.click(screen.getByRole('button', { name: '切换侧边栏' }))
     await waitFor(() => {
       expect(store.getState().app.sidebarCollapsed).toBe(true)
     })
+    // 自绘导航 mini 态（SPEC_UI2 §6.1）：侧栏 88px 标记 + 悬浮折叠球切换为展开语义
     await waitFor(() => {
-      expect(container.querySelector('.ant-menu-inline-collapsed')).not.toBeNull()
+      const nav = container.querySelector('nav[data-collapsed="true"]')
+      expect(nav).not.toBeNull()
+      expect(screen.getByRole('button', { name: '展开侧边栏' })).toBeInTheDocument()
     })
   })
 

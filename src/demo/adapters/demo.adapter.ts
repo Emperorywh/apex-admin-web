@@ -1083,6 +1083,18 @@ function handleDeleteMenu(config: InternalAxiosRequestConfig, params: Record<str
 const DEMO_OVERVIEW_TREND_DAYS = 7
 
 /**
+ * demo 扩展字段（SPEC_UI2 §8）：统计卡迷你趋势序列（按时间升序的计数点）。
+ * DashboardOverview 契约（规格 §14.1）不变——本字段为 demo fixture 私有演示数据，
+ * 真实后端无该字段时统计卡回退为现有 loginTrend/userGrowth 派生序列。
+ */
+export interface DemoDashboardStatTrends {
+  userCount: number[]
+  enabledUserCount: number[]
+  roleCount: number[]
+  todayLoginCount: number[]
+}
+
+/**
  * 概览数据全部由当前内存数据集推导，公式确定性、无随机数，测试与快照可复现；
  * 图表序列按日期升序，date 使用 YYYY-MM-DD（规格 §14.1）。
  */
@@ -1110,7 +1122,16 @@ function handleDashboardOverview(config: InternalAxiosRequestConfig): DemoEndpoi
     count,
     percent: userCount === 0 ? 0 : Math.round((count / userCount) * 100),
   }))
-  const overview: DashboardOverview = {
+  // 统计卡迷你趋势（demo 私有扩展，SPEC_UI2 §8）：由同一数据集确定性推导，无随机数
+  const statTrends: DemoDashboardStatTrends = {
+    userCount: userGrowth.map((point) => point.count),
+    enabledUserCount: userGrowth.map((point) => Math.max(0, point.count - (userCount - enabledUserCount))),
+    roleCount: Array.from({ length: DEMO_OVERVIEW_TREND_DAYS }, (_, index) =>
+      Math.max(0, dataset.roles.length - (DEMO_OVERVIEW_TREND_DAYS - 1 - index) % 3),
+    ),
+    todayLoginCount: loginTrend.map((point) => point.count),
+  }
+  const overview: DashboardOverview & { statTrends: DemoDashboardStatTrends } = {
     stats: {
       userCount,
       enabledUserCount,
@@ -1120,6 +1141,7 @@ function handleDashboardOverview(config: InternalAxiosRequestConfig): DemoEndpoi
     loginTrend,
     userGrowth,
     roleDistribution,
+    statTrends,
   }
   return ok(overview)
 }

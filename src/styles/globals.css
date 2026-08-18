@@ -2,8 +2,40 @@
  * 全局样式入口：只承载跨页面共享的基础样式与 CSS 自定义属性。
  * 组件级样式使用 CSS Modules 与 antd token（规格 §10.2）。
  * 颜色一律来自 antd CSS 变量（var(--ant-*)）或主题运行时写入的文档属性，
- * 色值字面量只允许出现在 src/config/theme.ts（规格 §10.2）。
+ * 色值字面量只允许出现在 src/config/theme.ts（规格 §10.2/SPEC_UI2 §4.3）。
  */
+
+/*
+ * Inter Variable 自托管（SPEC_UI2 §4.5）：仅拉丁子集（woff2 随 src/assets/fonts 分发，
+ * SIL OFL 许可见 assets/NOTICE.md），中文经字体栈回退系统中文字体。
+ */
+@font-face {
+  font-family: 'Inter Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('../assets/fonts/inter-latin-wght-normal.woff2') format('woff2-variations');
+  unicode-range:
+    U+0000-00FF,
+    U+0131,
+    U+0152-0153,
+    U+02BB-02BC,
+    U+02C6,
+    U+02DA,
+    U+02DC,
+    U+0304,
+    U+0308,
+    U+0329,
+    U+2000-206F,
+    U+20AC,
+    U+2122,
+    U+2191,
+    U+2193,
+    U+2212,
+    U+2215,
+    U+FEFF,
+    U+FFFD;
+}
 
 /* 无启动镜像时的 color-scheme 兜底；首帧后由启动脚本与主题运行时的内联值接管 */
 :root {
@@ -18,14 +50,15 @@ body,
 }
 
 /*
- * 字体族经 body CSS 变量消费（规格 §10.1）：--app-font-family 由
- * applyThemeToDocument 按 antd token 写入（固定系统字体栈，无设置项）；
+ * 字体族经 body CSS 变量消费（规格 §10.1/SPEC_UI2 §4.5）：--app-font-family 由
+ * applyThemeToDocument 按 antd token 写入（Inter Variable 固定栈，无设置项）；
  * 未写入前的回退栈与固定栈一致。
  */
 body {
   font-family:
     var(
       --app-font-family,
+      'Inter Variable',
       system-ui,
       -apple-system,
       'Segoe UI',
@@ -47,7 +80,46 @@ body {
 }
 
 /*
- * 尊重 prefers-reduced-motion（规格 §11.3）：关闭非必要过渡与动画。
+ * 全局滚动条细化（SPEC_UI2 §4.1）：Chromium/WebKit 细轨 + 圆角灰色 thumb
+ * （slash ScrollArea 观感）；Firefox 以 scrollbar-width/color 对齐近似。
+ * 取色经 antd token 派生（color-mix 合成透明度，色值纪律 §4.3）。
+ */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--ant-color-text-tertiary) 48%, transparent);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--ant-color-text-tertiary) 72%, transparent);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--ant-color-text-tertiary) 48%, transparent) transparent;
+}
+
+/* 卡片：细边 + 柔和浅阴影并存（SPEC_UI2 §3.2），阴影经 --app-shadow-card 由主题运行时写入 */
+.ant-card {
+  box-shadow: var(--app-shadow-card);
+}
+
+/* Tag slash 式重制（SPEC_UI2 §4.2）：无边框 + 6px 圆角；语义浅底/文字色由 antd token 派生 */
+.ant-tag {
+  border-style: none;
+  border-radius: var(--ant-border-radius);
+}
+
+/*
+ * 尊重 prefers-reduced-motion（规格 §11.3/SPEC_UI2 §10）：关闭非必要过渡与动画。
  * antd 组件动画由 antd 自带的同名 media query 处理，此处覆盖自定义样式。
  */
 @media (prefers-reduced-motion: reduce) {

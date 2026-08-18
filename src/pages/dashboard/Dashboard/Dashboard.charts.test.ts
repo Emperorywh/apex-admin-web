@@ -12,6 +12,7 @@ import {
   buildRoleDistributionOption,
   buildUserGrowthOption,
   type DashboardChartTheme,
+  deriveDeltaPercent,
 } from './Dashboard.charts'
 
 // 测试夹具色值（规格 §10.2 允许）：仅作为断言输入
@@ -91,5 +92,18 @@ describe('buildRoleDistributionOption（规格 §14.2 饼/环）', () => {
     // 取色环从 colorPrimary 起，第二项取 colorSuccess
     expect(series.data[0].itemStyle.color).toBe(chartTheme.colorPrimary)
     expect(series.data[1].itemStyle.color).toBe(chartTheme.colorSuccess)
+  })
+})
+
+describe('deriveDeltaPercent 统计卡环比（SPEC_UI2 §8）', () => {
+  it('末位对前一位的百分比；涨正跌负', () => {
+    expect(deriveDeltaPercent([10, 15])).toBe(50)
+    expect(deriveDeltaPercent([20, 10])).toBe(-50)
+  })
+
+  it('序列不足两位或基期为 0 时不展示', () => {
+    expect(deriveDeltaPercent([5])).toBeUndefined()
+    expect(deriveDeltaPercent(undefined)).toBeUndefined()
+    expect(deriveDeltaPercent([0, 3])).toBeUndefined()
   })
 })

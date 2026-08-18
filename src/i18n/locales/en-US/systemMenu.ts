@@ -11,6 +11,8 @@ const systemMenu: Record<string, string> = {
     'Menu management only maintains backend menu data; it never changes frontend static routes',
   // 工具栏与表格列
   新增菜单: 'New Menu',
+  // 图标列（SPEC_UI2 §5.7：demo fixture 私有 icon 字段驱动）
+  图标: 'Icon',
   类型: 'Type',
   名称: 'Name',
   '路由 ID': 'Route ID',

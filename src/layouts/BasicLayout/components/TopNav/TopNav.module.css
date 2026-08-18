@@ -1,0 +1,136 @@
+/*
+ * 自绘顶部导航样式（SPEC_UI2 §6.1）：与 SideNav 同一套选中语言
+ * （圆角 6 + 主色浅底 + 主色文字，hover 中性浅底）；二级以下下拉浮层
+ * 圆角 12 + 阴影阶梯。颜色一律来自 var(--ant-*) 与 --app-shadow-*。
+ */
+
+.topNav {
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: stretch;
+  min-width: 0;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0 8px;
+  list-style: none;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+
+.bar::-webkit-scrollbar {
+  display: none;
+}
+
+.barEntry {
+  flex: none;
+}
+
+.barItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 12px;
+  border-radius: var(--ant-border-radius);
+  color: var(--ant-color-text-secondary);
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  transition:
+    background-color 220ms ease-out,
+    color 220ms ease-out;
+}
+
+.barItem:hover {
+  background: var(--ant-color-fill-tertiary);
+  color: var(--ant-color-text);
+}
+
+.barItem[data-selected='true'] {
+  background: var(--ant-color-primary-bg);
+  color: var(--ant-color-primary);
+}
+
+/* 选中叶子的祖先目录：主色标示选中链 */
+.barItem[data-on-chain='true'] {
+  color: var(--ant-color-primary);
+}
+
+.barItem:focus-visible,
+.dropdownItem:focus-visible {
+  outline: 2px solid var(--ant-color-primary);
+  outline-offset: -2px;
+}
+
+.barIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.barTitle {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.barArrow {
+  color: var(--ant-color-text-tertiary);
+}
+
+/* 下拉浮层：圆角 12 + 阴影阶梯（SPEC_UI2 §6.1） */
+.dropdown {
+  position: fixed;
+  z-index: 1050;
+  min-width: 180px;
+  max-width: 280px;
+  padding: 8px;
+  border: 1px solid var(--ant-color-border-secondary);
+  border-radius: var(--ant-border-radius-lg);
+  background: var(--ant-color-bg-elevated);
+  box-shadow: var(--app-shadow-raised);
+}
+
+.dropdownList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 6px 12px;
+  border-radius: var(--ant-border-radius);
+  color: var(--ant-color-text-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background-color 180ms ease-out,
+    color 180ms ease-out;
+}
+
+.dropdownItem:hover {
+  background: var(--ant-color-fill-tertiary);
+  color: var(--ant-color-text);
+}
+
+.dropdownItem[data-selected='true'] {
+  background: var(--ant-color-primary-bg);
+  color: var(--ant-color-primary);
+}
+
+.dropdownTitle {
+  font-size: 14px;
+  font-weight: 500;
+}

@@ -7,10 +7,11 @@
  * 角色与权限快照原样透传，不改变 auth 状态机（登录/登出/刷新编排不受影响）。
  */
 import { useState } from 'react'
-import { App, Card, Space } from 'antd'
+import { App, Space } from 'antd'
 import { useDispatch, useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import { PROFILE_I18N_NAMESPACE } from '@/constants/profile/profile.constants'
+import { PageCard } from '@/components/PageCard/PageCard'
 import { ProfileForm } from '@/features/profile/components/ProfileForm/ProfileForm'
 import type { ProfileFormSubmitPayload } from '@/features/profile/components/ProfileForm/ProfileForm.types'
 import { PasswordForm } from '@/features/profile/components/PasswordForm/PasswordForm'
@@ -63,12 +64,12 @@ export function Profile() {
 
   return (
     <Space direction="vertical" size={16} style={{ width: '100%' }}>
-      <Card title={t('基本资料')}>
+      <PageCard title={t('基本资料')}>
         <ProfileForm user={user} submitting={profileSubmitting} onSubmit={handleProfileSubmit} />
-      </Card>
-      <Card title={t('修改密码')}>
+      </PageCard>
+      <PageCard title={t('修改密码')}>
         <PasswordForm submitting={passwordSubmitting} onSubmit={handlePasswordSubmit} />
-      </Card>
+      </PageCard>
     </Space>
   )
 }

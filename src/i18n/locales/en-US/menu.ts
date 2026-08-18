@@ -19,6 +19,13 @@ const menu: Record<string, string> = {
   无权限访问: 'Forbidden',
   页面不存在: 'Not Found',
   服务器错误: 'Server Error',
+  // 菜单副标题 caption（SPEC_UI2 §6.1：路由 meta.caption，menu 命名空间）
+  工作台与核心指标: 'Workbench & metrics',
+  '用户·角色·菜单': 'Users, roles & menus',
+  账号与角色分配: 'Accounts & role assignment',
+  角色与权限树: 'Roles & permission tree',
+  后端菜单数据维护: 'Backend menu data',
+  多级菜单与页签缓存: 'Nested menu & tab cache',
 }
 
 export default menu

@@ -106,9 +106,9 @@ export async function spaNavigate(page: Page, path: string): Promise<void> {
   await expect(page).toHaveURL((url: URL) => url.pathname + url.search === path)
 }
 
-/** 展开侧边菜单的「系统管理」子菜单并点击目标叶子项（应用内导航，不整页刷新） */
+/** 展开侧边导航的「系统管理」目录并点击目标叶子项（SPEC_UI2 §6.1 自绘导航：目录即 menuitem，点击展开） */
 export async function openSystemPageViaMenu(page: Page, itemText: string): Promise<void> {
   const nav = page.locator('nav[aria-label="导航菜单"]')
-  await nav.locator('.ant-menu-submenu-title', { hasText: '系统管理' }).click()
+  await nav.getByRole('menuitem', { name: '系统管理' }).click()
   await nav.getByRole('menuitem', { name: itemText }).click()
 }

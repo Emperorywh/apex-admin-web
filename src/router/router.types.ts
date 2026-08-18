@@ -4,7 +4,6 @@
  * 业务页面只能通过 loadPage 延迟加载，不能在定义中直接创建页面实例。
  * 接口刻意不含 action 字段：renderRoutes 纯渲染架构下 route action 结构性不可用（规格 §4.1）。
  */
-import type { LucideIcon } from 'lucide-react'
 import type { ComponentType } from 'react'
 import type { NavTreeNode } from '@/layouts/BasicLayout/navModel'
 
@@ -22,10 +21,13 @@ export interface AppRouteDefinition {
   children?: AppRouteDefinition[]
 }
 
-/** 路由元信息：title 为中文文案 key（menu 命名空间），icon 为 lucide-react 图标组件 */
+/** 路由元信息：title/caption 为中文文案 key（menu 命名空间），icon 为 local: 图标名字符串（SPEC_UI2 §5.4） */
 export interface RouteMeta {
   title: string
-  icon?: LucideIcon
+  /** 菜单图标：local: 图标名字符串，经 AppIcon 注册表解析（原 LucideIcon 组件引用已废止） */
+  icon?: string
+  /** 菜单副标题（自绘导航 caption，SPEC_UI2 §6.1） */
+  caption?: string
   permCode?: string
   hideInMenu?: boolean
   hideInTabs?: boolean

@@ -95,17 +95,29 @@ export const DEMO_SEED_NEXT_USER_SEQUENCE = 5
 export const DEMO_SEED_NEXT_ROLE_SEQUENCE = 1
 
 /**
+ * demo fixture 私有演示字段（SPEC_UI2 §5.7）：icon 为 local: 图标名，驱动菜单管理页
+ * 图标列；MenuItem 契约不变，真实后端数据无该字段时图标列呈现占位。
+ */
+export interface DemoMenuFixtureItem extends MenuItem {
+  /** 菜单图标名（local: 前缀，AppIcon 注册表解析） */
+  icon?: string
+}
+
+/**
  * 种子菜单（规格 §14.1/§14.3）：扁平存储（children 由 GET /menus/tree 组装），
  * routeId/path 只引用当前已注册的静态路由（ROUTE_IDS/ROUTE_PATHS 权威值）；
  * 多级菜单演示条目与路由定义同步注册（演示 > 多级菜单 > 三个层级页面，
  * 对应前端三级菜单，§14.2/§19.1）。button 类型仅展示权限资源关系。
+ * page/directory 条目携带 demo 私有 icon 演示字段（SPEC_UI2 §5.7），
+ * 与前端路由 meta.icon 同名（图标资产注册表见 components/AppIcon）。
  */
-export const DEMO_SEED_MENUS: readonly MenuItem[] = [
+export const DEMO_SEED_MENUS: readonly DemoMenuFixtureItem[] = [
   {
     id: 'demo-menu-dashboard',
     parentId: null,
     type: 'page',
     name: '仪表盘',
+      icon: 'local:ic-dashboard',
     routeId: ROUTE_IDS.DASHBOARD,
     path: ROUTE_PATHS.DASHBOARD,
     sort: 1,
@@ -117,6 +129,7 @@ export const DEMO_SEED_MENUS: readonly MenuItem[] = [
     parentId: null,
     type: 'directory',
     name: '系统管理',
+      icon: 'local:ic-management',
     sort: 2,
     visible: true,
     status: 'enabled',
@@ -126,6 +139,7 @@ export const DEMO_SEED_MENUS: readonly MenuItem[] = [
     parentId: 'demo-menu-system',
     type: 'page',
     name: '用户管理',
+      icon: 'local:ic-user',
     routeId: ROUTE_IDS.SYSTEM_USER,
     path: ROUTE_PATHS.SYSTEM_USER,
     sort: 1,
@@ -142,6 +156,7 @@ export const DEMO_SEED_MENUS: readonly MenuItem[] = [
     parentId: 'demo-menu-system',
     type: 'page',
     name: '角色管理',
+      icon: 'local:ic-role',
     routeId: ROUTE_IDS.SYSTEM_ROLE,
     path: ROUTE_PATHS.SYSTEM_ROLE,
     sort: 2,
@@ -158,6 +173,7 @@ export const DEMO_SEED_MENUS: readonly MenuItem[] = [
     parentId: 'demo-menu-system',
     type: 'page',
     name: '菜单管理',
+      icon: 'local:ic-menu',
     routeId: ROUTE_IDS.SYSTEM_MENU,
     path: ROUTE_PATHS.SYSTEM_MENU,
     sort: 3,
@@ -173,6 +189,7 @@ export const DEMO_SEED_MENUS: readonly MenuItem[] = [
     parentId: null,
     type: 'directory',
     name: '演示',
+      icon: 'local:ic-flask',
     sort: 3,
     visible: true,
     status: 'enabled',
@@ -182,6 +199,7 @@ export const DEMO_SEED_MENUS: readonly MenuItem[] = [
     parentId: 'demo-menu-demo',
     type: 'directory',
     name: '多级菜单',
+      icon: 'local:ic-menulevel',
     sort: 1,
     visible: true,
     status: 'enabled',
@@ -191,6 +209,7 @@ export const DEMO_SEED_MENUS: readonly MenuItem[] = [
     parentId: 'demo-menu-nested',
     type: 'page',
     name: '一级页面',
+      icon: 'local:ic-file',
     routeId: ROUTE_IDS.DEMO_NESTED_LEVEL1,
     path: ROUTE_PATHS.DEMO_NESTED_LEVEL1,
     sort: 1,
@@ -202,6 +221,7 @@ export const DEMO_SEED_MENUS: readonly MenuItem[] = [
     parentId: 'demo-menu-nested',
     type: 'page',
     name: '二级页面',
+      icon: 'local:ic-file',
     routeId: ROUTE_IDS.DEMO_NESTED_LEVEL2,
     path: ROUTE_PATHS.DEMO_NESTED_LEVEL2,
     sort: 2,
@@ -213,6 +233,7 @@ export const DEMO_SEED_MENUS: readonly MenuItem[] = [
     parentId: 'demo-menu-nested',
     type: 'page',
     name: '三级页面',
+      icon: 'local:ic-file',
     routeId: ROUTE_IDS.DEMO_NESTED_LEVEL3,
     path: ROUTE_PATHS.DEMO_NESTED_LEVEL3,
     sort: 3,

@@ -18,6 +18,7 @@ import { PERMISSIONS } from '@/constants/permission.constants'
 import { USER_I18N_NAMESPACE, USER_SORT_FIELDS } from '@/constants/system/user/user.constants'
 import type { UserSortField } from '@/constants/system/user/user.constants'
 import { Auth } from '@/components/Auth/Auth'
+import { PageCard } from '@/components/PageCard/PageCard'
 import { UserForm } from '@/features/system/user/components/UserForm/UserForm'
 import type { UserFormMode, UserFormSubmitPayload } from '@/features/system/user/components/UserForm/UserForm.types'
 import { UserRoleDrawer } from '@/features/system/user/components/UserRoleDrawer/UserRoleDrawer'
@@ -198,50 +199,56 @@ export function User() {
   ]
 
   return (
-    <div>
-      <Space wrap style={{ marginBottom: 16 }}>
-        <Input.Search
-          allowClear
-          placeholder={t('搜索用户名或显示名称')}
-          value={keywordDraft}
-          onChange={(event) => setKeywordDraft(event.target.value)}
-          onSearch={(value) => list.searchKeyword(value)}
-          style={{ width: 240 }}
-        />
-        <Select<UserSortField | undefined>
-          allowClear
-          placeholder={t('默认排序（创建时间倒序）')}
-          value={list.query.sortBy}
-          onChange={(value) => list.changeSort(value, list.query.sortOrder)}
-          style={{ width: 180 }}
-          options={USER_SORT_FIELDS.map((field) => ({ label: t(SORT_FIELD_LABEL_KEYS[field]), value: field }))}
-        />
-        <Select<ListSortOrder>
-          placeholder={t('排序方向')}
-          value={list.query.sortBy === undefined ? undefined : list.query.sortOrder}
-          disabled={list.query.sortBy === undefined}
-          onChange={(value) => list.changeSort(list.query.sortBy, value)}
-          style={{ width: 120 }}
-          options={[
-            { label: t('升序'), value: SORT_ORDERS.ASC },
-            { label: t('降序'), value: SORT_ORDERS.DESC },
-          ]}
-        />
-        <Button
-          onClick={() => {
-            setKeywordDraft('')
-            list.searchKeyword('')
-            list.changeSort(undefined, list.query.sortOrder)
-          }}
-        >
-          {t('重置')}
-        </Button>
+    <PageCard
+      title={t('用户管理')}
+      extra={
         <Auth code={PERMISSIONS.SYSTEM_USER_CREATE}>
           <Button type="primary" icon={<Plus size={14} />} onClick={() => setFormDrawer({ open: true, mode: 'create', user: null })}>
             {t('新增用户')}
           </Button>
         </Auth>
-      </Space>
+      }
+      search={
+        <>
+          <Input.Search
+            allowClear
+            placeholder={t('搜索用户名或显示名称')}
+            value={keywordDraft}
+            onChange={(event) => setKeywordDraft(event.target.value)}
+            onSearch={(value) => list.searchKeyword(value)}
+            style={{ width: 240 }}
+          />
+          <Select<UserSortField | undefined>
+            allowClear
+            placeholder={t('默认排序（创建时间倒序）')}
+            value={list.query.sortBy}
+            onChange={(value) => list.changeSort(value, list.query.sortOrder)}
+            style={{ width: 180 }}
+            options={USER_SORT_FIELDS.map((field) => ({ label: t(SORT_FIELD_LABEL_KEYS[field]), value: field }))}
+          />
+          <Select<ListSortOrder>
+            placeholder={t('排序方向')}
+            value={list.query.sortBy === undefined ? undefined : list.query.sortOrder}
+            disabled={list.query.sortBy === undefined}
+            onChange={(value) => list.changeSort(list.query.sortBy, value)}
+            style={{ width: 120 }}
+            options={[
+              { label: t('升序'), value: SORT_ORDERS.ASC },
+              { label: t('降序'), value: SORT_ORDERS.DESC },
+            ]}
+          />
+          <Button
+            onClick={() => {
+              setKeywordDraft('')
+              list.searchKeyword('')
+              list.changeSort(undefined, list.query.sortOrder)
+            }}
+          >
+            {t('重置')}
+          </Button>
+        </>
+      }
+    >
       <Table<UserEntity>
         rowKey="id"
         columns={columns}
@@ -283,6 +290,6 @@ export function User() {
         onSubmit={handleAssignRoles}
         onClose={() => setRoleDrawerUser(null)}
       />
-    </div>
+    </PageCard>
   )
 }

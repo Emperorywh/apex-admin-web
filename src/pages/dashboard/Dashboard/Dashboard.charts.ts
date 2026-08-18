@@ -149,3 +149,16 @@ export function buildRoleDistributionOption(
     ],
   }
 }
+
+/** 统计卡环比变化百分比（SPEC_UI2 §8）：序列末位对前一位；基期为 0 或序列不足时不展示 */
+export function deriveDeltaPercent(series: readonly number[] | undefined): number | undefined {
+  if (series === undefined || series.length < 2) {
+    return undefined
+  }
+  const previous = series[series.length - 2]
+  const current = series[series.length - 1]
+  if (previous === 0) {
+    return undefined
+  }
+  return ((current - previous) / previous) * 100
+}

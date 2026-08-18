@@ -1,6 +1,7 @@
 /*
- * 统计卡片样式（规格 §10.2）：颜色一律来自 antd CSS 变量 var(--ant-*)，
- * 本文件不出现色值字面量。
+ * 统计卡片样式（SPEC_UI2 §8 slash workbench 式）：彩色浅底圆角图标块 +
+ * 大数字 + 环比文案 + 右侧迷你趋势图。颜色一律来自 antd CSS 变量
+ * var(--ant-*)（color-mix 合成 10% 浅底，色值纪律 SPEC_UI2 §4.3）。
  */
 .card {
   height: 100%;
@@ -12,22 +13,41 @@
   gap: 16px;
 }
 
+/* 彩色浅底圆角图标块：语义色/主色 10% 浅底派生 + 彩色图标 */
 .iconWrap {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex: none;
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
   border-radius: var(--ant-border-radius-lg);
+}
+
+.iconWrap[data-tone='primary'] {
   color: var(--ant-color-primary);
-  background: var(--ant-color-primary-bg);
+  background: color-mix(in srgb, var(--ant-color-primary) 10%, transparent);
+}
+
+.iconWrap[data-tone='success'] {
+  color: var(--ant-color-success);
+  background: color-mix(in srgb, var(--ant-color-success) 10%, transparent);
+}
+
+.iconWrap[data-tone='warning'] {
+  color: var(--ant-color-warning);
+  background: color-mix(in srgb, var(--ant-color-warning) 10%, transparent);
+}
+
+.iconWrap[data-tone='info'] {
+  color: var(--ant-color-info);
+  background: color-mix(in srgb, var(--ant-color-info) 10%, transparent);
 }
 
 .meta {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
   min-width: 0;
 }
 
@@ -39,8 +59,28 @@
 .value {
   color: var(--ant-color-text-heading);
   font-size: 24px;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.4;
+}
+
+/* 环比文案：涨=成功色 / 跌=错误色（语义色 token） */
+.delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--ant-color-success);
+}
+
+.delta[data-down='true'] {
+  color: var(--ant-color-error);
+}
+
+/* 迷你趋势图：右端底对齐 */
+.trend {
+  margin-left: auto;
+  align-self: flex-end;
+  flex: none;
 }
 
 .skeleton {

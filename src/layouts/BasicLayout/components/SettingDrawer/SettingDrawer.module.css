@@ -1,11 +1,55 @@
 /*
- * 界面设置抽屉样式（规格 §10.2；视觉 SPEC-UI §5.5）：
- * 分组带小标题与组间分隔线、充足间距；控件标签与控件分行（堆叠布局），
- * 根除非控件挤压标签换行的问题；二元开关行（面包屑/全屏）保持左右横排。
+ * 界面设置抽屉样式（规格 §10.2；视觉 SPEC_UI2 §6.5 slash 化）：
+ * 毛玻璃 + 光斑背景、主题模式图标卡片、布局缩略图、纵向色条选择器；
+ * 分组保留「主题 / 布局 / 界面元素」；宽度 360px；浮层阴影阶梯保留。
  * 颜色一律来自 var(--ant-*) CSS 变量（规格 §10.2，色值字面量只允许出现在 src/config/theme.ts）。
  */
 
+/* 毛玻璃：抽屉容器半透明 + blur(20px)（暗色透明度单独调优，SPEC_UI2 §11） */
+.drawerContent {
+  background: color-mix(in srgb, var(--ant-color-bg-elevated) 82%, transparent) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+:global([data-theme='dark']) .drawerContent {
+  background: color-mix(in srgb, var(--ant-color-bg-elevated) 72%, transparent) !important;
+}
+
+.drawerBody {
+  position: relative;
+  overflow: hidden;
+}
+
+/* 光斑装饰：右上 cyan / 左下 red，不参与交互与读屏 */
+.blob {
+  position: absolute;
+  z-index: 0;
+  width: 240px;
+  height: 240px;
+  pointer-events: none;
+  user-select: none;
+  opacity: 0.5;
+}
+
+.blobCyan {
+  top: -60px;
+  right: -60px;
+}
+
+.blobRed {
+  bottom: -60px;
+  left: -60px;
+}
+
+/* 暗色主题光斑透明度单独调（SPEC_UI2 §6.5/§11） */
+:global([data-theme='dark']) .blob {
+  opacity: 0.24;
+}
+
 .settingGroup {
+  position: relative;
+  z-index: 1;
   padding: 4px 0 20px;
 }
 
@@ -21,7 +65,7 @@
   color: var(--ant-color-text-heading);
 }
 
-/* 堆叠行：标签在上、控件在下，控件可用全部行宽（Radio.Group 不再挤压换行） */
+/* 堆叠行：标签在上、控件在下 */
 .settingRow {
   display: flex;
   flex-direction: column;
@@ -46,35 +90,143 @@
   color: var(--ant-color-text-secondary);
 }
 
-/* 预设色板：8 色单行网格（SPEC-UI §4.4/§5.5）；选中态以主题色描边 */
-.presetList {
+/* ── 主题模式图标卡片（SPEC_UI2 §6.5）：三卡分段，选中主色描边 + 浅底 ── */
+.modeCardList {
   display: grid;
-  grid-template-columns: repeat(8, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 8px;
 }
 
-.presetSwatch {
-  width: 100%;
-  aspect-ratio: 1;
-  padding: 0;
-  border: none;
-  border-radius: var(--ant-border-radius-sm);
+.modeCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 4px;
+  border: 1px solid var(--ant-color-border-secondary);
+  border-radius: var(--ant-border-radius-lg);
+  background: transparent;
+  color: var(--ant-color-text-secondary);
   cursor: pointer;
-  /* 预设色值由内联 style 注入（来自 config/theme.ts），本文件不出现色值字面量 */
-  box-shadow: 0 0 0 1px var(--ant-color-border-secondary) inset;
   transition:
-    transform 150ms ease-out,
-    box-shadow 150ms ease-out;
+    border-color 200ms ease-out,
+    background-color 200ms ease-out,
+    color 200ms ease-out;
 }
 
-.presetSwatch:hover {
-  transform: scale(1.08);
-  box-shadow: 0 0 0 1px var(--ant-color-border) inset;
+.modeCard:hover {
+  border-color: var(--ant-color-primary);
+  color: var(--ant-color-text);
 }
 
-.presetSwatchActive {
-  outline: 2px solid var(--ant-color-primary);
-  outline-offset: 2px;
+.modeCard[data-active='true'] {
+  border-color: var(--ant-color-primary);
+  background: var(--ant-color-primary-bg);
+  color: var(--ant-color-primary);
+}
+
+.modeCardLabel {
+  font-size: 12px;
+}
+
+/* ── 布局缩略图预览（SPEC_UI2 §6.5）：迷你线框卡片，选中主色描边 + 浅底 ── */
+.layoutCardList {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.layoutCard {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid var(--ant-color-border-secondary);
+  border-radius: var(--ant-border-radius-lg);
+  background: transparent;
+  color: var(--ant-color-text-secondary);
+  cursor: pointer;
+  transition:
+    border-color 200ms ease-out,
+    background-color 200ms ease-out,
+    color 200ms ease-out;
+}
+
+.layoutCard:hover {
+  border-color: var(--ant-color-primary);
+}
+
+.layoutCard[data-active='true'] {
+  border-color: var(--ant-color-primary);
+  background: var(--ant-color-primary-bg);
+  color: var(--ant-color-primary);
+}
+
+/* 迷你线框：侧边 = 左栏+右内容；顶部 = 顶栏+下内容（中性填充经 token 派生） */
+.layoutThumb {
+  position: relative;
+  display: block;
+  height: 56px;
+  border: 1px solid var(--ant-color-border-secondary);
+  border-radius: var(--ant-border-radius-sm);
+  background: var(--ant-color-fill-quaternary);
+  overflow: hidden;
+}
+
+.layoutThumbRegion {
+  position: absolute;
+  inset: 4px;
+  border-radius: 2px;
+  background: var(--ant-color-fill-tertiary);
+}
+
+.layoutThumb[data-layout='side'] .layoutThumbRegion {
+  left: 30%;
+  box-shadow: -18px 0 0 -4px var(--ant-color-fill-secondary);
+}
+
+.layoutThumb[data-layout='top'] .layoutThumbRegion {
+  top: 34%;
+  box-shadow: 0 -10px 0 -4px var(--ant-color-fill-secondary);
+}
+
+.layoutCardLabel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 12px;
+}
+
+/* ── 纵向色条选择器（SPEC_UI2 §6.5 slash 签名）：圆角色条纵向列表，
+ * 选中横向拉宽 + 白色对勾，纯 CSS 宽度过渡 ── */
+.presetBarList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.presetBar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 28px;
+  height: 24px;
+  padding: 0 8px;
+  border: none;
+  border-radius: var(--ant-border-radius);
+  cursor: pointer;
+  transition: width 220ms ease-out;
+}
+
+.presetBar[data-active='true'] {
+  width: 100%;
+}
+
+.presetBarCheck {
+  color: var(--ant-color-text-light-solid);
 }
 
 .contrastWarning {

@@ -11,6 +11,7 @@ import { Link, useMatches } from 'react-router'
 import { MENU_NAMESPACE } from '@/i18n/i18n'
 import { deriveBreadcrumbCrumbs } from '@/layouts/BasicLayout/navTree'
 import type { NavTreeNode } from '@/layouts/BasicLayout/navModel'
+import styles from './Breadcrumb.module.css'
 
 export interface BreadcrumbProps {
   /** 已过滤导航树：层级可点击性按树内 hasPage 判定（规格 §11.2） */
@@ -42,5 +43,5 @@ export function Breadcrumb({ items }: BreadcrumbProps) {
   if (breadcrumbItems.length === 0) {
     return null
   }
-  return <AntdBreadcrumb items={breadcrumbItems} />
+  return <AntdBreadcrumb className={styles.breadcrumb} items={breadcrumbItems} />
 }

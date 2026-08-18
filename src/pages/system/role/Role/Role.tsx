@@ -19,6 +19,7 @@ import { PERMISSIONS } from '@/constants/permission.constants'
 import { ROLE_I18N_NAMESPACE, ROLE_SORT_FIELDS } from '@/constants/system/role/role.constants'
 import type { RoleSortField } from '@/constants/system/role/role.constants'
 import { Auth } from '@/components/Auth/Auth'
+import { PageCard } from '@/components/PageCard/PageCard'
 import { RoleForm } from '@/features/system/role/components/RoleForm/RoleForm'
 import type { RoleFormMode, RoleFormSubmitPayload } from '@/features/system/role/components/RoleForm/RoleForm.types'
 import { RolePermissionDrawer } from '@/features/system/role/components/RolePermissionDrawer/RolePermissionDrawer'
@@ -222,8 +223,17 @@ export function Role() {
   ]
 
   return (
-    <div>
-      <Space wrap style={{ marginBottom: 16 }}>
+    <PageCard
+      title={t('角色管理')}
+      extra={
+        <Auth code={PERMISSIONS.SYSTEM_ROLE_CREATE}>
+          <Button type="primary" icon={<Plus size={14} />} onClick={() => setFormDrawer({ open: true, mode: 'create', role: null })}>
+            {t('新增角色')}
+          </Button>
+        </Auth>
+      }
+      search={
+        <>
         <Input.Search
           allowClear
           placeholder={t('搜索角色标识或名称')}
@@ -260,12 +270,9 @@ export function Role() {
         >
           {t('重置')}
         </Button>
-        <Auth code={PERMISSIONS.SYSTEM_ROLE_CREATE}>
-          <Button type="primary" icon={<Plus size={14} />} onClick={() => setFormDrawer({ open: true, mode: 'create', role: null })}>
-            {t('新增角色')}
-          </Button>
-        </Auth>
-      </Space>
+        </>
+      }
+    >
       <Table<RoleEntity>
         rowKey="id"
         columns={columns}
@@ -307,6 +314,6 @@ export function Role() {
         onSubmit={handleAssignPermissions}
         onClose={() => setPermissionDrawerRole(null)}
       />
-    </div>
+    </PageCard>
   )
 }

@@ -68,9 +68,10 @@ beforeEach(() => {
 
 /** 修改密码卡片：以卡片头标题定位（标题与表单提交按钮同名，getByText 会歧义） */
 function getPasswordCard(): HTMLElement | null {
-  return Array.from(document.querySelectorAll('.ant-card-head-title')).find(
+  // 页面骨架改 PageCard（SPEC_UI2 §7）：标题为 h3，卡片容器为 section
+  return Array.from(document.querySelectorAll('section h3')).find(
     (element) => element.textContent === '修改密码',
-  )?.closest('.ant-card') as HTMLElement | null
+  )?.closest('section') as HTMLElement | null
 }
 
 afterEach(() => {

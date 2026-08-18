@@ -187,6 +187,7 @@ function buildMenuRoute(def: AppRouteDefinition, inherited: readonly string[]): 
     path: def.path,
     title: def.meta.title,
     icon: def.meta.icon,
+    caption: def.meta.caption,
     // 是否挂载页面组件：目录节点 false，布局面包屑据此判定不可点击（规格 §11.2）
     hasPage: def.loadPage !== undefined,
     hideInMenu: def.meta.hideInMenu,

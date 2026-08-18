@@ -1,10 +1,10 @@
-/** 状态结果页测试（SPEC-UI §8）：状态码/标题/副标题/操作区呈现与可选分支缺省 */
+/** 状态结果页测试（SPEC_UI2 §9）：状态码/标题/副标题/操作区呈现与可选分支缺省（motion 入场结构） */
 import { render, screen } from '@testing-library/react'
 import { ShieldX } from 'lucide-react'
 import { describe, expect, it } from 'vitest'
 import { StatusResult } from './StatusResult'
 
-describe('StatusResult（SPEC-UI §8）', () => {
+describe('StatusResult（SPEC_UI2 §9）', () => {
   it('呈现状态码点缀、标题、副标题与操作区', () => {
     render(
       <StatusResult
@@ -24,7 +24,7 @@ describe('StatusResult（SPEC-UI §8）', () => {
   it('副标题与操作区缺省时不渲染对应区域', () => {
     const { container } = render(<StatusResult icon={ShieldX} status="404" title="页面不存在" />)
     expect(screen.getByRole('heading', { name: '页面不存在' })).toBeInTheDocument()
-    // 仅图标徽章 + 状态码 + 标题三个节点
-    expect(container.firstChild?.childNodes).toHaveLength(3)
+    // motion 入场容器内仅图标徽章 + 状态码 + 标题三个级联子项（SPEC_UI2 §9）
+    expect(container.firstChild?.firstChild?.childNodes).toHaveLength(3)
   })
 })

@@ -15,7 +15,9 @@ import { ListTree, Pencil, Plus, Trash2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { PERMISSIONS } from '@/constants/permission.constants'
 import { MENU_I18N_NAMESPACE, MENU_TYPES } from '@/constants/system/menu/menu.constants'
+import { AppIcon, hasAppIcon } from '@/components/AppIcon/AppIcon'
 import { Auth } from '@/components/Auth/Auth'
+import { PageCard } from '@/components/PageCard/PageCard'
 import { MenuForm } from '@/features/system/menu/components/MenuForm/MenuForm'
 import type { MenuFormMode, MenuFormSubmitPayload } from '@/features/system/menu/components/MenuForm/MenuForm.types'
 import { useMenuTree } from '@/features/system/menu/hooks/useMenuTree'
@@ -37,6 +39,16 @@ interface FormDrawerState {
 }
 
 const FORM_DRAWER_CLOSED: FormDrawerState = { open: false, mode: 'create', menu: null }
+
+/**
+ * 菜单图标列取值（SPEC_UI2 §5.7）：icon 为 demo fixture 私有演示字段
+ * （种子数据在 src/demo/ 内，MenuItem 契约不变）；真实后端数据无该字段时
+ * 图标列呈现占位。仅接受已注册的 local: 图标名，其余一律占位。
+ */
+function readDemoMenuIcon(record: MenuItem): string | null {
+  const icon = (record as { icon?: unknown }).icon
+  return typeof icon === 'string' && hasAppIcon(icon) ? icon : null
+}
 
 export function Menu() {
   const { t } = useTranslation(MENU_I18N_NAMESPACE)
@@ -91,6 +103,17 @@ export function Menu() {
   }
 
   const columns: TableProps<MenuItem>['columns'] = [
+    {
+      // 图标列（SPEC_UI2 §5.7 唯一列结构例外）：demo fixture 私有 icon 字段驱动，
+      // 统一经 AppIcon 渲染；缺省/未注册数据呈现占位
+      title: t('图标'),
+      key: 'icon',
+      width: 72,
+      render: (_, record) => {
+        const icon = readDemoMenuIcon(record)
+        return icon === null ? '-' : <AppIcon name={icon} size={18} />
+      },
+    },
     {
       title: t('类型'),
       dataIndex: 'type',
@@ -167,37 +190,41 @@ export function Menu() {
         message={t('菜单管理仅维护后端菜单数据，不会动态改变前端静态路由')}
         style={{ marginBottom: 16 }}
       />
-      <div style={{ marginBottom: 16 }}>
-        <Auth code={PERMISSIONS.SYSTEM_MENU_CREATE}>
-          <Button type="primary" icon={<Plus size={14} />} onClick={() => setFormDrawer({ open: true, mode: 'create', menu: null })}>
-            {t('新增菜单')}
-          </Button>
-        </Auth>
-      </div>
-      <Table<MenuItem>
-        rowKey="id"
-        columns={columns}
-        dataSource={menus}
-        loading={loading}
-        pagination={false}
-      />
-      <Drawer
-        title={formDrawer.mode === 'create' ? t('新增菜单') : t('编辑菜单')}
-        placement="right"
-        width={440}
-        open={formDrawer.open}
-        onClose={closeFormDrawer}
-        destroyOnHidden
+      <PageCard
+        title={t('菜单管理')}
+        extra={
+          <Auth code={PERMISSIONS.SYSTEM_MENU_CREATE}>
+            <Button type="primary" icon={<Plus size={14} />} onClick={() => setFormDrawer({ open: true, mode: 'create', menu: null })}>
+              {t('新增菜单')}
+            </Button>
+          </Auth>
+        }
       >
-        <MenuForm
-          mode={formDrawer.mode}
-          menu={formDrawer.menu}
-          tree={menus}
-          submitting={submitting}
-          onSubmit={handleFormSubmit}
-          onCancel={closeFormDrawer}
+        <Table<MenuItem>
+          rowKey="id"
+          columns={columns}
+          dataSource={menus}
+          loading={loading}
+          pagination={false}
         />
-      </Drawer>
+        <Drawer
+          title={formDrawer.mode === 'create' ? t('新增菜单') : t('编辑菜单')}
+          placement="right"
+          width={440}
+          open={formDrawer.open}
+          onClose={closeFormDrawer}
+          destroyOnHidden
+        >
+          <MenuForm
+            mode={formDrawer.mode}
+            menu={formDrawer.menu}
+            tree={menus}
+            submitting={submitting}
+            onSubmit={handleFormSubmit}
+            onCancel={closeFormDrawer}
+          />
+        </Drawer>
+      </PageCard>
     </div>
   )
 }

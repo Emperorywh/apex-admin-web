@@ -9,7 +9,6 @@
  * 业务页面路由随各自任务增量扩展；受保护根外壳由 projections 的 ProtectedRoot
  * 容器挂载 BasicLayout 承担渲染。
  */
-import { FlaskConical, LayoutDashboard, ListTree, Settings, ShieldCheck, UsersRound } from 'lucide-react'
 import { DASHBOARD_I18N_NAMESPACE } from '@/constants/dashboard/dashboard.constants'
 import { DEMO_NESTED_I18N_NAMESPACE } from '@/constants/demo/demo.constants'
 import { PERMISSIONS } from '@/constants/permission.constants'
@@ -54,7 +53,8 @@ export const routeDefinitions: readonly AppRouteDefinition[] = [
         loadPage: () => import('@/pages/dashboard/Dashboard/Dashboard').then(({ Dashboard }) => ({ default: Dashboard })),
         meta: {
           title: '仪表盘',
-          icon: LayoutDashboard,
+          icon: 'local:ic-dashboard',
+          caption: '工作台与核心指标',
           permCode: PERMISSIONS.DASHBOARD_VIEW,
           affixTab: true,
           i18nNamespaces: [DASHBOARD_I18N_NAMESPACE],
@@ -65,7 +65,7 @@ export const routeDefinitions: readonly AppRouteDefinition[] = [
         // 目录菜单只在自身权限满足且至少有一个可见子节点时保留（规格 §4.4）
         id: ROUTE_IDS.SYSTEM,
         path: ROUTE_PATHS.SYSTEM,
-        meta: { title: '系统管理', icon: Settings },
+        meta: { title: '系统管理', icon: 'local:ic-management', caption: '用户·角色·菜单' },
         children: [
           {
             // 用户管理（规格 §14.2/§14.3）：查询/分页/Drawer CRUD/角色分配；
@@ -76,7 +76,8 @@ export const routeDefinitions: readonly AppRouteDefinition[] = [
             loadPage: () => import('@/pages/system/user/User/User').then(({ User }) => ({ default: User })),
             meta: {
               title: '用户管理',
-              icon: UsersRound,
+              icon: 'local:ic-user',
+              caption: '账号与角色分配',
               permCode: PERMISSIONS.SYSTEM_USER_LIST,
               i18nNamespaces: [USER_I18N_NAMESPACE],
             },
@@ -90,7 +91,8 @@ export const routeDefinitions: readonly AppRouteDefinition[] = [
             loadPage: () => import('@/pages/system/role/Role/Role').then(({ Role }) => ({ default: Role })),
             meta: {
               title: '角色管理',
-              icon: ShieldCheck,
+              icon: 'local:ic-role',
+              caption: '角色与权限树',
               permCode: PERMISSIONS.SYSTEM_ROLE_LIST,
               i18nNamespaces: [ROLE_I18N_NAMESPACE],
             },
@@ -104,7 +106,8 @@ export const routeDefinitions: readonly AppRouteDefinition[] = [
             loadPage: () => import('@/pages/system/menu/Menu/Menu').then(({ Menu }) => ({ default: Menu })),
             meta: {
               title: '菜单管理',
-              icon: ListTree,
+              icon: 'local:ic-menu',
+              caption: '后端菜单数据维护',
               permCode: PERMISSIONS.SYSTEM_MENU_LIST,
               i18nNamespaces: [MENU_I18N_NAMESPACE],
             },
@@ -119,30 +122,30 @@ export const routeDefinitions: readonly AppRouteDefinition[] = [
         // 祖先与叶子 AND），admin/viewer 均持有（规格 §5.3 矩阵）。
         id: ROUTE_IDS.DEMO,
         path: ROUTE_PATHS.DEMO,
-        meta: { title: '演示', icon: FlaskConical },
+        meta: { title: '演示', icon: 'local:ic-flask', caption: '多级菜单与页签缓存' },
         children: [
           {
             id: ROUTE_IDS.DEMO_NESTED,
             path: ROUTE_PATHS.DEMO_NESTED,
-            meta: { title: '多级菜单', permCode: PERMISSIONS.DEMO_NESTED_VIEW },
+            meta: { title: '多级菜单', icon: 'local:ic-menulevel', permCode: PERMISSIONS.DEMO_NESTED_VIEW },
             children: [
               {
                 id: ROUTE_IDS.DEMO_NESTED_LEVEL1,
                 path: ROUTE_PATHS.DEMO_NESTED_LEVEL1,
                 loadPage: () => import('@/pages/demo/NestedDemo/NestedDemo').then(({ NestedDemo }) => ({ default: NestedDemo })),
-                meta: { title: '一级页面', i18nNamespaces: [DEMO_NESTED_I18N_NAMESPACE] },
+                meta: { title: '一级页面', icon: 'local:ic-file', i18nNamespaces: [DEMO_NESTED_I18N_NAMESPACE] },
               },
               {
                 id: ROUTE_IDS.DEMO_NESTED_LEVEL2,
                 path: ROUTE_PATHS.DEMO_NESTED_LEVEL2,
                 loadPage: () => import('@/pages/demo/NestedDemo/NestedDemo').then(({ NestedDemo }) => ({ default: NestedDemo })),
-                meta: { title: '二级页面', i18nNamespaces: [DEMO_NESTED_I18N_NAMESPACE] },
+                meta: { title: '二级页面', icon: 'local:ic-file', i18nNamespaces: [DEMO_NESTED_I18N_NAMESPACE] },
               },
               {
                 id: ROUTE_IDS.DEMO_NESTED_LEVEL3,
                 path: ROUTE_PATHS.DEMO_NESTED_LEVEL3,
                 loadPage: () => import('@/pages/demo/NestedDemo/NestedDemo').then(({ NestedDemo }) => ({ default: NestedDemo })),
-                meta: { title: '三级页面', i18nNamespaces: [DEMO_NESTED_I18N_NAMESPACE] },
+                meta: { title: '三级页面', icon: 'local:ic-file', i18nNamespaces: [DEMO_NESTED_I18N_NAMESPACE] },
               },
             ],
           },

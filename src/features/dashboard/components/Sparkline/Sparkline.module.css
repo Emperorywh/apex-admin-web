@@ -1,0 +1,33 @@
+/*
+ * 迷你趋势图样式（SPEC_UI2 §8）：纯 CSS 描边动画（stroke-dash 描画 + 面积淡入）；
+ * 非挂载触发的 JS 动效，Activity 缓存页合规（§10 红线）；
+ * prefers-reduced-motion 由 globals.css 全局降级规则关闭动画。
+ */
+
+.sparkline {
+  display: block;
+  overflow: visible;
+}
+
+.line {
+  stroke-dasharray: 400;
+  stroke-dashoffset: 400;
+  animation: sparkline-draw 900ms ease-out forwards;
+}
+
+.area {
+  opacity: 0;
+  animation: sparkline-fade 600ms ease-out 300ms forwards;
+}
+
+@keyframes sparkline-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes sparkline-fade {
+  to {
+    opacity: 1;
+  }
+}

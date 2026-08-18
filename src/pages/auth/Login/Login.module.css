@@ -47,16 +47,26 @@
   position: relative;
   display: flex;
   align-items: center;
-  gap: 0.625rem;
+  gap: 10px;
 }
 
+/* 品牌区入场容器：铺满品牌列并保持 flex 布局（SPEC_UI2 §9，结构不变） */
+.brandEntrance {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+/* 品牌图形标：主色浅底小圆角方块（rem 审计：28px 固定几何改 px，SPEC_UI2 §4.5） */
 .brandMark {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex: none;
-  width: 1.75rem;
-  height: 1.75rem;
+  width: 28px;
+  height: 28px;
   border-radius: var(--ant-border-radius);
   color: var(--ant-color-primary);
   background: var(--ant-color-primary-bg);
@@ -106,7 +116,8 @@
 
 .formBody {
   width: 100%;
-  max-width: 20rem;
+  /* rem 审计（SPEC_UI2 §4.5）：表单列宽保 px 语义（原 20rem @16px = 320px） */
+  max-width: 320px;
 }
 
 .welcome {

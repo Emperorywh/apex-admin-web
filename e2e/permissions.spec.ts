@@ -12,12 +12,12 @@ test('viewer：系统管理菜单仅保留用户管理，角色/菜单管理隐�
   const nav = page.locator('nav[aria-label="导航菜单"]')
   await expect(nav.getByRole('menuitem', { name: '仪表盘' })).toBeVisible()
   // 系统管理目录因唯一可见子节点（用户管理）而保留（§4.4）
-  await nav.locator('.ant-menu-submenu-title', { hasText: '系统管理' }).click()
+  await nav.getByRole('menuitem', { name: '系统管理' }).click()
   await expect(nav.getByRole('menuitem', { name: '用户管理' })).toBeVisible()
   await expect(nav.getByRole('menuitem', { name: '角色管理' })).toHaveCount(0)
   await expect(nav.getByRole('menuitem', { name: '菜单管理' })).toHaveCount(0)
   // 多级菜单演示对 viewer 开放（§5.3）
-  await nav.locator('.ant-menu-submenu-title', { hasText: '演示' }).click()
+  await nav.getByRole('menuitem', { name: '演示' }).click()
   await expect(nav.getByRole('menuitem', { name: '多级菜单' })).toBeVisible()
 })
 

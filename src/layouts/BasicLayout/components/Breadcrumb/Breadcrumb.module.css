@@ -1,0 +1,26 @@
+/*
+ * 面包屑精修（SPEC_UI2 §6.4）：位置/开关/派生逻辑不变；14px 字号、
+ * 分隔符与文字基线对齐、可点层级 hover 浅底圆角。
+ * 颜色一律来自 var(--ant-*) CSS 变量（规格 §10.2）。
+ */
+
+.breadcrumb {
+  font-size: 14px;
+}
+
+/* 可点层级：hover 浅底圆角（SPEC_UI2 §6.4） */
+.breadcrumb :global(.ant-breadcrumb-link) a {
+  padding: 2px 6px;
+  margin: -2px -6px;
+  border-radius: var(--ant-border-radius-sm);
+  transition: background-color 180ms ease-out;
+}
+
+.breadcrumb :global(.ant-breadcrumb-link) a:hover {
+  background: var(--ant-color-fill-tertiary);
+}
+
+/* 分隔符与文字垂直对齐 */
+.breadcrumb :global(.ant-breadcrumb-separator) {
+  color: var(--ant-color-text-tertiary);
+}

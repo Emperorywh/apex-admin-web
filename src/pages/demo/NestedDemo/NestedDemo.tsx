@@ -8,12 +8,13 @@
  * - 页签缓存验证：表单输入由 Activity 页面缓存保留，切换页签或层级后返回本页签，输入内容不变（§19.1）。
  * 层级标题复用 menu 命名空间的路由标题文案，不在 demoNested 命名空间重复维护。
  */
-import { Button, Card, Form, Input, Space, Steps, Switch } from 'antd'
+import { Button, Form, Input, Space, Steps, Switch } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router'
 import { DEMO_NESTED_I18N_NAMESPACE } from '@/constants/demo/demo.constants'
 import { ROUTE_PATHS } from '@/constants/route.constants'
 import { MENU_NAMESPACE } from '@/i18n/i18n'
+import { PageCard } from '@/components/PageCard/PageCard'
 
 /** 层级描述：路由路径与标题文案 key 一一对应（顺序即层级顺序） */
 const DEMO_NESTED_LEVELS = [
@@ -41,7 +42,7 @@ export function NestedDemo() {
 
   return (
     <Space direction="vertical" size={16} style={{ width: '100%' }}>
-      <Card title={t('多级菜单演示')}>
+      <PageCard title={t('多级菜单演示')}>
         <Steps
           current={current}
           onChange={(index) => void navigate(DEMO_NESTED_LEVELS[index].path)}
@@ -63,8 +64,8 @@ export function NestedDemo() {
             {t('面包屑链')}：{breadcrumbChain}
           </span>
         </Space>
-      </Card>
-      <Card title={t('页签缓存验证')}>
+      </PageCard>
+      <PageCard title={t('页签缓存验证')}>
         <p style={{ marginTop: 0 }}>{t('切换到其他页签或层级后返回本页签，下方表单内容保持不变（页面缓存由 Activity 保留）')}</p>
         <Form layout="vertical">
           <Form.Item label={t('演示输入框')} name="demoInput">
@@ -77,7 +78,7 @@ export function NestedDemo() {
             <Switch />
           </Form.Item>
         </Form>
-      </Card>
+      </PageCard>
     </Space>
   )
 }

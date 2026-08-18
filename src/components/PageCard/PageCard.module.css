@@ -1,0 +1,48 @@
+/*
+ * 页面骨架卡片（SPEC_UI2 §7）：白色圆角卡片（12px、细边、浅阴影）承载
+ * 标题区/搜索区/内容区；搜索区与内容区之间细分隔线。
+ * 颜色一律来自 var(--ant-*) 与 --app-shadow-card（规格 §10.2/SPEC_UI2 §4.3）。
+ */
+
+.pageCard {
+  border: 1px solid var(--ant-color-border-secondary);
+  border-radius: var(--ant-border-radius-lg);
+  background: var(--ant-color-bg-container);
+  box-shadow: var(--app-shadow-card);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--ant-color-border-secondary);
+}
+
+.title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ant-color-text-heading);
+}
+
+.extra {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 搜索/工具栏区：与内容区之间细分隔线（SPEC_UI2 §7） */
+.search {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--ant-color-border-secondary);
+}
+
+.body {
+  padding: 16px 20px;
+}

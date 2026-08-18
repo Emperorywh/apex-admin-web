@@ -7,9 +7,9 @@
 import { expect, test } from '@playwright/test'
 import { loginViaUi } from './helpers'
 
-/** 侧边（inline）/顶部（horizontal）菜单根节点的稳定判别选择器 */
-const INLINE_MENU = 'nav .ant-menu-root.ant-menu-inline'
-const HORIZONTAL_MENU = 'nav .ant-menu-root.ant-menu-horizontal'
+/** 侧边（自绘 menu）/顶部（自绘 menubar）导航根节点的稳定判别选择器（SPEC_UI2 §6.1） */
+const INLINE_MENU = 'nav [role="menu"]'
+const HORIZONTAL_MENU = 'nav [role="menubar"]'
 
 test('侧边 ↔ 顶部布局热切换不整页刷新（§11.1/§16.3 布局切换）', async ({ page }) => {
   await loginViaUi(page, 'admin')
@@ -44,9 +44,9 @@ test('窄视口（<768px）：侧边菜单折叠为导航 Drawer，次要操作�
   await expect(page.getByRole('button', { name: '打开导航菜单' })).toBeVisible()
   await page.getByRole('button', { name: '打开导航菜单' }).click()
   // 抽屉内垂直菜单可见，且可点击叶子项完成导航
-  const drawerMenu = page.locator('.ant-drawer .ant-menu-root.ant-menu-inline')
+  const drawerMenu = page.locator('.ant-drawer [role="menu"]')
   await expect(drawerMenu).toBeVisible()
-  await page.locator('.ant-drawer .ant-menu-submenu-title', { hasText: '系统管理' }).click()
+  await page.locator('.ant-drawer').getByRole('menuitem', { name: '系统管理' }).click()
   await page.locator('.ant-drawer').getByRole('menuitem', { name: '用户管理' }).click()
   await expect(page).toHaveURL(/\/system\/user$/)
   // 次要操作（全屏/语言/主题）收入「更多」菜单（§11.1）

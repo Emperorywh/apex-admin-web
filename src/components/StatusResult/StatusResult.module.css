@@ -13,13 +13,20 @@
   text-align: center;
 }
 
-/* 插画级图标徽章：主题色浅底大圆角方块 */
+/* motion 入场容器：保持原垂直居中排版（SPEC_UI2 §9，结构不变） */
+.entrance {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* 插画级图标徽章：主题色浅底大圆角方块（rem 审计：80px 固定几何改 px，SPEC_UI2 §4.5） */
 .iconBadge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 5rem;
-  height: 5rem;
+  width: 80px;
+  height: 80px;
   border-radius: var(--ant-border-radius-lg);
   color: var(--ant-color-primary);
   background: var(--ant-color-primary-bg);

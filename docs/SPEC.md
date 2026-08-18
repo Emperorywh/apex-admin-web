@@ -1,10 +1,12 @@
 # Apex Admin Web — 通用后台管理系统模板规格说明
 
-> 版本：v1.6 · 日期：2026-08-17 · 状态：已确认（§20 技术闸门已于 2026-08-15 验证通过）
+> 版本：v1.7 · 日期：2026-08-17 · 状态：已确认（§20 技术闸门已于 2026-08-15 验证通过）
 >
 > 本文档是实现候选基线。§20 技术闸门通过并记录结果后，状态才能改为「已确认」，届时本文档作为实现的唯一需求依据。技术闸门通过前，只允许完成基础工程和验证性 PoC，不进入全部业务页面开发。
 >
 > 所有标注「已定」的条目来自访谈结论；标注「默认」的条目为访谈未覆盖、按行业惯例选定的默认值。如需变更，必须先修改本文档及修订记录，不允许实现与文档长期分叉。
+>
+> v1.7 修订记录（2026-08-17）：新增视觉第二轮专项子规格 `docs/SPEC_UI2.md`（slash-admin 风格转向），视觉呈现以 SPEC_UI2 为准（取代 SPEC_UI.md 冲突条文，SPEC_UI.md 仅作历史留存），功能行为不变。配套修订：§2 图标栈改「线性图标 lucide-react + 菜单彩色图标 @iconify/react（离线 local:）双轨」；§4.2 `RouteMeta.icon` 改为 `local:` 图标名字符串（原 `LucideIcon` 组件引用废止）并新增 `caption`；§10.1 字体改 Inter Variable 自托管、基准字号 16px→14px、预设色板默认色改 meadow 绿；§16.2 check-structure 职责追加 `@iconify/react` 直接导入限制（唯一豁免 `src/components/AppIcon/`）。
 >
 > v1.6 修订记录（2026-08-17）：移除界面设置中的「字体族」与「字号」配置项——字体族固定为系统字体栈、基准字号固定 16px；settings 切片相应移除 `fontSize`/`fontFamily` 字段，持久化 schema 版本升至 2，v1 旧数据迁移时识别并丢弃这两个字段（其余设置照常恢复）；设置抽屉分组调整为「主题、布局、界面元素」。
 >
@@ -49,7 +51,7 @@
 | 状态 | @reduxjs/toolkit + react-redux + redux-persist | 字段级白名单；恢复闸门见 §4.3 |
 | HTTP | axios | 封装见 §7 |
 | 国际化 | react-i18next + i18next | 中文文案即 key；命名空间按路由加载 |
-| 图标 | lucide-react | 业务菜单/按钮统一使用；antd 内部图标除外 |
+| 图标 | lucide-react + @iconify/react | 双轨（SPEC_UI2 §5）：工具/内联线性图标 lucide-react；菜单彩色图标 @iconify/react 离线 `local:` 注册（禁运行时 CDN），唯一入口 `src/components/AppIcon/`；antd 内部图标除外 |
 | 样式 | CSS Modules + antd token | 禁止 Tailwind/Less；色值规则见 §10.2 |
 | 图表 | ECharts | `echarts/core` 按需注册 |
 | 日期 | dayjs | 作为直接依赖安装；不依赖 antd 的传递依赖 |
@@ -349,7 +351,10 @@ interface AppRouteDefinition {
  */
 interface RouteMeta {
   title: string
-  icon?: LucideIcon
+  /** 菜单图标：`local:` 图标名字符串（AppIcon 注册表解析，SPEC_UI2 §5），原 LucideIcon 组件引用已废止 */
+  icon?: string
+  /** 菜单副标题：中文文案 key（menu 命名空间），自绘导航 12px 灰色 caption（SPEC_UI2 §6.1） */
+  caption?: string
   permCode?: string
   hideInMenu?: boolean
   hideInTabs?: boolean
@@ -766,7 +771,7 @@ Fullscreen 是浏览器瞬时状态，明确属于 app slice，不属于 setting
 | 面包屑 | 开 / 关 | 条件渲染 |
 | 全屏 | 瞬时开关 | Fullscreen API；状态在 app slice |
 
-字体不提供设置项：字体族固定为系统字体栈，基准字号固定 16px（根 rem 基准 html font-size 与 antd fontSize 同值）。
+字体不提供设置项：字体族固定为 Inter Variable 自托管栈（拉丁子集，中文回退系统中文字体），基准字号固定 14px（根 rem 基准 html font-size 与 antd fontSize 同值）（SPEC_UI2 §4.5）。预设主题色板默认色为 meadow 绿 `#00A76F`（SPEC_UI2 §4.4）。
 
 ### 10.2 实现规则
 
@@ -1072,7 +1077,7 @@ check       pnpm check:structure && pnpm lint && pnpm typecheck && pnpm test && 
 prepare     husky
 ```
 
-- `check-structure.mjs`必须扫描源码导入语句和真实文件路径，并在以下任一情况返回非零退出码：存在 `index.tsx`；页面/组件缺少同名文件夹或同名实现文件；路由 `loadPage`目标不在 `src/pages/`；页面入口出现在 `src/features/`；叶子 feature 包含 `components/`、`hooks/`以外的直属目录或文件；feature 任意层级出现 `pages/`、`api/`、`services/`或 `*.service.*`；feature React 组件逃逸到 `components/<Name>/<Name>.tsx`之外；业务请求实现或 DTO 出现在 `src/services/`之外；存在 `../../`及更深父级导入；内部根级导入未使用唯一的 `@/`别名；`src/components/`或 `src/hooks/`反向导入 `src/pages/`或 `src/features/`；service 导入 React UI；不同业务域的 feature 互相穿透导入；导入路径大小写与磁盘不一致。
+- `check-structure.mjs`必须扫描源码导入语句和真实文件路径，并在以下任一情况返回非零退出码：存在 `index.tsx`；页面/组件缺少同名文件夹或同名实现文件；路由 `loadPage`目标不在 `src/pages/`；页面入口出现在 `src/features/`；叶子 feature 包含 `components/`、`hooks/`以外的直属目录或文件；feature 任意层级出现 `pages/`、`api/`、`services/`或 `*.service.*`；feature React 组件逃逸到 `components/<Name>/<Name>.tsx`之外；业务请求实现或 DTO 出现在 `src/services/`之外；存在 `../../`及更深父级导入；内部根级导入未使用唯一的 `@/`别名；`src/components/`或 `src/hooks/`反向导入 `src/pages/`或 `src/features/`；service 导入 React UI；不同业务域的 feature 互相穿透导入；导入路径大小写与磁盘不一致；`@iconify/react` 只允许在 `src/components/AppIcon/` 内直接导入（SPEC_UI2 §5.3，其余文件必须经 AppIcon 消费）。
 - 边界例外必须通过精确到文件的 allowlist 记录所有者、原因和清理条件；allowlist 不得使用目录通配符，也不得豁免“feature 只含组件/Hook”“页面只在 pages”“业务请求只在 services”三条硬约束。该脚本自身需有 fixture 测试，每类规则至少包含一个应通过和一个应失败样例。
 - lint-staged 对暂存的 TS/TSX 文件运行 `oxlint`，并运行全量 `pnpm check:structure`；两者都不使用 `--fix`，不改写用户代码。
 - `tsc -b --noEmit`是全项目引用构建检查，由 pre-commit 或 pre-push 执行，不伪装为“仅检查暂存文件”。
