@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Apex Admin Web — 基于 React 19.2 + TypeScript + Vite 8 + antd v6 + react-router v8 的通用后台管理系统前端模板（RBAC、多页签保活、i18n、明暗主题、可剔除的演示模式）。
 
-**`docs/SPEC.md` 是唯一需求依据**（v1.12，状态：已确认）。实现不得与规格长期分叉：变更行为必须先改 SPEC 及修订记录，再改代码。规格条文在 README、代码注释中以 `§x.y` 引用；动手修改认证、路由、页签缓存等核心机制前必须先读对应章节。README.md 面向模板接入方（安全边界、部署等），不重复于此。
+**`docs/SPEC.md` 是唯一需求依据**（v1.13，状态：已确认）。实现不得与规格长期分叉：变更行为必须先改 SPEC 及修订记录，再改代码。规格条文在 README、代码注释中以 `§x.y` 引用；动手修改认证、路由、页签缓存等核心机制前必须先读对应章节。**视觉与壳层呈现以子规格 `docs/SPEC_UI2.md` 为准**（取代 `docs/SPEC_UI.md`，后者仅历史留存），改布局/导航/页签样式前先读它。README.md 面向模板接入方（安全边界、部署等），不重复于此。
 
 ## 环境与常用命令
 
@@ -16,6 +16,7 @@ Node `>=22.22.0`，pnpm `11.21.0`（`packageManager` 锁定，建议 `corepack e
 | --- | --- |
 | `pnpm dev` | Vite 开发服务器（`/api` 代理到 `PROXY_TARGET`） |
 | `pnpm build` | `tsc -b && vite build` |
+| `pnpm preview` | 托管 `dist/` 预览生产产物（自带 SPA fallback，可直刷深层路由验证部署行为） |
 | `pnpm lint` / `pnpm typecheck` | oxlint / `tsc -b --noEmit` 全项目引用检查 |
 | `pnpm check:structure` | 目录/命名/导入方向/大小写结构门禁（`scripts/check-structure.mjs`） |
 | `pnpm check` | 完整质量链：structure → lint → typecheck → build（CI 强制执行） |
@@ -60,6 +61,7 @@ Node `>=22.22.0`，pnpm `11.21.0`（`packageManager` 锁定，建议 `corepack e
 - 页面入口只在 `src/pages/`；业务组件/Hook 只在 `src/features/<domain>/components|hooks/`（feature 叶子目录只允许这两类）；HTTP 基础设施、业务请求与 DTO 只在 `src/services/`；跨域共享组件/Hook 提升到 `src/components/`、`src/hooks/`。
 - **全项目禁止 `index.tsx`**；页面/组件必须 `<Name>/<Name>.tsx` 同名文件夹 + 同名实现文件；`index.ts` 仅允许作纯 barrel。
 - 唯一路径别名 `@/* → src/*`；禁止 `../../` 及更深父级导入（跨目录一律 `@/`）；导入路径大小写必须与磁盘完全一致（Windows 本地不报错不代表 Linux CI 能过）。
+- 图标双轨：线性图标 lucide-react，菜单彩色图标用 Iconify 离线 `local:` 资源；`@iconify/react` 只允许在 `src/components/AppIcon/` 导入（check-structure 强制，§16.2）。
 - 依赖方向固定：`router → layouts/pages → features → components/hooks/services/store/types/constants`；service 不得导入 React UI；`components/`、`hooks/` 不得反向导入 `pages/`、`features/`；不同业务域的 feature 不得互相穿透导入。
 - `pages/`、`features/`、`services/`、`types/`、`constants/` 使用一致的业务域路径片段（如 `system/user`）。
 - 权限码集中在 `src/constants/permission.constants.ts`，页面禁止权限魔法字符串；按钮级权限用 `<Auth code={PERMISSIONS.…}>`（默认无权限隐藏）。
@@ -72,4 +74,4 @@ Node `>=22.22.0`，pnpm `11.21.0`（`packageManager` 锁定，建议 `corepack e
 
 ## 技术栈红线（§2、§18）
 
-不引入 ESLint/Prettier（仅 oxlint，且任何钩子/脚本不得 `--fix`）、Tailwind/Less（样式用 CSS Modules + antd token）、`react-router-dom`（直接用 react-router v8）、MSW 等 mock 插件、Data Router loader/action 承载业务数据。ECharts 只从 `echarts/core` 按需注册，禁止 `import * as echarts`。新增环境变量必须同步 `src/vite-env.d.ts` 严格类型与 `vite.config.ts` 的 `assertEnv` 校验；`PROXY_TARGET` 故意不带 `VITE_` 前缀（不暴露给客户端），不得改名。
+不引入 ESLint/Prettier（仅 oxlint，且任何钩子/脚本不得 `--fix`）、Tailwind/Less（样式用 CSS Modules + antd token）、`react-router-dom`（直接用 react-router v8）、MSW 等 mock 插件、Data Router loader/action 承载业务数据。ECharts 只从 `echarts/core` 按需注册，禁止 `import * as echarts`。新增环境变量必须同步 `src/vite-env.d.ts` 严格类型与 `vite.config.ts` 的 `assertEnv` 校验；`PROXY_TARGET` 故意不带 `VITE_` 前缀（不暴露给客户端），不得改名。环境变量文件已收敛为单一 `.env` + 模板 `.env.example`（均入库，dev 与 build 全模式生效），本地差异用 `.env.*.local` 覆盖（不入库，§16.1 v1.13）。
