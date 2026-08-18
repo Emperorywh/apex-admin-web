@@ -20,7 +20,7 @@
  * 条目必须精确到文件、不得使用通配符；feature-leaf-content、pages-not-in-features、
  * service-file-outside-services 三条硬约束不可豁免。
  *
- * 用法：node scripts/check-structure.mjs [srcDir]（默认仓库 src/，参数供测试使用）
+ * 用法：node scripts/check-structure.mjs [srcDir]（默认仓库 src/，可传自定义扫描根）
  */
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
@@ -60,7 +60,6 @@ export const SRC_TOP_LEVEL_NAMES = [
   'services',
   'store',
   'styles',
-  'test',
   'types',
   'utils',
 ]
@@ -296,7 +295,7 @@ export function checkStructure(srcDir, allowlistData = {}) {
     const segs = file.rel.split('/')
     const stem = segs[segs.length - 1].slice(0, -'.tsx'.length)
     const folder = segs.length >= 2 ? segs[segs.length - 2] : ''
-    // 同前缀的共置测试（Login/Login.test.tsx）不算逃逸
+    // 同前缀的伴生实现文件（Login/Login.module.tsx 等）不算逃逸
     if (stem !== folder && !stem.startsWith(`${folder}.`)) {
       add('same-name-folder-file', file.rel, `页面/组件实现 ${stem}.tsx 必须位于同名文件夹 ${stem}/ 内`)
     }

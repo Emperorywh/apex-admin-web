@@ -61,7 +61,7 @@ export function useFullscreen(): UseFullscreenResult {
 
   useEffect(() => {
     // 挂载时先按浏览器实际状态校正一次，再监听后续变化；卸载时移除监听。
-    // 使用宽松空值判断：未实现 Fullscreen API 的环境（如 jsdom）属性为 undefined，视同未全屏
+    // 使用宽松空值判断：未实现 Fullscreen API 的环境属性为 undefined，视同未全屏
     const syncFromDocument = () => {
       dispatch(fullscreenSet({ fullscreen: document.fullscreenElement != null }))
     }

@@ -1,7 +1,6 @@
 import { fileURLToPath } from 'node:url'
 import react from '@vitejs/plugin-react'
-import { loadEnv } from 'vite'
-import { defineConfig } from 'vitest/config'
+import { defineConfig, loadEnv } from 'vite'
 
 /** VITE_DEMO_MODE 合法取值，见规格 §13.1 */
 const DEMO_MODE_VALUES = ['off', 'force', 'fallback'] as const
@@ -66,31 +65,6 @@ export default defineConfig(({ mode }) => {
             }
             return undefined
           },
-        },
-      },
-    },
-    test: {
-      environment: 'jsdom',
-      setupFiles: ['./src/test/setup.ts'],
-      // 收窄测试文件范围：结构门禁的 fixture 树中存在 *.test.tsx 数据文件，不得被执行
-      include: ['src/**/*.{test,spec}.?(c|m)[jt]s?(x)', 'scripts/**/*.{test,spec}.mjs'],
-      coverage: {
-        provider: 'v8',
-        reporter: ['text', 'html'],
-        // 与 resolve.alias 保持一致，Vitest 复用本配置，不另写 alias
-        include: [
-          'src/router/**',
-          'src/services/**',
-          'src/store/**',
-          'src/utils/**',
-          'src/features/**/hooks/**',
-        ],
-        thresholds: {
-          'src/router/**': { statements: 80, branches: 80, functions: 80, lines: 80 },
-          'src/services/**': { statements: 80, branches: 80, functions: 80, lines: 80 },
-          'src/store/**': { statements: 80, branches: 80, functions: 80, lines: 80 },
-          'src/utils/**': { statements: 80, branches: 80, functions: 80, lines: 80 },
-          'src/features/**/hooks/**': { statements: 80, branches: 80, functions: 80, lines: 80 },
         },
       },
     },

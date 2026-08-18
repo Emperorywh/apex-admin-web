@@ -15,9 +15,7 @@
     "check:demo-off": "node scripts/check-demo-off.mjs",
     "lint": "oxlint",
     "typecheck": "tsc -b --noEmit",
-    "test": "vitest run --coverage",
-    "test:e2e": "playwright test",
-    "check": "pnpm check:structure && pnpm lint && pnpm typecheck && pnpm test && pnpm build",
+    "check": "pnpm check:structure && pnpm lint && pnpm typecheck && pnpm build",
     "prepare": "husky"
   },
   "lint-staged": {
@@ -44,21 +42,14 @@
     "redux-persist": "^6.0.0"
   },
   "devDependencies": {
-    "@playwright/test": "^1.62.1",
-    "@testing-library/jest-dom": "^7.0.1",
-    "@testing-library/react": "^16.3.2",
-    "@testing-library/user-event": "^14.6.4",
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.4",
-    "@vitest/coverage-v8": "^4.1.10",
     "husky": "^9.1.7",
-    "jsdom": "^30.0.1",
     "lint-staged": "^17.3.0",
     "oxlint": "^1.75.0",
     "typescript": "~6.0.2",
-    "vite": "^8.2.0",
-    "vitest": "^4.1.10"
+    "vite": "^8.2.0"
   }
 }

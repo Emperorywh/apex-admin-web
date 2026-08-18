@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Apex Admin Web — 基于 React 19.2 + TypeScript + Vite 8 + antd v6 + react-router v8 的通用后台管理系统前端模板（RBAC、多页签保活、i18n、明暗主题、可剔除的演示模式）。
 
-**`docs/SPEC.md` 是唯一需求依据**（v1.4，状态：已确认）。实现不得与规格长期分叉：变更行为必须先改 SPEC 及修订记录，再改代码。规格条文在 README、代码注释中以 `§x.y` 引用；动手修改认证、路由、页签缓存等核心机制前必须先读对应章节。README.md 面向模板接入方（安全边界、部署、demo 移除步骤等），不重复于此。
+**`docs/SPEC.md` 是唯一需求依据**（v1.9，状态：已确认）。实现不得与规格长期分叉：变更行为必须先改 SPEC 及修订记录，再改代码。规格条文在 README、代码注释中以 `§x.y` 引用；动手修改认证、路由、页签缓存等核心机制前必须先读对应章节。README.md 面向模板接入方（安全边界、部署、demo 移除步骤等），不重复于此。
 
 ## 环境与常用命令
 
@@ -16,14 +16,10 @@ Node `>=22.22.0`，pnpm `11.21.0`（`packageManager` 锁定，建议 `corepack e
 | --- | --- |
 | `pnpm dev` | Vite 开发服务器（`/api` 代理到 `PROXY_TARGET`） |
 | `pnpm build` | `tsc -b && vite build` |
-| `pnpm test` | Vitest 全量 + §16.3 覆盖率阈值门禁 |
-| `pnpm exec vitest run src/router/guard.test.ts` | 跑单个测试文件（目录路径亦可，如 `src/router`） |
-| `pnpm test:e2e` | Playwright：chromium 全量 + firefox/webkit 冒烟（首次先 `pnpm exec playwright install`） |
-| `pnpm test:e2e --project=chromium` | 仅 chromium 全量；firefox/webkit 只跑 `smoke.spec.ts` |
 | `pnpm lint` / `pnpm typecheck` | oxlint / `tsc -b --noEmit` 全项目引用检查 |
 | `pnpm check:structure` | 目录/命名/导入方向/大小写结构门禁（`scripts/check-structure.mjs`） |
-| `pnpm check:demo-off` | 强制 `VITE_DEMO_MODE=off` 构建并扫描产物，确认 demo 模块被整体剔除 |
-| `pnpm check` | 完整质量链：structure → lint → typecheck → test → build（**不含** e2e 与 demo-off，CI 另行执行） |
+| `pnpm check:demo-off` | 强制 `VITE_DEMO_MODE=off` 构建并扫描产物，确认 demo 模块被整体剔除（按需执行，不进 CI） |
+| `pnpm check` | 完整质量链：structure → lint → typecheck → build（CI 强制执行） |
 
 提交钩子（Husky + lint-staged，全部只读、不 `--fix`）：pre-commit 对暂存 TS/TSX 跑 oxlint + 全量 check:structure；pre-push 跑 typecheck。**Commit message 必须使用简体中文。**
 
@@ -48,7 +44,7 @@ Node `>=22.22.0`，pnpm `11.21.0`（`packageManager` 锁定，建议 `corepack e
 
 ### 演示模式（三态枚举，非布尔，§13）
 
-`VITE_DEMO_MODE = off | force | fallback`，在 `vite.config.ts` 配置加载期校验（dev 与 build 均生效）。`off` 通过静态条件 + 动态 import 让 Rollup 整体剔除 `src/demo/`，`pnpm check:demo-off` 扫描产物哨兵 `APEX_DEMO_SENTINEL` 与 demo 账号数据。演示账号 admin/viewer（**密码任意**），权限差异严格符合 §5.3 矩阵；demo 账号/假数据只允许存在于 `src/demo/`。E2E 依赖 demo 构建的可观测性桥 `window.__APEX_DEMO_E2E__`（`e2e/helpers.ts`）。
+`VITE_DEMO_MODE = off | force | fallback`，在 `vite.config.ts` 配置加载期校验（dev 与 build 均生效）。`off` 通过静态条件 + 动态 import 让 Rollup 整体剔除 `src/demo/`，`pnpm check:demo-off` 扫描产物哨兵 `APEX_DEMO_SENTINEL` 与 demo 账号数据。演示账号 admin/viewer（**密码任意**），权限差异严格符合 §5.3 矩阵；demo 账号/假数据只允许存在于 `src/demo/`。
 
 ### 状态、持久化与主题（§8、§10）
 
@@ -70,11 +66,11 @@ Node `>=22.22.0`，pnpm `11.21.0`（`packageManager` 锁定，建议 `corepack e
 - 权限码集中在 `src/constants/permission.constants.ts`，页面禁止权限魔法字符串；按钮级权限用 `<Auth code={PERMISSIONS.…}>`（默认无权限隐藏）。
 - 魔法值（超时、容量、分页默认、Storage key、sortBy 白名单等）必须收敛为具名常量，归属规则见 §3.6；API endpoint 例外——接口路径由各 service 在请求调用点直接内联（§14.3 v1.8）。
 
-## 测试约定（§16.3）
+## 质量门禁（§16.3）
 
-- 单元测试与被测文件同目录（`*.test.ts(x)`）；`src/test/` 只放全局 setup 与跨业务测试工具。
-- 覆盖率门禁（`pnpm test` 强制）：`src/router/`、`src/services/`、`src/store/`、`src/utils/`、`src/features/**/hooks/` 的语句/分支/函数/行覆盖率均 **≥80%**。
-- E2E（`e2e/`，38 用例）：chromium 全量，firefox/webkit 仅冒烟；`playwright.config.ts` 的 webServer 用 `VITE_DEMO_MODE=force` 生产构建 + `vite preview` 托管。用例与规格条目映射见 `e2e/README.md`。
+- 模板**不内置单元测试与 E2E 体系**（v1.9 移除）；质量保障依赖 `pnpm check` 四道静态门禁：结构检查、oxlint、`tsc -b --noEmit` 全项目引用类型检查、生产构建，CI 强制执行。
+- `check:demo-off` 为按需执行的构建产物完整性检查（off 构建剔除 demo 模块），不进 CI。
+- 接入方自建测试时，路径别名等配置须与 §3.5 保持一致。
 
 ## 技术栈红线（§2、§18）
 

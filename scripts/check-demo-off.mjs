@@ -10,7 +10,7 @@
  * 3. 命中任何标记即以非零退出码失败；构建失败同样非零退出。
  *
  * 标记清单与 src/demo 常量保持同步：新增 demo 专属字符串时同步更新 DEMO_ARTIFACT_MARKERS。
- * 扫描逻辑导出供 scripts/check-demo-off.test.mjs 做单元测试（不触发真实构建）。
+ * 扫描逻辑与标记清单单独导出，供按需复用（不触发真实构建）。
  */
 import { spawnSync } from 'node:child_process'
 import { existsSync, readdirSync, readFileSync, rmSync } from 'node:fs'
@@ -18,8 +18,7 @@ import { join, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
 /**
- * 仓库根目录：只在 CLI 主流程解析（jsdom 测试环境下 import.meta.url 不是 file: URL，
- * 不得在模块导入期求值，与 check-structure.mjs 同策略）。
+ * 仓库根目录：只在 CLI 主流程解析，不在模块导入期求值（与 check-structure.mjs 同策略）。
  */
 function repoRoot() {
   return fileURLToPath(new URL('..', import.meta.url))

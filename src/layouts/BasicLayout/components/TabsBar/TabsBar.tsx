@@ -131,7 +131,7 @@ export function TabsBar({ pageContainerRef }: TabsBarProps) {
       return
     }
     const node = tabNodes.current.get(activeKey)
-    // jsdom 未实现 scrollIntoView，能力守卫保证测试环境安全
+    // scrollIntoView 属可选能力，守卫调用避免未实现环境报错
     node?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' })
     syncOverflow()
   }, [activeKey, items, syncOverflow])

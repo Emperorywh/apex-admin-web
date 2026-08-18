@@ -230,28 +230,3 @@ export function clearDemoDataOnLogout(): void {
     // 清理失败不影响登出流程
   }
 }
-
-/**
- * 重置内存数据集（测试与登出运行态清理使用）。
- * keepSnapshot=true 时保留 localStorage 快照，模拟整页刷新后从快照重新加载。
- */
-export function resetDemoDataset(options: { keepSnapshot?: boolean } = {}): void {
-  dataset = null
-  snapshotRestoreNotified = false
-  if (options.keepSnapshot !== true) {
-    try {
-      window.localStorage.removeItem(DEMO_SNAPSHOT_STORAGE_KEY)
-    } catch {
-      // 忽略清理失败
-    }
-  }
-}
-
-/** 读取快照原始内容（测试断言用） */
-export function readDemoSnapshotRaw(): string | null {
-  try {
-    return window.localStorage.getItem(DEMO_SNAPSHOT_STORAGE_KEY)
-  } catch {
-    return null
-  }
-}

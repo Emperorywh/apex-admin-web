@@ -22,19 +22,8 @@ import type { RequestAdapterResolver } from '@/services/request/request'
 import type { RequestStore } from '@/services/request/request.types'
 import { getDefaultAppStore } from '@/store/store'
 import { sessionSourceSet } from '@/store/slices/user.slice'
-import { demoAdapter, demoAdapterTestController, resetDemoTokenRuntime } from './adapters/demo.adapter'
+import { demoAdapter, resetDemoTokenRuntime } from './adapters/demo.adapter'
 import { DEMO_MODES, type DemoMode } from './demo.constants'
-
-/**
- * E2E 可观测性桥（规格 §13.2 测试专用控制器）：demo 构建下挂到 window，
- * 供 Playwright 在页面上下文内触发 token 失效、设置人工延迟并读取调用记录；
- * off 构建不包含本模块，真实生产部署不存在该入口。
- */
-declare global {
-  interface Window {
-    __APEX_DEMO_E2E__?: typeof demoAdapterTestController
-  }
-}
 
 /** fallback 切换提示文案（zh 即 key；en-US 资源见 locales/en-US/common.ts） */
 const FALLBACK_SWITCH_NOTICE_KEY = '无法连接真实后端，已切换到演示模式'
@@ -49,19 +38,11 @@ function isNetworkLevelFailure(error: unknown): boolean {
   return isApiError(error) && !error.canceled && error.httpStatus === undefined
 }
 
-/** 演示模式运行时句柄：resolver 供组合/测试使用；dispose 注销全部注册 */
-export interface DemoRuntimeHandle {
-  /** 请求 adapter 解析器（已注册到请求层；组合真实 mock 时可复用） */
-  readonly resolver: RequestAdapterResolver
-  /** 注销 adapter 解析器、登录传输扩展与会话清理订阅 */
-  dispose(): void
-}
-
 /**
  * 把演示模式运行时绑定到指定 store 并完成全部注册。
- * store 必须是当前页面实际使用的 store（默认单例或测试构造的刷新模拟 store）。
+ * store 必须是当前页面实际使用的 store（默认单例）。
  */
-export function createDemoRuntime(store: RequestStore): DemoRuntimeHandle {
+function createDemoRuntime(store: RequestStore): void {
   // ① adapter 解析器：force 全量接管；fallback 仅 demo 会话接管；其余回落真实 adapter
   const resolver: RequestAdapterResolver = () => {
     const mode = currentDemoMode()
@@ -122,21 +103,12 @@ export function createDemoRuntime(store: RequestStore): DemoRuntimeHandle {
 
   // ③ 会话清理订阅：登出/清理使 token 与来源归空后重置 demo token 运行态；
   //    CRUD 快照不在清理范围（是否清除由登出确认框选择，默认保留，规格 §13.2）
-  const unsubscribe = store.subscribe(() => {
+  store.subscribe(() => {
     const user = store.getState().user
     if (user.accessToken === null && user.sessionSource === null) {
       resetDemoTokenRuntime()
     }
   })
-
-  return {
-    resolver,
-    dispose() {
-      unsubscribe()
-      configureRequestAdapter(null)
-      registerLoginTransportExtension(null)
-    },
-  }
 }
 
 /**
@@ -149,8 +121,4 @@ export function setupDemoMode(): void {
     return
   }
   createDemoRuntime(getDefaultAppStore().store)
-  // E2E 桥（见上方 declare global）：仅 demo 构建存在，供浏览器内测试控制器调用
-  if (typeof window !== 'undefined') {
-    window.__APEX_DEMO_E2E__ = demoAdapterTestController
-  }
 }

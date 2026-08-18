@@ -1,6 +1,6 @@
 # Apex Admin Web — 视觉现代化第二轮专项规格（SPEC-UI2：slash-admin 风格转向）
 
-> 版本：v1.3 · 日期：2026-08-18 · 状态：已确认（两阶段实施完成 + v1.3 导航走查回归修复，见 §16 修订记录）
+> 版本：v1.4 · 日期：2026-08-18 · 状态：已确认（两阶段实施完成 + v1.3 导航走查回归修复，见 §16 修订记录）
 >
 > 本文档是主规格 `docs/SPEC.md` 的**视觉专项子规格**，承接并取代 `docs/SPEC_UI.md`（v1.3，两阶段已验收）。主规格仍是全项目唯一需求依据；本文档只覆盖视觉与壳层呈现，不改变任何功能行为。冲突裁决：功能行为以主规格为准；视觉呈现上 SPEC_UI.md 与本文档冲突的条文**以本文档为准**（§13 给出逐条取代映射）。
 >
@@ -93,7 +93,7 @@
 ### 4.4 预设主题色板调整（已定）
 
 - 8 色预设数量不变；**将 `emerald #059669`（翡冷翠）替换为 slash 招牌绿 `meadow #00A76F`（原野绿）并置首作为新默认**（`DEFAULT_COLOR_PRIMARY` 变更）。其余 7 色不变：indigo / azure / violet / sunset / crimson / teal / magenta。
-- 新色必须通过现有 `contrastRatio ≥ 3` 白字对比度校验（theme.test.ts 机制）；`#00A76F` 估算 ≈3.1 贴线，若不达标微调明度后回写本文档。
+- 新色必须通过 `contrastRatio ≥ 3` 白字对比度校验；`#00A76F` 估算 ≈3.1 贴线，若不达标微调明度后回写本文档。
 - 兼容性（已定）：老用户 localStorage 持久化的 `colorPrimary` 为任意 hex，不受影响；新默认只影响首次安装。预设 key/labelKey 变化同步 en-US 资源（新增 原野绿 Meadow、移除 翡冷翠 Emerald）。
 
 ### 4.5 字体与字号（已定，主规格 §10.1 表述实施时同步修订）
@@ -192,12 +192,10 @@
 - **启动镜像同步（红线）**：画布底色变更后，`index.html` 内联启动脚本（主规格 §8.3，读 `apex_boot_theme`）写入的首帧背景字面量同步更新为新画布色（亮 `#F4F6F8` / 暗 `#09090B`），`themeBootMirror.ts` 同步；保证整页刷新无首帧闪变。Redux 仍是运行时单一数据源。
 - 跟随系统、手动切换、系统偏好监听行为零变更（主规格 §10.2）。
 
-## 12. 测试影响与验收（沿用上轮机制，已定）
+## 12. 验收与走查（已定）
 
-- **允许破坏并同步修复**：自绘导航重写与壳层 DOM 重排导致的 E2E 选择器、布局单测（BasicLayout/SideMenu→SideNav/TabsBar/SettingDrawer/Login 等）断言更新属本次改造一部分，不视为回归；`src/config/theme.test.ts` 存量 8 色精确色值断言与 `DEFAULT_COLOR_PRIMARY` 断言随 §4.4 换默认色同步更新。E2E 用例总数与 §16.3 映射关系保持有效；选择器优先语义化或稳定 data-testid。
-- **新增单测**：AppIcon 注册完整性（§5.4）、自绘导航选中/展开派生与键盘导航逻辑、theme token 新基线（默认色/字号/字体族/画布色）、启动镜像取值。
-- 覆盖率门禁不变（主规格 §16.3）：`src/router/`、`src/services/`、`src/store/`、`src/utils/`、`src/features/**/hooks/` ≥80%。导航选中/展开派生与键盘导航逻辑保持纯函数/Hook 并配**同目录单测**（`src/layouts/BasicLayout/`，参照 `navModel.ts`/`navTree.test.ts` 现状；该目录不在门禁清单内，不为此搬迁文件）。
-- `pnpm check`（structure → lint → typecheck → test → build）与 `check:demo-off` 全绿是每阶段交付前提；check-structure 新增 `@iconify/react` 导入限制规则（`src/assets/` 已属合法目录，无需白名单调整）。
+- **v1.4 起**单元测试与 E2E 体系已随主规格 v1.9 整体移除（主规格 §16.3），本节原有的单测/E2E 断言与覆盖率要求不再适用；视觉质量由人工走查把关。
+- `pnpm check`（structure → lint → typecheck → build）全绿是每阶段交付前提，`check:demo-off` 按需执行；check-structure 含 `@iconify/react` 导入限制规则（`src/assets/` 已属合法目录，无需白名单调整）。
 - **人工走查矩阵（扩展）**：亮/暗 × 侧边/顶部 × 色板（含新默认绿 + 至少 2 个非默认色）× zh/en；页签栏全交互（拖拽/右键/横滚/affix）；**自绘导航键盘走查**——方向键/Enter/Esc 全层级遍历、`aria-expanded`/`aria-current` 状态核验、焦点可见、TopNav 下拉浮层键盘操作与 Esc 关闭；mini 折叠悬浮子菜单（鼠标 hover + 键盘）；14px 密度与 Inter 字体渲染（中英文混排）；毛玻璃 Header 亮暗两态；设置抽屉新控件全组合；登录页与错误页动效（含 reduced-motion 降级）。
 
 ## 13. 与既有规格的冲突裁决
@@ -218,7 +216,7 @@
 | §11 系统字体栈 + 16px 固定、禁 Web 字体 | §4.5 Inter Variable 自托管 + 14px |
 | §2.2 零新依赖 | §15 依赖白名单（3 必选 + 1 待定） |
 
-未被映射的 SPEC_UI 条文（如 §4.3 色值纪律、§10 启动镜像、§12 测试机制）继续有效。
+未被映射的 SPEC_UI 条文（如 §4.3 色值纪律、§10 启动镜像）继续有效。
 
 ### 13.2 文档衔接（阶段一第 0 步前置交付，先于任何代码改动）
 
@@ -250,12 +248,13 @@
 | `@iconify/utils`（待定） | ^3.x（3.1.4） | MIT | **构建期**工具集，仅当 §5.1 选定「构建期 SVG→IconifyJSON 转换脚本」路径时按需引入；若脚本改用其他工具或人工维护 JSON 则不引入（**v1.2 定稿：未引入**——转换脚本 `scripts/generate-icon-collection.mjs` 为零依赖自写实现） |
 | slash-admin `src/assets/icons/*.svg`、光斑 PNG | — | MIT | 菜单彩色图标、抽屉光斑背景；随资产附 LICENSE/NOTICE |
 
-版本为下限指引而非锁定：实际可复现版本以 `pnpm-lock.yaml` 定稿为准，升级依赖单独提交并重跑全部测试（主规格 §2 惯例）。
+版本为下限指引而非锁定：实际可复现版本以 `pnpm-lock.yaml` 定稿为准，升级依赖单独提交并重跑完整质量链（主规格 §2 惯例）。
 
 红线不变：不引入 Tailwind/Less、ESLint/Prettier、react-router-dom、MSW；不引入第二套线性图标库；Iconify 严禁运行时 CDN 拉取。
 
 ## 16. 修订记录
 
+- v1.4（2026-08-18）：随主规格 v1.9 整体移除单元测试与 E2E 测试体系——§12 改写为「验收与走查」，删除单测/E2E 断言与覆盖率条文；§4.4 对比度校验要求保留，去掉对已删 `theme.test.ts` 机制的引用。以下历史修订记录中的测试机制表述按原文保留。
 - v1.3（2026-08-18）：§6.1 自绘导航走查回归修复（行为回到条文本意，无规格变更）——
   - **子菜单收纳失效（闭合目录残留大片空白）**：`.branch` 同时承载行按钮与 submenu 两个子元素，却只声明一条 `grid-template-rows` 轨道，submenu 落入隐式 `auto` 轨道——`0fr` 收纳从未作用于它，闭合态仅 `visibility: hidden` 却占满高。改为显式两轨道 `auto 1fr ↔ auto 0fr`（轨道 1 行按钮常显、轨道 2 submenu 收纳），展开/折叠过渡不变。
   - **mini 折叠浮层空壳（hover 一级目录看不到二级）**：浮层节点渲染在 `NavRowContext.Provider` 之外，浮层内 NavRow 取不到行上下文（ctx 为 null）整树返回 null，浮层只剩 16px 空卡片。Provider 上提包住主菜单与浮层两棵子树；BasicLayout.test.tsx 新增 mini 浮层回归用例（hover 弹出、子级可点导航、导航即关闭）。

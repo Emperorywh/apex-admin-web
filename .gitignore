@@ -12,15 +12,6 @@ dist
 dist-ssr
 *.local
 
-# Coverage
-coverage/
-
-# Playwright 产物
-playwright-report/
-test-results/
-blob-report/
-.playwright/
-
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

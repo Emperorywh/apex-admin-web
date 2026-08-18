@@ -1,5 +1,5 @@
-# CI 质量门禁（规格 §16.2/§16.4）：
-# 固定执行 pnpm install --frozen-lockfile → pnpm check → pnpm test:e2e → demo off 构建检查。
+# CI 质量门禁（规格 §16.2/§16.3）：
+# 固定执行 pnpm install --frozen-lockfile → pnpm check（结构门禁 / oxlint / 类型检查 / 构建）。
 # Node/pnpm 版本与 package.json#engines（node >=22.22.0）和 packageManager（pnpm@11.21.0）一致：
 # pnpm 版本由 pnpm/action-setup 直接读取 packageManager 字段；Node 固定为本地实测的 22.23.1，
 # 满足 engines 下限且可复现（不要改用会漂移的 "22" 这类浮动版本号）。
@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   verify:
-    name: check + e2e + demo-off
+    name: check
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
@@ -34,14 +34,5 @@ jobs:
       - name: 安装依赖（frozen lockfile）
         run: pnpm install --frozen-lockfile
 
-      - name: 完整质量链（结构门禁 / oxlint / 类型检查 / 单测+覆盖率 / 构建）
+      - name: 完整质量链（结构门禁 / oxlint / 类型检查 / 构建）
         run: pnpm check
-
-      - name: 安装 Playwright 浏览器（chromium 全量 + firefox/webkit 冒烟所需二进制与系统依赖）
-        run: pnpm exec playwright install --with-deps
-
-      - name: E2E（chromium 全量 + firefox/webkit 关键冒烟）
-        run: pnpm test:e2e
-
-      - name: demo off 构建检查（产物不得含哨兵与 demo 账号）
-        run: pnpm run check:demo-off
