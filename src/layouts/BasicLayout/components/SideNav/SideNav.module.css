@@ -123,15 +123,19 @@
   color: var(--ant-color-primary);
 }
 
-/* ── 子菜单：grid 行高 0fr→1fr 纯 CSS 展开/收纳（200–300ms） ── */
+/* ── 子菜单：grid 行高 0fr→1fr 纯 CSS 展开/收纳（200–300ms）。
+ * branch 含两个子元素（行按钮 + submenu），必须显式声明两条轨道：
+ * 轨道 1 = auto（行按钮常显），轨道 2 = submenu（1fr↔0fr 收纳）；
+ * 若只声明一条轨道，submenu 落入隐式 auto 轨道，收纳态仅 visibility 隐藏
+ * 却仍占满高（闭合目录残留大片空白，实为 bug） */
 .branch {
   display: grid;
-  grid-template-rows: 1fr;
+  grid-template-rows: auto 1fr;
   transition: grid-template-rows 240ms ease-out;
 }
 
 .branch[data-open='false'] {
-  grid-template-rows: 0fr;
+  grid-template-rows: auto 0fr;
 }
 
 .submenu {

@@ -396,20 +396,22 @@ export function SideNav({ items, selectedKey, ancestorOpenKeys, onNavigate, coll
 
   return (
     <div className={styles.nav} data-collapsed={collapsed}>
-      <div
-        className={styles.menu}
-        role="menu"
-        aria-label={t('导航菜单', { ns: MENU_NAMESPACE })}
-        style={collapsed ? undefined : { minWidth: 0 }}
-        data-testid="side-nav-menu"
-      >
-        <NavRowContext.Provider value={ctx}>
+      {/* Provider 包住主菜单与 mini 浮层：浮层内的 NavRow 依赖同一行上下文
+          （缺 Provider 时浮层行 ctx 为 null 全部渲染为空，浮层只剩卡片空壳） */}
+      <NavRowContext.Provider value={ctx}>
+        <div
+          className={styles.menu}
+          role="menu"
+          aria-label={t('导航菜单', { ns: MENU_NAMESPACE })}
+          style={collapsed ? undefined : { minWidth: 0 }}
+          data-testid="side-nav-menu"
+        >
           {items.map((item) => (
             <NavRow key={item.path ?? item.id} node={item} level={0} />
           ))}
-        </NavRowContext.Provider>
-      </div>
-      {miniPopupNode}
+        </div>
+        {miniPopupNode}
+      </NavRowContext.Provider>
     </div>
   )
 }

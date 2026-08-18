@@ -1,6 +1,6 @@
 # Apex Admin Web — 视觉现代化第二轮专项规格（SPEC-UI2：slash-admin 风格转向）
 
-> 版本：v1.2 · 日期：2026-08-17 · 状态：已确认（两阶段实施完成，实测定稿见 §16 v1.2 修订记录）
+> 版本：v1.3 · 日期：2026-08-18 · 状态：已确认（两阶段实施完成 + v1.3 导航走查回归修复，见 §16 修订记录）
 >
 > 本文档是主规格 `docs/SPEC.md` 的**视觉专项子规格**，承接并取代 `docs/SPEC_UI.md`（v1.3，两阶段已验收）。主规格仍是全项目唯一需求依据；本文档只覆盖视觉与壳层呈现，不改变任何功能行为。冲突裁决：功能行为以主规格为准；视觉呈现上 SPEC_UI.md 与本文档冲突的条文**以本文档为准**（§13 给出逐条取代映射）。
 >
@@ -256,6 +256,9 @@
 
 ## 16. 修订记录
 
+- v1.3（2026-08-18）：§6.1 自绘导航走查回归修复（行为回到条文本意，无规格变更）——
+  - **子菜单收纳失效（闭合目录残留大片空白）**：`.branch` 同时承载行按钮与 submenu 两个子元素，却只声明一条 `grid-template-rows` 轨道，submenu 落入隐式 `auto` 轨道——`0fr` 收纳从未作用于它，闭合态仅 `visibility: hidden` 却占满高。改为显式两轨道 `auto 1fr ↔ auto 0fr`（轨道 1 行按钮常显、轨道 2 submenu 收纳），展开/折叠过渡不变。
+  - **mini 折叠浮层空壳（hover 一级目录看不到二级）**：浮层节点渲染在 `NavRowContext.Provider` 之外，浮层内 NavRow 取不到行上下文（ctx 为 null）整树返回 null，浮层只剩 16px 空卡片。Provider 上提包住主菜单与浮层两棵子树；BasicLayout.test.tsx 新增 mini 浮层回归用例（hover 弹出、子级可点导航、导航即关闭）。
 - v1.2（2026-08-17）：两阶段实施完成，实测定稿回写——
   - **§5.1 装载路径 PoC 定稿**：选定首选路径「构建期预生成 IconifyJSON + `import.meta.glob` 聚合 + `addCollection`」；转换脚本 `scripts/generate-icon-collection.mjs` 为零依赖自写实现（剥外层 `<svg>` 取 body、读 viewBox 推尺寸），产物 `src/assets/icons/local.iconify.json` 随资产提交；**未引入 `@iconify/utils`**（§15 待定项落空）。glob 以 `@/assets/icons/*.iconify.json` 别名形态使用（Vite 对 CSS/TS url 与 glob 均解析别名）。
   - **§10 动效封装落位调整**：`src/components/MotionDiv/`（`MotionDiv.tsx` + `motionVariants.ts`）承载统一封装。原定 `src/components/animate/` 与结构门禁「components/ 直属子项必须是同名组件文件夹」冲突（主规格 §3.3 优先于子规格路径命名），按裁决规则调整；业务代码仍不直接 import `motion/react`。

@@ -11,7 +11,7 @@
  * 菜单权限/hideInMenu/目录保留过滤的判定测试位于 router/projections.test.tsx
  * （filterMenuRoutes 与守卫共用 hasPermissionChain），此处验证布局消费注入结果。
  */
-import { act, screen, waitFor, within } from '@testing-library/react'
+import { act, fireEvent, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Outlet, RouterProvider, createMemoryRouter, useLocation, type RouteObject } from 'react-router'
 import { useEffect } from 'react'
@@ -442,6 +442,27 @@ describe('Header 全功能与回调（规格 §11.2）', () => {
     await user.click(collapseBall!)
     await waitFor(() => {
       expect(store.getState().app.sidebarCollapsed).toBe(false)
+    })
+  })
+
+  it('mini 折叠态 hover 一级目录弹出浮层：子级行渲染非空、点击导航并关闭浮层', async () => {
+    const user = userEvent.setup()
+    const { router, container } = renderLayout({ initialPath: '/dashboard' })
+    await user.click(screen.getAllByRole('button', { name: '切换侧边栏' })[0])
+    await waitFor(() => {
+      expect(container.querySelector('nav[data-collapsed="true"]')).not.toBeNull()
+    })
+    // hover 一级目录「系统管理」→ mini 浮层（role=menu）弹出且子级行可寻（回归：
+    // 浮层曾渲染于 NavRowContext.Provider 之外，子级行 ctx 为 null 全部空壳）
+    fireEvent.mouseEnter(within(sideNavRegion()).getByRole('menuitem', { name: '系统管理' }))
+    const popup = await screen.findByRole('menu', { name: '系统管理' })
+    await user.click(within(popup).getByRole('menuitem', { name: '用户管理' }))
+    await waitFor(() => {
+      expect(router.state.location.pathname).toBe('/system/user')
+    })
+    // 导航即关闭浮层
+    await waitFor(() => {
+      expect(screen.queryByRole('menu', { name: '系统管理' })).not.toBeInTheDocument()
     })
   })
 
