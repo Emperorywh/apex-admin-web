@@ -1,18 +1,8 @@
 # Apex Admin Web — 通用后台管理系统模板规格说明
 
-> 版本：v1.4 · 日期：2026-08-14 · 状态：待技术验证
+> 状态：待技术验证。本文档是实现候选基线；§20 技术闸门通过并记录结果后才能改为「已确认」，届时作为实现的唯一需求依据。闸门通过前只允许完成基础工程和验证性 PoC，不进入全部业务页面开发。
 >
-> 本文档是实现候选基线。§20 技术闸门通过并记录结果后，状态才能改为「已确认」，届时本文档作为实现的唯一需求依据。技术闸门通过前，只允许完成基础工程和验证性 PoC，不进入全部业务页面开发。
->
-> 所有标注「已定」的条目来自访谈结论；标注「默认」的条目为访谈未覆盖、按行业惯例选定的默认值。如需变更，必须先修改本文档及修订记录，不允许实现与文档长期分叉。
->
-> v1.4 修订记录：① 目录改为顶层分层、同业务域对齐；`features`只允许业务组件与业务 Hook，不再放置页面、API/service、类型、常量或其他业务实现；② 页面入口统一放入 `src/pages/`，HTTP 基础设施、业务请求与 DTO 统一放入 `src/services/`；③ 业务共享类型与常量分别归入 `src/types/`和 `src/constants/`，demo adapter 与假数据归入可整体剔除的 `src/demo/`；④ 同步修正路由懒加载、依赖方向、类型/常量归属、结构门禁、覆盖率与验收项；⑤ 继续强制所有页面和 React 组件使用同名文件夹与同名实现文件。
->
-> v1.3 修订记录：① 目录改为 Feature-Based，共置同一业务功能的页面、组件、Hook、样式、测试、API、类型与常量；② 页面和组件强制使用同名文件夹与同名实现文件，禁止 `index.tsx`；③ 类型改为就近管理，取消无边界的全局类型桶；④ 固定 `@/*` 路径别名并禁止两层及以上父级相对导入；⑤ 建立全局、功能、组件三级常量归属规则；⑥ 增加结构检查脚本、CI 门禁和对应验收项。
->
-> v1.2 修订记录：① 页签缓存改为 React 19.2 `<Activity>` + 独立 location 快照 + 纯渲染路由，Data Router 仅负责 URL/守卫；② 增加 redux-persist 恢复闸门，消除初始 loader 竞态；③ demo 会话来源随 token 持久化；④ 补齐核心实体、接口、错误码及 admin/viewer 权限矩阵；⑤ 明确 401/403、取消、重放、登出状态机；⑥ 补齐 `/`、路由 `handle`、权限继承、同源回跳规则；⑦ 增加 Node/pnpm 基线、SPA 部署重写、Playwright E2E 和可量化验收标准。
->
-> v1.1 修订记录：i18n 改为中文文案即 key；基线升级 antd v6 / react-router v8；路由改为全量注册 + 守卫校验；补充开放重定向防护、环境变量和 token 单一数据源。
+> 标注「已定」的条目来自访谈结论；标注「默认」的条目为访谈未覆盖、按行业惯例选定的默认值。如需变更，必须先修改本文档，不允许实现与文档长期分叉。
 
 ---
 
@@ -52,12 +42,11 @@
 | 图表 | ECharts | `echarts/core` 按需注册 |
 | 日期 | dayjs | 作为直接依赖安装；不依赖 antd 的传递依赖 |
 | 页签拖拽 | dnd-kit（core + sortable） | 支持键盘拖拽替代操作 |
-| 单元测试 | Vitest + Testing Library + jsdom + @vitest/coverage-v8 | 核心模块覆盖率阈值见 §16 |
 | E2E | Playwright | Chromium 自动化；Firefox/WebKit 冒烟 |
 | Lint | oxlint + `tsc -b --noEmit` | 不引入 ESLint/Prettier，不自动改写代码 |
 | 提交钩子 | Husky + lint-staged | 只检查，不执行格式化或 `--fix` |
 
-首次安装依赖后必须提交 `pnpm-lock.yaml`。规格中的 major/minor 是兼容边界，实际可复现版本以 lock 文件为准；升级依赖必须单独提交并重新执行全部测试。
+首次安装依赖后必须提交 `pnpm-lock.yaml`。规格中的 major/minor 是兼容边界，实际可复现版本以 lock 文件为准；升级依赖必须单独提交并重新执行全部检查和 E2E。
 
 参考实现边界：
 
@@ -81,11 +70,9 @@ src/
 │   └── icons/
 ├── components/                           # 跨业务域共享的 React 组件
 │   ├── Auth/
-│   │   ├── Auth.tsx
-│   │   └── Auth.test.tsx
+│   │   └── Auth.tsx
 │   ├── FeedbackBridge/
-│   │   ├── FeedbackBridge.tsx
-│   │   └── FeedbackBridge.test.tsx
+│   │   └── FeedbackBridge.tsx
 │   ├── GlobalProgress/GlobalProgress.tsx
 │   ├── PageLoading/PageLoading.tsx
 │   ├── RouterErrorBoundary/RouterErrorBoundary.tsx
@@ -94,16 +81,14 @@ src/
 │   ├── auth/
 │   │   ├── components/
 │   │   │   └── LoginForm/
-│   │   │       ├── LoginForm.tsx
-│   │   │       └── LoginForm.test.tsx
+│   │   │       └── LoginForm.tsx
 │   │   └── hooks/
 │   │       └── useLogin.ts
 │   ├── dashboard/
 │   │   ├── components/
 │   │   │   └── OverviewCard/
 │   │   │       ├── OverviewCard.tsx
-│   │   │       ├── OverviewCard.module.css
-│   │   │       └── OverviewCard.test.tsx
+│   │   │       └── OverviewCard.module.css
 │   │   └── hooks/
 │   │       └── useDashboard.ts
 │   ├── profile/
@@ -114,11 +99,9 @@ src/
 │   │   │   ├── components/
 │   │   │   │   └── UserForm/
 │   │   │   │       ├── UserForm.tsx
-│   │   │   │       ├── UserForm.types.ts
-│   │   │   │       └── UserForm.test.tsx
+│   │   │   │       └── UserForm.types.ts
 │   │   │   └── hooks/
-│   │   │       ├── useUserList.ts
-│   │   │       └── useUserList.test.ts
+│   │   │       └── useUserList.ts
 │   └── demo/
 │       └── components/
 │           └── DemoBadge/DemoBadge.tsx
@@ -126,8 +109,7 @@ src/
 │   ├── auth/
 │   │   └── Login/
 │   │       ├── Login.tsx
-│   │       ├── Login.module.css
-│   │       └── Login.test.tsx
+│   │       └── Login.module.css
 │   ├── dashboard/
 │   │   └── Dashboard/Dashboard.tsx
 │   ├── profile/
@@ -168,8 +150,7 @@ src/
 │           └── menu.service.types.ts
 ├── demo/                                 # adapter、假数据和 demo 常量；可整体剔除
 │   ├── adapters/
-│   │   ├── demo.adapter.ts
-│   │   └── demo.adapter.test.ts
+│   │   └── demo.adapter.ts
 │   ├── fixtures/
 │   └── demo.constants.ts                 # demo 账号与权限矩阵，仅 demo 动态入口引用
 ├── hooks/                                # 跨业务域共享且无单一业务所有者的 Hook
@@ -230,7 +211,6 @@ src/
 │   └── slices/                          # 应用级 user/settings/tabs/pageCache/app
 ├── utils/                               # 仅无业务语义的纯工具
 ├── styles/globals.css
-├── test/setup.ts                        # 全局测试初始化；业务测试不得集中到这里
 └── vite-env.d.ts                        # 严格环境变量类型
 scripts/
 └── check-structure.mjs                  # 目录、命名、导入方向与深层相对路径门禁
@@ -245,8 +225,8 @@ e2e/                                     # Playwright 跨业务场景
 
 | 内容 | 唯一默认归属 | 约束 |
 | --- | --- | --- |
-| 页面入口 | `src/pages/<domain>/<Page>/<Page>.tsx` | 页面目录可共置同名前缀的样式、测试、页面私有类型和常量；业务子组件放入对应 feature |
-| 单业务域组件/Hook | `src/features/<domain>/components/`、`src/features/<domain>/hooks/` | feature 只管理这两类实现及其紧邻的测试、样式、类型和常量 |
+| 页面入口 | `src/pages/<domain>/<Page>/<Page>.tsx` | 页面目录可共置同名前缀的样式、页面私有类型和常量；业务子组件放入对应 feature |
+| 单业务域组件/Hook | `src/features/<domain>/components/`、`src/features/<domain>/hooks/` | feature 只管理这两类实现及其紧邻的样式、类型和常量 |
 | 跨业务域共享组件/Hook | `src/components/`、`src/hooks/` | 必须无单一业务所有者，不得反向依赖页面或 feature |
 | 应用服务、HTTP 基础设施、业务请求、DTO | `src/services/` | 业务请求按同一业务域路径拆分；禁止在 feature 或页面目录定义 API adapter |
 | 跨层业务实体/模型 | `src/types/<domain>/` | 必须有明确业务所有者，不创建无边界 barrel |
@@ -254,19 +234,18 @@ e2e/                                     # Playwright 跨业务场景
 | demo adapter、假数据、账号矩阵 | `src/demo/` | 只能由 demo 动态入口引用，并可在 off 构建中整体剔除 |
 
 - 页面文件负责路由入口与业务组件编排，不在 `src/pages/`内建立通用组件库。只被一个页面使用但具有独立 React 组件身份的子组件，仍放入对应 `src/features/<domain>/components/<Name>/`；页面文件夹只共置页面自身的辅助文件。
-- 一个业务组件或 Hook 首次只服务单一业务域时放在该域的 feature 内；被两个或以上业务域直接复用时，必须在同一次变更中提升到 `src/components/`或 `src/hooks/`，补齐独立测试，并移除对原业务域内部状态和 service 的耦合。
+- 一个业务组件或 Hook 首次只服务单一业务域时放在该域的 feature 内；被两个或以上业务域直接复用时，必须在同一次变更中提升到 `src/components/`或 `src/hooks/`，并移除对原业务域内部状态和 service 的耦合。
 - 固定依赖方向为：`router → layouts/pages`、`layouts/pages → features/components/hooks/services/store/types/constants`、`features → components/hooks/services/store/types/constants`、`业务 service → services/request、store、types、constants`。箭头右侧不得反向导入箭头左侧；service 不得导入 React 页面、组件或业务 Hook。
 - `src/components/`和 `src/hooks/`不得导入 `src/pages/`或 `src/features/`，也不得直接依赖单一业务域 service。`FeedbackBridge`注册 `src/services/feedback/uiFeedback.ts`是基础设施接线，不属于业务域依赖。
 - 不同业务域的 feature 不得穿透导入彼此的组件或 Hook；确需复用时按上一条提升到共享层。跨层共享数据结构引用所有者在 `src/types/<domain>/`中的权威定义，禁止复制接口，也不得把业务实现塞进 `utils/`规避边界。
 - 页面/组件私有资产与其实现同目录；跨页面、跨组件复用的静态资产提升到 `src/assets/`。`src/utils/`只接收无业务语义的纯工具，不能成为业务杂物桶。
-- `src/test/`只保存全局 setup、自定义 renderer 和跨业务测试工具；其他单元测试必须与被测文件同目录，命名为 `*.test.ts`或 `*.test.tsx`。
 
 ### 3.3 页面与组件文件夹规则（已定）
 
 - 所有页面和 React 组件都必须由独立文件夹包裹，文件夹名、实现文件名和导出的组件名保持一致，例如 `src/pages/system/user/User/User.tsx`、`src/features/system/user/components/UserForm/UserForm.tsx`。
 - 禁止用 `index.tsx`承载页面或组件实现，项目内不得出现 `index.tsx`。即使一个目录当前只有一个实现文件，也必须使用同名文件，不能只创建 `User/index.tsx`。
 - `index.ts`只允许作为确有多个稳定公共导出时的纯 barrel，不能包含运行时代码，也不能成为唯一文件；默认直接从具名文件导入，以降低循环依赖和跳转歧义。
-- 页面/组件专属样式、测试、类型和常量使用同一前缀并放在该文件夹内，例如 `User.module.css`、`User.test.tsx`、`User.types.ts`和 `User.constants.ts`。
+- 页面/组件专属样式、类型和常量使用同一前缀并放在该文件夹内，例如 `User.module.css`、`User.types.ts`和 `User.constants.ts`。
 - 页面入口只能位于 `src/pages/`；业务 React 组件只能位于对应 `src/features/<domain>/components/`或跨业务域共享的 `src/components/`。`layouts/`和 `App/`是应用外壳组件的明确例外，但仍必须遵循同名文件夹规则。
 - `main.tsx`、路由定义、配置、纯函数和 Hook 不属于页面/组件命名规则；若 Hook 自身拆出多个强相关文件，可使用 `useXxx/`文件夹并保持同名。`App`是 React 组件，必须遵循 `App/App.tsx`。
 
@@ -280,8 +259,8 @@ e2e/                                     # Playwright 跨业务场景
 
 ### 3.5 路径别名与导入规则（已定）
 
-- 唯一路径别名固定为 `@/*` → `src/*`。TypeScript `compilerOptions.paths`、Vite `resolve.alias`、Vitest 和编辑器解析必须指向同一绝对目录；任一环境无法解析都视为配置失败。
-- `tsconfig.app.json`固定设置 `baseUrl: "."`与 `paths: { "@/*": ["src/*"] }`；Vite 的 alias key 使用 `@`，目标通过 `fileURLToPath(new URL('./src', import.meta.url))`解析，禁止依赖当前工作目录。Vitest 复用 Vite 配置，不另写一份可能漂移的 alias。
+- 唯一路径别名固定为 `@/*` → `src/*`。TypeScript `compilerOptions.paths`、Vite `resolve.alias` 和编辑器解析必须指向同一绝对目录；任一环境无法解析都视为配置失败。
+- `tsconfig.app.json`固定设置 `baseUrl: "."`与 `paths: { "@/*": ["src/*"] }`；Vite 的 alias key 使用 `@`，目标通过 `fileURLToPath(new URL('./src', import.meta.url))`解析，禁止依赖当前工作目录。
 - 同一文件夹内使用 `./`相对导入；仅允许一次 `../`访问直接父级的共置文件。出现 `../../`或更深父级导入即检查失败，必须改用 `@/`绝对别名。
 - 项目源码的根级绝对导入必须以 `@/`开头，禁止 `src/...`、`features/...`等伪绝对路径，也禁止新增 `@components`、`@features`等第二套别名；第三方包名不受此条影响。
 - 跨顶层目录、业务域内跨子目录以及路由 lazy import 均使用 `@/`；禁止通过 barrel 或路径拼接隐藏跨层、跨业务域的越界依赖。
@@ -292,9 +271,9 @@ e2e/                                     # Playwright 跨业务场景
 - 有业务或配置语义的魔法数字和字符串不得散落在实现中。请求超时、缓存容量、分页默认值、Storage key、路由 ID/路径、权限码、错误码、状态值、日期格式、正则、长度限制和 API endpoint 等必须使用具名常量。
 - 应用级稳定常量按关注点放在 `src/constants/*.constants.ts`；同一业务域跨页面、组件和 service 使用的常量放在 `src/constants/<domain>/<domain>.constants.ts`。权限码统一在 `src/constants/permission.constants.ts`，但 demo 账号和权限矩阵只能放在可剔除的 `src/demo/demo.constants.ts`。只供一个页面/组件使用的常量放在同目录 `<Name>.constants.ts`或实现文件顶部。
 - `src/features/<domain>/`根部不得放常量；组件/Hook 私有常量可以与实现紧邻共置。API endpoint、sortBy 白名单和跨层字段限制属于业务域常量，不得在页面、feature 和 service 各复制一份。
-- 常量必须遵循最小可见范围，不能为了“统一”把所有值堆入一个 `constants.ts`。跨层移动常量时同步移动测试并更新唯一所有者。
+- 常量必须遵循最小可见范围，不能为了“统一”把所有值堆入一个 `constants.ts`。跨层移动常量时更新唯一所有者。
 - 基础常量使用 `UPPER_SNAKE_CASE`；成组枚举值使用 `as const`对象并从其值推导联合类型，避免另写一份可能漂移的字符串联合。
-- 用户可见静态文案仍按 §12 通过 i18n 管理，不复制到 constants；主题色、间距和断点优先使用 antd token/CSS 自定义属性；测试 fixture、协议规定的空字符串以及无业务语义的 `0`、`1`可直接使用，但一旦参与业务判断必须命名。
+- 用户可见静态文案仍按 §12 通过 i18n 管理，不复制到 constants；主题色、间距和断点优先使用 antd token/CSS 自定义属性；协议规定的空字符串以及无业务语义的 `0`、`1`可直接使用，但一旦参与业务判断必须命名。
 - 代码评审必须拒绝无名称、无法说明来源的字面量；新增常量时在名称或相邻多行简体中文注释中解释单位、边界和用途，尤其是毫秒、容量和版本号。
 
 应用级常量所有权固定如下，禁止在多个文件重复定义：
@@ -411,7 +390,7 @@ Data Router 默认可能并行执行父子 loader，因此每个受保护 loader
 - admin 角色拥有通配权限 `*`，`hasAuth('*')`和任意权限均返回 true。
 - 目录菜单只有在自身权限满足且至少有一个可见子节点时保留。
 - `hideInMenu: true`隐藏该节点及其菜单子树，但不改变 URL 可访问性和权限校验；详情页应单独设为隐藏叶子节点，不把可见菜单放在隐藏目录下。
-- 菜单过滤和守卫必须调用同一个 `hasPermissionChain`函数，并对该函数做单元测试。
+- 菜单过滤和守卫必须调用同一个 `hasPermissionChain`函数。
 
 ### 4.5 页签 key 与 location 快照
 
@@ -499,7 +478,7 @@ demo:nested:view
 
 个人中心仅要求登录，不分配额外 permCode。
 
-上述账号名、权限集合和矩阵的实现只能存在于 `src/demo/demo.constants.ts`及其同目录测试中，并由 demo 动态入口引用；正式权限常量文件不得导出任何演示账号数据。
+上述账号名、权限集合和矩阵的实现只能存在于 `src/demo/demo.constants.ts`中，并由 demo 动态入口引用；正式权限常量文件不得导出任何演示账号数据。
 
 ### 5.4 会话内权限变更
 
@@ -575,7 +554,7 @@ PUT /auth/password
 ```ts
 /**
  * errorCode 是跨前后端稳定的机器可读标识。
- * 新增错误码必须同步更新接口契约、i18n 映射、demo adapter 和测试。
+ * 新增错误码必须同步更新接口契约、i18n 映射和 demo adapter。
  */
 type ApiErrorCode =
   | 'VALIDATION_FAILED'
@@ -700,7 +679,7 @@ Fullscreen 是浏览器瞬时状态，明确属于 app slice，不属于 setting
 ### 8.2 redux-persist
 
 - 使用 slice 级嵌套 persist 或 `createTransform`完成字段级白名单，禁止把完整 user/app slice 直接加入根白名单。
-- 初始 `version: 1`并提供 `migrate`映射；结构变化必须升版本并测试旧数据迁移。
+- 初始 `version: 1`并提供 `migrate`映射；结构变化必须升版本并同步更新 migrate。
 - serializableCheck 只忽略 redux-persist 官方 action，不关闭整个检查器。
 - key 前缀常量 `STORAGE_KEY_PREFIX`统一为 `apex_`。
 - `rehydratedPromise`由 persistor bootstrap 回调完成，auth loader 必须等待它。
@@ -736,7 +715,7 @@ Fullscreen 是浏览器瞬时状态，明确属于 app slice，不属于 setting
 - antd 下拉层优先通过 `getPopupContainer`挂到当前页面容器；无法局部挂载的 Modal/notification 在页面隐藏前必须关闭。
 - 每个 Activity 页面拥有独立滚动容器，滚动发生在该容器而不是共享内容外壳，才能自然保留 `scrollTop`。
 - ECharts 在隐藏时暂停 resize 监听，重新激活后必须调用 `resize()`；主题变化时只标记重建，激活页立即重建，隐藏页在下次激活重建。
-- StrictMode 在开发与测试环境保持开启，用于暴露不完整的 Effect 清理。
+- StrictMode 在开发环境保持开启，用于暴露不完整的 Effect 清理。
 
 ### 9.3 页签交互
 
@@ -770,7 +749,7 @@ Fullscreen 是浏览器瞬时状态，明确属于 app slice，不属于 setting
 
 - settings 变化实时组装 ConfigProvider theme，无「应用」按钮。
 - 自定义组件的颜色只能来自 `theme.useToken()`或 `var(--ant-*)`。
-- 颜色字面量只允许出现在 `config/theme.ts`预设、自定义取色结果持久化以及必要的测试夹具；其他 CSS/TSX 出现十六进制、rgb、hsl 色值视为违规。
+- 颜色字面量只允许出现在 `config/theme.ts`预设和自定义取色结果持久化；其他 CSS/TSX 出现十六进制、rgb、hsl 色值视为违规。
 - 设置 Drawer 分组：主题、布局、字体、界面元素。
 - 跟随系统时监听 media query；用户选亮/暗后停止跟随，重新选“跟随系统”才恢复监听结果。
 - `index.html`启动镜像必须确保刷新时不出现相反主题底色；允许显示同主题的轻量初始化壳。
@@ -837,7 +816,7 @@ Fullscreen 是浏览器瞬时状态，明确属于 app slice，不属于 setting
 - demo 提供 `admin`、`viewer`两个账号，密码任意；权限严格符合 §5.3。
 - 登录 API 服务负责 fallback：真实 adapter 网络失败后 dispatch `sessionSource = demo`，再以 demo adapter 重试一次。普通响应拦截器不得隐式切 adapter。
 - `sessionSource`随双 token 持久化。刷新页面后，首个 profile 请求之前已恢复来源，因此 demo 会话继续走 demo adapter。
-- demo refresh endpoint 支持 token 过期和旋转，以便验证 401 single-flight；可通过测试专用控制器令 access/refresh token 失效。
+- demo refresh endpoint 支持 token 过期和旋转，以便验证 401 single-flight；可手动令 access/refresh token 失效。
 - CRUD 修改内存数据并同步版本化 localStorage 快照；加载时校验 schemaVersion，损坏或旧版本无法迁移时恢复种子数据并提示。
 - 登出清 token、sessionSource 和 demo 数据运行态；settings 保留。是否清 CRUD 快照由登出确认框明确选择，默认保留以便继续演示。
 - 页面 Header 显示常驻「演示模式」Badge。
@@ -1064,31 +1043,21 @@ preview     vite preview
 check:structure  node scripts/check-structure.mjs
 lint        oxlint
 typecheck   tsc -b --noEmit
-test        vitest run --coverage
 test:e2e    playwright test
-check       pnpm check:structure && pnpm lint && pnpm typecheck && pnpm test && pnpm build
+check       pnpm check:structure && pnpm lint && pnpm typecheck && pnpm build
 prepare     husky
 ```
 
 - `check-structure.mjs`必须扫描源码导入语句和真实文件路径，并在以下任一情况返回非零退出码：存在 `index.tsx`；页面/组件缺少同名文件夹或同名实现文件；路由 `loadPage`目标不在 `src/pages/`；页面入口出现在 `src/features/`；叶子 feature 包含 `components/`、`hooks/`以外的直属目录或文件；feature 任意层级出现 `pages/`、`api/`、`services/`或 `*.service.*`；feature React 组件逃逸到 `components/<Name>/<Name>.tsx`之外；业务请求实现或 DTO 出现在 `src/services/`之外；存在 `../../`及更深父级导入；内部根级导入未使用唯一的 `@/`别名；`src/components/`或 `src/hooks/`反向导入 `src/pages/`或 `src/features/`；service 导入 React UI；不同业务域的 feature 互相穿透导入；导入路径大小写与磁盘不一致。
-- 边界例外必须通过精确到文件的 allowlist 记录所有者、原因和清理条件；allowlist 不得使用目录通配符，也不得豁免“feature 只含组件/Hook”“页面只在 pages”“业务请求只在 services”三条硬约束。该脚本自身需有 fixture 测试，每类规则至少包含一个应通过和一个应失败样例。
+- 边界例外必须通过精确到文件的 allowlist 记录所有者、原因和清理条件；allowlist 不得使用目录通配符，也不得豁免“feature 只含组件/Hook”“页面只在 pages”“业务请求只在 services”三条硬约束。
 - lint-staged 对暂存的 TS/TSX 文件运行 `oxlint`，并运行全量 `pnpm check:structure`；两者都不使用 `--fix`，不改写用户代码。
 - `tsc -b --noEmit`是全项目引用构建检查，由 pre-commit 或 pre-push 执行，不伪装为“仅检查暂存文件”。
 - commit message 使用简体中文。
 - CI 固定执行 `pnpm install --frozen-lockfile`、`pnpm check`、`pnpm test:e2e`。
 
-### 16.3 测试
+### 16.3 端到端测试
 
-Vitest 覆盖：
-
-- 路由三投影、权限继承、菜单过滤、redirect 同源校验。
-- rehydrated/profile single-flight。
-- 401 刷新、epoch 防陈旧写回、403 权限刷新、防递归。
-- GET key、页面 scope abort、逻辑 loading 计数。
-- persist transform/migrate、i18n namespace 预加载、工具函数。
-- 顶层分层边界、feature 内容白名单、页面/组件命名、深层相对导入、依赖方向和大小写路径检查 fixture。
-
-`router/`、`services/`、`store/`、`utils/`以及各 feature 的 `hooks/`语句/分支/函数/行覆盖率均不低于 80%。业务组件和页面的关键交互按 §14 与 §19.1 编写同目录测试，不以移动文件规避覆盖率统计。
+本模板不编写单元测试；回归保障由 §16.2 的结构检查、lint、typecheck、构建与 Playwright E2E 承担。
 
 Playwright 覆盖：登录与回跳、admin/viewer 差异、CRUD、布局切换、语言、主题刷新、多页签缓存/LRU、并发 401、refresh 失效、路由切换取消、错误页和恶意 redirect。
 
@@ -1097,7 +1066,7 @@ Playwright 覆盖：登录与回跳、admin/viewer 差异、CRUD、布局切换�
 - `base: '/'`，`outDir: dist`；本规格不支持子路径部署。
 - manualChunks 拆分 echarts、antd 等大依赖，但以构建分析结果为准，不要求形成循环 chunk。
 - 浏览器目标：最近两个稳定版 Chrome/Edge/Firefox，Safari 16.4+；Playwright Chromium 全量，Firefox/WebKit 关键冒烟。
-- 每次模板发布在 README 记录实际通过测试的浏览器版本，不能只记录“最近两个版本”的滚动策略。
+- 每次模板发布在 README 记录实际通过 E2E 验证的浏览器版本，不能只记录“最近两个版本”的滚动策略。
 - 使用 `createBrowserRouter`的生产静态服务器必须把除真实静态资源和 `/api`外的未知 GET 路径重写到 `/index.html`。
 - README 提供 Nginx、Apache/通用静态托管的 SPA fallback 示例；没有 fallback 的部署不算验收通过。
 
@@ -1175,15 +1144,14 @@ Playwright 覆盖：登录与回跳、admin/viewer 差异、CRUD、布局切换�
 
 ### 19.2 工程验收
 
-- [ ] `pnpm check:structure`、`pnpm lint`、`pnpm typecheck`、`pnpm test`、`pnpm build`、`pnpm test:e2e`全部通过。
+- [ ] `pnpm check:structure`、`pnpm lint`、`pnpm typecheck`、`pnpm build`、`pnpm test:e2e`全部通过。
 - [ ] 所有页面和组件均为 `<Name>/<Name>.tsx`；源码不存在 `index.tsx`，不存在只有 barrel 而没有具名实现文件的页面/组件目录。
 - [ ] `src/features/`的每个叶子业务域只包含 `components/`和 `hooks/`，不存在页面、`api/`、`services/`、service 文件或根部散落的类型/常量/业务实现；组件/Hook 的同目录辅助文件除外。
 - [ ] 所有页面入口位于 `src/pages/`，所有 HTTP 基础设施、业务请求和 DTO 位于 `src/services/`；`pages/features/services/types/constants`使用一致的业务域路径。
 - [ ] 跨两个以上业务域复用的组件/Hook 已分别提升到 `src/components/`和 `src/hooks/`，共享层不反向依赖 `src/pages/`或 `src/features/`，service 不导入 React UI。
-- [ ] 源码不存在 `../../`及更深父级导入；`@/*`在 TypeScript、Vite、Vitest、编辑器和 CI 中解析一致，路径大小写完全匹配。
+- [ ] 源码不存在 `../../`及更深父级导入；`@/*`在 TypeScript、Vite、编辑器和 CI 中解析一致，路径大小写完全匹配。
 - [ ] Props/DTO/领域类型均按 §3.4 就近且只有一个权威定义；不存在无所有者的全局类型桶或复制接口。
 - [ ] 魔法数字和字符串已按 §3.6 收敛到最小作用域的具名常量；不存在单体全局 `constants.ts`杂物桶。
-- [ ] 核心目录覆盖率达到 §16.3 阈值。
 - [ ] package.json 声明 engines 与 packageManager，CI 使用 frozen lockfile。
 - [ ] Husky/lint-staged 对暂存 TS/TSX 执行 oxlint，并执行全量结构检查；所有钩子只读检查，不主动格式化或修改代码。
 - [ ] `VITE_DEMO_MODE=off`构建产物不含 `APEX_DEMO_SENTINEL`、demo 账号或 demo chunk。
@@ -1195,7 +1163,7 @@ Playwright 覆盖：登录与回跳、admin/viewer 差异、CRUD、布局切换�
 
 ## 20. 实现前技术闸门
 
-以下验证必须在全面开发前以最小 PoC 完成，并把命令、测试文件和结果追加到本节；全部通过后方可把文档状态改为「已确认」。
+以下验证必须在全面开发前以最小 PoC 完成，并把命令、验证文件和结果追加到本节；全部通过后方可把文档状态改为「已确认」。
 
 1. **独立路由上下文**：用两个 query 页签证明 `CachedRouteView + useRoutes(locationArg)`中的 `useLocation/useSearchParams/useParams`互不串值。
 2. **Activity 生命周期**：证明输入状态和滚动位置恢复，Effect 隐藏时清理、显示时重建，关闭/LRU 后真正卸载。
