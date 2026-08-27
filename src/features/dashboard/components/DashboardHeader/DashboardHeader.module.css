@@ -1,0 +1,56 @@
+/* 仪表盘页头：复刻设计稿（24px 标题 + 状态点 + 控制胶囊） */
+
+.header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 8px;
+  min-height: 44px;
+}
+
+.titleWrap {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 780;
+  letter-spacing: -0.02em;
+}
+
+.systemOk {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #66718a;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--app-green);
+  box-shadow: 0 0 0 4px rgba(20, 160, 90, 0.16);
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.spinning {
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

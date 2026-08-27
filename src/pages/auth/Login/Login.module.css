@@ -1,0 +1,50 @@
+/* 登录页：渐变画布上的居中玻璃卡片 */
+
+.wrap {
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.card {
+  width: 400px;
+  padding: 36px 34px 28px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(120, 145, 190, 0.28);
+  box-shadow:
+    0 18px 60px rgba(23, 43, 77, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(18px) saturate(135%);
+  -webkit-backdrop-filter: blur(18px) saturate(135%);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.apple {
+  width: 26px;
+  height: 26px;
+  color: #1d1d1f;
+}
+
+.name {
+  font-size: 18px;
+  font-weight: 780;
+  letter-spacing: -0.02em;
+}
+
+.sub {
+  margin: 0 0 22px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--app-text-3);
+}

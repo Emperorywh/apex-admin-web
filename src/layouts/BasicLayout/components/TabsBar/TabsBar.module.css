@@ -1,0 +1,160 @@
+/* 页签栏：复刻设计稿（52px 玻璃条 + 258px 定宽页签） */
+
+.bar {
+  height: var(--app-tabs-h);
+  display: flex;
+  align-items: stretch;
+  padding: 0 15px;
+  background: rgba(244, 247, 252, 0.9);
+  border-bottom: 1px solid var(--app-line);
+  backdrop-filter: blur(16px) saturate(130%);
+  -webkit-backdrop-filter: blur(16px) saturate(130%);
+}
+
+.scroll {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: stretch;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+
+.scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.arrow {
+  width: 26px;
+  flex: 0 0 auto;
+  border: 0;
+  background: transparent;
+  color: var(--app-text-3);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.arrow:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+
+.arrow:not(:disabled):hover {
+  color: var(--app-blue);
+}
+
+.tab {
+  width: 258px;
+  min-width: 258px;
+  max-width: 258px;
+  height: var(--app-tabs-h);
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 0 18px;
+  border-top: 1px solid transparent;
+  border-left: 1px solid rgba(110, 135, 176, 0.18);
+  border-right: 1px solid rgba(110, 135, 176, 0.18);
+  color: #45516b;
+  cursor: pointer;
+  user-select: none;
+  touch-action: none;
+  background: linear-gradient(180deg, rgba(251, 253, 255, 0.8), rgba(240, 245, 251, 0.85));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.tab:hover {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(243, 247, 252, 0.92));
+}
+
+.tabActive,
+.tabActive:hover {
+  color: #22304e;
+  border-top-color: rgba(64, 123, 255, 0.5);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(245, 249, 254, 0.94));
+  box-shadow:
+    inset 0 2px 0 rgba(47, 127, 255, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.tabDragging {
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.99);
+  box-shadow: 0 8px 22px rgba(23, 43, 77, 0.18);
+}
+
+.tabIcon {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+.blue {
+  background: linear-gradient(180deg, #3f8dff, #1f6eff);
+}
+
+.green {
+  background: linear-gradient(180deg, #31d67d, #16b76e);
+}
+
+.orange {
+  background: linear-gradient(180deg, #ffb449, #ff9500);
+}
+
+.purple {
+  background: linear-gradient(180deg, #a86dff, #7e56ff);
+}
+
+.title {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 650;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.close {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #7a859a;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.close:hover {
+  background: rgba(20, 45, 90, 0.08);
+  color: #33405a;
+}
+
+.closePlaceholder {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+}
+
+@media (max-width: 1600px) {
+  .tab {
+    width: 220px;
+    min-width: 220px;
+    max-width: 220px;
+  }
+}

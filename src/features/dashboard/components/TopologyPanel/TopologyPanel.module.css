@@ -1,0 +1,136 @@
+/* 资源拓扑面板：复刻设计稿（评分环 conic-gradient + 拓扑画布） */
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.body {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 10px;
+  min-height: 230px;
+}
+
+.scoreRing {
+  width: 112px;
+  height: 112px;
+  margin: 0 auto 8px;
+  border-radius: 50%;
+  position: relative;
+  background: conic-gradient(#13b8a6 0 72%, #2f7fff 72% 86%, rgba(20, 50, 100, 0.08) 86% 100%);
+}
+
+.scoreRing::before {
+  content: '';
+  position: absolute;
+  inset: 9px;
+  border-radius: 50%;
+  background: #fdfeff;
+}
+
+.scoreCenter {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.scoreCenter small {
+  font-size: 12px;
+  font-weight: 700;
+  color: #74809a;
+}
+
+.scoreCenter strong {
+  font-size: 20px;
+  font-weight: 800;
+  color: #101b30;
+  margin: 2px 0;
+}
+
+.scoreCenter span {
+  font-size: 13px;
+  font-weight: 800;
+  color: #0da85f;
+}
+
+.healthList {
+  display: grid;
+  gap: 5px;
+}
+
+.healthItem {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #3f4c63;
+}
+
+.greenDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #18ad68;
+  display: inline-block;
+  margin-right: 8px;
+}
+
+.canvas {
+  position: relative;
+  min-height: 230px;
+}
+
+.mapDots {
+  position: absolute;
+  inset: 18px 0 0 0;
+  opacity: 0.24;
+  background-image:
+    radial-gradient(circle at 10% 35%, rgba(60, 90, 140, 0.75) 0 0.9px, transparent 1.1px),
+    radial-gradient(circle at 30% 28%, rgba(60, 90, 140, 0.7) 0 0.9px, transparent 1.1px),
+    radial-gradient(circle at 52% 24%, rgba(60, 90, 140, 0.7) 0 0.9px, transparent 1.1px),
+    radial-gradient(circle at 68% 31%, rgba(60, 90, 140, 0.7) 0 0.9px, transparent 1.1px),
+    radial-gradient(circle at 83% 50%, rgba(60, 90, 140, 0.65) 0 0.9px, transparent 1.1px),
+    radial-gradient(circle at 58% 58%, rgba(60, 90, 140, 0.62) 0 0.9px, transparent 1.1px),
+    radial-gradient(circle at 38% 60%, rgba(60, 90, 140, 0.62) 0 0.9px, transparent 1.1px),
+    radial-gradient(circle at 20% 56%, rgba(60, 90, 140, 0.62) 0 0.9px, transparent 1.1px);
+}
+
+.svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.nodeTitle {
+  fill: #17233b;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.nodeSub {
+  fill: #5d6a83;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+@media (max-width: 1100px) {
+  .body {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,8 +1,43 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
+  "plugins": ["react", "typescript", "import", "oxc"],
+  "overrides": [
+    {
+      "files": ["src/router/**/*.tsx"],
+      "rules": {
+        "react/only-export-components": "off"
+      }
+    }
+  ],
   "rules": {
     "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
+    "react/only-export-components": ["warn", { "allowConstantExport": true }],
+    "import/no-default-export": "off",
+    "no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "name": "react-router",
+            "importNames": [
+              "useLoaderData",
+              "useRouteLoaderData",
+              "useFetcher",
+              "useRevalidator",
+              "useActionData",
+              "useAsyncError",
+              "useAsyncValue",
+              "useAwaitError",
+              "Outlet"
+            ],
+            "message": "renderRoutes 不参与 Data Router 数据 API；页面数据统一通过 service 层获取（SPEC §4.1）。"
+          },
+          {
+            "name": "react-router-dom",
+            "message": "统一从 react-router 导入；不安装 react-router-dom（SPEC §2）。"
+          }
+        ]
+      }
+    ]
   }
 }

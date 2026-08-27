@@ -1,0 +1,33 @@
+.row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.row > :last-child {
+  border-right: 0;
+}
+
+@media (max-width: 1280px) {
+  .row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .row > :nth-child(2) {
+    border-right: 0;
+  }
+}
+
+@media (max-width: 720px) {
+  .row {
+    grid-template-columns: 1fr;
+  }
+
+  .row > * {
+    border-right: 0;
+    border-bottom: 1px solid rgba(108, 138, 184, 0.22);
+  }
+
+  .row > :last-child {
+    border-bottom: 0;
+  }
+}

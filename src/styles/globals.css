@@ -1,0 +1,214 @@
+/*
+ * 全局样式：设计令牌 + 背景画布 + 滚动条。
+ * 布局与业务样式一律使用 CSS Modules；本文件只承载跨页面共享的基础层。
+ */
+
+:root {
+  --app-bg: #eef2f8;
+  --app-bg-2: #e6ebf3;
+  --app-panel: rgba(255, 255, 255, 0.86);
+  --app-line: rgba(108, 138, 184, 0.3);
+  --app-line-soft: rgba(60, 90, 140, 0.09);
+  --app-text: #101728;
+  --app-text-2: #3d4759;
+  --app-text-3: #5f6b80;
+  --app-text-4: #7d879b;
+  --app-blue: #1f6ef5;
+  --app-blue-2: #4c8dff;
+  --app-green: #0f9f58;
+  --app-orange: #e8860c;
+  --app-red: #e5484d;
+  --app-yellow: #d98e0b;
+  --app-topbar-h: 49px;
+  --app-tabs-h: 52px;
+  --app-dock-h: 54px;
+  --app-font:
+    -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text',
+    'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+  font-family: var(--app-font);
+  color: var(--app-text);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(64, 132, 255, 0.1), transparent 26%),
+    radial-gradient(circle at 20% 40%, rgba(80, 140, 255, 0.09), transparent 26%),
+    radial-gradient(circle at 80% 35%, rgba(120, 160, 255, 0.08), transparent 22%),
+    repeating-linear-gradient(
+      90deg,
+      rgba(70, 105, 160, 0.05) 0px,
+      rgba(70, 105, 160, 0.05) 1px,
+      transparent 2px,
+      transparent 40px
+    ),
+    linear-gradient(180deg, #f7f9fd 0%, #e8edf6 100%);
+}
+
+/* 细滚动条，贴合明亮玻璃风格 */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(108, 138, 184, 0.32);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(108, 138, 184, 0.5);
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* -------------------------------------------------------------------------- */
+/* 设计系统工具类：跨业务面板复用的卡片 / 标题 / 胶囊 / 标签（源自设计稿）            */
+/* -------------------------------------------------------------------------- */
+
+.ds-card {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(52, 123, 255, 0.05), transparent 50%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(252, 254, 255, 0.92));
+  border: 1px solid rgba(108, 138, 184, 0.24);
+  border-radius: 9px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  overflow: hidden;
+}
+
+.ds-card-p {
+  padding: 14px 17px;
+}
+
+.ds-card-title {
+  font-size: 14px;
+  font-weight: 750;
+  color: #17233b;
+}
+
+.ds-card-sub {
+  font-size: 11px;
+  color: #71809a;
+  font-weight: 600;
+}
+
+.ds-control {
+  height: 32px;
+  padding: 0 13px;
+  border-radius: 9px;
+  border: 1px solid rgba(108, 138, 184, 0.32);
+  background: rgba(255, 255, 255, 0.92);
+  color: #33405a;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 650;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+}
+
+.ds-control:hover {
+  border-color: rgba(47, 127, 255, 0.45);
+  color: #1f6ef5;
+}
+
+.ds-icon-btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  justify-content: center;
+}
+
+.ds-pill {
+  min-width: 31px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.ds-pill-red {
+  background: rgba(229, 72, 77, 0.1);
+  color: #d92d20;
+}
+
+.ds-pill-orange {
+  background: rgba(232, 134, 12, 0.12);
+  color: #c2690a;
+}
+
+.ds-pill-yellow {
+  background: rgba(217, 142, 11, 0.14);
+  color: #a3660b;
+}
+
+.ds-tag {
+  min-width: 36px;
+  height: 23px;
+  padding: 0 7px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ds-tag-green {
+  background: rgba(23, 178, 106, 0.14);
+  color: #0c8f53;
+}
+
+.ds-tag-blue {
+  background: rgba(47, 127, 255, 0.12);
+  color: #1f6ef5;
+}
+
+.ds-tag-orange {
+  background: rgba(232, 134, 12, 0.14);
+  color: #c2690a;
+}
+
+.ds-tag-red {
+  background: rgba(229, 72, 77, 0.12);
+  color: #d92d20;
+}
+
+.ds-link {
+  color: #1f6ef5;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.ds-link:hover {
+  text-decoration: underline;
+}
+
+.ds-red-link {
+  color: #e5484d;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}

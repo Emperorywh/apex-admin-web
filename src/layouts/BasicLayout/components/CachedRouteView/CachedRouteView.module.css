@@ -1,0 +1,8 @@
+/* 每个缓存页面独立的滚动容器；左右与底部留白为 Dock 与画布边距让位 */
+
+.scrollHost {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 10px 9px 72px;
+}
