@@ -1,24 +1,26 @@
 /**
- * 用户管理页：分页表格 + 状态筛选 + 新建/编辑/启停用/删除（写权限门控）。
+ * 用户管理页：分页表格 + 状态筛选 + 新建/编辑/启停用/删除。
  */
 
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { App, Badge, Button, Card, Popconfirm, Select, Space, Table, Tag, type TablePaginationConfig } from 'antd'
 import { Plus } from 'lucide-react'
-import { DEFAULT_PAGE_SIZE } from '@/constants/request.constants'
-import { PERMISSION_CODES } from '@/constants/permission.constants'
-import { USER_SORT_FIELDS, type UserSortField } from '@/constants/system/user/user.constants'
-import { useAuth } from '@/hooks/useAuth'
 import { usePageRequest } from '@/hooks/usePageRequest'
 import { UserForm } from '@/features/system/user/components/UserForm/UserForm'
 import { useUserList } from '@/features/system/user/hooks/useUserList'
+import { DEFAULT_PAGE_SIZE } from '@/services/request/request.constants'
 import { pageRoles } from '@/services/system/role/role.service'
 import { createUser, deleteUser, disableUser, enableUser, updateUser } from '@/services/system/user/user.service'
 import { apiErrorMessage } from '@/services/request/request'
 import type { RoleOption } from '@/types/system/role/role.types'
 import type { UserEntity } from '@/types/system/user/user.types'
 import type { UserFormValues } from '@/features/system/user/components/UserForm/UserForm.types'
+
+/** 列表 sort 白名单；后端协议为单参数、逗号分隔、'-' 前缀降序 */
+const USER_SORT_FIELDS = ['username', 'displayName', 'createdAt', 'updatedAt'] as const
+
+type UserSortField = (typeof USER_SORT_FIELDS)[number]
 
 /** 排序字段 → 中文标签（作为 i18n key） */
 const USER_SORT_LABELS: Record<UserSortField, string> = {
@@ -31,11 +33,9 @@ const USER_SORT_LABELS: Record<UserSortField, string> = {
 export default function User() {
   const { t } = useTranslation('system')
   const { t: tCommon } = useTranslation('common')
-  const { hasAuth } = useAuth()
   const { signal } = usePageRequest()
   const { message } = App.useApp()
   const { items, total, loading, error, query, setQuery, reload } = useUserList()
-  const canWrite = hasAuth(PERMISSION_CODES.SYSTEM_USER_WRITE)
 
   const [roleOptions, setRoleOptions] = useState<RoleOption[]>([])
   const [formOpen, setFormOpen] = useState(false)
@@ -125,24 +125,21 @@ export default function User() {
       title: tCommon('操作'),
       key: 'actions',
       width: 200,
-      render: (_: unknown, record: UserEntity) =>
-        canWrite ? (
-          <Space size={4}>
-            <Button type="link" size="small" onClick={() => openEdit(record)}>
-              {tCommon('编辑')}
+      render: (_: unknown, record: UserEntity) => (
+        <Space size={4}>
+          <Button type="link" size="small" onClick={() => openEdit(record)}>
+            {tCommon('编辑')}
+          </Button>
+          <Button type="link" size="small" onClick={() => void toggleStatus(record)}>
+            {record.status === 'active' ? t('停用') : t('启用')}
+          </Button>
+          <Popconfirm title={t('确认删除该用户？')} onConfirm={() => void remove(record)}>
+            <Button type="link" size="small" danger>
+              {tCommon('删除')}
             </Button>
-            <Button type="link" size="small" onClick={() => void toggleStatus(record)}>
-              {record.status === 'active' ? t('停用') : t('启用')}
-            </Button>
-            <Popconfirm title={t('确认删除该用户？')} onConfirm={() => void remove(record)}>
-              <Button type="link" size="small" danger>
-                {tCommon('删除')}
-              </Button>
-            </Popconfirm>
-          </Space>
-        ) : (
-          '—'
-        ),
+          </Popconfirm>
+        </Space>
+      ),
     },
   ]
 
@@ -190,11 +187,9 @@ export default function User() {
     <Card
       title={t('用户管理')}
       extra={
-        canWrite ? (
-          <Button type="primary" icon={<Plus size={15} />} onClick={openCreate}>
-            {t('新建用户')}
-          </Button>
-        ) : null
+        <Button type="primary" icon={<Plus size={15} />} onClick={openCreate}>
+          {t('新建用户')}
+        </Button>
       }
       styles={{ body: { paddingTop: 12 } }}
     >

@@ -1,24 +1,24 @@
 /**
- * 角色管理页：分页表格 + 新建/编辑/启停用/删除（写权限门控）。
- * 权限分配端点后端暂缺，仅详情展示权限码（SPEC 约定只读）。
+ * 角色管理页：分页表格 + 新建/编辑/启停用/删除。
  */
 
 import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { App, Badge, Button, Card, Drawer, Popconfirm, Select, Space, Table, Tag, type TablePaginationConfig } from 'antd'
+import { App, Badge, Button, Card, Drawer, Popconfirm, Select, Space, Table, type TablePaginationConfig } from 'antd'
 import { Plus } from 'lucide-react'
-import { DEFAULT_PAGE_SIZE } from '@/constants/request.constants'
-import { PERMISSION_CODES } from '@/constants/permission.constants'
-import { ROLE_SORT_FIELDS } from '@/constants/system/role/role.constants'
-import { useAuth } from '@/hooks/useAuth'
 import { usePageRequest } from '@/hooks/usePageRequest'
 import { RoleForm } from '@/features/system/role/components/RoleForm/RoleForm'
 import { useRoleList } from '@/features/system/role/hooks/useRoleList'
+import { DEFAULT_PAGE_SIZE } from '@/services/request/request.constants'
 import { createRole, deleteRole, disableRole, enableRole, getRole, updateRole } from '@/services/system/role/role.service'
 import { apiErrorMessage } from '@/services/request/request'
 import type { RoleEntity } from '@/types/system/role/role.types'
 import type { RoleFormValues } from '@/features/system/role/components/RoleForm/RoleForm'
-import type { RoleSortField } from '@/constants/system/role/role.constants'
+
+/** 列表 sort 白名单；协议同用户域 */
+const ROLE_SORT_FIELDS = ['code', 'name', 'createdAt', 'updatedAt'] as const
+
+type RoleSortField = (typeof ROLE_SORT_FIELDS)[number]
 
 /** 排序字段 → 中文标签（作为 i18n key） */
 const ROLE_SORT_LABELS: Record<RoleSortField, string> = {
@@ -31,11 +31,9 @@ const ROLE_SORT_LABELS: Record<RoleSortField, string> = {
 export default function Role() {
   const { t } = useTranslation('system')
   const { t: tCommon } = useTranslation('common')
-  const { hasAuth } = useAuth()
   const { signal } = usePageRequest()
   const { message } = App.useApp()
   const { items, total, loading, query, setQuery, reload } = useRoleList()
-  const canWrite = hasAuth(PERMISSION_CODES.RBAC_ROLE_WRITE)
 
   const [formOpen, setFormOpen] = useState(false)
   const [editing, setEditing] = useState<RoleEntity | null>(null)
@@ -129,28 +127,24 @@ export default function Role() {
           <Button type="link" size="small" onClick={() => openDetail(record)}>
             {t('详情')}
           </Button>
-          {canWrite ? (
-            <>
-              <Button
-                type="link"
-                size="small"
-                onClick={() => {
-                  setEditing(record)
-                  setFormOpen(true)
-                }}
-              >
-                {tCommon('编辑')}
-              </Button>
-              <Button type="link" size="small" onClick={() => void toggleStatus(record)}>
-                {record.status === 'active' ? t('停用') : t('启用')}
-              </Button>
-              <Popconfirm title={t('确认删除该角色？')} onConfirm={() => void remove(record)}>
-                <Button type="link" size="small" danger>
-                  {tCommon('删除')}
-                </Button>
-              </Popconfirm>
-            </>
-          ) : null}
+          <Button
+            type="link"
+            size="small"
+            onClick={() => {
+              setEditing(record)
+              setFormOpen(true)
+            }}
+          >
+            {tCommon('编辑')}
+          </Button>
+          <Button type="link" size="small" onClick={() => void toggleStatus(record)}>
+            {record.status === 'active' ? t('停用') : t('启用')}
+          </Button>
+          <Popconfirm title={t('确认删除该角色？')} onConfirm={() => void remove(record)}>
+            <Button type="link" size="small" danger>
+              {tCommon('删除')}
+            </Button>
+          </Popconfirm>
         </Space>
       ),
     },
@@ -168,18 +162,16 @@ export default function Role() {
     <Card
       title={t('角色管理')}
       extra={
-        canWrite ? (
-          <Button
-            type="primary"
-            icon={<Plus size={15} />}
-            onClick={() => {
-              setEditing(null)
-              setFormOpen(true)
-            }}
-          >
-            {t('新建角色')}
-          </Button>
-        ) : null
+        <Button
+          type="primary"
+          icon={<Plus size={15} />}
+          onClick={() => {
+            setEditing(null)
+            setFormOpen(true)
+          }}
+        >
+          {t('新建角色')}
+        </Button>
       }
       styles={{ body: { paddingTop: 12 } }}
     >
@@ -233,14 +225,6 @@ export default function Role() {
             <div>
               <strong>{t('成员数')}：</strong>
               {detail.memberCount ?? '—'}
-            </div>
-            <div>
-              <strong>{t('权限码')}：</strong>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 6 }}>
-                {(detail.permissionCodes ?? []).map((code) => (
-                  <Tag key={code}>{code}</Tag>
-                ))}
-              </div>
             </div>
           </div>
         ) : null}

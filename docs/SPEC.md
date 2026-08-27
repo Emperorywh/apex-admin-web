@@ -10,7 +10,7 @@
 
 设计原则：
 
-- **约定大于配置**：路由定义、权限码、i18n 均有统一约定。
+- **约定大于配置**：路由定义、i18n 均有统一约定。
 - **单一来源**：路由匹配、菜单、面包屑、页签标题和纯渲染路由均由同一静态路由定义派生。
 - **分层清晰**：页面入口、业务 UI、请求服务、类型和常量分别归入顶层目录；各层使用一致的业务域路径保持对应关系，`features`只承载业务组件与业务 Hook。
 
@@ -111,7 +111,8 @@ src/
 ├── services/                             # 应用服务、HTTP 基础设施、业务请求与请求/响应 DTO
 │   ├── request/
 │   │   ├── request.ts
-│   │   └── request.types.ts              # 请求基础设施类型
+│   │   ├── request.types.ts              # 请求基础设施类型
+│   │   └── request.constants.ts          # 超时、稳定错误码与请求协议默认值
 │   ├── feedback/uiFeedback.ts
 │   ├── auth/
 │   │   ├── auth.service.ts
@@ -143,19 +144,9 @@ src/
 │       ├── user/user.types.ts
 │       ├── role/role.types.ts
 │       └── menu/menu.types.ts
-├── constants/                            # 应用级与跨层业务常量，按关注点/业务域拆分
-│   ├── app.constants.ts
-│   ├── permission.constants.ts           # 权限码统一定义
-│   ├── request.constants.ts
-│   ├── route.constants.ts
-│   ├── storage.constants.ts
-│   ├── auth/auth.constants.ts
-│   ├── dashboard/dashboard.constants.ts
-│   ├── profile/profile.constants.ts
-│   └── system/
-│       ├── user/user.constants.ts
-│       ├── role/role.constants.ts
-│       └── menu/menu.constants.ts
+├── constants/                            # 仅收跨层共享的全局常量；其余常量就近放置（§3.6）
+│   ├── route.constants.ts                # 稳定回退地址（路由 id/path 唯一来源在 router/definitions.tsx）
+│   └── auth/auth.constants.ts            # 登录回跳参数与用户名边界（登录/用户管理共用）
 ├── i18n/
 │   ├── i18n.ts                           # i18next 初始化，不以 index.ts 隐藏运行时代码
 │   └── locales/en-US/*.ts
@@ -203,7 +194,7 @@ scripts/
 | 跨业务域共享组件/Hook | `src/components/`、`src/hooks/` | 必须无单一业务所有者，不得反向依赖页面或 feature |
 | 应用服务、HTTP 基础设施、业务请求、DTO | `src/services/` | 业务请求按同一业务域路径拆分；禁止在 feature 或页面目录定义 API adapter |
 | 跨层业务实体/模型 | `src/types/<domain>/` | 必须有明确业务所有者，不创建无边界 barrel |
-| 应用级/跨层业务常量 | `src/constants/` | 按关注点或业务域拆分 |
+| 跨层共享全局常量 | `src/constants/` | 只收多业务域共用的契约，按关注点或业务域拆分；其余常量就近放置（§3.6） |
 
 - 页面文件负责路由入口与业务组件编排，不在 `src/pages/`内建立通用组件库。只被一个页面使用但具有独立 React 组件身份的子组件，仍放入对应 `src/features/<domain>/components/<Name>/`；页面文件夹只共置页面自身的辅助文件。
 - 一个业务组件或 Hook 首次只服务单一业务域时放在该域的 feature 内；被两个或以上业务域直接复用时，必须在同一次变更中提升到 `src/components/`或 `src/hooks/`，并移除对原业务域内部状态和 service 的耦合。
@@ -240,23 +231,21 @@ scripts/
 
 ### 3.6 Constants 常量管理（已定）
 
-- 有业务或配置语义的魔法数字和字符串不得散落在实现中。请求超时、缓存容量、分页默认值、Storage key、路由 ID/路径、权限码、错误码、状态值、日期格式、正则、长度限制和 API endpoint 等必须使用具名常量。
-- 应用级稳定常量按关注点放在 `src/constants/*.constants.ts`；同一业务域跨页面、组件和 service 使用的常量放在 `src/constants/<domain>/<domain>.constants.ts`。权限码统一在 `src/constants/permission.constants.ts`。只供一个页面/组件使用的常量放在同目录 `<Name>.constants.ts`或实现文件顶部。
-- `src/features/<domain>/`根部不得放常量；组件/Hook 私有常量可以与实现紧邻共置。API endpoint、sortBy 白名单和跨层字段限制属于业务域常量，不得在页面、feature 和 service 各复制一份。
+- 有业务或配置语义的魔法数字和字符串不得散落在实现中。请求超时、缓存容量、分页默认值、Storage key、路由 ID/路径、错误码、状态值、日期格式、正则、长度限制和 API endpoint 等必须使用具名常量。
+- `src/constants/`只收被多个业务域跨层共享的全局常量（路由回退地址、认证边界契约等），按关注点或业务域拆分。其余常量一律放到离调用最近的地方：单一消费者写在实现文件顶部，同目录多文件共享放同目录 `<Name>.constants.ts`，请求协议常量（超时、错误码、endpoint、分页默认值）放 `src/services/`对应目录，存储 key 与持久化版本放对应基础设施（store、i18n）旁。
+- `src/features/<domain>/`根部不得放常量；组件/Hook 私有常量与实现紧邻共置。跨层共享的边界值（如用户名长度）放 `src/constants/<domain>/`，不得在多个 feature 各复制一份。
 - 常量必须遵循最小可见范围，不能为了“统一”把所有值堆入一个 `constants.ts`。跨层移动常量时更新唯一所有者。
 - 基础常量使用 `UPPER_SNAKE_CASE`；成组枚举值使用 `as const`对象并从其值推导联合类型，避免另写一份可能漂移的字符串联合。
 - 用户可见静态文案仍按 §6 通过 i18n 管理，不复制到 constants；主题色、间距和断点优先使用 antd token/CSS 自定义属性；协议规定的空字符串以及无业务语义的 `0`、`1`可直接使用，但一旦参与业务判断必须命名。
 - 代码评审必须拒绝无名称、无法说明来源的字面量；新增常量时在名称或相邻多行简体中文注释中解释单位、边界和用途，尤其是毫秒、容量和版本号。
 
-应用级常量所有权固定如下，禁止在多个文件重复定义：
+跨层共享常量与协议常量的所有权固定如下，禁止在多个文件重复定义：
 
 | 文件 | 唯一负责内容 |
 | --- | --- |
-| `src/constants/app.constants.ts` | 页签缓存容量、全局进度延迟和应用级容量/时间边界 |
-| `src/constants/request.constants.ts` | 请求超时、稳定错误码、请求协议默认值 |
-| `src/constants/route.constants.ts` | 路由 ID、路径和稳定回退地址 |
-| `src/constants/storage.constants.ts` | Storage key、前缀和持久化 schema 版本 |
-| `src/constants/permission.constants.ts` | 权限码统一定义 |
+| `src/constants/route.constants.ts` | 错误页与登录的稳定回退地址 `FALLBACK_PATH` |
+| `src/constants/auth/auth.constants.ts` | 登录回跳参数名、用户名长度边界 |
+| `src/services/request/request.constants.ts` | 请求超时、稳定错误码、API 基础路径、分页默认页大小 |
 
 ---
 
@@ -266,15 +255,15 @@ scripts/
 
 `router/definitions.tsx` 中的 `AppRouteDefinition[]` 是唯一来源，每个节点必须有稳定且全局唯一的 `id`。它生成三份只读投影：
 
-1. **accessRoutes**：全量注册给 `createBrowserRouter`。负责 URL 匹配、权限 loader、重定向和路由级错误；业务叶子节点只返回空锚点，不能直接渲染业务页。
+1. **accessRoutes**：全量注册给 `createBrowserRouter`。负责 URL 匹配、认证 loader、重定向和路由级错误；业务叶子节点只返回空锚点，不能直接渲染业务页。
 2. **renderRoutes**：不包含 loader/action，仅包含目录结构和 `React.lazy` 页面组件。`CachedRouteView` 使用 `useRoutes(renderRoutes, locationSnapshot)`渲染，从而让每个缓存页签获得自己的 `useLocation/useParams/useSearchParams`上下文。
-3. **menuRoutes**：按权限和 `hideInMenu`过滤，供侧边菜单、顶部菜单和快捷入口使用。
+3. **menuRoutes**：按 `hideInMenu`过滤，供侧边菜单、顶部菜单和快捷入口使用。
 
 三份投影和其中的 lazy component 都在模块初始化时只生成一次并保持引用稳定；不能在 `PageCacheHost`每次渲染时重建。列表中的每个页签由独立 `CachedRouteView`组件调用一次 `useRoutes`，禁止在循环体内直接调用 hook。
 
 `BasicLayout`在受保护根路由内只挂载一次。它根据 Data Router 当前 location/matches 更新 tabs，再由持久存在的 `PageCacheHost`渲染所有缓存页。禁止缓存 `<Outlet/>`返回值。
 
-Data Router loader 只做权限校验和重定向，不承载业务页面数据。业务页统一通过 service 层获取数据。`renderRoutes`不参与 Data Router 数据 API，因此页面禁止使用 `useLoaderData`、`useRouteLoaderData`、`useFetcher`、route action 和 `useRevalidator`；oxlint 通过受限导入规则检查这些命名导入。
+Data Router loader 只做认证校验和重定向，不承载业务页面数据。业务页统一通过 service 层获取数据。`renderRoutes`不参与 Data Router 数据 API，因此页面禁止使用 `useLoaderData`、`useRouteLoaderData`、`useFetcher`、route action 和 `useRevalidator`；oxlint 通过受限导入规则检查这些命名导入。
 
 ### 4.2 路由定义与 meta
 
@@ -289,7 +278,7 @@ interface AppRouteDefinition {
   index?: boolean
   loadPage?: () => Promise<{ default: React.ComponentType }>
   meta: RouteMeta
-  children?: AppRouteDefinition[]
+  children?: readonly AppRouteDefinition[]
 }
 
 /**
@@ -299,14 +288,13 @@ interface AppRouteDefinition {
 interface RouteMeta {
   title: string
   icon?: LucideIcon
-  permCode?: string
   hideInMenu?: boolean
   hideInTabs?: boolean
   affixTab?: boolean
   noCache?: boolean
   breadcrumb?: boolean
   tabKeyMode?: 'fullPath' | 'pathname'
-  i18nNamespaces?: string[]
+  i18nNamespaces?: readonly string[]
 }
 ```
 
@@ -315,23 +303,19 @@ interface RouteMeta {
 - `meta`投影为 `handle: { meta }`，面包屑使用 Data Router 的 `useMatches()`读取。
 - 目录节点允许无 `loadPage`，只参与匹配、菜单和面包屑。
 - 叶子页面必须有 `loadPage`，由 `React.lazy` + `<Suspense fallback={<PageLoading />}>`加载。
-- `loadPage`必须通过 `@/pages/system/user/User/User`这类具名实现路径导入，禁止从 `features`加载页面、导入页面目录或依赖 `index.ts/index.tsx`解析；路由 ID、路径和回退地址引用 `src/constants/route.constants.ts`。
+- `loadPage`必须通过 `@/pages/system/user/User/User`这类具名实现路径导入，禁止从 `features`加载页面、导入页面目录或依赖 `index.ts/index.tsx`解析；路由 id 与 path 的唯一来源是 definitions.tsx 树节点：顶层节点用绝对路径（以 `/` 开头），子节点用相对段，新增页面只需在树中加一个节点。`ROUTE_IDS`、`ROUTE_PATHS`（均按 id 索引）与 `RouteId` 联合类型由树在模块初始化时推导并校验 id 全局唯一，禁止手写路由表副本；`src/constants/route.constants.ts` 仅保留 components/features 等不可依赖 router 层的模块使用的 `FALLBACK_PATH`。
 - `breadcrumb`默认 true；`hideInTabs`用于登录、错误页和不应生成页签的辅助路由。
 - `/`是受保护 index route，固定 `replace`重定向到 `/dashboard`。
 - 受保护根路由内的 `*`渲染 404。
-- `/403`和 `/500`需要登录但不要求 permCode，防止错误页自身形成权限循环。
-- `/404`既有可直达的显式路由，受保护根路由的 `*`也渲染同一组件；登录、403、404、500 固定设置 `hideInMenu/hideInTabs/noCache`，错误页 `breadcrumb: false`。
+- `/500`需要登录。
+- `/404`既有可直达的显式路由，受保护根路由的 `*`也渲染同一组件；登录、404、500 固定设置 `hideInMenu/hideInTabs/noCache`，错误页 `breadcrumb: false`。
 - Dashboard 固定 `affixTab: true`，且是唯一默认 affix。
 - 页面渲染错误由每个缓存实例外层 `PageErrorBoundary`显示 500 内容；guard/loader 错误由 Data Router 配置的 `RouterErrorBoundary`处理。
 
-### 4.3 权限继承与菜单过滤
+### 4.3 菜单过滤
 
-- 路由没有 `permCode`表示所有已登录用户可访问，不表示公开路由。
-- 一个叶子页面需要同时满足从受保护根到叶子的全部 `permCode`，即祖先与叶子权限为 AND。
-- admin 角色拥有通配权限 `*`，`hasAuth('*')`和任意权限均返回 true。
-- 目录菜单只有在自身权限满足且至少有一个可见子节点时保留。
-- `hideInMenu: true`隐藏该节点及其菜单子树，但不改变 URL 可访问性和权限校验；详情页应单独设为隐藏叶子节点，不把可见菜单放在隐藏目录下。
-- 菜单过滤和守卫必须调用同一个 `hasPermissionChain`函数。
+- 目录菜单只有在至少有一个可见子节点时保留。
+- `hideInMenu: true`隐藏该节点及其菜单子树，但不改变 URL 可访问性；详情页应单独设为隐藏叶子节点，不把可见菜单放在隐藏目录下。
 
 ### 4.4 页签 key 与 location 快照
 

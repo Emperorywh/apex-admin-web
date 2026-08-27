@@ -5,12 +5,18 @@
 import { useEffect } from 'react'
 import { App, Button, Form, Input } from 'antd'
 import { useTranslation } from 'react-i18next'
-import { DISPLAY_NAME_MAX_LENGTH, DISPLAY_NAME_MIN_LENGTH, EMAIL_MAX_LENGTH } from '@/constants/profile/profile.constants'
 import { useAppDispatch } from '@/hooks/useAppDispatch'
 import { apiErrorMessage } from '@/services/request/request'
 import { updateMyProfile } from '@/services/profile/profile.service'
 import { userPatched } from '@/store/slices/authSlice'
 import type { AuthUser } from '@/types/auth/auth.types'
+
+/** 显示名长度边界（Unicode 字符数） */
+const DISPLAY_NAME_MIN_LENGTH = 1
+const DISPLAY_NAME_MAX_LENGTH = 32
+
+/** 邮箱长度上限 */
+const EMAIL_MAX_LENGTH = 254
 
 interface ProfileFormValues {
   displayName: string

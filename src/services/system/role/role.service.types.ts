@@ -11,7 +11,6 @@ export interface RoleItemDto {
   description: string | null
   status: EntityStatus
   memberCount?: number
-  permissionCodes?: string[]
   createdAt: string
   updatedAt: string
 }

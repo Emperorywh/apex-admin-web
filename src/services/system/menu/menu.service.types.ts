@@ -12,7 +12,6 @@ export interface MenuItemDto {
   icon: string | null
   sort: number
   status: EntityStatus
-  permCode: string | null
   createdAt: string
   updatedAt: string
 }
@@ -23,7 +22,6 @@ export interface CreateMenuRequestDto {
   path: string
   icon: string | null
   sort: number
-  permCode: string | null
 }
 
 export interface UpdateMenuRequestDto {
@@ -31,7 +29,6 @@ export interface UpdateMenuRequestDto {
   path: string
   icon: string | null
   sort: number
-  permCode: string | null
 }
 
 /** PUT /menus/:id/hierarchy 请求体 */

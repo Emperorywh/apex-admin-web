@@ -14,7 +14,6 @@ export default {
   '邮箱过长': 'Email is too long',
   '用户名': 'Username',
   '角色': 'Roles',
-  '权限码': 'Permission codes',
   '个人资料已保存': 'Profile saved',
   '保存失败，请稍后重试': 'Failed to save. Please retry later.',
 } as const

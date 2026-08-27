@@ -6,13 +6,12 @@
 import { useEffect } from 'react'
 import { Form, Input, Modal, Select } from 'antd'
 import { useTranslation } from 'react-i18next'
-import {
-  PASSWORD_MAX_LENGTH,
-  PASSWORD_MIN_LENGTH,
-  USERNAME_MAX_LENGTH,
-  USERNAME_MIN_LENGTH,
-} from '@/constants/auth/auth.constants'
+import { USERNAME_MAX_LENGTH, USERNAME_MIN_LENGTH } from '@/constants/auth/auth.constants'
 import type { UserFormProps, UserFormValues } from '@/features/system/user/components/UserForm/UserForm.types'
+
+/** 密码长度边界（Unicode 字符数，仅长度校验、无复杂度；与后端策略一致） */
+const PASSWORD_MIN_LENGTH = 12
+const PASSWORD_MAX_LENGTH = 128
 
 export function UserForm({ open, user, roleOptions, saving, onOk, onCancel }: UserFormProps) {
   const { t } = useTranslation('system')

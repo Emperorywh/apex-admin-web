@@ -4,10 +4,18 @@
 
 import { configureStore } from '@reduxjs/toolkit'
 import { persistReducer, persistStore } from 'redux-persist'
-import { PERSIST_KEYS, PERSIST_SCHEMA_VERSION } from '@/constants/storage.constants'
 import authReducer from '@/store/slices/authSlice'
 import settingsReducer from '@/store/slices/settingsSlice'
 import tabsReducer from '@/store/slices/tabsSlice'
+
+/** redux-persist 持久化 key（统一前缀 apex-admin） */
+const PERSIST_KEYS = {
+  AUTH: 'apex-admin:auth',
+  SETTINGS: 'apex-admin:settings',
+} as const
+
+/** 持久化 schema 版本；结构不兼容变更时递增并补 migration */
+const PERSIST_SCHEMA_VERSION = 1
 
 /**
  * redux-persist 的 localStorage 适配器。
@@ -21,13 +29,13 @@ const localStorageAdapter = {
   removeItem: (key: string): Promise<void> => Promise.resolve(localStorage.removeItem(key)),
 }
 
-/** 字段级白名单：auth 只持久化 user/permissions（令牌只在内存） */
+/** 字段级白名单：auth 只持久化 user（令牌只在内存） */
 const persistedAuth = persistReducer(
   {
     key: PERSIST_KEYS.AUTH,
     storage: localStorageAdapter,
     version: PERSIST_SCHEMA_VERSION,
-    whitelist: ['user', 'permissions'],
+    whitelist: ['user'],
   },
   authReducer,
 )

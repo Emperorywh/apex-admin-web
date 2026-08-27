@@ -13,8 +13,6 @@ export interface MenuEntity {
   icon: string | null
   sort: number
   status: EntityStatus
-  /** 绑定的权限码（无则表示所有登录用户可见） */
-  permCode: string | null
   createdAt: string
   updatedAt: string
 }

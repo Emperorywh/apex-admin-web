@@ -3,8 +3,8 @@
  */
 
 import { useCallback, useEffect, useState } from 'react'
-import { DEFAULT_PAGE_SIZE } from '@/constants/request.constants'
 import { usePageRequest } from '@/hooks/usePageRequest'
+import { DEFAULT_PAGE_SIZE } from '@/services/request/request.constants'
 import { pageUsers } from '@/services/system/user/user.service'
 import { isCancelledError, toApiError } from '@/services/request/request'
 import type { EntityStatus } from '@/services/request/request.types'

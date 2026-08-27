@@ -6,8 +6,12 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Dropdown } from 'antd'
 import { ChevronDown, RefreshCw } from 'lucide-react'
-import { DASHBOARD_RANGE_OPTIONS, type DashboardRange } from '@/constants/dashboard/dashboard.constants'
 import styles from '@/features/dashboard/components/DashboardHeader/DashboardHeader.module.css'
+
+/** 概览时间范围选项（展示值，业务上仅影响演示数据口径） */
+const DASHBOARD_RANGE_OPTIONS = ['近 24 小时', '近 7 天', '近 30 天'] as const
+
+type DashboardRange = (typeof DASHBOARD_RANGE_OPTIONS)[number]
 
 interface DashboardHeaderProps {
   refreshing: boolean

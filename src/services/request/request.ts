@@ -18,7 +18,7 @@ import {
   REFRESH_LOCK_TTL_MS,
   REFRESH_TIMEOUT_MS,
   REQUEST_TIMEOUT_MS,
-} from '@/constants/request.constants'
+} from '@/services/request/request.constants'
 import { tryDemoFallback } from '@/services/request/demoFallback'
 import type { ApiError } from '@/services/request/request.types'
 import { sessionExpired } from '@/store/slices/authSlice'

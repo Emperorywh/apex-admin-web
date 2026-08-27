@@ -36,7 +36,3 @@ export const CLIENT_ERROR_CODES = {
 
 /** 分页默认页大小；与后端协议一致 */
 export const DEFAULT_PAGE_SIZE = 20
-
-/** 分页页大小上下界（含）；与后端协议一致 */
-export const PAGE_SIZE_MIN = 1
-export const PAGE_SIZE_MAX = 100

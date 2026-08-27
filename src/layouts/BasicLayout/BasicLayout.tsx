@@ -13,7 +13,7 @@ import { GlobalProgress } from '@/components/GlobalProgress/GlobalProgress'
 import { useAppDispatch } from '@/hooks/useAppDispatch'
 import { useAppSelector } from '@/hooks/useAppSelector'
 import { useAuth } from '@/hooks/useAuth'
-import { ROUTE_IDS } from '@/constants/route.constants'
+import { ROUTE_IDS } from '@/router/definitions'
 import { buildLoginPath } from '@/router/redirect'
 import { findRouteMeta } from '@/router/projections'
 import type { RouteHandle, RouteMeta } from '@/router/router.types'
@@ -37,7 +37,7 @@ type RouterMatches = ReturnType<typeof useMatches>
 function resolveLeaf(matches: RouterMatches): ActiveLeaf | null {
   for (let i = matches.length - 1; i >= 0; i -= 1) {
     const match = matches[i]
-    if (match.id === ROUTE_IDS.ROOT || match.id === ROUTE_IDS.ROOT_INDEX) continue
+    if (match.id === ROUTE_IDS['root'] || match.id === ROUTE_IDS['root-index']) continue
     const handle = match.handle as RouteHandle | undefined
     if (handle?.meta) {
       return { routeId: String(match.id), meta: handle.meta }

@@ -9,14 +9,13 @@ import type { LucideIcon } from 'lucide-react'
 export interface RouteMeta {
   title: string
   icon?: LucideIcon
-  permCode?: string
   hideInMenu?: boolean
   hideInTabs?: boolean
   affixTab?: boolean
   noCache?: boolean
   breadcrumb?: boolean
   tabKeyMode?: 'fullPath' | 'pathname'
-  i18nNamespaces?: string[]
+  i18nNamespaces?: readonly string[]
 }
 
 /** 路由定义节点；同时驱动访问路由、纯渲染路由、菜单和面包屑 */
@@ -26,7 +25,7 @@ export interface AppRouteDefinition {
   index?: boolean
   loadPage?: () => Promise<{ default: ComponentType }>
   meta: RouteMeta
-  children?: AppRouteDefinition[]
+  children?: readonly AppRouteDefinition[]
 }
 
 /** Data Router handle 约定 */

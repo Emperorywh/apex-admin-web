@@ -1,13 +1,12 @@
 /**
  * DEV 演示回退后端：仅在 `import.meta.env.DEV` 且真实后端网络不可达时启用，
  * 提供与真实协议一致（/api/v1、raw JSON、problem+json、分页 sort 单参数、
- * active/disabled、read/write 权限码、Cookie refreshToken 语义）的内存实现，
+ * active/disabled、Cookie refreshToken 语义）的内存实现，
  * 保证模板离线开箱可演示。生产构建不打包任何回退逻辑。
  */
 
 import type { AxiosRequestConfig } from 'axios'
-import { DEFAULT_PAGE_SIZE } from '@/constants/request.constants'
-import { PERMISSION_CODES } from '@/constants/permission.constants'
+import { DEFAULT_PAGE_SIZE } from '@/services/request/request.constants'
 import type { EntityStatus } from '@/services/request/request.types'
 
 export interface DemoFallbackResult {
@@ -20,12 +19,6 @@ export interface DemoFallbackResult {
 }
 
 const DEMO_LATENCY_MS = 120
-const ALL_PERMISSIONS = Object.values(PERMISSION_CODES)
-const READ_ONLY_PERMISSIONS = [
-  PERMISSION_CODES.SYSTEM_USER_READ,
-  PERMISSION_CODES.RBAC_ROLE_READ,
-  PERMISSION_CODES.MENU_MENU_READ,
-]
 
 /* -------------------------------------------------------------------------- */
 /* 内存种子数据                                                                 */
@@ -60,7 +53,6 @@ interface DemoMenu {
   icon: string | null
   sort: number
   status: EntityStatus
-  permCode: string | null
   createdAt: string
   updatedAt: string
 }
@@ -93,11 +85,11 @@ const demoUsers: DemoUser[] = [
 ]
 
 const demoMenus: DemoMenu[] = [
-  { id: 'mnu_001', parentId: null, name: '工作台', path: '/dashboard', icon: 'layout-dashboard', sort: 1, status: 'active', permCode: null, createdAt: iso(80), updatedAt: iso(2) },
-  { id: 'mnu_002', parentId: null, name: '系统管理', path: '/system', icon: 'settings', sort: 2, status: 'active', permCode: null, createdAt: iso(80), updatedAt: iso(2) },
-  { id: 'mnu_003', parentId: 'mnu_002', name: '用户管理', path: '/system/user', icon: 'users', sort: 1, status: 'active', permCode: PERMISSION_CODES.SYSTEM_USER_READ, createdAt: iso(80), updatedAt: iso(2) },
-  { id: 'mnu_004', parentId: 'mnu_002', name: '角色管理', path: '/system/role', icon: 'shield', sort: 2, status: 'active', permCode: PERMISSION_CODES.RBAC_ROLE_READ, createdAt: iso(80), updatedAt: iso(2) },
-  { id: 'mnu_005', parentId: 'mnu_002', name: '菜单管理', path: '/system/menu', icon: 'list-tree', sort: 3, status: 'active', permCode: PERMISSION_CODES.MENU_MENU_READ, createdAt: iso(80), updatedAt: iso(2) },
+  { id: 'mnu_001', parentId: null, name: '工作台', path: '/dashboard', icon: 'layout-dashboard', sort: 1, status: 'active', createdAt: iso(80), updatedAt: iso(2) },
+  { id: 'mnu_002', parentId: null, name: '系统管理', path: '/system', icon: 'settings', sort: 2, status: 'active', createdAt: iso(80), updatedAt: iso(2) },
+  { id: 'mnu_003', parentId: 'mnu_002', name: '用户管理', path: '/system/user', icon: 'users', sort: 1, status: 'active', createdAt: iso(80), updatedAt: iso(2) },
+  { id: 'mnu_004', parentId: 'mnu_002', name: '角色管理', path: '/system/role', icon: 'shield', sort: 2, status: 'active', createdAt: iso(80), updatedAt: iso(2) },
+  { id: 'mnu_005', parentId: 'mnu_002', name: '菜单管理', path: '/system/menu', icon: 'list-tree', sort: 3, status: 'active', createdAt: iso(80), updatedAt: iso(2) },
 ]
 
 /** 最近一次演示登录的用户名；默认 admin */
@@ -168,12 +160,6 @@ function delay<T>(value: T): Promise<T> {
 
 const currentUser = () => demoUsers.find((u) => u.username === demoCurrentUsername) ?? demoUsers[0]
 
-function permissionsFor(user: DemoUser): string[] {
-  if (user.username === 'admin') return ALL_PERMISSIONS
-  if (user.roleCodes.includes('ops_admin')) return [PERMISSION_CODES.SYSTEM_USER_READ, PERMISSION_CODES.SYSTEM_USER_WRITE, PERMISSION_CODES.RBAC_ROLE_READ, PERMISSION_CODES.MENU_MENU_READ]
-  return READ_ONLY_PERMISSIONS
-}
-
 /* -------------------------------------------------------------------------- */
 /* 路由表                                                                      */
 /* -------------------------------------------------------------------------- */
@@ -229,11 +215,6 @@ const routes: Array<{ method: string; pattern: RegExp; handler: Handler }> = [
         },
       }
     },
-  },
-  {
-    method: 'GET',
-    pattern: /^me\/permissions$/,
-    handler: () => ({ status: 200, data: permissionsFor(currentUser()) }),
   },
   {
     method: 'PUT',
@@ -390,11 +371,7 @@ const routes: Array<{ method: string; pattern: RegExp; handler: Handler }> = [
       const role = demoRoles.find((r) => r.id === params[0] || r.code === params[0])
       if (!role) return notFound('角色不存在')
       const memberCount = demoUsers.filter((u) => u.roleCodes.includes(role.code)).length
-      const permissionCodes =
-        role.code === 'super_admin' ? ALL_PERMISSIONS : role.code === 'ops_admin'
-          ? [PERMISSION_CODES.SYSTEM_USER_READ, PERMISSION_CODES.SYSTEM_USER_WRITE, PERMISSION_CODES.RBAC_ROLE_READ]
-          : READ_ONLY_PERMISSIONS
-      return { status: 200, data: { ...stripRole(role), memberCount, permissionCodes } }
+      return { status: 200, data: { ...stripRole(role), memberCount } }
     },
   },
   {
@@ -450,7 +427,6 @@ const routes: Array<{ method: string; pattern: RegExp; handler: Handler }> = [
         icon: body.icon ? String(body.icon) : null,
         sort: Number(body.sort ?? 0),
         status: 'active',
-        permCode: body.permCode ? String(body.permCode) : null,
         createdAt: now,
         updatedAt: now,
       }
@@ -467,7 +443,6 @@ const routes: Array<{ method: string; pattern: RegExp; handler: Handler }> = [
       if (typeof body.name === 'string') menu.name = body.name
       if (typeof body.path === 'string') menu.path = body.path
       menu.icon = body.icon === null ? null : typeof body.icon === 'string' ? body.icon : menu.icon
-      menu.permCode = body.permCode === null ? null : typeof body.permCode === 'string' ? body.permCode : menu.permCode
       if (body.sort !== undefined) menu.sort = Number(body.sort)
       menu.updatedAt = new Date().toISOString()
       return { status: 200, data: { ...menu } }

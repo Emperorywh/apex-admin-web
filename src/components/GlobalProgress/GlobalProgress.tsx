@@ -4,8 +4,10 @@
 
 import { useEffect, useState } from 'react'
 import { useNavigation } from 'react-router'
-import { GLOBAL_PROGRESS_DELAY_MS } from '@/constants/app.constants'
 import styles from '@/components/GlobalProgress/GlobalProgress.module.css'
+
+/** 全局进度条延迟显示时间（毫秒）；短于该值的导航不显示，避免闪烁 */
+const GLOBAL_PROGRESS_DELAY_MS = 120
 
 export function GlobalProgress() {
   const navigation = useNavigation()

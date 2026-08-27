@@ -6,7 +6,6 @@
 import { useEffect } from 'react'
 import { Form, Input, InputNumber, Modal, Select } from 'antd'
 import { useTranslation } from 'react-i18next'
-import { PERMISSION_CODES } from '@/constants/permission.constants'
 import type { MenuTreeNode } from '@/types/system/menu/menu.types'
 
 export interface MenuFormValues {
@@ -15,7 +14,6 @@ export interface MenuFormValues {
   path: string
   icon?: string
   sort: number
-  permCode?: string
 }
 
 export interface MenuFormProps {
@@ -44,7 +42,6 @@ export function MenuForm({ open, menu, parentOptions, saving, onOk, onCancel }: 
         path: menu.path,
         icon: menu.icon ?? undefined,
         sort: menu.sort,
-        permCode: menu.permCode ?? undefined,
       })
     }
   }, [open, menu, form])
@@ -91,13 +88,6 @@ export function MenuForm({ open, menu, parentOptions, saving, onOk, onCancel }: 
         </Form.Item>
         <Form.Item name="sort" label={t('排序')} rules={[{ required: true, message: t('请输入排序值') }]}>
           <InputNumber min={0} style={{ width: '100%' }} />
-        </Form.Item>
-        <Form.Item name="permCode" label={t('权限码')}>
-          <Select
-            allowClear
-            placeholder={t('所有登录用户可见')}
-            options={Object.values(PERMISSION_CODES).map((code) => ({ value: code, label: code }))}
-          />
         </Form.Item>
       </Form>
     </Modal>

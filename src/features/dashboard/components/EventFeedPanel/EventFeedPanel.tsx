@@ -6,7 +6,6 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ArrowRight, Pause, Play } from 'lucide-react'
-import { EVENT_FEED_MAX_ITEMS, EVENT_FEED_PUSH_INTERVAL_MS } from '@/constants/dashboard/dashboard.constants'
 import { usePageActive } from '@/hooks/usePageActive'
 import { pushDemoEvent } from '@/services/dashboard/dashboard.service'
 import type { EventItem, EventLevel } from '@/types/dashboard/dashboard.types'
@@ -15,6 +14,12 @@ import styles from '@/features/dashboard/components/EventFeedPanel/EventFeedPane
 interface EventFeedPanelProps {
   initialEvents: EventItem[]
 }
+
+/** 实时事件流演示刷新间隔（毫秒） */
+const EVENT_FEED_PUSH_INTERVAL_MS = 6_000
+
+/** 实时事件流在页面保留的最大条数（容量，条） */
+const EVENT_FEED_MAX_ITEMS = 8
 
 /** 级别 → 标签类 */
 const LEVEL_CLASS: Record<EventLevel, string> = {

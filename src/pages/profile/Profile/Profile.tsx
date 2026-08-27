@@ -10,7 +10,7 @@ import styles from '@/pages/profile/Profile/Profile.module.css'
 
 export default function Profile() {
   const { t } = useTranslation('profile')
-  const { user, permissions } = useAuth()
+  const { user } = useAuth()
 
   if (user === null) return null
 
@@ -27,19 +27,6 @@ export default function Profile() {
           <Descriptions.Item label={t('邮箱')}>{user.email ?? '—'}</Descriptions.Item>
           <Descriptions.Item label={t('角色')}>
             {user.roleNames.length > 0 ? user.roleNames.map((name) => <Tag key={name}>{name}</Tag>) : '—'}
-          </Descriptions.Item>
-          <Descriptions.Item label={t('权限码')}>
-            {permissions.length > 0 ? (
-              <span className={styles.perms}>
-                {permissions.map((code) => (
-                  <Tag key={code} color={code === '*' ? 'geekblue' : undefined}>
-                    {code}
-                  </Tag>
-                ))}
-              </span>
-            ) : (
-              '—'
-            )}
           </Descriptions.Item>
         </Descriptions>
       </Card>

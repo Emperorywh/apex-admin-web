@@ -1,9 +1,9 @@
 /**
  * 三投影生成（SPEC §4.1）：
- * 1. accessRoutes —— 注册给 createBrowserRouter；权限 loader、重定向、空锚点叶子
+ * 1. accessRoutes —— 注册给 createBrowserRouter；认证 loader、重定向、空锚点叶子
  * 2. renderRoutes —— 无 loader/action，仅结构与 React.lazy 页面；供 CachedRouteView 以
  *    useRoutes(renderRoutes, locationSnapshot) 渲染，使每个缓存页签拥有独立路由上下文
- * 3. menuRoutes   —— 按权限与 hideInMenu 过滤；供底部 Dock 菜单与快捷入口
+ * 3. menuRoutes   —— 按 hideInMenu 过滤；供底部 Dock 菜单与快捷入口
  *
  * 三份投影与 lazy 组件均在模块初始化时只生成一次，保持引用稳定。
  */
@@ -14,11 +14,10 @@ import { useTranslation } from 'react-i18next'
 import type { LucideIcon } from 'lucide-react'
 import PageLoading from '@/components/PageLoading/PageLoading'
 import { RouterErrorBoundary } from '@/components/RouterErrorBoundary/RouterErrorBoundary'
-import { ROUTE_IDS } from '@/constants/route.constants'
 import { BasicLayout } from '@/layouts/BasicLayout/BasicLayout'
 import { BlankLayout } from '@/layouts/BlankLayout/BlankLayout'
-import { appRouteDefinitions } from '@/router/definitions'
-import { createRouteGuardLoader, hasPermissionChain } from '@/router/guard'
+import { appRouteDefinitions, joinPath, ROUTE_IDS } from '@/router/definitions'
+import { createRouteGuardLoader } from '@/router/guard'
 import { ROOT_REDIRECT_TARGET } from '@/router/redirect'
 import type { AppRouteDefinition, RouteMeta } from '@/router/router.types'
 
@@ -38,7 +37,13 @@ function getLazyPage(definition: AppRouteDefinition): ComponentType {
 }
 
 /** 命名空间门：进入页面前确保 meta.i18nNamespaces 已加载（zh-CN 同步完成） */
-function I18nPageGate({ page, namespaces }: { page: ComponentType; namespaces: string[] }) {
+function I18nPageGate({
+  page,
+  namespaces,
+}: {
+  page: ComponentType
+  namespaces: readonly string[]
+}) {
   useTranslation(namespaces)
   const Page = page
   return <Page />
@@ -50,11 +55,9 @@ function I18nPageGate({ page, namespaces }: { page: ComponentType; namespaces: s
 
 function toAccessNode(
   definition: AppRouteDefinition,
-  parentChain: ReadonlyArray<string | undefined>,
   isProtected: boolean,
   isTopLevel: boolean,
 ): RouteObject {
-  const chain = [...parentChain, definition.meta.permCode]
   // RouteObject 为可辨识联合：index 与 path 必须在构造期确定
   const node: RouteObject = definition.index
     ? { id: definition.id, handle: { meta: definition.meta }, index: true }
@@ -66,17 +69,17 @@ function toAccessNode(
   if (isTopLevel) node.errorElement = <RouterErrorBoundary />
 
   if (isProtected) {
-    // index 节点固定 replace 到 Dashboard；其余节点做认证与权限链校验
+    // index 节点固定 replace 到 Dashboard；其余节点做认证校验
     node.loader = definition.index
       ? () => redirect(ROOT_REDIRECT_TARGET)
-      : createRouteGuardLoader(chain)
+      : createRouteGuardLoader()
   }
 
   if (definition.children?.length) {
     node.children = definition.children.map((child) =>
-      toAccessNode(child, chain, isProtected, false),
+      toAccessNode(child, isProtected, false),
     )
-    if (definition.id === ROUTE_IDS.ROOT) {
+    if (definition.id === ROUTE_IDS['root']) {
       // BasicLayout 在受保护根只挂载一次；业务页由 PageCacheHost 渲染
       node.element = <BasicLayout />
     }
@@ -101,7 +104,7 @@ function wrapPublicPage(children: ReactNode): ReactNode {
 }
 
 export const accessRoutes: RouteObject[] = appRouteDefinitions.map((definition) =>
-  toAccessNode(definition, [], definition.id === ROUTE_IDS.ROOT, true),
+  toAccessNode(definition, definition.id === ROUTE_IDS['root'], true),
 )
 
 /* -------------------------------------------------------------------------- */
@@ -147,25 +150,16 @@ export interface MenuNode {
   children: MenuNode[]
 }
 
-function joinPath(base: string, segment: string | undefined): string {
-  if (!segment) return base || '/'
-  return `${base === '/' ? '' : base}/${segment}`
-}
-
 function filterMenuNodes(
-  definitions: AppRouteDefinition[],
-  permissions: ReadonlyArray<string>,
-  parentChain: ReadonlyArray<string | undefined>,
+  definitions: readonly AppRouteDefinition[],
   basePath: string,
 ): MenuNode[] {
   const nodes: MenuNode[] = []
   for (const definition of definitions) {
     if (definition.meta.hideInMenu) continue
-    const chain = [...parentChain, definition.meta.permCode]
-    if (!hasPermissionChain(chain, permissions)) continue
     const path = joinPath(basePath, definition.path)
     if (definition.children?.length) {
-      const children = filterMenuNodes(definition.children, permissions, chain, path)
+      const children = filterMenuNodes(definition.children, path)
       // 目录至少有一个可见子节点才保留（SPEC §4.3）
       if (children.length === 0) continue
       nodes.push({
@@ -188,8 +182,8 @@ function filterMenuNodes(
   return nodes
 }
 
-export function buildMenuRoutes(permissions: ReadonlyArray<string>): MenuNode[] {
-  return filterMenuNodes(appRouteDefinitions, permissions, [], '/')
+export function buildMenuRoutes(): MenuNode[] {
+  return filterMenuNodes(appRouteDefinitions, '/')
 }
 
 /** 拍平菜单树为叶子列表（Dock、快捷入口等扁平导航使用） */
@@ -204,7 +198,7 @@ export function flattenMenuLeaves(nodes: MenuNode[]): MenuNode[] {
 /* -------------------------------------------------------------------------- */
 
 function walkDefinitions(
-  definitions: AppRouteDefinition[],
+  definitions: readonly AppRouteDefinition[],
   visit: (definition: AppRouteDefinition) => void,
 ): void {
   for (const definition of definitions) {

@@ -8,7 +8,9 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
-import { PAGE_CACHE_MAX_ENTRIES } from '@/constants/app.constants'
+
+/** 非固定页签的最大缓存实例数；affix 页签不计入（SPEC §5.1） */
+const PAGE_CACHE_MAX_ENTRIES = 10
 
 /** 可序列化的 location 快照；state 固定为 null（SPEC §4.4） */
 export interface TabLocationSnapshot {

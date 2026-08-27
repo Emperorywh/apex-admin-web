@@ -1,13 +1,11 @@
 /**
- * 菜单管理页：树形表格 + 新建/编辑（含层级调整）/删除（写权限门控）。
+ * 菜单管理页：树形表格 + 新建/编辑（含层级调整）/删除。
  */
 
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { App, Badge, Button, Card, Popconfirm, Space, Table, Tag } from 'antd'
+import { App, Badge, Button, Card, Popconfirm, Space, Table } from 'antd'
 import { Plus } from 'lucide-react'
-import { PERMISSION_CODES } from '@/constants/permission.constants'
-import { useAuth } from '@/hooks/useAuth'
 import { MenuForm } from '@/features/system/menu/components/MenuForm/MenuForm'
 import { useMenuTree } from '@/features/system/menu/hooks/useMenuTree'
 import { createMenu, deleteMenu, updateMenu, updateMenuHierarchy } from '@/services/system/menu/menu.service'
@@ -30,10 +28,8 @@ function collectParents(nodes: MenuTreeNode[], excludeId: string | null): Array<
 export default function Menu() {
   const { t } = useTranslation('system')
   const { t: tCommon } = useTranslation('common')
-  const { hasAuth } = useAuth()
   const { message } = App.useApp()
   const { tree, loading, reload } = useMenuTree()
-  const canWrite = hasAuth(PERMISSION_CODES.MENU_MENU_WRITE)
 
   const [formOpen, setFormOpen] = useState(false)
   const [editing, setEditing] = useState<MenuTreeNode | null>(null)
@@ -55,7 +51,6 @@ export default function Menu() {
           path: values.path,
           icon: values.icon || null,
           sort: values.sort,
-          permCode: values.permCode || null,
         })
         void message.success(t('菜单已创建'))
       } else if (editing !== null) {
@@ -64,7 +59,6 @@ export default function Menu() {
           path: values.path,
           icon: values.icon || null,
           sort: values.sort,
-          permCode: values.permCode || null,
         })
         await updateMenuHierarchy(editing.id, { parentId: values.parentId, sort: values.sort })
         void message.success(t('菜单已更新'))
@@ -94,12 +88,6 @@ export default function Menu() {
     { title: t('图标名'), dataIndex: 'icon', width: 140, render: (value: string | null) => value ?? '—' },
     { title: t('排序'), dataIndex: 'sort', width: 80 },
     {
-      title: t('权限码'),
-      dataIndex: 'permCode',
-      width: 180,
-      render: (value: string | null) => (value ? <Tag>{value}</Tag> : t('所有登录用户可见')),
-    },
-    {
       title: t('状态'),
       dataIndex: 'status',
       width: 90,
@@ -111,29 +99,26 @@ export default function Menu() {
       title: tCommon('操作'),
       key: 'actions',
       width: 160,
-      render: (_: unknown, record: MenuTreeNode) =>
-        canWrite ? (
-          <Space size={4}>
-            <Button
-              type="link"
-              size="small"
-              onClick={() => {
-                setCreating(false)
-                setEditing(record)
-                setFormOpen(true)
-              }}
-            >
-              {tCommon('编辑')}
+      render: (_: unknown, record: MenuTreeNode) => (
+        <Space size={4}>
+          <Button
+            type="link"
+            size="small"
+            onClick={() => {
+              setCreating(false)
+              setEditing(record)
+              setFormOpen(true)
+            }}
+          >
+            {tCommon('编辑')}
+          </Button>
+          <Popconfirm title={t('确认删除该菜单？')} onConfirm={() => void remove(record)}>
+            <Button type="link" size="small" danger>
+              {tCommon('删除')}
             </Button>
-            <Popconfirm title={t('确认删除该菜单？')} onConfirm={() => void remove(record)}>
-              <Button type="link" size="small" danger>
-                {tCommon('删除')}
-              </Button>
-            </Popconfirm>
-          </Space>
-        ) : (
-          '—'
-        ),
+          </Popconfirm>
+        </Space>
+      ),
     },
   ]
 
@@ -141,19 +126,17 @@ export default function Menu() {
     <Card
       title={t('菜单管理')}
       extra={
-        canWrite ? (
-          <Button
-            type="primary"
-            icon={<Plus size={15} />}
-            onClick={() => {
-              setCreating(true)
-              setEditing(null)
-              setFormOpen(true)
-            }}
-          >
-            {t('新建菜单')}
-          </Button>
-        ) : null
+        <Button
+          type="primary"
+          icon={<Plus size={15} />}
+          onClick={() => {
+            setCreating(true)
+            setEditing(null)
+            setFormOpen(true)
+          }}
+        >
+          {t('新建菜单')}
+        </Button>
       }
       styles={{ body: { paddingTop: 12 } }}
     >

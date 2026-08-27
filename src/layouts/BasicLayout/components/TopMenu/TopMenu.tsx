@@ -10,7 +10,6 @@ import { App, Dropdown, type MenuProps } from 'antd'
 import { buildMenuRoutes, flattenMenuLeaves } from '@/router/projections'
 import { useAppDispatch } from '@/hooks/useAppDispatch'
 import { useAppSelector } from '@/hooks/useAppSelector'
-import { useAuth } from '@/hooks/useAuth'
 import { allTabsClosed, otherTabsClosed, rightTabsClosed, tabRefreshed } from '@/store/slices/tabsSlice'
 import { localeChanged } from '@/store/slices/settingsSlice'
 import type { AppLanguage } from '@/i18n/i18n'
@@ -25,11 +24,10 @@ export function TopMenu() {
   const { message } = App.useApp()
   const { t: tCommon } = useTranslation('common')
   const { t: tMenu } = useTranslation('menu')
-  const { permissions } = useAuth()
   const activeTabKey = useAppSelector((state) => state.tabs.activeTabKey)
   const locale = useAppSelector((state) => state.settings.locale)
 
-  const quickLinks = useMemo(() => flattenMenuLeaves(buildMenuRoutes(permissions)), [permissions])
+  const quickLinks = useMemo(() => flattenMenuLeaves(buildMenuRoutes()), [])
 
   const changeLocale = useCallback(
     (next: AppLanguage) => {

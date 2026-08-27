@@ -25,6 +25,3 @@ export interface MeResponseDto {
   email: string | null
   roles: Array<{ code: string; name: string }>
 }
-
-/** GET /me/permissions 响应 */
-export type PermissionsResponseDto = string[]

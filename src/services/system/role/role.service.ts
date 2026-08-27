@@ -1,6 +1,5 @@
 /**
- * 角色管理服务：分页/CRUD、启停用、详情（含权限码只读展示）。
- * 后端暂无权限分配端点，前端保持只读（SPEC 约定）。
+ * 角色管理服务：分页/CRUD、启停用、详情（含成员数）。
  */
 
 import { api } from '@/services/request/request'

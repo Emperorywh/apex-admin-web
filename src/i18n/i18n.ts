@@ -10,11 +10,13 @@ import i18next, { type BackendModule, type CallbackError } from 'i18next'
 import dayjs from 'dayjs'
 import { initReactI18next } from 'react-i18next'
 import 'dayjs/locale/zh-cn'
-import { STORAGE_KEYS } from '@/constants/storage.constants'
 
 export const SUPPORTED_LANGUAGES = ['zh-CN', 'en-US'] as const
 export type AppLanguage = (typeof SUPPORTED_LANGUAGES)[number]
 export const DEFAULT_LANGUAGE: AppLanguage = 'zh-CN'
+
+/** 语言偏好 localStorage key */
+const STORAGE_KEY_LANGUAGE = 'apex-admin:lang'
 
 /** 基础命名空间，所有页面共享 */
 export const BASE_NAMESPACES = ['common', 'menu'] as const
@@ -38,7 +40,7 @@ export function normalizeLanguage(raw: string | null | undefined): AppLanguage {
 
 function readStoredLanguage(): AppLanguage {
   try {
-    return normalizeLanguage(localStorage.getItem(STORAGE_KEYS.LANGUAGE))
+    return normalizeLanguage(localStorage.getItem(STORAGE_KEY_LANGUAGE))
   } catch {
     return DEFAULT_LANGUAGE
   }
@@ -46,7 +48,7 @@ function readStoredLanguage(): AppLanguage {
 
 function persistLanguage(language: AppLanguage): void {
   try {
-    localStorage.setItem(STORAGE_KEYS.LANGUAGE, language)
+    localStorage.setItem(STORAGE_KEY_LANGUAGE, language)
   } catch {
     // 隐私模式等场景下静默失败
   }

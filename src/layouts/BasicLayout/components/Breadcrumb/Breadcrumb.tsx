@@ -6,7 +6,7 @@
 import { ChevronRight } from 'lucide-react'
 import { useNavigate, type UIMatch } from 'react-router'
 import { useTranslation } from 'react-i18next'
-import { ROUTE_IDS } from '@/constants/route.constants'
+import { ROUTE_IDS } from '@/router/definitions'
 import type { RouteHandle } from '@/router/router.types'
 import styles from '@/layouts/BasicLayout/components/Breadcrumb/Breadcrumb.module.css'
 
@@ -25,7 +25,7 @@ export function Breadcrumb({ matches }: BreadcrumbProps) {
 
   const crumbs = matches
     .filter((match) => {
-      if (match.id === ROUTE_IDS.ROOT || match.id === ROUTE_IDS.ROOT_INDEX) return false
+      if (match.id === ROUTE_IDS['root'] || match.id === ROUTE_IDS['root-index']) return false
       const handle = match.handle as RouteHandle | undefined
       if (!handle?.meta) return false
       if (handle.meta.breadcrumb === false) return false

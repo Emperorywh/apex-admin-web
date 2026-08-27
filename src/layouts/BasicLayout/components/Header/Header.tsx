@@ -18,8 +18,7 @@ import {
   UserRoundCog,
   Wifi,
 } from 'lucide-react'
-import { CLOCK_TICK_INTERVAL_MS } from '@/constants/app.constants'
-import { ROUTE_PATHS } from '@/constants/route.constants'
+import { ROUTE_PATHS } from '@/router/definitions'
 import { buildMenuRoutes, flattenMenuLeaves } from '@/router/projections'
 import { logout } from '@/services/auth/auth.service'
 import { getRequestHealth, subscribeRequestHealth, type RequestHealth } from '@/services/request/request'
@@ -31,6 +30,9 @@ import { localeChanged } from '@/store/slices/settingsSlice'
 import type { AppLanguage } from '@/i18n/i18n'
 import { TopMenu } from '@/layouts/BasicLayout/components/TopMenu/TopMenu'
 import styles from '@/layouts/BasicLayout/components/Header/Header.module.css'
+
+/** 顶栏时钟刷新间隔（毫秒） */
+const CLOCK_TICK_INTERVAL_MS = 1_000
 
 /** 通知条目（演示数据） */
 const DEMO_NOTIFICATIONS = [
@@ -125,7 +127,6 @@ interface CommandItem {
 function CommandPalette({ query, onDone }: { query: string; onDone: () => void }) {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
-  const { permissions } = useAuth()
   const locale = useAppSelector((state) => state.settings.locale)
   const { t: tCommon } = useTranslation('common')
   const { t: tMenu } = useTranslation('menu')
@@ -133,7 +134,7 @@ function CommandPalette({ query, onDone }: { query: string; onDone: () => void }
 
   const items = useMemo<CommandItem[]>(() => {
     const keyword = query.trim().toLowerCase()
-    const leaves = flattenMenuLeaves(buildMenuRoutes(permissions))
+    const leaves = flattenMenuLeaves(buildMenuRoutes())
     const pages: CommandItem[] = leaves
       .filter(
         (leaf) =>
@@ -156,13 +157,13 @@ function CommandPalette({ query, onDone }: { query: string; onDone: () => void }
       { key: 'action:logout', kind: 'action', title: tCommon('退出登录') },
     ]
     return [...pages, ...actions.filter((action) => action.title.toLowerCase().includes(keyword))]
-  }, [locale, permissions, query, tCommon, tMenu])
+  }, [locale, query, tCommon, tMenu])
 
   const run = (item: CommandItem | undefined) => {
     if (!item) return
     if (item.kind === 'page') {
       const routeId = item.key.slice('page:'.length)
-      const leaves = flattenMenuLeaves(buildMenuRoutes(permissions))
+      const leaves = flattenMenuLeaves(buildMenuRoutes())
       const target = leaves.find((leaf) => leaf.routeId === routeId)
       if (target) navigate(target.path)
     } else if (item.key === 'action:lang') {
@@ -350,7 +351,7 @@ function AvatarMenu() {
 
   const onClick: MenuProps['onClick'] = ({ key }) => {
     if (key === 'profile') {
-      navigate(ROUTE_PATHS.PROFILE)
+      navigate(ROUTE_PATHS.profile)
     } else if (key === 'lang') {
       dispatch(localeChanged(locale === 'zh-CN' ? 'en-US' : 'zh-CN'))
     } else if (key === 'logout') {

@@ -11,7 +11,6 @@ export default {
   '用户管理': 'Users',
   '角色管理': 'Roles',
   '菜单管理': 'Menus',
-  '无权限': 'Forbidden',
   '页面不存在': 'Not Found',
   '服务错误': 'Server Error',
   '登录': 'Sign in',

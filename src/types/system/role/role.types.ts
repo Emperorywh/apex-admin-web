@@ -13,8 +13,6 @@ export interface RoleEntity {
   status: EntityStatus
   /** 成员数（仅详情接口返回） */
   memberCount?: number
-  /** 权限码列表（仅详情接口返回；后端暂无分配端点，前端只读展示） */
-  permissionCodes?: string[]
   createdAt: string
   updatedAt: string
 }

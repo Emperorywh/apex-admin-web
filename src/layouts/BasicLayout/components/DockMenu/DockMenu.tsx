@@ -1,6 +1,6 @@
 /**
  * 底部 Dock 菜单：复刻设计稿的悬浮玻璃坞。
- * 菜单项来自 menuRoutes 投影（按权限过滤后拍平叶子）；
+ * 菜单项来自 menuRoutes 投影（拍平叶子）；
  * 尾部的「废纸篓」承载关闭全部页签并释放缓存。
  */
 
@@ -11,7 +11,6 @@ import { App } from 'antd'
 import { Trash2 } from 'lucide-react'
 import { buildMenuRoutes, flattenMenuLeaves } from '@/router/projections'
 import { useAppDispatch } from '@/hooks/useAppDispatch'
-import { useAuth } from '@/hooks/useAuth'
 import { allTabsClosed } from '@/store/slices/tabsSlice'
 import styles from '@/layouts/BasicLayout/components/DockMenu/DockMenu.module.css'
 
@@ -19,14 +18,13 @@ export function DockMenu() {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const location = useLocation()
-  const { permissions } = useAuth()
   const { t: tCommon } = useTranslation('common')
   const { t: tMenu } = useTranslation('menu')
   const { message } = App.useApp()
 
   const items = useMemo(
-    () => flattenMenuLeaves(buildMenuRoutes(permissions)),
-    [permissions],
+    () => flattenMenuLeaves(buildMenuRoutes()),
+    [],
   )
 
   const activeRouteId = useMemo(() => {
