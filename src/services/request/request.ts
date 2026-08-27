@@ -3,7 +3,6 @@
  * - 成功响应直接返回资源 JSON 本体（协议无 code envelope）
  * - 失败统一收敛为 ApiError（RFC 9457 problem+json / 客户端错误）
  * - 401 时以单飞方式刷新令牌（refreshToken 位于 HttpOnly Cookie，不进 JSON）并重放原请求
- * - DEV 环境在网络不可达时回退到内存演示后端（demoFallback），保证模板离线可演示
  */
 
 import axios, {
@@ -19,14 +18,12 @@ import {
   REFRESH_TIMEOUT_MS,
   REQUEST_TIMEOUT_MS,
 } from '@/services/request/request.constants'
-import { tryDemoFallback } from '@/services/request/demoFallback'
 import type { ApiError } from '@/services/request/request.types'
 import { sessionExpired } from '@/store/slices/authSlice'
 
-/** axios 配置扩展：演示回退与刷新重放标记，防止循环 */
+/** axios 配置扩展：刷新重放标记，防止循环 */
 declare module 'axios' {
   export interface AxiosRequestConfig {
-    demoFallbackApplied?: boolean
     _retriedAfterRefresh?: boolean
   }
 }
@@ -190,22 +187,6 @@ async function handleRequestError(error: AxiosError): Promise<unknown> {
 
   if (!canceled) recordHealth(responded && error.code !== 'APEX_HTML_RESPONSE' && !unreachable)
 
-  // DEV 演示回退：网络不可达 / HTML 响应且未尝试过时启用
-  if (import.meta.env.DEV && !canceled && unreachable && config && !config.demoFallbackApplied) {
-    const fallback = await tryDemoFallback(config)
-    if (fallback) {
-      config.demoFallbackApplied = true
-      if (fallback.status < 400) return fallback.data
-      fail({
-        isApiError: true,
-        code: fallback.code ?? CLIENT_ERROR_CODES.UNKNOWN,
-        status: fallback.status,
-        title: fallback.title ?? `请求失败（HTTP ${fallback.status}）`,
-        detail: fallback.detail,
-      })
-    }
-  }
-
   const isAuthCall =
     config?.url?.includes('/auth/login') === true ||
     config?.url?.includes('/auth/refresh') === true
@@ -218,7 +199,6 @@ async function handleRequestError(error: AxiosError): Promise<unknown> {
       API_ERROR_CODES.UNAUTHENTICATED &&
     !isAuthCall &&
     config &&
-    !config.demoFallbackApplied &&
     !config._retriedAfterRefresh
   ) {
     try {
@@ -237,13 +217,6 @@ async function handleRequestError(error: AxiosError): Promise<unknown> {
   }
 
   fail(fromAxiosError(error))
-}
-
-/** 重放标记；仅内部使用 */
-declare module 'axios' {
-  export interface AxiosRequestConfig {
-    _retriedAfterRefresh?: boolean
-  }
 }
 
 /* -------------------------------------------------------------------------- */

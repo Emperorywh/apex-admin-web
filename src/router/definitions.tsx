@@ -8,7 +8,6 @@
  */
 
 import {
-  LayoutDashboard,
   ListTree,
   Settings,
   ShieldCheck,
@@ -59,17 +58,6 @@ export const appRouteDefinitions = defineAppRoutes([
         meta: { title: '工作台', hideInMenu: true, hideInTabs: true, noCache: true },
       },
       {
-        id: 'dashboard',
-        path: 'dashboard',
-        loadPage: () => import('@/pages/dashboard/Dashboard/Dashboard'),
-        meta: {
-          title: '运营总览',
-          icon: LayoutDashboard,
-          affixTab: true,
-          i18nNamespaces: ['dashboard'],
-        },
-      },
-      {
         id: 'profile',
         path: 'profile',
         loadPage: () => import('@/pages/profile/Profile/Profile'),
@@ -91,6 +79,7 @@ export const appRouteDefinitions = defineAppRoutes([
             meta: {
               title: '用户管理',
               icon: Users,
+              affixTab: true,
               i18nNamespaces: ['system'],
             },
           },

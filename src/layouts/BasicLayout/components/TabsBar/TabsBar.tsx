@@ -41,7 +41,6 @@ import styles from '@/layouts/BasicLayout/components/TabsBar/TabsBar.module.css'
 
 /** 页签图标配色（按路由 ID 指定；复刻设计稿四色渐变） */
 const TAB_ICON_TONES = {
-  dashboard: 'blue',
   'system-user': 'green',
   'system-role': 'orange',
   'system-menu': 'purple',

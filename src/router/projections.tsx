@@ -69,7 +69,7 @@ function toAccessNode(
   if (isTopLevel) node.errorElement = <RouterErrorBoundary />
 
   if (isProtected) {
-    // index 节点固定 replace 到 Dashboard；其余节点做认证校验
+    // index 节点固定 replace 到受保护首页；其余节点做认证校验
     node.loader = definition.index
       ? () => redirect(ROOT_REDIRECT_TARGET)
       : createRouteGuardLoader()

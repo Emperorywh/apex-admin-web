@@ -73,13 +73,6 @@ src/
 │   │   │       └── LoginForm.tsx
 │   │   └── hooks/
 │   │       └── useLogin.ts
-│   ├── dashboard/
-│   │   ├── components/
-│   │   │   └── OverviewCard/
-│   │   │       ├── OverviewCard.tsx
-│   │   │       └── OverviewCard.module.css
-│   │   └── hooks/
-│   │       └── useDashboard.ts
 │   ├── profile/
 │   │   └── components/
 │   │       └── ProfileForm/ProfileForm.tsx
@@ -96,8 +89,6 @@ src/
 │   │   └── Login/
 │   │       ├── Login.tsx
 │   │       └── Login.module.css
-│   ├── dashboard/
-│   │   └── Dashboard/Dashboard.tsx
 │   ├── profile/
 │   │   └── Profile/Profile.tsx
 │   ├── system/
@@ -117,9 +108,6 @@ src/
 │   ├── auth/
 │   │   ├── auth.service.ts
 │   │   └── auth.service.types.ts
-│   ├── dashboard/
-│   │   ├── dashboard.service.ts
-│   │   └── dashboard.service.types.ts
 │   ├── profile/
 │   │   ├── profile.service.ts
 │   │   └── profile.service.types.ts
@@ -139,7 +127,6 @@ src/
 │   └── usePageRequest.ts
 ├── types/                                # 跨页面、组件和 service 的业务域类型；禁止全局 barrel
 │   ├── auth/auth.types.ts
-│   ├── dashboard/dashboard.types.ts
 │   └── system/
 │       ├── user/user.types.ts
 │       ├── role/role.types.ts
@@ -181,7 +168,7 @@ scripts/
 └── check-structure.mjs                  # 目录、命名、导入方向与深层相对路径门禁
 ```
 
-本规格采用“顶层分层 + 同业务域对齐”，不是把所有实现共置到 feature 的传统 Feature-Based 结构。`auth`、`dashboard`、`profile`、`system/user`等业务域必须在 `features/`、`pages/`、`services/`、`types/`和 `constants/`中使用一致的路径片段；不存在对应内容时不创建空目录。
+本规格采用“顶层分层 + 同业务域对齐”，不是把所有实现共置到 feature 的传统 Feature-Based 结构。`auth`、`profile`、`system/user`等业务域必须在 `features/`、`pages/`、`services/`、`types/`和 `constants/`中使用一致的路径片段；不存在对应内容时不创建空目录。
 
 `src/features/`是业务 UI 复用层，不是业务功能的总根目录。每个叶子 feature 目录只允许出现 `components/`和 `hooks/`；`system/`这类中间分组目录只允许继续包含子业务域。禁止在 feature 根部或其任意层级新增 `pages/`、`api/`、`services/`、`store/`、独立类型文件、独立常量文件及其他业务实现。
 
@@ -305,11 +292,11 @@ interface RouteMeta {
 - 叶子页面必须有 `loadPage`，由 `React.lazy` + `<Suspense fallback={<PageLoading />}>`加载。
 - `loadPage`必须通过 `@/pages/system/user/User/User`这类具名实现路径导入，禁止从 `features`加载页面、导入页面目录或依赖 `index.ts/index.tsx`解析；路由 id 与 path 的唯一来源是 definitions.tsx 树节点：顶层节点用绝对路径（以 `/` 开头），子节点用相对段，新增页面只需在树中加一个节点。`ROUTE_IDS`、`ROUTE_PATHS`（均按 id 索引）与 `RouteId` 联合类型由树在模块初始化时推导并校验 id 全局唯一，禁止手写路由表副本；`src/constants/route.constants.ts` 仅保留 components/features 等不可依赖 router 层的模块使用的 `FALLBACK_PATH`。
 - `breadcrumb`默认 true；`hideInTabs`用于登录、错误页和不应生成页签的辅助路由。
-- `/`是受保护 index route，固定 `replace`重定向到 `/dashboard`。
+- `/`是受保护 index route，固定 `replace`重定向到 `/system/user`。
 - 受保护根路由内的 `*`渲染 404。
 - `/500`需要登录。
 - `/404`既有可直达的显式路由，受保护根路由的 `*`也渲染同一组件；登录、404、500 固定设置 `hideInMenu/hideInTabs/noCache`，错误页 `breadcrumb: false`。
-- Dashboard 固定 `affixTab: true`，且是唯一默认 affix。
+- 用户管理（`system-user`）固定 `affixTab: true`，且是唯一默认 affix。
 - 页面渲染错误由每个缓存实例外层 `PageErrorBoundary`显示 500 内容；guard/loader 错误由 Data Router 配置的 `RouterErrorBoundary`处理。
 
 ### 4.3 菜单过滤
@@ -342,7 +329,7 @@ interface RouteMeta {
 
 缓存容量由 `PAGE_CACHE_MAX_ENTRIES = 10`统一定义，即最多 **10 个非 affix 实例**：
 
-- affix 缓存不计入 10，但项目默认只能配置一个 affix Dashboard；新增 affix 必须评估内存。
+- affix 缓存不计入 10，但项目默认只能配置一个 affix 页（`system-user`）；新增 affix 必须评估内存。
 - 新增第 11 个普通缓存时，淘汰最久未激活且非当前页的实例；页签仍保留，再激活时重新挂载。
 - 当前激活页永不被淘汰；关闭页签立即移除其 Activity、取消请求并释放缓存。
 
@@ -360,9 +347,9 @@ interface RouteMeta {
 - 刷新当前：递增缓存 `revision`，取消该 scope 请求并用新 React key 重建；业务数据随组件重新挂载重新请求。
 - 固定页签排在最前且不可关闭。普通页签不能拖入固定区，固定页签不能拖出固定区。
 - dnd-kit 同时提供键盘拖拽；无法拖拽时可用右键菜单完成关闭操作。
-- 关闭当前页：优先激活右侧最近页签；没有右侧则激活左侧最近页签；都没有则 `/dashboard`。
-- 关闭全部：只保留 affix Dashboard 并激活它。
-- 浏览器刷新后重建为「Dashboard + 当前可生成页签的页面」；当前即 Dashboard 时只保留一个。错误页和 `hideInTabs`页面不加入。
+- 关闭当前页：优先激活右侧最近页签；没有右侧则激活左侧最近页签；都没有则 `/system/user`。
+- 关闭全部：只保留 affix 页（用户管理）并激活它。
+- 浏览器刷新后重建为「affix 页 + 当前可生成页签的页面」；当前即 affix 页时只保留一个。错误页和 `hideInTabs`页面不加入。
 - 溢出时横向滚动 + 左右箭头，激活页自动进入可视区。
 - tabs 不跨会话持久化。
 

@@ -12,5 +12,4 @@ export default {
   '请输入密码': 'Please enter your password',
   '用户名长度需在 2-32 个字符之间': 'Username must be 2-32 characters',
   '登录失败，请稍后重试': 'Sign-in failed. Please retry later.',
-  '演示模式：任意账号密码均可登录': 'Demo mode: any username and password will sign you in.',
 } as const

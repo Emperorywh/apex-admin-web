@@ -26,7 +26,6 @@ const enUsLoaders: Record<string, () => Promise<{ default: Record<string, string
   common: () => import('@/i18n/locales/en-US/common'),
   menu: () => import('@/i18n/locales/en-US/menu'),
   auth: () => import('@/i18n/locales/en-US/auth'),
-  dashboard: () => import('@/i18n/locales/en-US/dashboard'),
   profile: () => import('@/i18n/locales/en-US/profile'),
   system: () => import('@/i18n/locales/en-US/system'),
   error: () => import('@/i18n/locales/en-US/error'),

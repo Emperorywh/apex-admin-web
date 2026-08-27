@@ -5,7 +5,6 @@
 export default {
   '企业运营中心': 'Enterprise Operations Center',
   '工作台': 'Workspace',
-  '运营总览': 'Operations Overview',
   '个人中心': 'My Profile',
   '系统管理': 'System',
   '用户管理': 'Users',

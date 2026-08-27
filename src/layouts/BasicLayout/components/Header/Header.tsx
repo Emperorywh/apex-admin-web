@@ -5,7 +5,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { useTranslation } from 'react-i18next'
-import { App, Button, Calendar, Dropdown, Popover, type MenuProps } from 'antd'
+import { App, Calendar, Dropdown, Popover, type MenuProps } from 'antd'
 import dayjs from 'dayjs'
 import {
   Bell,
@@ -33,13 +33,6 @@ import styles from '@/layouts/BasicLayout/components/Header/Header.module.css'
 
 /** 顶栏时钟刷新间隔（毫秒） */
 const CLOCK_TICK_INTERVAL_MS = 1_000
-
-/** 通知条目（演示数据） */
-const DEMO_NOTIFICATIONS = [
-  { id: 1, title: '支付服务响应超时告警', detail: '平均响应时间 ＞ 300ms' },
-  { id: 2, title: '库存预警：智能摄像头 Pro', detail: '广州仓剩余 32 件' },
-  { id: 3, title: '月度安全巡检已完成', detail: '未发现高危风险' },
-]
 
 export function Header() {
   const { t } = useTranslation('common')
@@ -227,7 +220,6 @@ function CommandPalette({ query, onDone }: { query: string; onDone: () => void }
 
 function NotificationBell() {
   const { t } = useTranslation('common')
-  const [unread, setUnread] = useState(DEMO_NOTIFICATIONS.length + 5)
   return (
     <Popover
       trigger="click"
@@ -235,21 +227,12 @@ function NotificationBell() {
       title={t('通知')}
       content={
         <div className={styles.popList}>
-          {DEMO_NOTIFICATIONS.map((item) => (
-            <div key={item.id} className={styles.popItem}>
-              <strong>{t(item.title)}</strong>
-              <span>{t(item.detail)}</span>
-            </div>
-          ))}
-          <Button size="small" type="link" onClick={() => setUnread(0)}>
-            {t('全部标记已读')}
-          </Button>
+          <div className={styles.popItem}>{t('暂无通知')}</div>
         </div>
       }
     >
       <button type="button" className={styles.iconBtn} title={t('通知')}>
         <Bell size={18} />
-        {unread > 0 && <span className={styles.badge}>{unread}</span>}
       </button>
     </Popover>
   )

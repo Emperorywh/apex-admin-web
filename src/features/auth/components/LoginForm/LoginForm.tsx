@@ -59,7 +59,6 @@ export function LoginForm() {
       <Button type="primary" size="large" htmlType="submit" block loading={submitting} className={styles.submit}>
         {tCommon('登录')}
       </Button>
-      <p className={styles.hint}>{t('演示模式：任意账号密码均可登录')}</p>
     </Form>
   )
 }
