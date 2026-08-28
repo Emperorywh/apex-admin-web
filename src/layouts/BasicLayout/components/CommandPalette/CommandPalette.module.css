@@ -1,0 +1,111 @@
+/* 命令面板：Spotlight 式居中浮层（遮罩 + 玻璃面板），不占用布局空间 */
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 16vh;
+  background: rgba(18, 28, 48, 0.2);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+
+.panel {
+  width: min(580px, 88vw);
+  background: rgba(255, 255, 255, 0.97);
+  border: 1px solid rgba(118, 145, 190, 0.3);
+  border-radius: 14px;
+  box-shadow: 0 24px 64px rgba(23, 43, 77, 0.28);
+  overflow: hidden;
+}
+
+.searchRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 48px;
+  padding: 0 16px;
+  border-bottom: 1px solid rgba(118, 145, 190, 0.16);
+}
+
+.searchIcon {
+  color: #7a86a0;
+  flex: 0 0 auto;
+}
+
+.searchRow input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--app-text-2);
+  font-size: 14px;
+  font-weight: 550;
+  font-family: var(--app-font);
+}
+
+.searchRow input::placeholder {
+  color: #8a93a8;
+}
+
+.kbd {
+  font-size: 11px;
+  font-weight: 700;
+  color: #5c6779;
+  padding: 2px 7px;
+  border: 1px solid rgba(121, 145, 184, 0.35);
+  border-radius: 6px;
+  background: rgba(233, 239, 248, 0.9);
+  flex: 0 0 auto;
+}
+
+.results {
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 6px;
+}
+
+.item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 12px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.itemActive {
+  background: rgba(47, 127, 255, 0.1);
+}
+
+.itemTitle {
+  font-size: 13px;
+  font-weight: 650;
+  color: var(--app-text-2);
+}
+
+.itemActive .itemTitle {
+  color: var(--app-blue);
+}
+
+.itemHint {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--app-text-4);
+}
+
+.empty {
+  padding: 14px;
+  font-size: 13px;
+  color: var(--app-text-4);
+  text-align: center;
+}

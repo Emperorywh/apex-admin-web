@@ -3,7 +3,7 @@
  * 顶层节点用绝对路径（以 / 开头），子节点用相对段；完整路径由树推导进
  * ROUTE_PATHS（按 id 索引），业务代码不拼接、不复制路径。
  * 新增页面只需在树中加一个节点（id、path、loadPage、meta），访问路由、
- * 纯渲染路由、菜单、面包屑与 ROUTE_IDS/ROUTE_PATHS/RouteId 自动生效。
+ * 纯渲染路由、菜单与 ROUTE_IDS/ROUTE_PATHS/RouteId 自动生效。
  * 业务页面只能通过 loadPage 延迟加载，且必须指向具名实现路径。
  */
 
@@ -28,7 +28,6 @@ function auxiliaryMeta(title: string): AppRouteDefinition['meta'] {
     hideInMenu: true,
     hideInTabs: true,
     noCache: true,
-    breadcrumb: false,
     i18nNamespaces: ['error'],
   }
 }
@@ -43,7 +42,6 @@ export const appRouteDefinitions = defineAppRoutes([
       hideInMenu: true,
       hideInTabs: true,
       noCache: true,
-      breadcrumb: false,
       i18nNamespaces: ['auth'],
     },
   },

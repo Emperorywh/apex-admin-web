@@ -1,5 +1,5 @@
 /**
- * 基础布局：复刻 macOS 风格外壳（顶部状态栏 / 页签栏 / 面包屑 / 工作区 / 底部 Dock）。
+ * 基础布局：复刻 macOS 风格外壳（顶部工具条（品牌+页签+状态）/ 工作区 / 底部 Dock）。
  *
  * - 在受保护根路由只挂载一次；不渲染 <Outlet/>，业务页全部经 PageCacheHost 输出
  * - 根据 Data Router location/matches 同步页签（SPEC §4.1/§4.4）
@@ -19,11 +19,9 @@ import { findRouteMeta } from '@/router/projections'
 import type { RouteHandle, RouteMeta } from '@/router/router.types'
 import { tabSynced } from '@/store/slices/tabsSlice'
 import { normalizeSearchString } from '@/utils/url'
-import { Breadcrumb } from '@/layouts/BasicLayout/components/Breadcrumb/Breadcrumb'
 import { DockMenu } from '@/layouts/BasicLayout/components/DockMenu/DockMenu'
 import { Header } from '@/layouts/BasicLayout/components/Header/Header'
 import { PageCacheHost } from '@/layouts/BasicLayout/components/PageCacheHost/PageCacheHost'
-import { TabsBar } from '@/layouts/BasicLayout/components/TabsBar/TabsBar'
 import styles from '@/layouts/BasicLayout/BasicLayout.module.css'
 
 interface ActiveLeaf {
@@ -120,8 +118,6 @@ export function BasicLayout() {
     <div className={styles.shell}>
       <GlobalProgress />
       <Header />
-      <TabsBar />
-      <Breadcrumb matches={matches} />
       <main className={styles.workspace}>
         <PageCacheHost
           currentLocation={location}

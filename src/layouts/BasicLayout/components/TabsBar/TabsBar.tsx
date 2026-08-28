@@ -1,5 +1,5 @@
 /**
- * 页签栏：复刻设计稿的玻璃页签条。
+ * 页签栏：嵌入顶部工具条的浏览器式页签条。
  * - dnd-kit 排序（含键盘替代操作）；固定页签不可拖动、不可关闭
  * - 右键菜单：刷新当前 / 关闭其他 / 关闭右侧 / 关闭全部（永不影响 affix）
  * - 溢出横向滚动（箭头仅溢出时显示），激活页签自动滚入可视区
@@ -221,8 +221,8 @@ function SortableTab({ tab, active, contextMenu, onActivate, onClose }: Sortable
         aria-selected={active}
       >
         {Icon ? (
-          <IconTile tone={tone}>
-            <Icon size={13} strokeWidth={2.2} />
+          <IconTile tone={tone} size={20} radius={6}>
+            <Icon size={12} strokeWidth={2.2} />
           </IconTile>
         ) : null}
         <span className={styles.title}>{t(meta?.title ?? tab.key)}</span>

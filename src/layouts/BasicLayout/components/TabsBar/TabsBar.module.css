@@ -1,11 +1,11 @@
-/* 页签栏：浮动卡片页签（258px 定宽 + 圆角 + 间隙 + 激活投影），条带透明透出画布 */
+/* 页签栏：嵌入顶部工具条的浏览器式页签（弹性宽度 + 激活白卡投影），条带透明 */
 
 .bar {
-  height: var(--app-tabs-h);
+  height: 100%;
+  min-width: 0;
   display: flex;
   align-items: center;
   gap: 4px;
-  padding: 0 15px;
 }
 
 .scroll {
@@ -13,8 +13,8 @@
   min-width: 0;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 3px 0;
+  gap: 8px;
+  height: 100%;
   overflow-x: auto;
   overflow-y: hidden;
   scrollbar-width: none;
@@ -26,8 +26,8 @@
 
 /* 箭头仅在页签溢出时渲染（见组件） */
 .arrow {
-  width: 24px;
-  height: 28px;
+  width: 22px;
+  height: 26px;
   flex: 0 0 auto;
   border: 0;
   border-radius: 8px;
@@ -45,33 +45,32 @@
 }
 
 .tab {
-  width: 258px;
-  min-width: 258px;
-  max-width: 258px;
-  height: 40px;
+  flex: 0 1 190px;
+  min-width: 104px;
+  height: 32px;
   display: flex;
   align-items: center;
-  gap: 11px;
-  padding: 0 16px;
-  border: 1px solid rgba(110, 135, 176, 0.16);
-  border-radius: 10px;
+  gap: 8px;
+  padding: 0 10px;
+  border: 1px solid transparent;
+  border-radius: 9px;
   color: #45516b;
   cursor: pointer;
   user-select: none;
   touch-action: none;
-  background: rgba(255, 255, 255, 0.58);
+  background: transparent;
 }
 
 .tab:hover {
-  background: rgba(255, 255, 255, 0.82);
+  background: rgba(20, 45, 90, 0.06);
 }
 
 .tabActive,
 .tabActive:hover {
   color: #22304e;
-  border-color: rgba(110, 135, 176, 0.3);
-  background: rgba(255, 255, 255, 0.98);
-  box-shadow: 0 6px 16px rgba(23, 43, 77, 0.1);
+  border-color: rgba(110, 135, 176, 0.28);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 12px rgba(23, 43, 77, 0.12);
 }
 
 .tabDragging {
@@ -83,7 +82,7 @@
 .title {
   flex: 1;
   min-width: 0;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 650;
   white-space: nowrap;
   overflow: hidden;
@@ -91,8 +90,8 @@
 }
 
 .close {
-  width: 18px;
-  height: 18px;
+  width: 17px;
+  height: 17px;
   flex: 0 0 auto;
   border: 0;
   border-radius: 50%;
@@ -111,15 +110,14 @@
 }
 
 .closePlaceholder {
-  width: 18px;
-  height: 18px;
+  width: 17px;
+  height: 17px;
   flex: 0 0 auto;
 }
 
 @media (max-width: 1600px) {
   .tab {
-    width: 220px;
-    min-width: 220px;
-    max-width: 220px;
+    flex-basis: 160px;
+    min-width: 92px;
   }
 }
