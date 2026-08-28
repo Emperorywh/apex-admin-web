@@ -5,13 +5,14 @@
  */
 
 import { Suspense, useEffect } from 'react'
-import { App as AntdApp, ConfigProvider } from 'antd'
+import { App as AntdApp, ConfigProvider, theme as antdTheme, type ThemeConfig } from 'antd'
 import zhCN from 'antd/locale/zh_CN'
 import enUS from 'antd/locale/en_US'
 import { RouterProvider } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import { FeedbackBridge } from '@/components/FeedbackBridge/FeedbackBridge'
 import PageLoading from '@/components/PageLoading/PageLoading'
+import { useTheme } from '@/hooks/useTheme'
 import { changeAppLanguage } from '@/i18n/i18n'
 import { findRouteMeta } from '@/router/projections'
 import { appRouter } from '@/router/router'
@@ -20,9 +21,13 @@ import { useAppDispatch } from '@/hooks/useAppDispatch'
 import { useAppSelector } from '@/hooks/useAppSelector'
 import { localeChanged } from '@/store/slices/settingsSlice'
 
-/** antd 主题：对齐设计稿的主色/圆角/字体（CSS Variables 模式，SPEC §2） */
-const ANTD_THEME = {
+/**
+ * antd 主题：按明暗选择算法，品牌色/圆角/字体对齐设计稿（CSS Variables 模式，SPEC §2）。
+ * 文字色亮色下显式给定；暗色交给 darkAlgorithm，仅指定深蓝底/文字基色以贴合应用气质。
+ */
+const getAntdTheme = (isDark: boolean): ThemeConfig => ({
   cssVar: {},
+  algorithm: isDark ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,
   token: {
     colorPrimary: '#1f6ef5',
     colorInfo: '#1f6ef5',
@@ -32,13 +37,16 @@ const ANTD_THEME = {
     borderRadius: 10,
     fontFamily:
       "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif",
-    colorText: '#101728',
+    ...(isDark
+      ? { colorBgBase: '#0d1422', colorTextBase: '#e9edf7' }
+      : { colorText: '#101728' }),
   },
-} as const
+})
 
 export default function App() {
   const dispatch = useAppDispatch()
   const locale = useAppSelector((state) => state.settings.locale)
+  const resolvedTheme = useTheme()
   const { i18n } = useTranslation()
 
   /* 语言切换：读取一次当前页签集合计算命名空间并集，避免半翻译状态 */
@@ -55,7 +63,7 @@ export default function App() {
   const antdLocale = locale === 'zh-CN' ? zhCN : enUS
 
   return (
-    <ConfigProvider locale={antdLocale} theme={ANTD_THEME}>
+    <ConfigProvider locale={antdLocale} theme={getAntdTheme(resolvedTheme === 'dark')}>
       <AntdApp>
         <FeedbackBridge />
         <Suspense fallback={<PageLoading />}>

@@ -20,6 +20,7 @@ export default {
   '选择角色': 'Select roles',
   '角色': 'Roles',
   '状态筛选': 'Filter by status',
+  '状态': 'Status',
   '启用': 'Active',
   '停用': 'Disabled',
   '排序': 'Sort',

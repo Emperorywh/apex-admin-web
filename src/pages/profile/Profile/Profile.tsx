@@ -19,7 +19,7 @@ export default function Profile() {
       <Card
         title={t('账户信息')}
         className={styles.card}
-        styles={{ header: { borderBottom: '1px solid rgba(108,138,184,.18)' } }}
+        styles={{ header: { borderBottom: '1px solid var(--app-divider)' } }}
       >
         <Descriptions column={1} size="small" labelStyle={{ width: 96, fontWeight: 700 }}>
           <Descriptions.Item label={t('用户名')}>{user.username}</Descriptions.Item>

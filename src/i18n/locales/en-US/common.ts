@@ -4,10 +4,11 @@
 
 export default {
   企业运营中心: 'Enterprise Operations Center',
-  '搜索应用、数据、设备、文档或输入命令...': 'Search apps, data, devices, docs, or type a command...',
-  全局搜索: 'Global search',
-  '没有匹配的结果': 'No matching results',
   '切换语言': 'Switch language',
+  '切换主题': 'Switch theme',
+  '浅色': 'Light',
+  '深色': 'Dark',
+  '跟随系统': 'System',
   '退出登录': 'Sign out',
   '网络': 'Network',
   '网络连接正常': 'Network is healthy',
@@ -40,6 +41,7 @@ export default {
   '保存': 'Save',
   '编辑': 'Edit',
   '删除': 'Delete',
+  '操作': 'Actions',
   '操作失败，请稍后重试': 'Something went wrong. Please retry later.',
   '加载失败，点击重试': 'Failed to load. Click to retry.',
 } as const

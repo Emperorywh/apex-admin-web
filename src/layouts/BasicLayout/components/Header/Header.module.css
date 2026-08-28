@@ -7,11 +7,11 @@
   align-items: center;
   gap: 12px;
   padding: 0 16px 0 20px;
-  background: rgba(250, 252, 255, 0.96);
+  background: var(--app-topbar-bg);
   backdrop-filter: blur(18px) saturate(135%);
   -webkit-backdrop-filter: blur(18px) saturate(135%);
-  border-bottom: 1px solid rgba(125, 149, 187, 0.22);
-  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.6);
+  border-bottom: 1px solid var(--app-divider);
+  box-shadow: inset 0 -1px 0 var(--app-highlight-soft);
   position: relative;
   z-index: 20;
 }
@@ -26,21 +26,21 @@
 .apple {
   width: 19px;
   height: 19px;
-  color: #1d1d1f;
+  color: var(--app-text);
   flex: 0 0 auto;
 }
 
 .brandName {
   font-size: 13px;
   font-weight: 700;
-  color: rgba(20, 28, 45, 0.92);
+  color: var(--app-text);
   white-space: nowrap;
 }
 
 .divider {
   width: 1px;
   height: 20px;
-  background: rgba(125, 149, 187, 0.26);
+  background: var(--app-divider);
   flex: 0 0 auto;
 }
 
@@ -71,13 +71,13 @@
 }
 
 .iconBtn:hover {
-  background: rgba(20, 45, 90, 0.06);
+  background: var(--app-hover-bg);
 }
 
 .time {
   font-size: 12px;
   font-weight: 700;
-  color: #1c2740;
+  color: var(--app-text);
   white-space: nowrap;
 }
 
@@ -85,7 +85,7 @@
   width: 27px;
   height: 27px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--app-highlight-soft);
   color: #fff;
   background: linear-gradient(180deg, #8fb0e8, #5d7cc0);
   display: flex;

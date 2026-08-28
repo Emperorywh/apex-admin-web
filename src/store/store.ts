@@ -40,13 +40,13 @@ const persistedAuth = persistReducer(
   authReducer,
 )
 
-/** 字段级白名单：settings 只持久化 locale */
+/** 字段级白名单：settings 持久化 locale 与 theme */
 const persistedSettings = persistReducer(
   {
     key: PERSIST_KEYS.SETTINGS,
     storage: localStorageAdapter,
     version: PERSIST_SCHEMA_VERSION,
-    whitelist: ['locale'],
+    whitelist: ['locale', 'theme'],
   },
   settingsReducer,
 )

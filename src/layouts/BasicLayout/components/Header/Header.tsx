@@ -1,7 +1,6 @@
 /**
- * 顶部工具条：品牌 + 页签栏 + 状态区（网络 / 时钟 / 头像）三段式玻璃条。
- * 原菜单文字项、搜索框、加号、通知、日历已移除；全局搜索由 ⌘K / Ctrl+K
- * 呼出 CommandPalette 浮层承接，不占用工具条空间。
+ * 顶部工具条：品牌 + 页签栏 + 状态区（语言 / 网络 / 时钟 / 头像）三段式玻璃条。
+ * 原菜单文字项、搜索框、加号、通知、日历及 ⌘K / Ctrl+K 命令面板已移除。
  */
 
 import { useEffect, useState } from 'react'
@@ -9,7 +8,7 @@ import { useNavigate } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import { App, Dropdown, Popover, type MenuProps } from 'antd'
 import dayjs from 'dayjs'
-import { Languages, LogOut, UserRoundCog, Wifi } from 'lucide-react'
+import { Languages, LogOut, Monitor, Moon, Sun, UserRoundCog, Wifi } from 'lucide-react'
 import { ROUTE_PATHS } from '@/router/definitions'
 import { logout } from '@/services/auth/auth.service'
 import { getRequestHealth, subscribeRequestHealth, type RequestHealth } from '@/services/request/request'
@@ -17,8 +16,8 @@ import { useAppDispatch } from '@/hooks/useAppDispatch'
 import { useAppSelector } from '@/hooks/useAppSelector'
 import { useAuth } from '@/hooks/useAuth'
 import { sessionExpired } from '@/store/slices/authSlice'
-import { localeChanged } from '@/store/slices/settingsSlice'
-import { CommandPalette } from '@/layouts/BasicLayout/components/CommandPalette/CommandPalette'
+import { localeChanged, themeChanged, type AppTheme } from '@/store/slices/settingsSlice'
+import type { AppLanguage } from '@/i18n/i18n'
 import { TabsBar } from '@/layouts/BasicLayout/components/TabsBar/TabsBar'
 import styles from '@/layouts/BasicLayout/components/Header/Header.module.css'
 
@@ -27,19 +26,6 @@ const CLOCK_TICK_INTERVAL_MS = 1_000
 
 export function Header() {
   const { t } = useTranslation('common')
-  const [paletteOpen, setPaletteOpen] = useState(false)
-
-  /* ⌘K / Ctrl+K 开关命令面板 */
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
-        event.preventDefault()
-        setPaletteOpen((open) => !open)
-      }
-    }
-    window.addEventListener('keydown', onKeyDown)
-    return () => window.removeEventListener('keydown', onKeyDown)
-  }, [])
 
   return (
     <header className={styles.topbar}>
@@ -59,19 +45,83 @@ export function Header() {
       <span className={styles.divider} aria-hidden="true" />
 
       <div className={styles.actions}>
+        <ThemeButton />
+        <LanguageButton />
         <NetworkButton />
         <ClockText />
         <AvatarMenu />
       </div>
-
-      {paletteOpen && <CommandPalette onClose={() => setPaletteOpen(false)} />}
     </header>
   )
 }
 
 /* -------------------------------------------------------------------------- */
-/* 网络 / 时钟 / 头像                                                          */
+/* 主题 / 语言 / 网络 / 时钟 / 头像                                             */
 /* -------------------------------------------------------------------------- */
+
+const THEME_ICONS = { light: Sun, dark: Moon, system: Monitor } as const
+
+function ThemeButton() {
+  const { t } = useTranslation('common')
+  const dispatch = useAppDispatch()
+  const theme = useAppSelector((state) => state.settings.theme)
+  const ThemeIcon = THEME_ICONS[theme]
+
+  const items: MenuProps['items'] = [
+    { key: 'light', icon: <Sun size={15} />, label: t('浅色') },
+    { key: 'dark', icon: <Moon size={15} />, label: t('深色') },
+    { key: 'system', icon: <Monitor size={15} />, label: t('跟随系统') },
+  ]
+
+  return (
+    <Dropdown
+      menu={{
+        items,
+        selectable: true,
+        selectedKeys: [theme],
+        onClick: ({ key }) => {
+          if (key !== theme) dispatch(themeChanged(key as AppTheme))
+        },
+      }}
+      trigger={['click']}
+      placement="bottomRight"
+    >
+      <button type="button" className={styles.iconBtn} title={t('切换主题')}>
+        <ThemeIcon size={17} />
+      </button>
+    </Dropdown>
+  )
+}
+
+function LanguageButton() {
+  const { t } = useTranslation('common')
+  const dispatch = useAppDispatch()
+  const locale = useAppSelector((state) => state.settings.locale)
+
+  const items: MenuProps['items'] = [
+    { key: 'zh-CN', label: '中文' },
+    { key: 'en-US', label: 'English' },
+  ]
+
+  return (
+    <Dropdown
+      menu={{
+        items,
+        selectable: true,
+        selectedKeys: [locale],
+        onClick: ({ key }) => {
+          if (key !== locale) dispatch(localeChanged(key as AppLanguage))
+        },
+      }}
+      trigger={['click']}
+      placement="bottomRight"
+    >
+      <button type="button" className={styles.iconBtn} title={t('切换语言')}>
+        <Languages size={17} />
+      </button>
+    </Dropdown>
+  )
+}
 
 function NetworkButton() {
   const { t } = useTranslation('common')
@@ -124,7 +174,6 @@ function AvatarMenu() {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const { modal } = App.useApp()
-  const locale = useAppSelector((state) => state.settings.locale)
 
   const items: MenuProps['items'] = [
     {
@@ -139,11 +188,6 @@ function AvatarMenu() {
     },
     { type: 'divider' },
     { key: 'profile', icon: <UserRoundCog size={15} />, label: t('个人中心') },
-    {
-      key: 'lang',
-      icon: <Languages size={15} />,
-      label: locale === 'zh-CN' ? 'English' : '中文',
-    },
     { type: 'divider' },
     { key: 'logout', icon: <LogOut size={15} />, label: t('退出登录'), danger: true },
   ]
@@ -151,8 +195,6 @@ function AvatarMenu() {
   const onClick: MenuProps['onClick'] = ({ key }) => {
     if (key === 'profile') {
       navigate(ROUTE_PATHS.profile)
-    } else if (key === 'lang') {
-      dispatch(localeChanged(locale === 'zh-CN' ? 'en-US' : 'zh-CN'))
     } else if (key === 'logout') {
       modal.confirm({
         title: t('确认退出登录？'),

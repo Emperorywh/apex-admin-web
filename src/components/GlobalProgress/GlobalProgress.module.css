@@ -8,7 +8,7 @@
   height: 3px;
   z-index: 1100;
   border-radius: 0 0 2px 2px;
-  background: linear-gradient(90deg, #1f6ef5, #4c8dff, #0f9f58);
+  background: linear-gradient(90deg, var(--app-blue), var(--app-blue-2), var(--app-green));
   transform-origin: left;
   animation: globalProgressGrow 1.1s ease-in-out infinite;
 }

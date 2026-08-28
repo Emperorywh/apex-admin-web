@@ -1,9 +1,11 @@
 /*
  * 全局样式：设计令牌 + 背景画布 + 滚动条。
  * 布局与业务样式一律使用 CSS Modules；本文件只承载跨页面共享的基础层。
+ * 令牌双主题：亮色值在 :root，暗色覆盖在 :root[data-theme='dark']（由 useTheme 落到 <html>）。
  */
 
 :root {
+  color-scheme: light;
   --app-bg: #eef2f8;
   --app-bg-2: #e6ebf3;
   --app-panel: rgba(255, 255, 255, 0.86);
@@ -24,6 +26,120 @@
   --app-font:
     -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text',
     'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', Arial, sans-serif;
+
+  /* 背景画布：body 多层渐变整体收进变量，暗色给一套深色等价物 */
+  --app-canvas:
+    radial-gradient(circle at 50% 0%, rgba(64, 132, 255, 0.1), transparent 26%),
+    radial-gradient(circle at 20% 40%, rgba(80, 140, 255, 0.09), transparent 26%),
+    radial-gradient(circle at 80% 35%, rgba(120, 160, 255, 0.08), transparent 22%),
+    repeating-linear-gradient(
+      90deg,
+      rgba(70, 105, 160, 0.05) 0px,
+      rgba(70, 105, 160, 0.05) 1px,
+      transparent 2px,
+      transparent 40px
+    ),
+    linear-gradient(180deg, #f7f9fd 0%, #e8edf6 100%);
+
+  /* 卡片 / 控制 / 玻璃高光（供 .ds-* 与布局模块共用） */
+  --app-card-bg:
+    radial-gradient(circle at 50% 0%, rgba(52, 123, 255, 0.05), transparent 50%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(252, 254, 255, 0.92));
+  --app-card-line: rgba(108, 138, 184, 0.24);
+  --app-card-title: #17233b;
+  --app-card-sub: #71809a;
+  --app-control-bg: rgba(255, 255, 255, 0.92);
+  --app-control-text: #33405a;
+  --app-highlight: rgba(255, 255, 255, 0.9);
+  --app-highlight-soft: rgba(255, 255, 255, 0.6);
+  --app-topbar-bg: rgba(250, 252, 255, 0.96);
+  --app-divider: rgba(125, 149, 187, 0.24);
+  --app-hover-bg: rgba(20, 45, 90, 0.06);
+  --app-scrollbar: rgba(108, 138, 184, 0.32);
+  --app-scrollbar-hover: rgba(108, 138, 184, 0.5);
+  --app-dock-bg: rgba(255, 255, 255, 0.78);
+  --app-tab-bg: rgba(255, 255, 255, 0.95);
+  --app-tab-drag-bg: rgba(255, 255, 255, 0.99);
+  --app-shadow-1: 0 4px 12px rgba(23, 43, 77, 0.12);
+  --app-shadow-2: 0 8px 22px rgba(23, 43, 77, 0.18);
+  --app-dock-shadow:
+    0 14px 34px rgba(23, 43, 77, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  --app-panel-shadow:
+    0 18px 60px rgba(23, 43, 77, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+
+  /* 彩色语义文字（胶囊/标签用，暗色下整体提亮保证对比度） */
+  --app-red-text: #d92d20;
+  --app-orange-text: #c2690a;
+  --app-yellow-text: #a3660b;
+  --app-green-text: #0c8f53;
+  --app-blue-text: #1f6ef5;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --app-bg: #0b101c;
+  --app-bg-2: #0e1524;
+  --app-panel: rgba(19, 26, 43, 0.82);
+  --app-line: rgba(129, 155, 205, 0.24);
+  --app-line-soft: rgba(129, 155, 205, 0.09);
+  --app-text: #e9edf7;
+  --app-text-2: #b9c3d8;
+  --app-text-3: #8b97ad;
+  --app-text-4: #66738c;
+  --app-blue: #4c8dff;
+  --app-blue-2: #7fa9ff;
+  --app-green: #2fbf74;
+  --app-orange: #f0a13c;
+  --app-red: #f2555a;
+  --app-yellow: #e8ac3f;
+
+  --app-canvas:
+    radial-gradient(circle at 50% 0%, rgba(76, 141, 255, 0.12), transparent 26%),
+    radial-gradient(circle at 20% 40%, rgba(64, 120, 220, 0.1), transparent 26%),
+    radial-gradient(circle at 80% 35%, rgba(90, 130, 220, 0.09), transparent 22%),
+    repeating-linear-gradient(
+      90deg,
+      rgba(120, 150, 205, 0.045) 0px,
+      rgba(120, 150, 205, 0.045) 1px,
+      transparent 2px,
+      transparent 40px
+    ),
+    linear-gradient(180deg, #0d1424 0%, #0a0f1b 100%);
+
+  --app-card-bg:
+    radial-gradient(circle at 50% 0%, rgba(76, 141, 255, 0.08), transparent 50%),
+    linear-gradient(180deg, rgba(26, 35, 57, 0.94), rgba(20, 28, 46, 0.9));
+  --app-card-line: rgba(129, 155, 205, 0.2);
+  --app-card-title: #e9edf7;
+  --app-card-sub: #93a0b8;
+  --app-control-bg: rgba(30, 40, 64, 0.92);
+  --app-control-text: #ccd5e6;
+  --app-highlight: rgba(255, 255, 255, 0.08);
+  --app-highlight-soft: rgba(255, 255, 255, 0.1);
+  --app-topbar-bg: rgba(15, 21, 36, 0.92);
+  --app-divider: rgba(129, 155, 205, 0.2);
+  --app-hover-bg: rgba(120, 160, 230, 0.12);
+  --app-scrollbar: rgba(129, 155, 205, 0.28);
+  --app-scrollbar-hover: rgba(129, 155, 205, 0.45);
+  --app-dock-bg: rgba(22, 30, 49, 0.8);
+  --app-tab-bg: rgba(33, 44, 70, 0.95);
+  --app-tab-drag-bg: rgba(38, 50, 78, 0.99);
+  --app-shadow-1: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --app-shadow-2: 0 8px 22px rgba(0, 0, 0, 0.5);
+  --app-dock-shadow:
+    0 14px 34px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --app-panel-shadow:
+    0 18px 60px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+
+  --app-red-text: #ff8589;
+  --app-orange-text: #f2b04e;
+  --app-yellow-text: #edc25f;
+  --app-green-text: #4cd595;
+  --app-blue-text: #7fa9ff;
 }
 
 * {
@@ -41,35 +157,24 @@ body {
   overflow: hidden;
   font-family: var(--app-font);
   color: var(--app-text);
-  background:
-    radial-gradient(circle at 50% 0%, rgba(64, 132, 255, 0.1), transparent 26%),
-    radial-gradient(circle at 20% 40%, rgba(80, 140, 255, 0.09), transparent 26%),
-    radial-gradient(circle at 80% 35%, rgba(120, 160, 255, 0.08), transparent 22%),
-    repeating-linear-gradient(
-      90deg,
-      rgba(70, 105, 160, 0.05) 0px,
-      rgba(70, 105, 160, 0.05) 1px,
-      transparent 2px,
-      transparent 40px
-    ),
-    linear-gradient(180deg, #f7f9fd 0%, #e8edf6 100%);
+  background: var(--app-canvas);
 }
 
-/* 细滚动条，贴合明亮玻璃风格 */
+/* 细滚动条，贴合玻璃风格 */
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(108, 138, 184, 0.32);
+  background: var(--app-scrollbar);
   border-radius: 999px;
   border: 3px solid transparent;
   background-clip: padding-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(108, 138, 184, 0.5);
+  background-color: var(--app-scrollbar-hover);
 }
 
 ::-webkit-scrollbar-track {
@@ -81,12 +186,10 @@ body {
 /* -------------------------------------------------------------------------- */
 
 .ds-card {
-  background:
-    radial-gradient(circle at 50% 0%, rgba(52, 123, 255, 0.05), transparent 50%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(252, 254, 255, 0.92));
-  border: 1px solid rgba(108, 138, 184, 0.24);
+  background: var(--app-card-bg);
+  border: 1px solid var(--app-card-line);
   border-radius: 9px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  box-shadow: inset 0 1px 0 var(--app-highlight);
   overflow: hidden;
 }
 
@@ -97,12 +200,12 @@ body {
 .ds-card-title {
   font-size: 14px;
   font-weight: 750;
-  color: #17233b;
+  color: var(--app-card-title);
 }
 
 .ds-card-sub {
   font-size: 11px;
-  color: #71809a;
+  color: var(--app-card-sub);
   font-weight: 600;
 }
 
@@ -110,21 +213,21 @@ body {
   height: 32px;
   padding: 0 13px;
   border-radius: 9px;
-  border: 1px solid rgba(108, 138, 184, 0.32);
-  background: rgba(255, 255, 255, 0.92);
-  color: #33405a;
+  border: 1px solid var(--app-line);
+  background: var(--app-control-bg);
+  color: var(--app-control-text);
   display: inline-flex;
   align-items: center;
   gap: 8px;
   font-size: 12px;
   font-weight: 650;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  box-shadow: inset 0 1px 0 var(--app-highlight);
   cursor: pointer;
 }
 
 .ds-control:hover {
   border-color: rgba(47, 127, 255, 0.45);
-  color: #1f6ef5;
+  color: var(--app-blue);
 }
 
 .ds-icon-btn {
@@ -148,17 +251,17 @@ body {
 
 .ds-pill-red {
   background: rgba(229, 72, 77, 0.1);
-  color: #d92d20;
+  color: var(--app-red-text);
 }
 
 .ds-pill-orange {
   background: rgba(232, 134, 12, 0.12);
-  color: #c2690a;
+  color: var(--app-orange-text);
 }
 
 .ds-pill-yellow {
   background: rgba(217, 142, 11, 0.14);
-  color: #a3660b;
+  color: var(--app-yellow-text);
 }
 
 .ds-tag {
@@ -175,26 +278,26 @@ body {
 
 .ds-tag-green {
   background: rgba(23, 178, 106, 0.14);
-  color: #0c8f53;
+  color: var(--app-green-text);
 }
 
 .ds-tag-blue {
   background: rgba(47, 127, 255, 0.12);
-  color: #1f6ef5;
+  color: var(--app-blue-text);
 }
 
 .ds-tag-orange {
   background: rgba(232, 134, 12, 0.14);
-  color: #c2690a;
+  color: var(--app-orange-text);
 }
 
 .ds-tag-red {
   background: rgba(229, 72, 77, 0.12);
-  color: #d92d20;
+  color: var(--app-red-text);
 }
 
 .ds-link {
-  color: #1f6ef5;
+  color: var(--app-blue);
   text-decoration: none;
   font-size: 13px;
   font-weight: 800;
@@ -206,7 +309,7 @@ body {
 }
 
 .ds-red-link {
-  color: #e5484d;
+  color: var(--app-red);
   font-size: 14px;
   font-weight: 800;
   cursor: pointer;

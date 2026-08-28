@@ -92,19 +92,17 @@ if (!i18next.isInitialized) {
   document.documentElement.lang = initialLanguage
 }
 
-/** 预加载指定语言的命名空间集合（zh-CN 无需加载） */
+/** 预加载指定语言的命名空间集合（zh-CN 无需加载；backendConnector.load 自带缓存与去重） */
 export async function preloadNamespaces(language: AppLanguage, namespaces: readonly string[]): Promise<void> {
   if (language === 'zh-CN') return
-  const pending = [...new Set(namespaces)].map(
-    (namespace) =>
-      new Promise<void>((resolve, reject) => {
-        i18next.services.backendConnector.read(language, namespace, (err: unknown) => {
-          if (err) reject(err)
-          else resolve()
-        })
-      }),
-  )
-  await Promise.all(pending)
+  const unique = [...new Set(namespaces)]
+  if (!unique.length) return
+  await new Promise<void>((resolve, reject) => {
+    i18next.services.backendConnector.load([language], unique, (err: unknown) => {
+      if (err) reject(err)
+      else resolve()
+    })
+  })
 }
 
 /**
