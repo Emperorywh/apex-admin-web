@@ -1,4 +1,4 @@
-/* 底部 Dock：复刻设计稿的居中悬浮玻璃坞 */
+/* 底部 Dock：居中悬浮全圆角胶囊，图标为彩色瓷片（与页签同源配色） */
 
 .dock {
   position: fixed;
@@ -7,35 +7,35 @@
   transform: translateX(-50%);
   z-index: 30;
   height: var(--app-dock-h);
-  padding: 0 12px;
+  padding: 0 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  border-radius: 18px;
+  gap: 4px;
+  border-radius: 999px;
   background: rgba(255, 255, 255, 0.78);
   backdrop-filter: blur(22px) saturate(145%);
   -webkit-backdrop-filter: blur(22px) saturate(145%);
   border: 1px solid rgba(118, 145, 190, 0.3);
   box-shadow:
-    0 12px 28px rgba(23, 43, 77, 0.12),
+    0 14px 34px rgba(23, 43, 77, 0.14),
     inset 0 1px 0 rgba(255, 255, 255, 0.85);
   max-width: calc(100vw - 32px);
 }
 
 .item {
   min-width: 100px;
-  height: 42px;
-  padding: 0 10px;
+  height: 44px;
+  padding: 0 12px;
   border: 0;
-  border-radius: 12px;
+  border-radius: 999px;
   background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  font-size: 12px;
-  font-weight: 700;
+  gap: 9px;
+  font-size: 13px;
+  font-weight: 650;
   color: #2e3b55;
   cursor: pointer;
   transition: 0.18s ease;
@@ -49,16 +49,15 @@
 
 .itemActive,
 .itemActive:hover {
-  background: rgba(47, 127, 255, 0.14);
+  background: rgba(47, 127, 255, 0.12);
   color: #1f6ef5;
-  box-shadow: inset 0 0 0 1px rgba(47, 127, 255, 0.22);
 }
 
 .separator {
   width: 1px;
   height: 24px;
   background: rgba(118, 145, 190, 0.3);
-  margin: 0 6px;
+  margin: 0 8px;
   flex: 0 0 auto;
 }
 

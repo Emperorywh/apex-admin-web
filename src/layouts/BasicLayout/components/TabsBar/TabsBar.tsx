@@ -2,7 +2,7 @@
  * 页签栏：复刻设计稿的玻璃页签条。
  * - dnd-kit 排序（含键盘替代操作）；固定页签不可拖动、不可关闭
  * - 右键菜单：刷新当前 / 关闭其他 / 关闭右侧 / 关闭全部（永不影响 affix）
- * - 溢出横向滚动 + 左右箭头，激活页签自动滚入可视区
+ * - 溢出横向滚动（箭头仅溢出时显示），激活页签自动滚入可视区
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -27,6 +27,8 @@ import {
 } from '@dnd-kit/sortable'
 import { useAppDispatch } from '@/hooks/useAppDispatch'
 import { useAppSelector } from '@/hooks/useAppSelector'
+import { IconTile } from '@/layouts/BasicLayout/components/IconTile/IconTile'
+import { routeIconTone } from '@/layouts/BasicLayout/components/IconTile/iconTones'
 import { findRouteMeta } from '@/router/projections'
 import {
   allTabsClosed,
@@ -38,16 +40,6 @@ import {
   type TabEntry,
 } from '@/store/slices/tabsSlice'
 import styles from '@/layouts/BasicLayout/components/TabsBar/TabsBar.module.css'
-
-/** 页签图标配色（按路由 ID 指定；复刻设计稿四色渐变） */
-const TAB_ICON_TONES = {
-  'system-user': 'green',
-  'system-role': 'orange',
-  'system-menu': 'purple',
-  profile: 'blue',
-} as const
-
-type TabTone = (typeof TAB_ICON_TONES)[keyof typeof TAB_ICON_TONES] | 'blue'
 
 const SCROLL_STEP_PX = 260
 
@@ -143,15 +135,16 @@ export function TabsBar() {
 
   return (
     <div className={styles.bar} role="tablist" aria-label={t('页面页签')}>
-      <button
-        type="button"
-        className={styles.arrow}
-        disabled={!canScrollLeft}
-        onClick={() => scrollBy(-1)}
-        aria-label={t('向左滚动')}
-      >
-        <ChevronLeft size={15} />
-      </button>
+      {canScrollLeft && (
+        <button
+          type="button"
+          className={styles.arrow}
+          onClick={() => scrollBy(-1)}
+          aria-label={t('向左滚动')}
+        >
+          <ChevronLeft size={15} />
+        </button>
+      )}
       <div ref={scrollRef} className={styles.scroll} onScroll={updateArrows}>
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
           <SortableContext items={tabKeys} strategy={horizontalListSortingStrategy}>
@@ -168,15 +161,16 @@ export function TabsBar() {
           </SortableContext>
         </DndContext>
       </div>
-      <button
-        type="button"
-        className={styles.arrow}
-        disabled={!canScrollRight}
-        onClick={() => scrollBy(1)}
-        aria-label={t('向右滚动')}
-      >
-        <ChevronRight size={15} />
-      </button>
+      {canScrollRight && (
+        <button
+          type="button"
+          className={styles.arrow}
+          onClick={() => scrollBy(1)}
+          aria-label={t('向右滚动')}
+        >
+          <ChevronRight size={15} />
+        </button>
+      )}
     </div>
   )
 }
@@ -197,7 +191,7 @@ function SortableTab({ tab, active, contextMenu, onActivate, onClose }: Sortable
   })
   const meta = findRouteMeta(tab.routeId)
   const Icon = meta?.icon
-  const tone: TabTone = (TAB_ICON_TONES as Record<string, TabTone>)[tab.routeId] ?? 'blue'
+  const tone = routeIconTone(tab.routeId)
 
   const style: React.CSSProperties = {
     transform: transform ? `translate3d(${transform.x}px, 0, 0)` : undefined,
@@ -227,9 +221,9 @@ function SortableTab({ tab, active, contextMenu, onActivate, onClose }: Sortable
         aria-selected={active}
       >
         {Icon ? (
-          <span className={`${styles.tabIcon} ${styles[tone]}`}>
+          <IconTile tone={tone}>
             <Icon size={13} strokeWidth={2.2} />
-          </span>
+          </IconTile>
         ) : null}
         <span className={styles.title}>{t(meta?.title ?? tab.key)}</span>
         {tab.closable ? (

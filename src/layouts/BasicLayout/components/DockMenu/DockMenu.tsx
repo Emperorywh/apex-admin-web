@@ -11,6 +11,8 @@ import { App } from 'antd'
 import { Trash2 } from 'lucide-react'
 import { buildMenuRoutes, flattenMenuLeaves } from '@/router/projections'
 import { useAppDispatch } from '@/hooks/useAppDispatch'
+import { IconTile } from '@/layouts/BasicLayout/components/IconTile/IconTile'
+import { routeIconTone } from '@/layouts/BasicLayout/components/IconTile/iconTones'
 import { allTabsClosed } from '@/store/slices/tabsSlice'
 import styles from '@/layouts/BasicLayout/components/DockMenu/DockMenu.module.css'
 
@@ -52,7 +54,11 @@ export function DockMenu() {
             onClick={() => navigate(item.path)}
             aria-current={active ? 'page' : undefined}
           >
-            {Icon ? <Icon size={18} strokeWidth={2} /> : null}
+            {Icon ? (
+              <IconTile tone={routeIconTone(item.routeId)} size={24} radius={7}>
+                <Icon size={15} strokeWidth={2} />
+              </IconTile>
+            ) : null}
             <span className={styles.label}>{tMenu(item.title)}</span>
           </button>
         )
