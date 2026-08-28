@@ -74,9 +74,13 @@
 .tabActive,
 .tabActive:hover {
   color: var(--app-text);
-  border-color: var(--app-line);
+  border-color: var(--app-glass-line);
   background: var(--app-tab-bg);
-  box-shadow: var(--app-shadow-1);
+  backdrop-filter: var(--app-glass-filter);
+  -webkit-backdrop-filter: var(--app-glass-filter);
+  box-shadow:
+    inset 0 1px 0 var(--app-highlight),
+    var(--app-shadow-1);
 }
 
 .tabDragging {

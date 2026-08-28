@@ -68,4 +68,5 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **图标**：统一 lucide 线性体系，`strokeWidth` 一律 2；彩色瓷片 `IconTile` 圆角固定 5。
 - **容器选型**：居中 Modal = 短任务（创建/编辑，Sheet 语义）；右侧 Drawer = 当前所选对象的属性/详情（Inspector 语义，如角色详情）；Confirm 仅用于不可逆操作。页面不渲染与页签重复的大标题，顶部为工具栏（筛选居左、主操作居右）。
 - **SplitView**（`src/components/SplitView`）：主从双栏布局原语，左栏=列表/导航、右栏=详情/画布；宽度与折叠状态按 `paneKey` 持久化到 `apex-admin:pane:<key>`，主从结构页面直接复用，不自行实现分栏。
-- **顶栏材质**：顶栏为悬浮玻璃（`position: absolute` + 半透明 `--app-topbar-bg`），页面内容从其下滚过；页面滚动容器 `CachedRouteView` 已预留 `padding-top: var(--app-topbar-h)`，新增页面宿主必须保持该内边距。
+- **材质体系（Sonoma 风）**：`Wallpaper` 组件（App 挂载一次，z-index:-1）以 `--app-canvas` + `--app-wall-*` 令牌绘制全屏动态壁纸，是一切玻璃材质的模糊采样源；顶栏（`--app-topbar-bg`）、Dock（`--app-dock-bg`）、工作区悬浮窗口（`--app-glass-window`，圆角 `--app-radius-window`）、antd 弹层（`--app-pop-bg`，globals.css 统一覆盖）全部半透明 + `--app-glass-filter` 毛玻璃。页面画布透明（`--app-page-bg` 仅极淡提亮），禁止给页面/卡片写不透明底色。
+- **顶栏材质**：顶栏为悬浮玻璃（`position: absolute` + 半透明 `--app-topbar-bg`），页面内容从其下滚过；工作区窗口从顶栏下方开始（上边距 = 顶栏高 + 8px），页面滚动容器 `CachedRouteView` 的 `padding: 16px 10px 92px` 中底部 92px 为悬浮 Dock 预留，新增页面宿主必须保持该内边距。

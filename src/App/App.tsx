@@ -12,6 +12,7 @@ import { RouterProvider } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import { FeedbackBridge } from '@/components/FeedbackBridge/FeedbackBridge'
 import PageLoading from '@/components/PageLoading/PageLoading'
+import { Wallpaper } from '@/components/Wallpaper/Wallpaper'
 import { getAntdTheme } from '@/constants/designTokens'
 import { useTheme } from '@/hooks/useTheme'
 import { changeAppLanguage } from '@/i18n/i18n'
@@ -44,6 +45,7 @@ export default function App() {
   return (
     <ConfigProvider locale={antdLocale} theme={getAntdTheme(resolvedTheme)}>
       <AntdApp>
+        <Wallpaper />
         <FeedbackBridge />
         <Suspense fallback={<PageLoading />}>
           <RouterProvider router={appRouter} />

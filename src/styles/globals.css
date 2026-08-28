@@ -6,12 +6,17 @@
  * 由 useTheme 渲染期同步到 <html>）。antd 侧不维护第二份色值/圆角/字体：
  * constants/designTokens.ts 在渲染期读取此处的计算变量生成 ThemeConfig。
  * 约束：新增令牌必须语义命名并双主题成对；组件只引用变量，不写裸色值/非标准字重。
+ *
+ * 材质体系（Sonoma 风）：--app-canvas 是壁纸底色渐变（挂 body + Wallpaper 组件兜底），
+ * --app-wall-* 是壁纸光斑/绸带配色；--app-glass-* 是玻璃材质（窗口/条带/弹层），
+ * 玻璃面一律半透明 + backdrop-filter 采样壁纸，所有表面透明度都刻意调低让色彩透出。
  */
 
 :root {
   color-scheme: light;
 
-  /* ---- 半径层级（同心关系：panel − 内边距 ≈ control，control − 内边距 ≈ badge） ---- */
+  /* ---- 半径层级（同心关系：panel − 内边距 ≈ control，control − 内边距 ≈ badge；window 为最外悬浮窗口） ---- */
+  --app-radius-window: 18px;
   --app-radius-panel: 12px;
   --app-radius-control: 7px;
   --app-radius-badge: 5px;
@@ -48,13 +53,13 @@
   --app-topbar-h: 48px;
   --app-dock-h: 56px;
   --app-font:
-    -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text',
+    'Inter Variable', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text',
     'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', Arial, sans-serif;
 
-  --app-bg: #eef2f8;
-  --app-bg-2: #e6ebf3;
-  --app-page-bg: #ffffff;
-  --app-panel: rgba(255, 255, 255, 0.86);
+  --app-bg: #dfe9f6;
+  --app-bg-2: #d4e2f2;
+  --app-page-bg: rgba(255, 255, 255, 0.24);
+  --app-panel: rgba(255, 255, 255, 0.62);
   --app-line: rgba(108, 138, 184, 0.3);
   --app-line-soft: rgba(60, 90, 140, 0.09);
   --app-text: #101728;
@@ -68,48 +73,74 @@
   --app-red: #e5484d;
   --app-yellow: #d98e0b;
 
-  /* 背景画布：body 多层渐变整体收进变量，暗色给一套深色等价物 */
+  /* 背景画布 = 壁纸底色（body 兜底 + Wallpaper 组件基底层），暖沙地平线快速过渡到饱和群青 */
   --app-canvas:
-    radial-gradient(circle at 50% 0%, rgba(64, 132, 255, 0.1), transparent 26%),
-    radial-gradient(circle at 20% 40%, rgba(80, 140, 255, 0.09), transparent 26%),
-    radial-gradient(circle at 80% 35%, rgba(120, 160, 255, 0.08), transparent 22%),
-    repeating-linear-gradient(
-      90deg,
-      rgba(70, 105, 160, 0.05) 0px,
-      rgba(70, 105, 160, 0.05) 1px,
-      transparent 2px,
-      transparent 40px
-    ),
-    linear-gradient(180deg, #f7f9fd 0%, #e8edf6 100%);
+    radial-gradient(110% 80% at 92% 104%, rgba(190, 228, 255, 0.5), transparent 50%),
+    radial-gradient(85% 65% at 2% -8%, #f7eeda 0%, rgba(247, 238, 218, 0) 42%),
+    linear-gradient(168deg, #e9e2cf 0%, #bcd7f2 14%, #7fb2ee 32%, #3f87e0 52%, #1f66d6 74%, #123f9e 100%);
+
+  /* 壁纸动态层配色（光斑 / 绸带 / 高光丝边，由 Wallpaper 组件消费） */
+  --app-wall-glow-a: radial-gradient(closest-side, rgba(122, 222, 255, 0.85), rgba(122, 222, 255, 0) 72%);
+  --app-wall-glow-b: radial-gradient(closest-side, rgba(18, 70, 190, 0.78), rgba(18, 70, 190, 0) 72%);
+  --app-wall-glow-c: radial-gradient(closest-side, rgba(96, 168, 255, 0.75), rgba(96, 168, 255, 0) 72%);
+  --app-wall-ribbon:
+    linear-gradient(
+      97deg,
+      rgba(255, 255, 255, 0) 12%,
+      rgba(255, 255, 255, 0.5) 34%,
+      rgba(255, 255, 255, 0.08) 44%,
+      rgba(150, 225, 255, 0.55) 56%,
+      rgba(255, 255, 255, 0) 78%
+    );
+  --app-wall-sheen:
+    linear-gradient(
+      97deg,
+      rgba(255, 255, 255, 0) 20%,
+      rgba(255, 255, 255, 0.85) 50%,
+      rgba(255, 255, 255, 0) 80%
+    );
+
+  /* ---- 玻璃材质：条带/弹层一套、悬浮窗口一套（模糊强一档） ---- */
+  --app-glass-filter: blur(28px) saturate(180%);
+  --app-glass-filter-window: blur(36px) saturate(170%);
+  --app-glass-line: rgba(255, 255, 255, 0.55);
+  --app-glass-window: linear-gradient(168deg, rgba(255, 255, 255, 0.52), rgba(244, 249, 255, 0.36));
+  --app-pop-bg: rgba(250, 252, 255, 0.78);
+  --app-mask: rgba(20, 32, 58, 0.3);
 
   /* 卡片 / 控制 / 玻璃高光（供 .ds-* 与布局模块共用） */
   --app-card-bg:
     radial-gradient(circle at 50% 0%, rgba(52, 123, 255, 0.05), transparent 50%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(252, 254, 255, 0.92));
-  --app-card-line: rgba(108, 138, 184, 0.24);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.8), rgba(250, 253, 255, 0.62));
+  --app-card-line: rgba(255, 255, 255, 0.66);
   --app-card-title: #17233b;
   --app-card-sub: #71809a;
-  --app-control-bg: rgba(255, 255, 255, 0.92);
+  --app-control-bg: rgba(255, 255, 255, 0.68);
   --app-control-text: #33405a;
-  --app-highlight: rgba(255, 255, 255, 0.9);
-  --app-highlight-soft: rgba(255, 255, 255, 0.6);
-  /* 顶栏为悬浮玻璃（页面内容从其下滚过），透明度让材质采样生效，模糊由 Header 模块加强 */
-  --app-topbar-bg: rgba(250, 252, 255, 0.72);
+  --app-highlight: rgba(255, 255, 255, 0.85);
+  --app-highlight-soft: rgba(255, 255, 255, 0.5);
+  /* 顶栏为悬浮玻璃条（页面内容从其下滚过），透明度让壁纸采样生效 */
+  --app-topbar-bg: rgba(255, 255, 255, 0.5);
   --app-divider: rgba(125, 149, 187, 0.24);
-  --app-hover-bg: rgba(20, 45, 90, 0.06);
-  --app-scrollbar: rgba(108, 138, 184, 0.32);
-  --app-scrollbar-hover: rgba(108, 138, 184, 0.5);
-  --app-dock-bg: rgba(255, 255, 255, 0.78);
-  --app-tab-bg: rgba(255, 255, 255, 0.95);
-  --app-tab-drag-bg: rgba(255, 255, 255, 0.99);
-  --app-shadow-1: 0 4px 12px rgba(23, 43, 77, 0.12);
-  --app-shadow-2: 0 8px 22px rgba(23, 43, 77, 0.18);
+  --app-hover-bg: rgba(255, 255, 255, 0.4);
+  --app-scrollbar: rgba(70, 100, 155, 0.35);
+  --app-scrollbar-hover: rgba(70, 100, 155, 0.55);
+  --app-dock-bg: rgba(255, 255, 255, 0.52);
+  --app-tab-bg: rgba(255, 255, 255, 0.8);
+  --app-tab-drag-bg: rgba(255, 255, 255, 0.94);
+  --app-shadow-1: 0 4px 12px rgba(10, 30, 70, 0.14);
+  --app-shadow-2: 0 8px 22px rgba(10, 30, 70, 0.2);
+  --app-card-shadow: 0 8px 24px rgba(10, 30, 70, 0.08);
+  --app-window-shadow:
+    0 24px 70px rgba(10, 30, 70, 0.28),
+    0 4px 18px rgba(10, 30, 70, 0.12);
+  --app-topbar-shadow: 0 8px 28px rgba(10, 30, 70, 0.1);
   --app-dock-shadow:
-    0 14px 34px rgba(23, 43, 77, 0.14),
-    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+    0 18px 40px rgba(10, 30, 70, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
   --app-panel-shadow:
-    0 18px 60px rgba(23, 43, 77, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+    0 30px 80px rgba(10, 30, 70, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
 
   /* 彩色语义文字（胶囊/标签用，暗色下整体提亮保证对比度） */
   --app-red-text: #d92d20;
@@ -124,8 +155,8 @@
 
   --app-bg: #0b101c;
   --app-bg-2: #0e1524;
-  --app-page-bg: #131a2b;
-  --app-panel: rgba(19, 26, 43, 0.82);
+  --app-page-bg: rgba(14, 21, 38, 0.32);
+  --app-panel: rgba(20, 28, 48, 0.62);
   --app-line: rgba(129, 155, 205, 0.24);
   --app-line-soft: rgba(129, 155, 205, 0.09);
   --app-text: #e9edf7;
@@ -140,44 +171,66 @@
   --app-yellow: #e8ac3f;
 
   --app-canvas:
-    radial-gradient(circle at 50% 0%, rgba(76, 141, 255, 0.12), transparent 26%),
-    radial-gradient(circle at 20% 40%, rgba(64, 120, 220, 0.1), transparent 26%),
-    radial-gradient(circle at 80% 35%, rgba(90, 130, 220, 0.09), transparent 22%),
-    repeating-linear-gradient(
-      90deg,
-      rgba(120, 150, 205, 0.045) 0px,
-      rgba(120, 150, 205, 0.045) 1px,
-      transparent 2px,
-      transparent 40px
-    ),
-    linear-gradient(180deg, #0d1424 0%, #0a0f1b 100%);
+    radial-gradient(110% 80% at 92% 104%, rgba(70, 150, 255, 0.28), transparent 50%),
+    radial-gradient(85% 65% at 2% -8%, #1b2544 0%, rgba(27, 37, 68, 0) 42%),
+    linear-gradient(168deg, #0a1122 0%, #0d1a33 20%, #102a55 42%, #123a75 66%, #163f7e 100%);
+
+  --app-wall-glow-a: radial-gradient(closest-side, rgba(64, 205, 255, 0.5), rgba(64, 205, 255, 0) 72%);
+  --app-wall-glow-b: radial-gradient(closest-side, rgba(30, 90, 230, 0.62), rgba(30, 90, 230, 0) 72%);
+  --app-wall-glow-c: radial-gradient(closest-side, rgba(110, 90, 255, 0.42), rgba(110, 90, 255, 0) 72%);
+  --app-wall-ribbon:
+    linear-gradient(
+      97deg,
+      rgba(255, 255, 255, 0) 12%,
+      rgba(255, 255, 255, 0.28) 34%,
+      rgba(255, 255, 255, 0.05) 44%,
+      rgba(120, 210, 255, 0.36) 56%,
+      rgba(255, 255, 255, 0) 78%
+    );
+  --app-wall-sheen:
+    linear-gradient(
+      97deg,
+      rgba(255, 255, 255, 0) 20%,
+      rgba(255, 255, 255, 0.5) 50%,
+      rgba(255, 255, 255, 0) 80%
+    );
+
+  --app-glass-line: rgba(160, 190, 240, 0.16);
+  --app-glass-window: linear-gradient(168deg, rgba(24, 34, 58, 0.6), rgba(14, 21, 38, 0.55));
+  --app-pop-bg: rgba(24, 33, 55, 0.82);
+  --app-mask: rgba(0, 0, 0, 0.45);
 
   --app-card-bg:
     radial-gradient(circle at 50% 0%, rgba(76, 141, 255, 0.08), transparent 50%),
-    linear-gradient(180deg, rgba(26, 35, 57, 0.94), rgba(20, 28, 46, 0.9));
-  --app-card-line: rgba(129, 155, 205, 0.2);
+    linear-gradient(180deg, rgba(32, 43, 70, 0.72), rgba(22, 31, 52, 0.6));
+  --app-card-line: rgba(160, 190, 240, 0.14);
   --app-card-title: #e9edf7;
   --app-card-sub: #93a0b8;
-  --app-control-bg: rgba(30, 40, 64, 0.92);
+  --app-control-bg: rgba(38, 50, 78, 0.7);
   --app-control-text: #ccd5e6;
-  --app-highlight: rgba(255, 255, 255, 0.08);
-  --app-highlight-soft: rgba(255, 255, 255, 0.1);
-  --app-topbar-bg: rgba(15, 21, 36, 0.66);
+  --app-highlight: rgba(255, 255, 255, 0.1);
+  --app-highlight-soft: rgba(255, 255, 255, 0.14);
+  --app-topbar-bg: rgba(12, 18, 33, 0.5);
   --app-divider: rgba(129, 155, 205, 0.2);
-  --app-hover-bg: rgba(120, 160, 230, 0.12);
+  --app-hover-bg: rgba(130, 170, 240, 0.14);
   --app-scrollbar: rgba(129, 155, 205, 0.28);
   --app-scrollbar-hover: rgba(129, 155, 205, 0.45);
-  --app-dock-bg: rgba(22, 30, 49, 0.8);
-  --app-tab-bg: rgba(33, 44, 70, 0.95);
-  --app-tab-drag-bg: rgba(38, 50, 78, 0.99);
+  --app-dock-bg: rgba(16, 24, 42, 0.55);
+  --app-tab-bg: rgba(40, 52, 80, 0.75);
+  --app-tab-drag-bg: rgba(46, 60, 92, 0.92);
   --app-shadow-1: 0 4px 12px rgba(0, 0, 0, 0.4);
   --app-shadow-2: 0 8px 22px rgba(0, 0, 0, 0.5);
+  --app-card-shadow: 0 8px 24px rgba(0, 0, 0, 0.32);
+  --app-window-shadow:
+    0 24px 70px rgba(0, 0, 0, 0.55),
+    0 4px 18px rgba(0, 0, 0, 0.35);
+  --app-topbar-shadow: 0 8px 28px rgba(0, 0, 0, 0.3);
   --app-dock-shadow:
-    0 14px 34px rgba(0, 0, 0, 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    0 18px 40px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
   --app-panel-shadow:
-    0 18px 60px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    0 30px 80px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
 
   /* antd darkAlgorithm 的组件底色基准（仅暗色需要；见 constants/designTokens.ts） */
   --app-antd-bg-base: #0d1422;
@@ -229,6 +282,41 @@ body {
 }
 
 /* -------------------------------------------------------------------------- */
+/* antd 浮层玻璃化：弹层悬浮在玻璃窗口之上，统一为 --app-pop-bg 毛玻璃材质           */
+/* （antd v6 样式经 :where 降权，此处同名类选择器可直接覆盖，无需 !important）        */
+/* -------------------------------------------------------------------------- */
+
+.ant-dropdown .ant-dropdown-menu,
+.ant-popover .ant-popover-inner,
+.ant-modal .ant-modal-content,
+.ant-select-dropdown,
+.ant-drawer .ant-drawer-content,
+.ant-message .ant-message-notice-content,
+.ant-notification .ant-notification-notice,
+.ant-picker-dropdown .ant-picker-panel-container {
+  background: var(--app-pop-bg);
+  backdrop-filter: var(--app-glass-filter);
+  -webkit-backdrop-filter: var(--app-glass-filter);
+}
+
+.ant-popover .ant-popover-arrow:before {
+  background: var(--app-pop-bg);
+}
+
+.ant-modal-mask {
+  background: var(--app-mask);
+  backdrop-filter: blur(6px) saturate(140%);
+  -webkit-backdrop-filter: blur(6px) saturate(140%);
+}
+
+.ant-tooltip .ant-tooltip-inner {
+  background: var(--app-pop-bg);
+  color: var(--app-text);
+  backdrop-filter: var(--app-glass-filter);
+  -webkit-backdrop-filter: var(--app-glass-filter);
+}
+
+/* -------------------------------------------------------------------------- */
 /* 设计系统工具类：跨业务面板复用的卡片 / 标题 / 胶囊 / 标签（源自设计稿）            */
 /* -------------------------------------------------------------------------- */
 
@@ -236,7 +324,9 @@ body {
   background: var(--app-card-bg);
   border: 1px solid var(--app-card-line);
   border-radius: var(--app-radius-panel);
-  box-shadow: inset 0 1px 0 var(--app-highlight);
+  box-shadow:
+    inset 0 1px 0 var(--app-highlight),
+    var(--app-card-shadow);
   overflow: hidden;
 }
 

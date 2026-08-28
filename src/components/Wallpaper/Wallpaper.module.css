@@ -1,0 +1,122 @@
+/*
+ * 全局动态壁纸：Sonoma 风格流体渐变，作为顶栏 / 悬浮窗口 / Dock / 弹层等
+ * 玻璃材质的模糊采样源。配色全部来自 globals.css 的 --app-canvas 与 --app-wall-*
+ * 令牌（双主题）；动效仅用 transform（GPU 合成），并尊重系统减弱动态偏好。
+ */
+
+.wall {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  background: var(--app-canvas);
+}
+
+/* 大尺度模糊光斑：缓慢平移缩放，让玻璃面的采样内容有生命感 */
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(64px);
+  will-change: transform;
+}
+
+.blobA {
+  width: 64vmax;
+  height: 64vmax;
+  left: -14vmax;
+  bottom: -20vmax;
+  background: var(--app-wall-glow-a);
+  animation: driftA 46s ease-in-out infinite alternate;
+}
+
+.blobB {
+  width: 72vmax;
+  height: 72vmax;
+  right: -20vmax;
+  bottom: -26vmax;
+  background: var(--app-wall-glow-b);
+  animation: driftB 58s ease-in-out infinite alternate;
+}
+
+.blobC {
+  width: 48vmax;
+  height: 48vmax;
+  right: 0;
+  top: -12vmax;
+  background: var(--app-wall-glow-c);
+  animation: driftA 52s ease-in-out infinite alternate-reverse;
+}
+
+/* 倾斜丝绸绸带 + 细高光丝边：复刻参考图 wave 的受光边缘 */
+.ribbon {
+  position: absolute;
+  left: -20vw;
+  top: 22vh;
+  width: 150vw;
+  height: 38vh;
+  background: var(--app-wall-ribbon);
+  filter: blur(26px);
+  transform: rotate(-16deg);
+  animation: sway 30s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.sheen {
+  position: absolute;
+  left: -20vw;
+  top: 29vh;
+  width: 150vw;
+  height: 7vh;
+  background: var(--app-wall-sheen);
+  filter: blur(9px);
+  transform: rotate(-16deg);
+  animation: sway 30s ease-in-out infinite alternate;
+  animation-delay: -30s;
+  will-change: transform;
+}
+
+/* 细颗粒噪点：压住渐变条带，避免大面积纯色的塑料感 */
+.grain {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+  background-size: 240px 240px;
+  opacity: 0.05;
+  mix-blend-mode: soft-light;
+}
+
+@keyframes driftA {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(6vmax, -4vmax, 0) scale(1.12);
+  }
+}
+
+@keyframes driftB {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(-5vmax, -6vmax, 0) scale(1.08);
+  }
+}
+
+@keyframes sway {
+  from {
+    transform: rotate(-16deg) translateY(-1.6vh);
+  }
+  to {
+    transform: rotate(-14.5deg) translateY(1.6vh);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blob,
+  .ribbon,
+  .sheen {
+    animation: none;
+  }
+}

@@ -11,12 +11,12 @@
 .card {
   width: 400px;
   padding: 36px 34px 28px;
-  border-radius: var(--app-radius-panel);
+  border-radius: var(--app-radius-window);
   background: var(--app-panel);
-  border: 1px solid var(--app-card-line);
+  border: 1px solid var(--app-glass-line);
   box-shadow: var(--app-panel-shadow);
-  backdrop-filter: blur(18px) saturate(135%);
-  -webkit-backdrop-filter: blur(18px) saturate(135%);
+  backdrop-filter: var(--app-glass-filter);
+  -webkit-backdrop-filter: var(--app-glass-filter);
 }
 
 .brand {

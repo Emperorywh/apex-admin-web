@@ -1,4 +1,4 @@
-/* 顶部工具条：48px 悬浮玻璃条（页面内容从其下滚过），三段网格（品牌 | 页签 | 状态区） */
+/* 顶部工具条：48px 悬浮玻璃条（macOS 菜单栏语义，页面内容从其下滚过），三段网格（品牌 | 页签 | 状态区） */
 
 .topbar {
   position: absolute;
@@ -12,10 +12,12 @@
   gap: 12px;
   padding: 0 16px 0 20px;
   background: var(--app-topbar-bg);
-  backdrop-filter: blur(20px) saturate(150%);
-  -webkit-backdrop-filter: blur(20px) saturate(150%);
-  border-bottom: 1px solid var(--app-divider);
-  box-shadow: inset 0 -1px 0 var(--app-highlight-soft);
+  backdrop-filter: var(--app-glass-filter);
+  -webkit-backdrop-filter: var(--app-glass-filter);
+  border-bottom: 1px solid var(--app-glass-line);
+  box-shadow:
+    var(--app-topbar-shadow),
+    inset 0 1px 0 var(--app-highlight-soft);
   z-index: 20;
 }
 
@@ -85,15 +87,21 @@
   font-weight: var(--app-fw-bold);
   color: var(--app-text);
   white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 
 .avatar {
   width: 27px;
   height: 27px;
   border-radius: var(--app-radius-pill);
-  border: 1px solid var(--app-highlight-soft);
+  border: 1px solid var(--app-glass-line);
   color: #fff;
-  background: linear-gradient(180deg, #8fb0e8, #5d7cc0);
+  background:
+    radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.45), transparent 55%),
+    linear-gradient(180deg, #8fb0e8, #5d7cc0);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    var(--app-shadow-1);
   display: flex;
   align-items: center;
   justify-content: center;

@@ -15,7 +15,6 @@ export function PagePlaceholder({ title }: PagePlaceholderProps) {
   return (
     <div className={styles.placeholder}>
       <h1 className={styles.title}>{t(title)}</h1>
-      <input placeholder="请输入内容..." />
     </div>
   )
 }

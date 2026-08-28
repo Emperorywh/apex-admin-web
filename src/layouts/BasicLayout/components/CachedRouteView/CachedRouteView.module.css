@@ -1,10 +1,11 @@
-/* 每个缓存页面独立的滚动容器：自动撑满工作区全高（顶栏悬浮于其上，故顶部内边距预留玻璃条高度）；
-   页面画布为 --app-page-bg（globals.css 双主题令牌） */
+/* 每个缓存页面独立的滚动容器：自动撑满工作区全高；
+   工作区（BasicLayout）已是悬浮玻璃窗口，这里只铺一层极淡的 --app-page-bg 提亮内容区，
+   保持透明感让窗口玻璃与壁纸透出；底部内边距为悬浮 Dock 预留通行空间 */
 
 .scrollHost {
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: calc(var(--app-topbar-h) + 10px) 9px 72px;
+  padding: 16px 10px 92px;
   background: var(--app-page-bg);
 }

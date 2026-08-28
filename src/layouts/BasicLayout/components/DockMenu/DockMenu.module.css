@@ -1,4 +1,4 @@
-/* 底部 Dock：居中悬浮全圆角胶囊，图标为彩色瓷片（与页签同源配色） */
+/* 底部 Dock：居中悬浮全圆角玻璃胶囊（macOS Dock 语义），图标为彩色瓷片（与页签同源配色） */
 
 .dock {
   position: fixed;
@@ -14,9 +14,9 @@
   gap: 4px;
   border-radius: 999px;
   background: var(--app-dock-bg);
-  backdrop-filter: blur(22px) saturate(145%);
-  -webkit-backdrop-filter: blur(22px) saturate(145%);
-  border: 1px solid var(--app-line);
+  backdrop-filter: var(--app-glass-filter);
+  -webkit-backdrop-filter: var(--app-glass-filter);
+  border: 1px solid var(--app-glass-line);
   box-shadow: var(--app-dock-shadow);
   max-width: calc(100vw - 32px);
   /* 菜单项较多时横向滚动；隐藏滚动条保持胶囊外观 */
@@ -57,15 +57,24 @@
   white-space: nowrap;
 }
 
+/* Dock 放大动效：悬停时首元素（图标瓷片/废纸篓图标）上浮放大，贴近 macOS Dock 手感 */
+.item > :first-child {
+  transition: transform var(--app-dur-base) var(--app-ease-standard);
+}
+
+.item:hover > :first-child {
+  transform: translateY(-3px) scale(1.18);
+}
+
 .item:hover {
   background: var(--app-hover-bg);
-  transform: translateY(-1px);
 }
 
 .itemActive,
 .itemActive:hover {
-  background: rgba(47, 127, 255, 0.12);
+  background: rgba(47, 127, 255, 0.16);
   color: var(--app-blue);
+  box-shadow: inset 0 1px 0 var(--app-highlight);
 }
 
 .separator {
@@ -91,11 +100,11 @@
   flex-direction: column;
   gap: 2px;
   border-radius: var(--app-radius-panel);
-  background: var(--app-dock-bg);
-  backdrop-filter: blur(22px) saturate(145%);
-  -webkit-backdrop-filter: blur(22px) saturate(145%);
-  border: 1px solid var(--app-line);
-  box-shadow: var(--app-dock-shadow);
+  background: var(--app-pop-bg);
+  backdrop-filter: var(--app-glass-filter);
+  -webkit-backdrop-filter: var(--app-glass-filter);
+  border: 1px solid var(--app-glass-line);
+  box-shadow: var(--app-panel-shadow);
   /* 出现动效的缩放原点由 computePanelStyle 按触发方位内联（从哪里来） */
   animation: panelIn var(--app-dur-fast) var(--app-ease-standard);
 }
@@ -136,7 +145,7 @@
 
 .panelItemActive,
 .panelItemActive:hover {
-  background: rgba(47, 127, 255, 0.12);
+  background: rgba(47, 127, 255, 0.16);
   color: var(--app-blue);
 }
 
