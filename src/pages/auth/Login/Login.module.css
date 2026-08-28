@@ -11,7 +11,7 @@
 .card {
   width: 400px;
   padding: 36px 34px 28px;
-  border-radius: 18px;
+  border-radius: var(--app-radius-panel);
   background: var(--app-panel);
   border: 1px solid var(--app-card-line);
   box-shadow: var(--app-panel-shadow);
@@ -34,15 +34,15 @@
 }
 
 .name {
-  font-size: 18px;
-  font-weight: 780;
+  font-size: var(--app-fs-title);
+  font-weight: var(--app-fw-bold);
   letter-spacing: -0.02em;
 }
 
 .sub {
   margin: 0 0 22px;
   text-align: center;
-  font-size: 12px;
-  font-weight: 600;
+  font-size: var(--app-fs-secondary);
+  font-weight: var(--app-fw-semibold);
   color: var(--app-text-3);
 }

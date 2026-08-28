@@ -1,5 +1,5 @@
 /**
- * 路由体系类型：定义与 meta 约定（SPEC §4.2）。
+ * 路由体系类型：定义与 meta 约定。
  */
 
 import type { ComponentType } from 'react'

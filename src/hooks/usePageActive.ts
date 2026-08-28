@@ -1,6 +1,6 @@
 /**
  * 页面激活状态：Activity 隐藏/显示时 isActive 变化，
- * 用于视频、音频、iframe、焦点、定时器等 DOM 型副作用的暂停与恢复（SPEC §5.2）。
+ * 用于视频、音频、iframe、焦点、定时器等 DOM 型副作用的暂停与恢复。
  */
 
 import { useRequestScope } from '@/components/RequestScopeProvider/RequestScopeContext'

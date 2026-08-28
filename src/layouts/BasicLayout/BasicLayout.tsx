@@ -2,7 +2,7 @@
  * 基础布局：复刻 macOS 风格外壳（顶部工具条（品牌+页签+状态）/ 工作区 / 底部 Dock）。
  *
  * - 在受保护根路由只挂载一次；不渲染 <Outlet/>，业务页全部经 PageCacheHost 输出
- * - 根据 Data Router location/matches 同步页签（SPEC §4.1/§4.4）
+ * - 根据 Data Router location/matches 同步页签
  * - 页签状态变化后的激活跳转、会话失效跳转与 document.title 均在此收敛
  */
 

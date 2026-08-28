@@ -16,7 +16,7 @@ interface IconTileProps {
   children: ReactNode
 }
 
-export function IconTile({ tone, size = 22, radius = 6, children }: IconTileProps) {
+export function IconTile({ tone, size = 22, radius = 5, children }: IconTileProps) {
   const style: CSSProperties = { width: size, height: size, borderRadius: radius }
   return (
     <span className={`${styles.tile} ${styles[tone]}`} style={style} aria-hidden="true">

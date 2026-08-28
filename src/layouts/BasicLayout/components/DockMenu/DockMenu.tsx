@@ -64,9 +64,9 @@ function clamp(value: number, min: number, max: number): number {
 }
 
 /**
- * 依据锚点与层级计算面板固定定位：顶层悬于 Dock 项上方；
- * 子级顶部对齐触发项（macOS 子菜单贴附锚点），panelHeight 为面板实际高度，
- * 仅在底部放不下时按需整体上移——短面板不再被最大高度预留推向远处
+ * 依据锚点与层级计算面板固定定位：顶层悬于 Dock 项上方（缩放原点在面板底边，向触发项生长）；
+ * 子级顶部对齐触发项（macOS 子菜单贴附锚点），缩放原点取贴附侧边；
+ * panelHeight 为面板实际高度，仅在底部放不下时按需整体上移——短面板不再被最大高度预留推向远处
  */
 function computePanelStyle(anchor: PanelAnchor, depth: number, panelHeight = PANEL_MAX_HEIGHT): CSSProperties {
   const viewWidth = window.innerWidth
@@ -75,17 +75,19 @@ function computePanelStyle(anchor: PanelAnchor, depth: number, panelHeight = PAN
     return {
       left: clamp(anchor.centerX - PANEL_WIDTH / 2, VIEWPORT_PADDING, viewWidth - VIEWPORT_PADDING - PANEL_WIDTH),
       bottom: viewHeight - anchor.top + PANEL_GAP,
+      transformOrigin: '50% 100%',
     }
   }
   const besideRight = anchor.right + FLYOUT_GAP
-  const left =
-    besideRight + PANEL_WIDTH <= viewWidth - VIEWPORT_PADDING
-      ? besideRight
-      : Math.max(VIEWPORT_PADDING, anchor.left - FLYOUT_GAP - PANEL_WIDTH)
+  const flipLeft = besideRight + PANEL_WIDTH > viewWidth - VIEWPORT_PADDING
+  const left = flipLeft
+    ? Math.max(VIEWPORT_PADDING, anchor.left - FLYOUT_GAP - PANEL_WIDTH)
+    : besideRight
   const maxTop = Math.max(VIEWPORT_PADDING, viewHeight - VIEWPORT_PADDING - panelHeight)
   return {
     left,
     top: clamp(anchor.top - 6, VIEWPORT_PADDING, maxTop),
+    transformOrigin: flipLeft ? '100% 50%' : '0% 50%',
   }
 }
 
@@ -241,7 +243,7 @@ export function DockMenu() {
               onClick={(event) => clickSection(section, event.currentTarget)}
             >
               {Icon ? (
-                <IconTile tone={routeIconTone(section.routeId)} size={24} radius={7}>
+                <IconTile tone={routeIconTone(section.routeId)} size={24} radius={5}>
                   <Icon size={15} strokeWidth={2} />
                 </IconTile>
               ) : null}
@@ -323,7 +325,7 @@ function DockMenuPanel({
   return (
     <div
       ref={panelRef}
-      className={depth === 0 ? `${styles.panel} ${styles.panelRoot}` : `${styles.panel} ${styles.panelFly}`}
+      className={styles.panel}
       data-dock-menu
       role="menu"
       style={style}
@@ -346,7 +348,7 @@ function DockMenuPanel({
               onClick={(event) => onOpenGroup(item, event.currentTarget)}
             >
               <span className={styles.panelLabel}>{t(item.title)}</span>
-              <ChevronRight size={14} strokeWidth={2.4} className={styles.panelChevron} aria-hidden="true" />
+              <ChevronRight size={14} strokeWidth={2} className={styles.panelChevron} aria-hidden="true" />
             </button>
           )
         }

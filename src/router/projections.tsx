@@ -1,5 +1,5 @@
 /**
- * 三投影生成（SPEC §4.1）：
+ * 三投影生成：
  * 1. accessRoutes —— 注册给 createBrowserRouter；认证 loader、重定向、空锚点叶子
  * 2. renderRoutes —— 无 loader/action，仅结构与 React.lazy 页面；供 CachedRouteView 以
  *    useRoutes(renderRoutes, locationSnapshot) 渲染，使每个缓存页签拥有独立路由上下文
@@ -94,7 +94,7 @@ function toAccessNode(
     const LazyPage = getLazyPage(definition)
     node.element = wrapPublicPage(<LazyPage />)
   }
-  // 受保护业务叶子：空锚点，不直接渲染业务页（SPEC §4.1）
+  // 受保护业务叶子：空锚点，不直接渲染业务页
   return node
 }
 
@@ -169,7 +169,7 @@ function filterMenuNodes(
     const path = joinPath(basePath, definition.path)
     if (definition.children?.length) {
       const children = filterMenuNodes(definition.children, path)
-      // 目录至少有一个可见子节点才保留（SPEC §4.3）
+      // 目录至少有一个可见子节点才保留
       if (children.length === 0) continue
       nodes.push({
         routeId: definition.id,

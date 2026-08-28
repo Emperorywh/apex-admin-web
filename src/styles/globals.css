@@ -1,11 +1,56 @@
 /*
- * 全局样式：设计令牌 + 背景画布 + 滚动条。
+ * 全局样式：设计令牌 + 背景画布 + 滚动条 + 设计系统工具类。
  * 布局与业务样式一律使用 CSS Modules；本文件只承载跨页面共享的基础层。
- * 令牌双主题：亮色值在 :root，暗色覆盖在 :root[data-theme='dark']（由 useTheme 落到 <html>）。
+ *
+ * 本文件是全局视觉令牌的唯一事实源（双主题：亮色在 :root，暗色覆盖在 :root[data-theme='dark']，
+ * 由 useTheme 渲染期同步到 <html>）。antd 侧不维护第二份色值/圆角/字体：
+ * constants/designTokens.ts 在渲染期读取此处的计算变量生成 ThemeConfig。
+ * 约束：新增令牌必须语义命名并双主题成对；组件只引用变量，不写裸色值/非标准字重。
  */
 
 :root {
   color-scheme: light;
+
+  /* ---- 半径层级（同心关系：panel − 内边距 ≈ control，control − 内边距 ≈ badge） ---- */
+  --app-radius-panel: 12px;
+  --app-radius-control: 7px;
+  --app-radius-badge: 5px;
+  --app-radius-pill: 999px;
+
+  /* ---- 间距刻度 ---- */
+  --app-space-1: 4px;
+  --app-space-2: 8px;
+  --app-space-3: 12px;
+  --app-space-4: 16px;
+  --app-space-5: 20px;
+  --app-space-6: 24px;
+  --app-space-8: 32px;
+
+  /* ---- 字阶（Web 近似层级）与标准字重（禁止 650/750 等非标准值） ---- */
+  --app-fs-caption: 11px;
+  --app-fs-secondary: 12px;
+  --app-fs-body: 13px;
+  --app-fs-primary: 14px;
+  --app-fs-title: 17px;
+  --app-fs-headline: 20px;
+  --app-fw-regular: 400;
+  --app-fw-medium: 500;
+  --app-fw-semibold: 600;
+  --app-fw-bold: 700;
+
+  /* ---- 动效令牌 ---- */
+  --app-dur-fast: 120ms;
+  --app-dur-base: 180ms;
+  --app-dur-slow: 240ms;
+  --app-ease-standard: cubic-bezier(0.25, 0.1, 0.25, 1);
+
+  /* ---- 布局尺寸 ---- */
+  --app-topbar-h: 48px;
+  --app-dock-h: 56px;
+  --app-font:
+    -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text',
+    'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', Arial, sans-serif;
+
   --app-bg: #eef2f8;
   --app-bg-2: #e6ebf3;
   --app-page-bg: #ffffff;
@@ -22,11 +67,6 @@
   --app-orange: #e8860c;
   --app-red: #e5484d;
   --app-yellow: #d98e0b;
-  --app-topbar-h: 48px;
-  --app-dock-h: 56px;
-  --app-font:
-    -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text',
-    'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', Arial, sans-serif;
 
   /* 背景画布：body 多层渐变整体收进变量，暗色给一套深色等价物 */
   --app-canvas:
@@ -53,7 +93,8 @@
   --app-control-text: #33405a;
   --app-highlight: rgba(255, 255, 255, 0.9);
   --app-highlight-soft: rgba(255, 255, 255, 0.6);
-  --app-topbar-bg: rgba(250, 252, 255, 0.96);
+  /* 顶栏为悬浮玻璃（页面内容从其下滚过），透明度让材质采样生效，模糊由 Header 模块加强 */
+  --app-topbar-bg: rgba(250, 252, 255, 0.72);
   --app-divider: rgba(125, 149, 187, 0.24);
   --app-hover-bg: rgba(20, 45, 90, 0.06);
   --app-scrollbar: rgba(108, 138, 184, 0.32);
@@ -80,6 +121,7 @@
 
 :root[data-theme='dark'] {
   color-scheme: dark;
+
   --app-bg: #0b101c;
   --app-bg-2: #0e1524;
   --app-page-bg: #131a2b;
@@ -120,7 +162,7 @@
   --app-control-text: #ccd5e6;
   --app-highlight: rgba(255, 255, 255, 0.08);
   --app-highlight-soft: rgba(255, 255, 255, 0.1);
-  --app-topbar-bg: rgba(15, 21, 36, 0.92);
+  --app-topbar-bg: rgba(15, 21, 36, 0.66);
   --app-divider: rgba(129, 155, 205, 0.2);
   --app-hover-bg: rgba(120, 160, 230, 0.12);
   --app-scrollbar: rgba(129, 155, 205, 0.28);
@@ -136,6 +178,9 @@
   --app-panel-shadow:
     0 18px 60px rgba(0, 0, 0, 0.5),
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
+
+  /* antd darkAlgorithm 的组件底色基准（仅暗色需要；见 constants/designTokens.ts） */
+  --app-antd-bg-base: #0d1422;
 
   --app-red-text: #ff8589;
   --app-orange-text: #f2b04e;
@@ -170,7 +215,7 @@ body {
 
 ::-webkit-scrollbar-thumb {
   background: var(--app-scrollbar);
-  border-radius: 999px;
+  border-radius: var(--app-radius-pill);
   border: 3px solid transparent;
   background-clip: padding-box;
 }
@@ -190,41 +235,44 @@ body {
 .ds-card {
   background: var(--app-card-bg);
   border: 1px solid var(--app-card-line);
-  border-radius: 9px;
+  border-radius: var(--app-radius-panel);
   box-shadow: inset 0 1px 0 var(--app-highlight);
   overflow: hidden;
 }
 
 .ds-card-p {
-  padding: 14px 17px;
+  padding: var(--app-space-3) var(--app-space-4);
 }
 
 .ds-card-title {
-  font-size: 14px;
-  font-weight: 750;
+  font-size: var(--app-fs-primary);
+  font-weight: var(--app-fw-bold);
   color: var(--app-card-title);
 }
 
 .ds-card-sub {
-  font-size: 11px;
+  font-size: var(--app-fs-caption);
   color: var(--app-card-sub);
-  font-weight: 600;
+  font-weight: var(--app-fw-semibold);
 }
 
 .ds-control {
   height: 32px;
-  padding: 0 13px;
-  border-radius: 9px;
+  padding: 0 var(--app-space-3);
+  border-radius: var(--app-radius-control);
   border: 1px solid var(--app-line);
   background: var(--app-control-bg);
   color: var(--app-control-text);
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  font-weight: 650;
+  gap: var(--app-space-2);
+  font-size: var(--app-fs-secondary);
+  font-weight: var(--app-fw-semibold);
   box-shadow: inset 0 1px 0 var(--app-highlight);
   cursor: pointer;
+  transition:
+    color var(--app-dur-fast) var(--app-ease-standard),
+    border-color var(--app-dur-fast) var(--app-ease-standard);
 }
 
 .ds-control:hover {
@@ -243,12 +291,12 @@ body {
   min-width: 31px;
   height: 22px;
   padding: 0 7px;
-  border-radius: 5px;
+  border-radius: var(--app-radius-badge);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 10px;
-  font-weight: 800;
+  font-size: var(--app-fs-caption);
+  font-weight: var(--app-fw-bold);
 }
 
 .ds-pill-red {
@@ -270,9 +318,9 @@ body {
   min-width: 36px;
   height: 23px;
   padding: 0 7px;
-  border-radius: 6px;
-  font-size: 10px;
-  font-weight: 800;
+  border-radius: var(--app-radius-badge);
+  font-size: var(--app-fs-caption);
+  font-weight: var(--app-fw-bold);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -301,8 +349,8 @@ body {
 .ds-link {
   color: var(--app-blue);
   text-decoration: none;
-  font-size: 13px;
-  font-weight: 800;
+  font-size: var(--app-fs-body);
+  font-weight: var(--app-fw-bold);
   cursor: pointer;
 }
 
@@ -312,7 +360,7 @@ body {
 
 .ds-red-link {
   color: var(--app-red);
-  font-size: 14px;
-  font-weight: 800;
+  font-size: var(--app-fs-primary);
+  font-weight: var(--app-fw-bold);
   cursor: pointer;
 }

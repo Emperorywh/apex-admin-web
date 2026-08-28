@@ -2,7 +2,7 @@
 
 > 原生规范、桌面壳适配与 Mac-first Web 实践
 
-版本：v3.0  
+版本：v3.1  
 更新日期：2026-08-28  
 适用基线：macOS 26 及以后版本的设计语言  
 适用产品：AppKit / SwiftUI 原生应用、Electron / Tauri 桌面应用、面向 Mac 用户的复杂 Web 应用、后台管理系统、生产力工具、数据系统与 AI 产品
@@ -13,7 +13,7 @@
 
 本指南用于让复杂软件具备真实、克制、熟悉且高效的 Mac 使用体验，不用于像素级复刻系统界面，也不主张在非原生环境伪造系统能力。
 
-macOS 体验由平台行为、窗口与工作区模型、菜单和命令系统、精确输入、语义视觉、可恢复性及无障碍共同构成。毛玻璃、圆角、SF Pro 或蓝色按钮不能单独构成 macOS 风格。
+macOS 体验由平台行为、窗口与工作区模型、精确输入、语义视觉及无障碍共同构成。毛玻璃、圆角、SF Pro 或蓝色按钮不能单独构成 macOS 风格。
 
 ### 0.1 参考优先级
 
@@ -56,7 +56,7 @@ Liquid Glass、悬浮 Sidebar、更新后的 Toolbar 分组、同心几何与滚
 | 原则 | 当前要求 |
 |---|---|
 | Purpose | 明确为谁解决什么问题，优先保证核心任务可靠、快速、清楚；每个功能都应证明其必要性，不以额外界面掩盖目的不清。 |
-| Agency | 让用户知道当前位置、选择、系统状态和操作结果，并能退出、停止、撤销或恢复。 |
+| Agency | 让用户知道当前位置、系统状态和操作结果，并能退出或停止。 |
 | Responsibility | 只处理必要数据，在需要时请求权限，清楚说明风险、处理边界和外部影响，不使用误导性设计。 |
 | Familiarity | 沿用用户已理解的 Sidebar、Toolbar、Menu Bar、Context Menu、双击、拖放和标准快捷键语义。 |
 | Flexibility | 支持菜单、工具栏、键盘、鼠标或触控板、Context Menu、Drag & Drop 与辅助技术等合理路径。 |
@@ -145,12 +145,6 @@ Application
     └── Alert
 ~~~
 
-核心状态链为：
-
-~~~text
-位置 → 选择 → 当前内容 → 可用命令 → 操作反馈
-~~~
-
 ### 3.1 App Chrome 与 Content
 
 - Global App Chrome 集中承载 Organization、Account、Notifications 和 Global Help，并与 Workspace 的上下文工具分离，避免在每个页面重复。
@@ -158,20 +152,6 @@ Application
 - Card 只用于表达独立对象、可移动单元或明确的强分组关系，不能作为所有内容的默认外壳。
 
 可按任务增加 Content List、Workspace Tabs、Filter Bar、Bottom Status Bar 或 Floating Controls，但不默认全部显示。
-
-### 3.2 工作区状态
-
-切换视图、对象、Pane 或窗口后，按任务合理保留：
-
-- Scroll Position。
-- Selection。
-- Search / Filter。
-- Outline 的展开状态。
-- 列宽、排序和密度。
-- Sidebar / Inspector 的宽度与可见状态。
-- Window Size / Position。
-- 当前工作区、最近文档与未完成编辑。
-- 只恢复仍然有效且不会泄露敏感内容的状态。
 
 ---
 
@@ -213,7 +193,6 @@ Application
 
 - 使用系统 Full Screen，不自动让用户退出。
 - 核心控件在全屏中仍可访问；隐藏 Toolbar 或 Navigation 时提供熟悉的恢复方式。
-- 离开全屏、切换应用或重新打开后恢复第 3.2 节定义的有效上下文。
 
 ### 4.4 连续缩放
 
@@ -229,38 +208,15 @@ Mac 布局围绕持续变化的窗口尺寸设计：
 
 - 以完整桌面布局为基线，真正放不下时才切换紧凑模式。
 - 先保留主任务，优先收起 Inspector 等 Tertiary Pane。
-- 缩放过程不得重置第 3.2 节定义的工作区状态。
 - 提供 Sidebar 与 Inspector 的明确恢复入口。
 - 避免在临界宽度频繁重排全部控件。
 - 不把 Mac 窄窗口直接转换成移动端 Hamburger Drawer。
 
 ---
 
-## 5. Command、Navigation 与 Search
+## 5. Navigation 与 Search
 
-### 5.1 统一 Command System
-
-成熟应用应让多个入口调用同一命令定义：
-
-~~~text
-Command
-├── Menu Bar
-├── Toolbar
-├── Context Menu
-├── Keyboard Shortcut
-└── Command Palette（产品可选）
-~~~
-
-每个 Command 统一管理：
-
-- 可用状态和权限检查。
-- 当前 Selection。
-- 菜单与控件标签。
-- Keyboard Shortcut。
-- Undo 名称。
-- 执行结果和错误反馈。
-
-### 5.2 Menu Bar
+### 5.1 Menu Bar
 
 **原生 / 桌面壳**通常提供以下标准结构，并按领域需要增加菜单：
 
@@ -278,7 +234,7 @@ Help
 - Toolbar 和 Context Menu 是高频或对象相关的快捷入口，不能成为重要命令的唯一入口。
 - Web 应用内命令菜单不得伪装成系统 Menu Bar，也不得阻断浏览器打印、关闭标签页、刷新和地址栏等行为。
 
-### 5.3 Toolbar
+### 5.2 Toolbar
 
 Toolbar 用于定位、导航、搜索和当前内容的高频命令。
 
@@ -296,7 +252,7 @@ Toolbar 用于定位、导航、搜索和当前内容的高频命令。
 - 原生 Toolbar Item 设置正确优先级；适合的专业应用允许用户增删、移动和恢复项目。
 - 熟悉且语义唯一的动作可只使用 Symbol；其他动作使用文本或图标加文本。
 
-### 5.4 Sidebar
+### 5.3 Sidebar
 
 Sidebar 用于稳定导航和位置感：
 
@@ -306,26 +262,24 @@ Sidebar 用于稳定导航和位置感：
 - 深层信息优先使用第二个列表 Pane 或 Split View，不无限缩进。
 - 不把复杂表单、卡片菜单或关键底部操作塞入 Sidebar。
 
-### 5.5 Tabs
+### 5.4 Tabs
 
 | 类型 | 用途 | 要求 |
 |---|---|---|
-| Window Tabs | 在同一系统窗口容器中组织多个文档或完整工作区 | 每个 Tab 保留相对完整的窗口级状态，适用于多文档或用户主动合并的窗口。 |
+| Window Tabs | 在同一系统窗口容器中组织多个文档或完整工作区 | 适用于多文档或用户主动合并的窗口。 |
 | Tab View | 在同一区域切换互斥且相关的内容面板 | 标签使用清楚的名词或短语；Pane 内控件只影响自身；通常避免达到六个或更多。 |
 | Tab Bar | 顶层区域导航 | 只做导航，不放 Toolbar Action。 |
-| Workspace Tabs | 同时打开多个订单、查询或对象 | **产品可选**；完整支持关闭、重开、重排、未保存状态、键盘切换与 Context Menu。 |
+| Workspace Tabs | 同时打开多个订单、查询或对象 | **产品可选**；完整支持关闭、重开、重排与 Context Menu。 |
 
-Workspace Tab 可记住 Scroll、Selection、Filter、Search、Local Edit State 和 Inspector State，但不得与 Sidebar、一级和二级 Tabs 形成多层导航迷宫。
+Workspace Tabs 不得与 Sidebar、一级和二级 Tabs 形成多层导航迷宫。
 
-### 5.6 Find、Search、Filter 与 Command Palette
+### 5.5 Find、Search 与 Filter
 
 - **Find**：在当前文档、页面或内容范围内查找。
 - **Search**：跨集合、来源或应用范围检索。
 - **Filter**：缩小当前结果范围。
 
 Search 可组合 Scope Control、Token、建议和 Filter，但必须让范围清楚，并在清空后恢复正常浏览状态。全局 Search 通常位于 Toolbar 尾部；Sidebar、本地列表的搜索分别靠近其作用范围，并在缩放时保持上下文关系。
-
-Command Palette 仅作为快速跳转、搜索命令、打开对象和执行明确低频功能的可选入口，不能替代 Menu Bar、Toolbar、Context Menu 或正常导航。`⌘K` 不是平台通用快捷键，采用前必须检查冲突并提供可发现入口。
 
 ---
 
@@ -368,28 +322,9 @@ Inspector 可以减少不必要的 Modal，但不能替代所有需要集中完�
 
 ---
 
-## 7. Selection、输入与可恢复操作
+## 7. 输入与可恢复操作
 
-### 7.1 Selection Model
-
-~~~text
-Click            → 单选或激活控件
-Shift-Click      → 范围选择
-Command-Click    → 非连续多选
-Command-A        → 在当前焦点范围内全选
-Arrow Keys       → 在当前集合内移动选择
-Esc              → 取消当前临时状态或操作
-~~~
-
-Selection 与 Activation 必须分离：
-
-- 单击通常选择，双击通常打开对象或进入编辑。
-- Return 的含义由当前上下文决定；例如 Finder 中可用于 Rename，不能全局规定为“打开”。
-- 默认按钮可响应 Return，但必须避免与文本输入区域冲突。
-- 多选时，Toolbar 显示批量命令，Inspector 显示共同属性或混合值，Context Menu 明确动作影响范围。
-- 删除、移动、导出等命令作用于完整 Selection。
-
-### 7.2 键盘
+### 7.1 键盘
 
 | 快捷键 | 标准语义 | 约束 |
 |---|---|---|
@@ -413,15 +348,15 @@ Selection 与 Activation 必须分离：
 
 浏览器 Web 不应覆盖 `⌘L`、`⌘R`、`⌘T`、`⌘W`、`⌘P`、`⌘,`。只有用户明确进入专用编辑器上下文、不会造成意外且有清楚退出方式时，才可考虑拦截部分行为。
 
-### 7.3 Pointer、Hover、Tooltip 与 Context Menu
+### 7.2 Pointer、Hover、Tooltip 与 Context Menu
 
 - 使用系统 Pointer Style 表达文本、链接、拖动和调整大小；Resize Handle 与真实方向一致。
 - 不隐藏系统指针，不重新定义系统级触控板手势。
 - Hover 可提示行、预览、Secondary Action、Drag Handle 或 Resize Handle，但不能成为关键动作或状态的唯一入口。
 - Tooltip 简短说明控件作用；Icon-only Button 必须提供，但 Tooltip 不能替代无障碍名称。
-- Context Menu 支持 Secondary Click 和 Control-Click，调用统一 Command，危险操作放在末尾并正确标记。
+- Context Menu 支持 Secondary Click 和 Control-Click，危险操作放在末尾并正确标记。
 
-### 7.4 Drag & Drop
+### 7.3 Drag & Drop
 
 Drag & Drop 适用于文件导入、列表或 Tab 重排、移动对象、跨 Pane 操作、拖入和拖出内容。
 
@@ -431,7 +366,7 @@ Drag & Drop 适用于文件导入、列表或 Tab 重排、移动对象、跨 Pa
 - 优先支持 Undo；不可恢复的高风险 Drop 在必要时确认。
 - 提供菜单或按钮等非拖动替代路径。
 
-### 7.5 Undo、Redo、Autosave 与冲突
+### 7.4 Undo、Redo、Autosave 与冲突
 
 - Undo / Redo 位于 Edit Menu 顶部，使用 `⌘Z` 与 `⇧⌘Z`，标签说明具体动作。
 - 连续编辑合理合并 Undo Group，Undo 后正确更新 Redo。
@@ -513,7 +448,7 @@ Shadow 只表达 Window、Popover、Menu、Panel、Drag Preview 或临时升起�
 | Secondary Text | 12–13 px / Regular |
 | Caption | 11–12 px / Regular |
 
-Toolbar / Window Title 不使用网页式超大标题。数字表格使用 Tabular Numerals；长文本控制行高和段落宽度；中英文混排单独校准基线、标点和字重。Web 系统字体栈见第 14 节。
+Toolbar / Window Title 不使用网页式超大标题。数字表格使用 Tabular Numerals；长文本控制行高和段落宽度；中英文混排单独校准基线、标点和字重。Web 系统字体栈见第 13 节。
 
 ### 9.3 Color、Appearance 与状态
 
@@ -592,32 +527,11 @@ macOS 控件推荐点击区域至少为 28 × 28 pt，最低不小于 20 × 20 p
 
 ---
 
-## 10. Feedback、System Status 与 Progress
-
-macOS 不存在一套通用的 `Inline → Toast → Popover → Banner → Sheet → Dialog` 打断等级。反馈容器由信息重要程度、作用范围和用户下一步决定。
-
-### 10.1 成功与错误
-
-- Copy、Save、Refresh、Sort、Filter 等常规成功通过内容或控件状态变化表达，不为每次操作显示 Toast。
-- 影响较大、耗时较长、结果不在当前界面可见或需要确认最终状态时，提供明确完成反馈。
-- 错误说明发生了什么、影响范围、可采取的动作、输入是否保留，以及能否重试或恢复。
-- 可在当前上下文解决的问题优先 Inline Error；只有关键且必须立即处理的问题使用 Alert。
-
-### 10.2 Progress
-
-- 时长已知使用 Determinate Progress，未知使用 Indeterminate Progress。
-- 局部任务在局部显示，不锁住整个窗口。
-- 长任务显示状态，并在可行时支持 Cancel、Pause 或后台继续。
-- 进度不得长期停在某个百分比而没有说明；卡住时给出原因和解决路径。
-- Skeleton 仅用于结构已知且不会造成明显布局跳变的 Web 内容；原生优先使用标准 Progress Indicator 和真实占位状态。
-
----
-
-## 11. Accessibility
+## 10. Accessibility
 
 Accessibility 从信息架构和组件选择阶段开始。
 
-### 11.1 语义与辅助技术
+### 10.1 语义与辅助技术
 
 - 每个 Button、Icon、Form Control 和交互对象有简短 Accessible Name；必要时用 Hint 说明结果。
 - 不朗读装饰元素；正确暴露 Selection、Expanded、Checked、Disabled 和 Progress 等状态。
@@ -626,7 +540,7 @@ Accessibility 从信息架构和组件选择阶段开始。
 - Voice Control 使用可说出的稳定 Label；多个可见控件不能使用无法区分的同名。
 - Switch Control 能扫描、聚焦和激活自定义控件；高精度拖动另提供数值输入或键盘微调。
 
-### 11.2 Full Keyboard Access 与 Focus
+### 10.2 Full Keyboard Access 与 Focus
 
 - 所有核心功能都能通过键盘完成。
 - Tab / Shift-Tab 的焦点顺序与视觉顺序一致，Arrow Keys 在集合、菜单和表格中按预期导航。
@@ -634,7 +548,7 @@ Accessibility 从信息架构和组件选择阶段开始。
 - Modal 出现后焦点进入正确位置，关闭后回到 Trigger。
 - VoiceOver 开启后，键盘路径仍然有效。
 
-### 11.3 可读性与系统偏好
+### 10.3 可读性与系统偏好
 
 - 默认文本达到可读尺寸，并支持必要的更大文本或缩放。
 - 17 pt 及以下普通文字通常至少达到 4.5:1 对比度；较大或粗体文字通常至少达到 3:1。
@@ -647,11 +561,11 @@ Accessibility 从信息架构和组件选择阶段开始。
 
 ---
 
-## 12. AI 产品的 macOS UX
+## 11. AI 产品的 macOS UX
 
 AI 产品在本指南通用要求之外，还必须明确模型状态、内容真实性和外部副作用。
 
-### 12.1 状态与控制
+### 11.1 状态与控制
 
 区分并正确呈现：
 
@@ -667,19 +581,19 @@ Cancelled
 ~~~
 
 - 不用永久旋转的 Spinner 代替完整状态。
-- 允许 Stop，并遵守第 7.5、10.2 节的恢复与长任务要求。
+- 允许 Stop，并遵守第 7.4 节的恢复要求。
 - 不因模型开始生成而锁住整个窗口。
-- 用户可以查看系统将要做什么、已经做了什么，并能确认、撤销、恢复或重试。
+- 用户可以查看系统将要做什么、已经做了什么，并能确认或重试。
 
-### 12.2 外部副作用
+### 11.2 外部副作用
 
 发送消息或邮件、发布、删除文件、修改远端数据、支付、交易、预订、创建长期自动化、访问敏感账户或数据前，必须提供与风险匹配的预览和确认。执行记录应靠近动作发生的上下文。
 
-### 12.3 内容真实性与隐私
+### 11.3 内容真实性与隐私
 
 - 区分用户内容与 AI 生成内容，必要时显示来源和验证状态。
 - 不确定内容不得使用与已验证事实相同的视觉状态。
-- 自动修改支持 Diff、Review 或 Undo，不把模型推测伪装成系统事实。
+- 自动修改支持 Diff 或 Review，不把模型推测伪装成系统事实。
 - 错误和未验证状态不得被动画或装饰效果掩盖。
 - 清楚说明数据发送位置、模型或服务提供方，以及本地、云端和第三方处理边界。
 - 最小化上传范围；本地处理、不保存等敏感选项应易于理解。
@@ -687,29 +601,28 @@ Cancelled
 
 ---
 
-## 13. 实施与验收
+## 12. 实施与验收
 
-### 13.1 实施顺序
+### 12.1 实施顺序
 
 | 顺序 | 目标 |
 |---|---|
 | 1 | 明确原生、桌面壳或 Web、最低 macOS 版本及可用系统能力。 |
-| 2 | 按 Workspace、Selection、Detail、Command 重建 Information Architecture。 |
-| 3 | 建立统一 Command，并连接 Menu、Toolbar、Context Menu、Shortcut、Undo 和错误反馈。 |
-| 4 | 删除重复 Page Header、无意义 Card、Border、Shadow、Badge、背景色和多余 Primary Action。 |
-| 5 | 完成 Selection、Keyboard、Context Menu、Drag & Drop、Column Resize、Window Resize 与恢复。 |
-| 6 | 优先采用 System Font、Semantic Color、Standard Control、SF Symbols、Standard Material 和系统功能层。 |
-| 7 | 完成无障碍语义、Focus、替代操作和系统偏好适配。 |
-| 8 | 在真实环境、真实数据和失败条件下验收。 |
+| 2 | 按 Workspace 与 Detail 重建 Information Architecture。 |
+| 3 | 删除重复 Page Header、无意义 Card、Border、Shadow、Badge、背景色和多余 Primary Action。 |
+| 4 | 完成 Context Menu、Drag & Drop、Column Resize 与 Window Resize。 |
+| 5 | 优先采用 System Font、Semantic Color、Standard Control、SF Symbols、Standard Material 和系统功能层。 |
+| 6 | 完成无障碍语义、Focus、替代操作和系统偏好适配。 |
+| 7 | 在真实环境、真实数据和失败条件下验收。 |
 
 AI 生成的界面同样以本指南为唯一约束来源，不能用额外“Apple 风格”提示覆盖平台边界；生成结果必须人工验证。
 
-### 13.2 验收矩阵
+### 12.2 验收矩阵
 
 | 维度 | 必测条件 |
 |---|---|
 | 设备与窗口 | 真实 Mac；最小和最大窗口；半屏、三分之一、三分之二、四分之一平铺；全屏；多显示器；不同缩放；Camera Housing。 |
-| 工作区 | Toolbar Overflow；Sidebar / Inspector 自动隐藏和恢复；Pane Resize；多窗口；状态恢复；Main / Key / Inactive。 |
+| 工作区 | Toolbar Overflow；Sidebar / Inspector 自动隐藏和恢复；Pane Resize；多窗口；Main / Key / Inactive。 |
 | 外观 | Light、Dark、不同 Accent Color、Desktop Tinting、Increase Contrast、Reduce Transparency、Reduce Motion。 |
 | 输入 | 键盘、不同键盘布局和输入法、鼠标、触控板、Context Menu、Drag & Drop。 |
 | 辅助技术 | Accessibility Inspector、VoiceOver、Full Keyboard Access、Voice Control、Switch Control。 |
@@ -718,13 +631,13 @@ AI 生成的界面同样以本指南为唯一约束来源，不能用额外“Ap
 
 ---
 
-## 14. Design Tokens：原生语义与 Web Fallback
+## 13. Design Tokens：原生语义与 Web Fallback
 
-### 14.1 原生应用
+### 13.1 原生应用
 
 原生应用不得把系统外观降级为固定 HEX、RGBA、字号和 Radius。优先使用 Dynamic System Colors、System Fonts、Standard Control Sizes、System Materials、Layout Guides、SF Symbols、User Accent Color 和 Accessibility Settings。
 
-### 14.2 Web 建议 Token
+### 13.2 Web 建议 Token
 
 以下 Token 只用于建立一致的 Web 近似，不代表 Apple 官方数值：
 
@@ -793,7 +706,7 @@ AI 生成的界面同样以本指南为唯一约束来源，不能用额外“Ap
 }
 ~~~
 
-### 14.3 Token 约束
+### 13.3 Token 约束
 
 - Component 只引用 Semantic Token，不在多个组件中重复硬编码 Accent。
 - Light / Dark 不共用未经验证的固定色；Increase Contrast 单独增强。
@@ -802,7 +715,7 @@ AI 生成的界面同样以本指南为唯一约束来源，不能用额外“Ap
 
 ---
 
-## 15. 官方参考资料
+## 14. 官方参考资料
 
 以 Apple 当前 HIG 为最高参考。
 
@@ -838,8 +751,6 @@ AI 生成的界面同样以本指南为唯一约束来源，不能用额外“Ap
 - [Popovers](https://developer.apple.com/design/human-interface-guidelines/popovers)
 - [Sheets](https://developer.apple.com/design/human-interface-guidelines/sheets)
 - [Alerts](https://developer.apple.com/design/human-interface-guidelines/alerts)
-- [Feedback](https://developer.apple.com/design/human-interface-guidelines/feedback)
-- [Progress Indicators](https://developer.apple.com/design/human-interface-guidelines/progress-indicators)
 
 ### Visual system
 

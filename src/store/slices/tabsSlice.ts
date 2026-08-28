@@ -1,18 +1,18 @@
 /**
- * 应用级页签与页面缓存状态（不跨会话持久化，SPEC §5.3）。
+ * 应用级页签与页面缓存状态（不跨会话持久化）。
  *
  * 约定：
- * - tab.key 为规范化地址（SPEC §4.4），同一 key 只有一个缓存实例
+ * - tab.key 为规范化地址，同一 key 只有一个缓存实例
  * - cached=false 表示页签仍在但 Activity 实例被 LRU 淘汰，再激活时重新挂载
  * - revision 递增用于「刷新当前页签」：外层以新 React key 重建并取消旧 scope 请求
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 
-/** 非固定页签的最大缓存实例数；affix 页签不计入（SPEC §5.1） */
+/** 非固定页签的最大缓存实例数；affix 页签不计入 */
 const PAGE_CACHE_MAX_ENTRIES = 10
 
-/** 可序列化的 location 快照；state 固定为 null（SPEC §4.4） */
+/** 可序列化的 location 快照；state 固定为 null */
 export interface TabLocationSnapshot {
   pathname: string
   search: string
@@ -104,7 +104,7 @@ const tabsSlice = createSlice({
         }
       }
     },
-    /** 关闭单个页签；若关闭的是当前页，优先激活右侧、其次左侧（SPEC §5.3） */
+    /** 关闭单个页签；若关闭的是当前页，优先激活右侧、其次左侧 */
     tabClosed(state, action: PayloadAction<string>) {
       const index = state.tabs.findIndex((tab) => tab.key === action.payload)
       if (index < 0) return

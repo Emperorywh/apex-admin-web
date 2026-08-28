@@ -1,0 +1,98 @@
+/* SplitView：主从双栏布局原语（样式令牌见 globals.css） */
+
+.split {
+  display: flex;
+  height: 100%;
+  min-width: 0;
+}
+
+/* 拖拽中：关闭过渡（宽度跟手），禁用文本选择避免拖出选区 */
+.split.dragging {
+  cursor: col-resize;
+  user-select: none;
+}
+
+.left {
+  height: 100%;
+  overflow: hidden;
+  flex: 0 0 auto;
+  transition: width var(--app-dur-base) var(--app-ease-standard);
+}
+
+.dragging .left {
+  transition: none;
+}
+
+.divider {
+  position: relative;
+  flex: 0 0 auto;
+  width: 9px;
+  cursor: col-resize;
+  touch-action: none;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+}
+
+/* 中线：1px 分隔线；悬停/拖拽时增粗并染强调色 */
+.divider::before {
+  content: '';
+  width: 1px;
+  height: 100%;
+  background: var(--app-divider);
+  transition:
+    background-color var(--app-dur-fast) var(--app-ease-standard),
+    width var(--app-dur-fast) var(--app-ease-standard);
+}
+
+.divider:hover::before {
+  width: 3px;
+  border-radius: var(--app-radius-pill);
+  background: rgba(47, 127, 255, 0.4);
+}
+
+.dragging .divider::before {
+  width: 3px;
+  border-radius: var(--app-radius-pill);
+  background: rgba(47, 127, 255, 0.55);
+}
+
+/* 折叠按钮：悬停分隔条时浮现的小圆钮（macOS 侧栏折叠语义） */
+.collapseBtn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  width: 18px;
+  height: 18px;
+  border-radius: var(--app-radius-pill);
+  border: 1px solid var(--app-line);
+  background: var(--app-tab-bg);
+  color: var(--app-text-3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  opacity: 0;
+  box-shadow: var(--app-shadow-1);
+  transition:
+    opacity var(--app-dur-fast) var(--app-ease-standard),
+    color var(--app-dur-fast) var(--app-ease-standard);
+}
+
+.divider:hover .collapseBtn {
+  opacity: 1;
+}
+
+.collapseBtn:hover {
+  color: var(--app-blue);
+}
+
+.right {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 100%;
+  overflow: auto;
+}

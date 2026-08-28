@@ -1,5 +1,5 @@
 /**
- * 页面缓存宿主：为每个可缓存页签保持一个稳定 key 的 <Activity>（SPEC §5.1）。
+ * 页面缓存宿主：为每个可缓存页签保持一个稳定 key 的 <Activity>。
  * - 隐藏页保存 React state 与 DOM；Effects 被清理，重新显示时恢复并重建
  * - LRU 淘汰（cached=false）的页签不渲染 Activity，再激活时重新挂载
  * - noCache / hideInTabs 的当前页面走「当前实例」分支，离开即卸载

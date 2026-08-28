@@ -123,9 +123,9 @@ export default function Menu() {
   ]
 
   return (
-    <Card
-      title={t('菜单管理')}
-      extra={
+    <Card styles={{ body: { paddingTop: 12 } }}>
+      {/* 页面标题由页签与 document.title 承载，顶部只保留工具栏：主操作居右 */}
+      <div style={{ marginBottom: 12, display: 'flex', justifyContent: 'flex-end' }}>
         <Button
           type="primary"
           icon={<Plus size={15} />}
@@ -137,9 +137,7 @@ export default function Menu() {
         >
           {t('新建菜单')}
         </Button>
-      }
-      styles={{ body: { paddingTop: 12 } }}
-    >
+      </div>
       <Table<MenuTreeNode>
         rowKey="id"
         size="middle"

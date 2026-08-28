@@ -1,5 +1,5 @@
 /**
- * 页面渲染错误边界：每个缓存实例一层，出错时显示 500 内容（SPEC §4.2）。
+ * 页面渲染错误边界：每个缓存实例一层，出错时显示 500 内容。
  */
 
 import { Component, type ErrorInfo, type ReactNode } from 'react'

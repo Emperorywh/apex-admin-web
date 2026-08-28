@@ -1,9 +1,10 @@
-/* 每个缓存页面独立的滚动容器：自动撑满工作区剩余宽高；页面画布为 --app-page-bg（globals.css 双主题令牌） */
+/* 每个缓存页面独立的滚动容器：自动撑满工作区全高（顶栏悬浮于其上，故顶部内边距预留玻璃条高度）；
+   页面画布为 --app-page-bg（globals.css 双主题令牌） */
 
 .scrollHost {
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 10px 9px 72px;
+  padding: calc(var(--app-topbar-h) + 10px) 9px 72px;
   background: var(--app-page-bg);
 }

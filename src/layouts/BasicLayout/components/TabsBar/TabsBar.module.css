@@ -30,13 +30,16 @@
   height: 26px;
   flex: 0 0 auto;
   border: 0;
-  border-radius: 8px;
+  border-radius: var(--app-radius-control);
   background: transparent;
   color: var(--app-text-3);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  transition:
+    color var(--app-dur-fast) var(--app-ease-standard),
+    background-color var(--app-dur-fast) var(--app-ease-standard);
 }
 
 .arrow:not(:disabled):hover {
@@ -50,15 +53,18 @@
   height: 32px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--app-space-2);
   padding: 0 10px;
   border: 1px solid transparent;
-  border-radius: 9px;
+  border-radius: var(--app-radius-control);
   color: var(--app-text-2);
   cursor: pointer;
   user-select: none;
   touch-action: none;
   background: transparent;
+  transition:
+    background-color var(--app-dur-fast) var(--app-ease-standard),
+    color var(--app-dur-fast) var(--app-ease-standard);
 }
 
 .tab:hover {
@@ -82,8 +88,8 @@
 .title {
   flex: 1;
   min-width: 0;
-  font-size: 13px;
-  font-weight: 650;
+  font-size: var(--app-fs-body);
+  font-weight: var(--app-fw-semibold);
   white-space: nowrap;
 }
 
@@ -92,7 +98,7 @@
   height: 17px;
   flex: 0 0 auto;
   border: 0;
-  border-radius: 50%;
+  border-radius: var(--app-radius-pill);
   background: transparent;
   color: var(--app-text-4);
   cursor: pointer;
@@ -100,6 +106,9 @@
   align-items: center;
   justify-content: center;
   padding: 0;
+  transition:
+    background-color var(--app-dur-fast) var(--app-ease-standard),
+    color var(--app-dur-fast) var(--app-ease-standard);
 }
 
 .close:hover {

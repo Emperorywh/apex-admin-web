@@ -3,7 +3,7 @@
  *
  * - key 即中文文案：keySeparator/nsSeparator 关闭，zh-CN 不维护资源文件
  * - en-US 资源按命名空间懒加载（路由通过 meta.i18nNamespaces 声明）
- * - 切换语言先预加载基础与已打开页签命名空间并集，再 changeLanguage（SPEC §6）
+ * - 切换语言先预加载基础与已打开页签命名空间并集，再 changeLanguage
  */
 
 import i18next, { type BackendModule, type CallbackError } from 'i18next'
@@ -31,7 +31,7 @@ const enUsLoaders: Record<string, () => Promise<{ default: Record<string, string
   error: () => import('@/i18n/locales/en-US/error'),
 }
 
-/** zh-* 一律映射 zh-CN；其余未支持语言回退 zh-CN（SPEC §6） */
+/** zh-* 一律映射 zh-CN；其余未支持语言回退 zh-CN */
 export function normalizeLanguage(raw: string | null | undefined): AppLanguage {
   if (raw?.toLowerCase().startsWith('en')) return 'en-US'
   return 'zh-CN'

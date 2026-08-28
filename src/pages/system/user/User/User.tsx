@@ -184,39 +184,45 @@ export default function User() {
   }
 
   return (
-    <Card
-      title={t('用户管理')}
-      extra={
+    <Card styles={{ body: { paddingTop: 12 } }}>
+      {/* 页面标题由页签与 document.title 承载，顶部只保留工具栏：筛选居左、主操作居右 */}
+      <div
+        style={{
+          marginBottom: 12,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 8,
+        }}
+      >
+        <Space size={8}>
+          <Select
+            allowClear
+            placeholder={t('状态筛选')}
+            style={{ width: 140 }}
+            value={query.status}
+            onChange={(status) => setQuery({ status: status ?? undefined, page: 1 })}
+            options={[
+              { value: 'active', label: t('启用') },
+              { value: 'disabled', label: t('停用') },
+            ]}
+          />
+          <Select
+            allowClear
+            placeholder={t('排序')}
+            style={{ width: 160 }}
+            value={query.sort}
+            onChange={(sort) => setQuery({ sort: sort ?? undefined, page: 1 })}
+            options={USER_SORT_FIELDS.flatMap((field: UserSortField) => [
+              { value: field, label: `${t(USER_SORT_LABELS[field])} ↑` },
+              { value: `-${field}`, label: `${t(USER_SORT_LABELS[field])} ↓` },
+            ])}
+          />
+        </Space>
         <Button type="primary" icon={<Plus size={15} />} onClick={openCreate}>
           {t('新建用户')}
         </Button>
-      }
-      styles={{ body: { paddingTop: 12 } }}
-    >
-      <Space style={{ marginBottom: 12 }}>
-        <Select
-          allowClear
-          placeholder={t('状态筛选')}
-          style={{ width: 140 }}
-          value={query.status}
-          onChange={(status) => setQuery({ status: status ?? undefined, page: 1 })}
-          options={[
-            { value: 'active', label: t('启用') },
-            { value: 'disabled', label: t('停用') },
-          ]}
-        />
-        <Select
-          allowClear
-          placeholder={t('排序')}
-          style={{ width: 160 }}
-          value={query.sort}
-          onChange={(sort) => setQuery({ sort: sort ?? undefined, page: 1 })}
-          options={USER_SORT_FIELDS.flatMap((field: UserSortField) => [
-            { value: field, label: `${t(USER_SORT_LABELS[field])} ↑` },
-            { value: `-${field}`, label: `${t(USER_SORT_LABELS[field])} ↓` },
-          ])}
-        />
-      </Space>
+      </div>
       {error ? (
         <div style={{ marginBottom: 12 }}>
           <Button danger size="small" onClick={reload}>

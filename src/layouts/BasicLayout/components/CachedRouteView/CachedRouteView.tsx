@@ -1,7 +1,7 @@
 /**
  * 缓存页签渲染器：以页签 location 快照调用 useRoutes(renderRoutes, snapshot)，
- * 使每个缓存实例拥有独立的 useLocation/useParams/useSearchParams 上下文（SPEC §4.1）。
- * 页面滚动发生在自身容器上，天然保留 scrollTop（SPEC §5.2）。
+ * 使每个缓存实例拥有独立的 useLocation/useParams/useSearchParams 上下文。
+ * 页面滚动发生在自身容器上，天然保留 scrollTop。
  */
 
 import { useMemo } from 'react'
@@ -15,7 +15,7 @@ interface CachedRouteViewProps {
 }
 
 export function CachedRouteView({ snapshot }: CachedRouteViewProps) {
-  // state 固定为 null：模板业务导航禁止依赖 location.state（SPEC §4.4）
+  // state 固定为 null：模板业务导航禁止依赖 location.state
   const locationArg = useMemo<Location>(
     () => ({
       pathname: snapshot.pathname,

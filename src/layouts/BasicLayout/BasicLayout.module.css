@@ -1,6 +1,8 @@
-/* 外壳：固定高度栅格；工作区为堆叠网格（Activity 隐藏/显示均占同一单元格） */
+/* 外壳：固定高度栅格；顶栏悬浮（内容从其下滚过，玻璃材质采样真实内容）；
+   工作区为堆叠网格（Activity 隐藏/显示均占同一单元格） */
 
 .shell {
+  position: relative;
   height: 100vh;
   display: flex;
   flex-direction: column;

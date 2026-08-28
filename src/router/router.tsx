@@ -1,5 +1,5 @@
 /**
- * Data Router 装配。禁止以 index.tsx 承载实现（SPEC §3.1）。
+ * Data Router 装配。禁止以 index.tsx 承载实现。
  */
 
 import { createBrowserRouter } from 'react-router'

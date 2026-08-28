@@ -1,6 +1,10 @@
-/* 顶部工具条：48px 玻璃条，三段网格（品牌 | 页签 | 状态区） */
+/* 顶部工具条：48px 悬浮玻璃条（页面内容从其下滚过），三段网格（品牌 | 页签 | 状态区） */
 
 .topbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
   height: var(--app-topbar-h);
   display: grid;
   grid-template-columns: auto auto minmax(0, 1fr) auto auto;
@@ -8,11 +12,10 @@
   gap: 12px;
   padding: 0 16px 0 20px;
   background: var(--app-topbar-bg);
-  backdrop-filter: blur(18px) saturate(135%);
-  -webkit-backdrop-filter: blur(18px) saturate(135%);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
   border-bottom: 1px solid var(--app-divider);
   box-shadow: inset 0 -1px 0 var(--app-highlight-soft);
-  position: relative;
   z-index: 20;
 }
 
@@ -31,8 +34,8 @@
 }
 
 .brandName {
-  font-size: 13px;
-  font-weight: 700;
+  font-size: var(--app-fs-body);
+  font-weight: var(--app-fw-bold);
   color: var(--app-text);
   white-space: nowrap;
 }
@@ -63,11 +66,14 @@
   border: 0;
   background: transparent;
   color: var(--app-text-2);
-  border-radius: 9px;
+  border-radius: var(--app-radius-control);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  transition:
+    background-color var(--app-dur-fast) var(--app-ease-standard),
+    color var(--app-dur-fast) var(--app-ease-standard);
 }
 
 .iconBtn:hover {
@@ -75,8 +81,8 @@
 }
 
 .time {
-  font-size: 12px;
-  font-weight: 700;
+  font-size: var(--app-fs-secondary);
+  font-weight: var(--app-fw-bold);
   color: var(--app-text);
   white-space: nowrap;
 }
@@ -84,15 +90,15 @@
 .avatar {
   width: 27px;
   height: 27px;
-  border-radius: 999px;
+  border-radius: var(--app-radius-pill);
   border: 1px solid var(--app-highlight-soft);
   color: #fff;
   background: linear-gradient(180deg, #8fb0e8, #5d7cc0);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
-  font-weight: 800;
+  font-size: var(--app-fs-secondary);
+  font-weight: var(--app-fw-bold);
   cursor: pointer;
   padding: 0;
 }
@@ -110,12 +116,12 @@
 }
 
 .popItem strong {
-  font-size: 13px;
+  font-size: var(--app-fs-body);
   color: var(--app-text);
 }
 
 .popItem span {
-  font-size: 12px;
+  font-size: var(--app-fs-secondary);
   color: var(--app-text-3);
 }
 
@@ -125,11 +131,11 @@
 }
 
 .avatarHeader strong {
-  font-size: 13px;
+  font-size: var(--app-fs-body);
   color: var(--app-text);
 }
 
 .avatarHeader span {
-  font-size: 12px;
+  font-size: var(--app-fs-secondary);
   color: var(--app-text-3);
 }

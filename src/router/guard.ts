@@ -1,5 +1,5 @@
 /**
- * 路由守卫：Data Router loader 只做认证校验与重定向，不承载业务数据（SPEC §4.1）。
+ * 路由守卫：Data Router loader 只做认证校验与重定向，不承载业务数据。
  */
 
 import { redirect, type LoaderFunction } from 'react-router'

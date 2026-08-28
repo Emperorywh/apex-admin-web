@@ -2,7 +2,7 @@
 
 通用后台管理系统前端模板：多语言、多页签、页面保活，布局复刻 macOS 风格设计稿（顶部状态栏 / 标签栏 / 核心内容 / 底部 Dock）。
 
-规格说明见 [docs/SPEC.md](docs/SPEC.md)，视觉基准见 [docs/apple-admin-light-pixel-perfect.html](docs/apple-admin-light-pixel-perfect.html)。
+视觉与交互基准见 [docs/macos_ui_ux_design_guide_v3.md](docs/macos_ui_ux_design_guide_v3.md)；全局设计令牌定义于 `src/styles/globals.css`，antd 侧经 `src/constants/designTokens.ts` 桥接。
 
 ## 技术栈
 
@@ -33,7 +33,7 @@ pnpm dev          # http://localhost:5173
 ## 目录速览
 
 - `src/router` — 路由定义唯一来源与三投影（access / render / menu）
-- `src/layouts/BasicLayout` — 外壳：顶栏、标签栏、面包屑、页面缓存宿主、底部 Dock
+- `src/layouts/BasicLayout` — 外壳：悬浮玻璃顶栏、标签栏、页面缓存宿主、底部 Dock
 - `src/pages` — 页面入口（登录 / 个人中心 / 系统管理 / 错误页）
 - `src/features` — 业务组件与业务 Hook
 - `src/services` — axios 基础设施、按域拆分的业务请求与 DTO

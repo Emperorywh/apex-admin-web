@@ -128,7 +128,7 @@ export function TabsBar() {
       if (!over || active.id === over.id) return
       const fromTab = tabs.find((tab) => tab.key === active.id)
       const toTab = tabs.find((tab) => tab.key === over.id)
-      // 普通页签不能拖入固定区，固定页签不能拖出固定区（SPEC §5.3）
+      // 普通页签不能拖入固定区，固定页签不能拖出固定区
       if (!fromTab || !toTab || fromTab.affix || toTab.affix) return
       dispatch(tabMoved({ fromKey: String(active.id), toKey: String(over.id) }))
     },
@@ -225,8 +225,8 @@ function SortableTab({ tab, active, contextMenu, onActivate, onClose }: Sortable
         aria-selected={active}
       >
         {Icon ? (
-          <IconTile tone={tone} size={20} radius={6}>
-            <Icon size={12} strokeWidth={2.2} />
+          <IconTile tone={tone} size={20} radius={5}>
+            <Icon size={12} strokeWidth={2} />
           </IconTile>
         ) : null}
         <span className={styles.title}>{t(meta?.title ?? tab.key)}</span>

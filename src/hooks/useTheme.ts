@@ -28,10 +28,13 @@ export function useTheme(): ResolvedTheme {
 
   const resolved: ResolvedTheme = theme === 'system' ? (systemDark ? 'dark' : 'light') : theme
 
+  /* 渲染期同步 data-theme（幂等）：antd 主题由 constants/designTokens.ts 在同一渲染期
+     读取计算样式，若延迟到 effect 会让 antd 颜色比 CSS 慢一拍 */
+  document.documentElement.dataset.theme = resolved
+
   useEffect(() => {
-    document.documentElement.dataset.theme = resolved
     localStorage.setItem(THEME_STORAGE_KEY, theme)
-  }, [resolved, theme])
+  }, [theme])
 
   return resolved
 }

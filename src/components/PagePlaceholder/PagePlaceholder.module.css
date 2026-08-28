@@ -8,8 +8,8 @@
 
 .title {
   margin: 0;
-  font-size: 22px;
-  font-weight: 600;
+  font-size: var(--app-fs-headline);
+  font-weight: var(--app-fw-semibold);
   letter-spacing: 0.04em;
   color: var(--app-text);
 }
