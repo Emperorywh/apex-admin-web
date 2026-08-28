@@ -123,7 +123,7 @@ export const appRouteDefinitions = defineAppRoutes([
         id: 'order-record',
         path: 'order-record',
         loadPage: () => import('@/pages/order-record/OrderRecord/OrderRecord'),
-        meta: { title: '任务管理', icon: List },
+        meta: { title: '任务管理', icon: List, i18nNamespaces: ['orderRecord'] },
       },
       {
         id: 'vehicle-deploy',

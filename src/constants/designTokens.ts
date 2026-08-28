@@ -44,5 +44,20 @@ export function getAntdTheme(resolved: ResolvedTheme): ThemeConfig {
       borderRadiusLG: cssVarPx('--app-radius-panel'),
       ...(isDark ? { colorBgBase: cssVar('--app-antd-bg-base') } : {}),
     },
+    components: {
+      /* 卡片退成「内容纸」：去边框（分组由窗口层承担），纸面用玻璃渐变让窗口透出 */
+      Card: {
+        colorBorderSecondary: 'transparent',
+        colorBgContainer: cssVar('--app-card-bg'),
+      },
+      /* 表格坐在卡片纸上：纸面必须不透明（固定列/表头遮底），行线与悬停走令牌 */
+      Table: {
+        colorBgContainer: cssVar('--app-table-bg'),
+        headerBg: cssVar('--app-table-header-bg'),
+        headerSplitColor: 'transparent',
+        borderColor: cssVar('--app-line-soft'),
+        rowHoverBg: cssVar('--app-table-hover-bg'),
+      },
+    },
   }
 }

@@ -1,11 +1,9 @@
-/* 底部 Dock：居中悬浮全圆角玻璃胶囊（macOS Dock 语义），图标为彩色瓷片（与页签同源配色） */
+/* 底部 Dock：布局流内独立一行，贴住视口底部并水平居中的全圆角玻璃胶囊
+   （macOS Dock 语义），图标为彩色瓷片（与页签同源配色） */
 
 .dock {
-  position: fixed;
-  left: 50%;
-  bottom: 17px;
-  transform: translateX(-50%);
-  z-index: 30;
+  flex: none;
+  margin: 0 auto 17px;
   height: var(--app-dock-h);
   padding: 0 14px;
   display: flex;

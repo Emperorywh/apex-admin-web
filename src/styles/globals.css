@@ -58,7 +58,6 @@
 
   --app-bg: #dfe9f6;
   --app-bg-2: #d4e2f2;
-  --app-page-bg: rgba(255, 255, 255, 0.24);
   --app-panel: rgba(255, 255, 255, 0.62);
   --app-line: rgba(108, 138, 184, 0.3);
   --app-line-soft: rgba(60, 90, 140, 0.09);
@@ -115,6 +114,11 @@
   --app-card-line: rgba(255, 255, 255, 0.66);
   --app-card-title: #17233b;
   --app-card-sub: #71809a;
+  /* 表格纸面：数据表是页面上唯一不透明的内容面（macOS「白纸」语义）。
+     不透明是硬约束——antd 固定列/表头遮底依赖它，半透明会让横向滚动内容透出来 */
+  --app-table-bg: #ffffff;
+  --app-table-header-bg: #f5f8fd;
+  --app-table-hover-bg: #eef4fe;
   --app-control-bg: rgba(255, 255, 255, 0.68);
   --app-control-text: #33405a;
   --app-highlight: rgba(255, 255, 255, 0.85);
@@ -155,7 +159,6 @@
 
   --app-bg: #0b101c;
   --app-bg-2: #0e1524;
-  --app-page-bg: rgba(14, 21, 38, 0.32);
   --app-panel: rgba(20, 28, 48, 0.62);
   --app-line: rgba(129, 155, 205, 0.24);
   --app-line-soft: rgba(129, 155, 205, 0.09);
@@ -206,6 +209,10 @@
   --app-card-line: rgba(160, 190, 240, 0.14);
   --app-card-title: #e9edf7;
   --app-card-sub: #93a0b8;
+  /* 表格纸面：比卡片纸面再沉一档，形成「纸上内嵌面板」的层次 */
+  --app-table-bg: #161f38;
+  --app-table-header-bg: #1d2a49;
+  --app-table-hover-bg: #243459;
   --app-control-bg: rgba(38, 50, 78, 0.7);
   --app-control-text: #ccd5e6;
   --app-highlight: rgba(255, 255, 255, 0.1);

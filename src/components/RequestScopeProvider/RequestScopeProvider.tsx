@@ -31,6 +31,13 @@ export function RequestScopeProvider({ scopeKey, revision, isActive, children }:
   }
 
   useEffect(() => {
+    // StrictMode 首挂载模拟卸载、<Activity> 隐藏页签都会先走一次 cleanup（abort），
+    // 而 controller 是组件 state，不会随之重建；signal 已中止时换新控制器自愈，
+    // 否则该页签后续所有请求都被静默取消。
+    if (controller.signal.aborted) {
+      setController(new AbortController())
+      return
+    }
     return () => {
       controller.abort()
     }
