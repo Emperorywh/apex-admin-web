@@ -9,7 +9,7 @@
  */
 
 import { Suspense, lazy, type ComponentType, type ReactNode } from 'react'
-import { redirect, type RouteObject } from 'react-router'
+import { Navigate, redirect, type RouteObject } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import type { LucideIcon } from 'lucide-react'
 import PageLoading from '@/components/PageLoading/PageLoading'
@@ -69,10 +69,13 @@ function toAccessNode(
   if (isTopLevel) node.errorElement = <RouterErrorBoundary />
 
   if (isProtected) {
-    // index 节点固定 replace 到受保护首页；其余节点做认证校验
-    node.loader = definition.index
-      ? () => redirect(ROOT_REDIRECT_TARGET)
-      : createRouteGuardLoader()
+    if (definition.index || definition.redirect) {
+      // index 与 redirect 节点固定 replace：index 未声明目标时回退受保护首页；
+      // 目标节点自带认证守卫，此处不再重复校验
+      node.loader = () => redirect(definition.redirect ?? ROOT_REDIRECT_TARGET)
+    } else {
+      node.loader = createRouteGuardLoader()
+    }
   }
 
   if (definition.children?.length) {
@@ -125,6 +128,12 @@ function toRenderNode(definition: AppRouteDefinition): RouteObject {
     return node
   }
 
+  if (definition.redirect) {
+    // 目录默认子页（index）与菜单别名等重定向节点
+    node.element = <Navigate replace to={definition.redirect} />
+    return node
+  }
+
   if (definition.loadPage) {
     const LazyPage = getLazyPage(definition)
     node.element = (
@@ -169,7 +178,7 @@ function filterMenuNodes(
         icon: definition.meta.icon,
         children,
       })
-    } else if (definition.loadPage) {
+    } else if (!definition.index && (definition.loadPage || definition.redirect)) {
       nodes.push({
         routeId: definition.id,
         path,
@@ -183,7 +192,12 @@ function filterMenuNodes(
 }
 
 export function buildMenuRoutes(): MenuNode[] {
-  return filterMenuNodes(appRouteDefinitions, '/')
+  const tree = filterMenuNodes(appRouteDefinitions, '/')
+  // 受保护根只是布局壳：菜单从其子级（业务分区）开始，避免多出一层无意义目录
+  const rootIndex = tree.findIndex((node) => node.routeId === ROUTE_IDS['root'])
+  if (rootIndex < 0) return tree
+  const root = tree[rootIndex]
+  return [...root.children, ...tree.filter((_, index) => index !== rootIndex)]
 }
 
 /** 拍平菜单树为叶子列表（Dock、快捷入口等扁平导航使用） */

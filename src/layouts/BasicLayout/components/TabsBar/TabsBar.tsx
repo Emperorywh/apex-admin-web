@@ -1,7 +1,7 @@
 /**
  * 页签栏：嵌入顶部工具条的浏览器式页签条。
  * - dnd-kit 排序（含键盘替代操作）；固定页签不可拖动、不可关闭
- * - 右键菜单：刷新当前 / 关闭其他 / 关闭右侧 / 关闭全部（永不影响 affix）
+ * - 右键菜单：刷新当前 / 关闭其他 / 关闭左侧 / 关闭右侧 / 关闭全部（永不影响 affix）
  * - 溢出横向滚动（箭头仅溢出时显示），激活页签自动滚入可视区
  */
 
@@ -32,6 +32,7 @@ import { routeIconTone } from '@/layouts/BasicLayout/components/IconTile/iconTon
 import { findRouteMeta } from '@/router/projections'
 import {
   allTabsClosed,
+  leftTabsClosed,
   otherTabsClosed,
   rightTabsClosed,
   tabClosed,
@@ -46,7 +47,8 @@ const SCROLL_STEP_PX = 260
 export function TabsBar() {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
-  const { t } = useTranslation('menu')
+  // 页签菜单文案在 common，路由标题在 menu（显式 ns 不会回退 defaultNS，需并列声明）
+  const { t } = useTranslation(['common', 'menu'])
   const tabs = useAppSelector((state) => state.tabs.tabs)
   const activeTabKey = useAppSelector((state) => state.tabs.activeTabKey)
 
@@ -104,6 +106,7 @@ export function TabsBar() {
         { type: 'divider' },
         { key: 'close', label: t('关闭当前页签'), disabled: !tab.closable },
         { key: 'others', label: t('关闭其他页签') },
+        { key: 'left', label: t('关闭左侧页签') },
         { key: 'right', label: t('关闭右侧页签') },
         { key: 'all', label: t('关闭全部页签') },
       ],
@@ -111,6 +114,7 @@ export function TabsBar() {
         if (key === 'refresh') dispatch(tabRefreshed(tab.key))
         else if (key === 'close') dispatch(tabClosed(tab.key))
         else if (key === 'others') dispatch(otherTabsClosed(tab.key))
+        else if (key === 'left') dispatch(leftTabsClosed(tab.key))
         else if (key === 'right') dispatch(rightTabsClosed(tab.key))
         else if (key === 'all') dispatch(allTabsClosed())
       },
@@ -184,7 +188,7 @@ interface SortableTabProps {
 }
 
 function SortableTab({ tab, active, contextMenu, onActivate, onClose }: SortableTabProps) {
-  const { t } = useTranslation('menu')
+  const { t } = useTranslation(['common', 'menu'])
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: tab.key,
     disabled: tab.affix,

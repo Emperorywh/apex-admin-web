@@ -122,6 +122,14 @@ const tabsSlice = createSlice({
       state.tabs = result.tabs
       state.activeTabKey = result.activeTabKey
     },
+    /** 关闭左侧页签 */
+    leftTabsClosed(state, action: PayloadAction<string>) {
+      const index = state.tabs.findIndex((tab) => tab.key === action.payload)
+      if (index < 0) return
+      const removedActive = state.tabs.slice(0, index).some((tab) => tab.key === state.activeTabKey)
+      state.tabs = state.tabs.filter((tab, i) => i >= index || !tab.closable || tab.affix)
+      if (removedActive) state.activeTabKey = action.payload
+    },
     /** 关闭右侧页签 */
     rightTabsClosed(state, action: PayloadAction<string>) {
       const index = state.tabs.findIndex((tab) => tab.key === action.payload)
@@ -157,6 +165,7 @@ export const {
   tabSynced,
   tabClosed,
   otherTabsClosed,
+  leftTabsClosed,
   rightTabsClosed,
   allTabsClosed,
   tabRefreshed,

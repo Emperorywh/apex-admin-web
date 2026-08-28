@@ -22,6 +22,8 @@ export interface AppRouteDefinition {
   id: string
   path?: string
   index?: boolean
+  /** 命中该节点即重定向的目标地址（绝对路径字面量）；不渲染自身页面 */
+  redirect?: string
   loadPage?: () => Promise<{ default: ComponentType }>
   meta: RouteMeta
   children?: readonly AppRouteDefinition[]

@@ -8,6 +8,7 @@
   color-scheme: light;
   --app-bg: #eef2f8;
   --app-bg-2: #e6ebf3;
+  --app-page-bg: #ffffff;
   --app-panel: rgba(255, 255, 255, 0.86);
   --app-line: rgba(108, 138, 184, 0.3);
   --app-line-soft: rgba(60, 90, 140, 0.09);
@@ -81,6 +82,7 @@
   color-scheme: dark;
   --app-bg: #0b101c;
   --app-bg-2: #0e1524;
+  --app-page-bg: #131a2b;
   --app-panel: rgba(19, 26, 43, 0.82);
   --app-line: rgba(129, 155, 205, 0.24);
   --app-line-soft: rgba(129, 155, 205, 0.09);

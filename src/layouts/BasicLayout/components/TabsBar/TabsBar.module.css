@@ -1,4 +1,4 @@
-/* 页签栏：嵌入顶部工具条的浏览器式页签（弹性宽度 + 激活白卡投影），条带透明 */
+/* 页签栏：嵌入顶部工具条的浏览器式页签（页签随内容自适应宽度、名称完整展示 + 激活白卡投影），条带透明 */
 
 .bar {
   height: 100%;
@@ -45,8 +45,8 @@
 }
 
 .tab {
-  flex: 0 1 190px;
-  min-width: 104px;
+  /* 页签宽度随内容自适应：菜单名称再长也完整展示，溢出交给条带横向滚动 */
+  flex: 0 0 auto;
   height: 32px;
   display: flex;
   align-items: center;
@@ -85,8 +85,6 @@
   font-size: 13px;
   font-weight: 650;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .close {
@@ -113,11 +111,4 @@
   width: 17px;
   height: 17px;
   flex: 0 0 auto;
-}
-
-@media (max-width: 1600px) {
-  .tab {
-    flex-basis: 160px;
-    min-width: 92px;
-  }
 }

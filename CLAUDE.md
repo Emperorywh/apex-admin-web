@@ -38,7 +38,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### 多页签保活（SPEC §5）
 
-`BasicLayout` 在受保护根路由挂载一次；持久存在的 `PageCacheHost` 为每个页签保持一个 `<Activity mode="visible|hidden">`，内含 `CachedRouteView` + 独立 `PageErrorBoundary`/Suspense/`RequestScopeProvider`。非 affix 缓存上限 10（LRU 淘汰，当前激活页永不淘汰）；affix 页固定为 `system-user`。每个页签有独立 `RequestScopeProvider`（AbortController 生命周期）：刷新页签/关闭页签会取消在途请求。禁止缓存 `<Outlet/>`；oxlint 已禁用 `useLoaderData`、`useFetcher`、`Outlet` 等 Data Router 数据 API 导入——页面数据一律走 service 层。
+`BasicLayout` 在受保护根路由挂载一次；持久存在的 `PageCacheHost` 为每个页签保持一个 `<Activity mode="visible|hidden">`，内含 `CachedRouteView` + 独立 `PageErrorBoundary`/Suspense/`RequestScopeProvider`。非 affix 缓存上限 10（LRU 淘汰，当前激活页永不淘汰）；affix 页固定为 `over-look`。每个页签有独立 `RequestScopeProvider`（AbortController 生命周期）：刷新页签/关闭页签会取消在途请求。禁止缓存 `<Outlet/>`；oxlint 已禁用 `useLoaderData`、`useFetcher`、`Outlet` 等 Data Router 数据 API 导入——页面数据一律走 service 层。
 
 ### 分层结构（SPEC §3，非 feature-based）
 

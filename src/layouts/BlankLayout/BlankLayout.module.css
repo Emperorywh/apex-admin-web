@@ -1,4 +1,6 @@
+/* 空白布局容器：antd <App> 中间层无高度，height:100% 链会断，直接占满视口 */
+
 .blank {
-  height: 100%;
+  height: 100dvh;
   overflow: auto;
 }

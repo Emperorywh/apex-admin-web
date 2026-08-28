@@ -290,19 +290,22 @@ interface RouteMeta {
 - `meta`投影为 `handle: { meta }`，面包屑使用 Data Router 的 `useMatches()`读取。
 - 目录节点允许无 `loadPage`，只参与匹配、菜单和面包屑。
 - 叶子页面必须有 `loadPage`，由 `React.lazy` + `<Suspense fallback={<PageLoading />}>`加载。
+- `redirect`声明命中即重定向的绝对路径（字面量），该节点不渲染自身页面：目录节点以 `index: true` + `redirect`表达默认子页；受保护菜单别名（如「服务器资源」）用 `redirect`replace 到布局外页面。
+- 布局外页面（源系统 `layout: false` 语义）为顶层公开路由：不包 BasicLayout、无认证守卫、不生成页签与缓存，固定 `hideInMenu/hideInTabs/noCache`。
 - `loadPage`必须通过 `@/pages/system/user/User/User`这类具名实现路径导入，禁止从 `features`加载页面、导入页面目录或依赖 `index.ts/index.tsx`解析；路由 id 与 path 的唯一来源是 definitions.tsx 树节点：顶层节点用绝对路径（以 `/` 开头），子节点用相对段，新增页面只需在树中加一个节点。`ROUTE_IDS`、`ROUTE_PATHS`（均按 id 索引）与 `RouteId` 联合类型由树在模块初始化时推导并校验 id 全局唯一，禁止手写路由表副本；`src/constants/route.constants.ts` 仅保留 components/features 等不可依赖 router 层的模块使用的 `FALLBACK_PATH`。
 - `breadcrumb`默认 true；`hideInTabs`用于登录、错误页和不应生成页签的辅助路由。
-- `/`是受保护 index route，固定 `replace`重定向到 `/system/user`。
+- `/`是受保护 index route，固定 `replace`重定向到 `/over-look`（调度监控）。
 - 受保护根路由内的 `*`渲染 404。
 - `/500`需要登录。
 - `/404`既有可直达的显式路由，受保护根路由的 `*`也渲染同一组件；登录、404、500 固定设置 `hideInMenu/hideInTabs/noCache`，错误页 `breadcrumb: false`。
-- 用户管理（`system-user`）固定 `affixTab: true`，且是唯一默认 affix。
+- 调度监控（`over-look`）固定 `affixTab: true`，且是唯一默认 affix。
 - 页面渲染错误由每个缓存实例外层 `PageErrorBoundary`显示 500 内容；guard/loader 错误由 Data Router 配置的 `RouterErrorBoundary`处理。
 
 ### 4.3 菜单过滤
 
 - 目录菜单只有在至少有一个可见子节点时保留。
 - `hideInMenu: true`隐藏该节点及其菜单子树，但不改变 URL 可访问性；详情页应单独设为隐藏叶子节点，不把可见菜单放在隐藏目录下。
+- 底部 Dock 只承载菜单树顶层分区入口（含子级的分区悬停/点击弹出玻璃菜单面板，孙级分组向侧边逐级飞出），叶子分区点击直接导航；不平铺全部叶子页。
 
 ### 4.4 页签 key 与 location 快照
 
@@ -329,7 +332,7 @@ interface RouteMeta {
 
 缓存容量由 `PAGE_CACHE_MAX_ENTRIES = 10`统一定义，即最多 **10 个非 affix 实例**：
 
-- affix 缓存不计入 10，但项目默认只能配置一个 affix 页（`system-user`）；新增 affix 必须评估内存。
+- affix 缓存不计入 10，但项目默认只能配置一个 affix 页（`over-look`）；新增 affix 必须评估内存。
 - 新增第 11 个普通缓存时，淘汰最久未激活且非当前页的实例；页签仍保留，再激活时重新挂载。
 - 当前激活页永不被淘汰；关闭页签立即移除其 Activity、取消请求并释放缓存。
 
@@ -347,8 +350,8 @@ interface RouteMeta {
 - 刷新当前：递增缓存 `revision`，取消该 scope 请求并用新 React key 重建；业务数据随组件重新挂载重新请求。
 - 固定页签排在最前且不可关闭。普通页签不能拖入固定区，固定页签不能拖出固定区。
 - dnd-kit 同时提供键盘拖拽；无法拖拽时可用右键菜单完成关闭操作。
-- 关闭当前页：优先激活右侧最近页签；没有右侧则激活左侧最近页签；都没有则 `/system/user`。
-- 关闭全部：只保留 affix 页（用户管理）并激活它。
+- 关闭当前页：优先激活右侧最近页签；没有右侧则激活左侧最近页签；都没有则 `/over-look`。
+- 关闭全部：只保留 affix 页（调度监控）并激活它。
 - 浏览器刷新后重建为「affix 页 + 当前可生成页签的页面」；当前即 affix 页时只保留一个。错误页和 `hideInTabs`页面不加入。
 - 溢出时横向滚动 + 左右箭头，激活页自动进入可视区。
 - tabs 不跨会话持久化。

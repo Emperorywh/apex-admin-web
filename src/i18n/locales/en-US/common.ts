@@ -25,6 +25,7 @@ export default {
   '用户': 'User',
   '刷新当前页签': 'Refresh this tab',
   '关闭其他页签': 'Close other tabs',
+  '关闭左侧页签': 'Close tabs to the left',
   '关闭右侧页签': 'Close tabs to the right',
   '关闭全部页签': 'Close all tabs',
   '页面页签': 'Page tabs',

@@ -66,5 +66,22 @@ export const store = configureStore({
 
 export const persistor = persistStore(store)
 
+/**
+ * 等待 redux-persist 完成 rehydrate。
+ * createBrowserRouter 在模块初始化期即执行初始导航并运行守卫 loader，
+ * 此刻 rehydrate 尚未完成；守卫必须先等待本 promise 再读取登录态，
+ * 否则硬刷新会被误判为未登录而弹回登录页。
+ */
+export const persistRehydrated = new Promise<void>((resolve) => {
+  const check = (): void => {
+    if (store.getState().auth._persist?.rehydrated === true) {
+      unsubscribe()
+      resolve()
+    }
+  }
+  const unsubscribe = store.subscribe(check)
+  check()
+})
+
 export type RootState = ReturnType<typeof store.getState>
 export type AppDispatch = typeof store.dispatch
