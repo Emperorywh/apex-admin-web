@@ -1,0 +1,75 @@
+.wrap {
+  width: 100%;
+}
+
+.legend {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--app-space-4);
+  margin-bottom: 2px;
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--app-fs-caption);
+  font-weight: var(--app-fw-semibold);
+  color: var(--app-text-3);
+}
+
+.legendDot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--app-radius-pill);
+}
+
+.canvas {
+  position: relative;
+  width: 100%;
+}
+
+.gridLine {
+  stroke: var(--app-line-soft);
+}
+
+.axisText {
+  fill: var(--app-text-4);
+  font-size: 10px;
+  font-family: var(--app-font);
+  font-variant-numeric: tabular-nums;
+}
+
+.lineCreated {
+  fill: none;
+  stroke: var(--app-blue);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.lineCompleted {
+  fill: none;
+  stroke: var(--app-green);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.guideLine {
+  stroke: var(--app-line);
+  stroke-dasharray: 3 3;
+}
+
+.hoverDot {
+  stroke: var(--app-card-line);
+  stroke-width: 1.5;
+}
+
+.haloCreated {
+  fill: var(--app-blue);
+  opacity: 0.18;
+}
+
+.haloCompleted {
+  fill: var(--app-green);
+  opacity: 0.18;
+}

@@ -11,6 +11,7 @@ export default {
   '登录': 'Sign in',
   '软件授权': 'Software Authorization',
   '调度监控': 'Dispatch Monitor',
+  '仪表盘': 'Dashboard',
   '任务管理': 'Tasks',
   '车辆管理': 'Vehicles',
   '车辆分组': 'Vehicle Groups',

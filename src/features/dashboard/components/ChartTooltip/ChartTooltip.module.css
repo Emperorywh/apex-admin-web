@@ -1,0 +1,49 @@
+.tooltip {
+  position: absolute;
+  z-index: 5;
+  width: 150px;
+  padding: 7px 10px;
+  border-radius: var(--app-radius-control);
+  border: 1px solid var(--app-glass-line);
+  background: var(--app-pop-bg);
+  backdrop-filter: var(--app-glass-filter);
+  box-shadow: var(--app-shadow-1);
+  pointer-events: none;
+}
+
+.title {
+  font-size: var(--app-fs-caption);
+  font-weight: var(--app-fw-semibold);
+  color: var(--app-text-3);
+  margin-bottom: 4px;
+  white-space: nowrap;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--app-fs-secondary);
+  line-height: 1.7;
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: var(--app-radius-pill);
+  flex-shrink: 0;
+}
+
+.label {
+  color: var(--app-text-2);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.value {
+  color: var(--app-text);
+  font-weight: var(--app-fw-bold);
+  font-variant-numeric: tabular-nums;
+}

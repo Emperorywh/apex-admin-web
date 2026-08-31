@@ -23,6 +23,7 @@ import {
   Cpu,
   Gauge,
   Image,
+  LayoutDashboard,
   LayoutGrid,
   List,
   ListTodo,
@@ -114,10 +115,16 @@ export const appRouteDefinitions = defineAppRoutes([
         },
       },
       {
+        id: 'dashboard',
+        path: 'dashboard',
+        loadPage: () => import('@/pages/dashboard/Dashboard/Dashboard'),
+        meta: { title: '仪表盘', icon: LayoutDashboard, affixTab: true, i18nNamespaces: ['dashboard'] },
+      },
+      {
         id: 'over-look',
         path: 'over-look',
         loadPage: () => import('@/pages/overlook/Overlook/Overlook'),
-        meta: { title: '调度监控', icon: LayoutGrid, affixTab: true },
+        meta: { title: '调度监控', icon: LayoutGrid },
       },
       {
         id: 'order-record',

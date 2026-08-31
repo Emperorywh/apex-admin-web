@@ -1,0 +1,103 @@
+.wrap {
+  display: flex;
+  align-items: center;
+  gap: var(--app-space-4);
+  min-height: 0;
+}
+
+.donutArea {
+  position: relative;
+  flex-shrink: 0;
+  align-self: center;
+}
+
+.segment {
+  transition:
+    opacity var(--app-dur-base) var(--app-ease-standard),
+    transform var(--app-dur-base) var(--app-ease-standard);
+  cursor: default;
+}
+
+.emptyRing {
+  stroke: var(--app-highlight-soft);
+}
+
+.centerContent {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  gap: 1px;
+}
+
+.centerValue {
+  font-size: 26px;
+  font-weight: var(--app-fw-bold);
+  color: var(--app-text);
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.centerLabel {
+  font-size: var(--app-fs-caption);
+  font-weight: var(--app-fw-semibold);
+  color: var(--app-text-3);
+}
+
+.legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  flex: 1;
+  min-width: 0;
+}
+
+.legendRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--app-fs-secondary);
+  padding: 3px 8px;
+  border-radius: var(--app-radius-control);
+  transition: background var(--app-dur-fast) var(--app-ease-standard);
+}
+
+.legendRowActive {
+  background: var(--app-hover-bg);
+}
+
+.legendDot {
+  width: 9px;
+  height: 9px;
+  border-radius: var(--app-radius-pill);
+  flex-shrink: 0;
+}
+
+.legendLabel {
+  color: var(--app-text-2);
+  font-weight: var(--app-fw-medium);
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.legendValue {
+  color: var(--app-text);
+  font-weight: var(--app-fw-bold);
+  font-variant-numeric: tabular-nums;
+}
+
+.legendPercent {
+  color: var(--app-text-4);
+  font-variant-numeric: tabular-nums;
+  width: 34px;
+  text-align: right;
+}

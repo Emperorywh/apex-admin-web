@@ -1,0 +1,106 @@
+.card {
+  display: flex;
+  align-items: center;
+  gap: var(--app-space-3);
+  padding: var(--app-space-3) var(--app-space-4);
+  min-width: 0;
+}
+
+.tile {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--app-radius-control);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tileBlue {
+  color: var(--app-blue);
+  background: color-mix(in srgb, var(--app-blue) 14%, transparent);
+}
+
+.tileGreen {
+  color: var(--app-green);
+  background: color-mix(in srgb, var(--app-green) 14%, transparent);
+}
+
+.tileOrange {
+  color: var(--app-orange);
+  background: color-mix(in srgb, var(--app-orange) 14%, transparent);
+}
+
+.tileRed {
+  color: var(--app-red);
+  background: color-mix(in srgb, var(--app-red) 14%, transparent);
+}
+
+.body {
+  min-width: 0;
+}
+
+.label {
+  font-size: var(--app-fs-caption);
+  font-weight: var(--app-fw-semibold);
+  color: var(--app-text-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.value {
+  font-size: 24px;
+  font-weight: var(--app-fw-bold);
+  color: var(--app-text);
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+  margin-top: 1px;
+}
+
+.valueLoading {
+  width: 64px;
+  height: 22px;
+  border-radius: var(--app-radius-badge);
+  background: var(--app-highlight);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+.suffix {
+  font-size: var(--app-fs-secondary);
+  font-weight: var(--app-fw-semibold);
+  color: var(--app-text-3);
+  margin-left: 2px;
+}
+
+.delta {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: var(--app-fs-caption);
+  font-weight: var(--app-fw-semibold);
+  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.deltaGood {
+  color: var(--app-green-text);
+}
+
+.deltaBad {
+  color: var(--app-red-text);
+}
+
+.deltaNeutral {
+  color: var(--app-text-4);
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}

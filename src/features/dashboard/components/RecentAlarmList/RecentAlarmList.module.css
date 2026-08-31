@@ -1,0 +1,93 @@
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  flex: 1;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--app-space-3);
+  padding: 6px 2px;
+  border-bottom: 1px solid var(--app-line-soft);
+  min-width: 0;
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.pill {
+  flex-shrink: 0;
+  min-width: 38px;
+  height: 21px;
+  padding: 0 7px;
+  border-radius: var(--app-radius-badge);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--app-fs-caption);
+  font-weight: var(--app-fw-bold);
+}
+
+.pillError {
+  background: color-mix(in srgb, var(--app-red) 12%, transparent);
+  color: var(--app-red-text);
+}
+
+.pillWarn {
+  background: color-mix(in srgb, var(--app-orange) 13%, transparent);
+  color: var(--app-orange-text);
+}
+
+.pillInfo {
+  background: color-mix(in srgb, var(--app-blue) 12%, transparent);
+  color: var(--app-blue-text);
+}
+
+.message {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--app-fs-secondary);
+  font-weight: var(--app-fw-medium);
+  color: var(--app-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.who {
+  flex-shrink: 0;
+  width: 118px;
+  font-size: var(--app-fs-caption);
+  color: var(--app-text-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: right;
+}
+
+.time {
+  flex-shrink: 0;
+  width: 58px;
+  text-align: right;
+  font-size: var(--app-fs-caption);
+  color: var(--app-text-4);
+  font-variant-numeric: tabular-nums;
+}
+
+.empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--app-space-2);
+  color: var(--app-text-4);
+  font-size: var(--app-fs-secondary);
+  min-height: 120px;
+}

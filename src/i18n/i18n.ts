@@ -29,6 +29,7 @@ const enUsLoaders: Record<string, () => Promise<{ default: Record<string, string
   profile: () => import('@/i18n/locales/en-US/profile'),
   system: () => import('@/i18n/locales/en-US/system'),
   orderRecord: () => import('@/i18n/locales/en-US/orderRecord'),
+  dashboard: () => import('@/i18n/locales/en-US/dashboard'),
   error: () => import('@/i18n/locales/en-US/error'),
 }
 

@@ -1,0 +1,37 @@
+/**
+ * en-US · dashboard 命名空间（仪表盘页）。
+ */
+
+export default {
+  '较昨日': 'vs yesterday',
+  '今日任务': "Today's Orders",
+  '执行中': 'Executing',
+  '排队中': 'Queued',
+  '完成率': 'Completion Rate',
+  '在线车辆': 'Vehicles Online',
+  '活跃告警': 'Active Alarms',
+  '任务趋势（24 小时）': 'Order Trend (24h)',
+  '新建任务': 'Created',
+  '完成任务': 'Completed',
+  '车辆状态分布': 'Vehicle Status',
+  '近7日任务统计': 'Orders · Last 7 Days',
+  '任务类型分布': 'Order Types',
+  '车辆任务排行': 'Top Vehicles by Orders',
+  '最新告警': 'Latest Alarms',
+  '暂无告警': 'No alarms',
+  '车辆总数': 'Total Vehicles',
+  '已完成': 'Completed',
+  '失败': 'Failed',
+  '工作': 'Work',
+  '回桩': 'Park',
+  '充电': 'Charge',
+  '空跑': 'Relocate',
+  '空闲': 'Idle',
+  '运行中': 'Running',
+  '充电中': 'Charging',
+  '告警': 'Alarm',
+  '离线': 'Offline',
+  '严重': 'Critical',
+  '警告': 'Warning',
+  '提示': 'Info',
+} as const

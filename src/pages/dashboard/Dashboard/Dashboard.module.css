@@ -1,0 +1,79 @@
+/* 仪表盘页布局：KPI 行 + 12 栅格图表面板 */
+
+.kpiRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(168px, 1fr));
+  gap: var(--app-space-3);
+  margin-bottom: var(--app-space-3);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--app-space-3);
+}
+
+.panel {
+  padding: var(--app-space-3) var(--app-space-4);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.panelTitle {
+  margin: 0 0 var(--app-space-2);
+}
+
+.panelBody {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.span4 {
+  grid-column: span 4;
+}
+
+.span5 {
+  grid-column: span 5;
+}
+
+.span7 {
+  grid-column: span 7;
+}
+
+.span8 {
+  grid-column: span 8;
+}
+
+.errorBlock {
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--app-space-4);
+  color: var(--app-text-3);
+}
+
+@media (max-width: 1280px) {
+  .span8,
+  .span7 {
+    grid-column: span 12;
+  }
+
+  .span4,
+  .span5 {
+    grid-column: span 6;
+  }
+}
+
+@media (max-width: 860px) {
+  .span4,
+  .span5,
+  .span7,
+  .span8 {
+    grid-column: span 12;
+  }
+}
