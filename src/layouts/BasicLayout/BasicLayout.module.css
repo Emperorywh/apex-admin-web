@@ -23,7 +23,7 @@
   -webkit-backdrop-filter: var(--app-glass-filter);
 }
 
-/* PageCacheHost 输出的每个页面滚动容器堆叠在同一单元格 */
+/* PageCacheHost 输出的每个页面图层（窗口容器，承载开合动画）堆叠在同一单元格 */
 .workspace > * {
   grid-area: 1 / 1;
   min-height: 0;

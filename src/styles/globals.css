@@ -46,7 +46,12 @@
   --app-dur-fast: 120ms;
   --app-dur-base: 180ms;
   --app-dur-slow: 240ms;
+  /* 窗口级开合（页面自 Dock 浮入/收合）与 Dock 图标启动弹跳 */
+  --app-dur-window: 340ms;
+  --app-dur-launch: 900ms;
   --app-ease-standard: cubic-bezier(0.25, 0.1, 0.25, 1);
+  /* Apple 窗口缓动：起步快、收尾缓，贴合 macOS 开窗手感 */
+  --app-ease-window: cubic-bezier(0.32, 0.72, 0, 1);
 
   /* ---- 布局尺寸 ---- */
   --app-topbar-h: 48px;

@@ -1,0 +1,48 @@
+/* 页面图层：工作区堆叠网格里代表每个页面的「窗口」容器。
+   打开：仿 macOS 应用启动，窗口自 Dock 方向（底部）缩放浮入（pageOpening，播毕移除类——
+   Activity 隐藏/显示靠 display 切换，元素常驻动画会在切回缓存页时被重放）；
+   关闭：窗口向 Dock 方向缩回并淡出（pageClosing），动画结束后才真正卸载。 */
+
+.pageLayer {
+  transform-origin: 50% 100%;
+}
+
+.pageOpening {
+  animation: pageOpen var(--app-dur-window) var(--app-ease-window) backwards;
+}
+
+/* 关闭中的图层浮在揭示页之上、不响应指针；卸载由 pageClose 的 animationend 驱动 */
+.pageClosing {
+  z-index: 1;
+  pointer-events: none;
+  animation: pageClose var(--app-dur-window) var(--app-ease-window) forwards;
+}
+
+@keyframes pageOpen {
+  from {
+    opacity: 0;
+    transform: translateY(32px) scale(0.88);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes pageClose {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(40px) scale(0.9);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pageLayer,
+  .pageClosing {
+    animation: none;
+  }
+}

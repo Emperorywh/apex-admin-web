@@ -3,6 +3,7 @@
  *
  * - 含子级的分区：悬停/点击在 Dock 上方弹出玻璃菜单面板，孙级分组沿面板侧边逐级飞出
  * - 叶子分区（如调度监控）：点击直接导航；当前所在分区整组高亮
+ * - 打开页面（叶子分区或面板项）时所属分区图标做 macOS 启动弹跳，动画结束自动复位
  * - 面板为纯文本原生 macOS 菜单样式；Escape、点击外部、地址变化均收起；悬停移到叶子分区/废纸篓时收起悬停展开的面板
  * - 尾部「废纸篓」承载关闭全部页签并释放缓存
  */
@@ -107,10 +108,17 @@ export function DockMenu() {
 
   const sections = useMemo(() => buildMenuRoutes(), [])
   const [trail, setTrail] = useState<TrailEntry[]>([])
+  /** 正在播放启动弹跳的分区（routeId）；动画结束由 onAnimationEnd 复位 */
+  const [launchingId, setLaunchingId] = useState<string | null>(null)
   const openTimer = useRef<number | null>(null)
   const closeTimer = useRef<number | null>(null)
   /** 当前展开是否由悬停触发：悬停展开后同分区的点击应保持展开而非收起 */
   const hoverOpenedRef = useRef(false)
+
+  /** 启动弹跳：导航的同时让所属分区图标弹跳（页面窗口浮出期间持续） */
+  const bounce = useCallback((routeId: string) => {
+    setLaunchingId(routeId)
+  }, [])
 
   const clearTimers = useCallback(() => {
     if (openTimer.current !== null) window.clearTimeout(openTimer.current)
@@ -186,6 +194,7 @@ export function DockMenu() {
     clearTimers()
     /* 叶子分区：点击直接导航，不弹面板 */
     if (node.children.length === 0) {
+      bounce(node.routeId)
       navigate(node.path)
       return
     }
@@ -228,11 +237,15 @@ export function DockMenu() {
         {sections.map((section) => {
           const Icon = section.icon
           const sectionActive = subtreeContains(section, location.pathname)
+          const launching = launchingId === section.routeId
           return (
             <button
               key={section.routeId}
               type="button"
-              className={sectionActive ? `${styles.item} ${styles.itemActive}` : styles.item}
+              className={
+                (sectionActive ? `${styles.item} ${styles.itemActive}` : styles.item) +
+                (launching ? ` ${styles.itemLaunching}` : '')
+              }
               aria-expanded={trail[0]?.node.routeId === section.routeId}
               aria-haspopup={section.children.length > 0 ? 'menu' : undefined}
               onMouseEnter={(event) => hoverSection(section, event.currentTarget)}
@@ -241,6 +254,12 @@ export function DockMenu() {
                 openTimer.current = null
               }}
               onClick={(event) => clickSection(section, event.currentTarget)}
+              onAnimationEnd={(event) => {
+                /* 弹跳作用在首元素（图标瓷片）上；结束即复位，便于下次点击重新触发 */
+                if (event.target === event.currentTarget.firstElementChild) {
+                  setLaunchingId((prev) => (prev === section.routeId ? null : prev))
+                }
+              }}
             >
               {Icon ? (
                 <IconTile tone={routeIconTone(section.routeId)} size={24} radius={5}>
@@ -273,7 +292,10 @@ export function DockMenu() {
           onHoverGroup={(node, element) => expandNested(node, element, depth + 1)}
           onOpenGroup={(node, element) => expandNested(node, element, depth + 1)}
           onNavigate={(node) => {
+            /* 先取面板所属分区：closeAll 清空 trail 后弹跳要落在 Dock 图标上 */
+            const sectionId = trail[0]?.node.routeId ?? null
             closeAll()
+            if (sectionId !== null) bounce(sectionId)
             navigate(node.path)
           }}
           onMouseEnter={cancelClose}

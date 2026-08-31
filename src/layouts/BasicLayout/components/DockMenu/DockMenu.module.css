@@ -71,6 +71,42 @@
   box-shadow: inset 0 1px 0 var(--app-highlight);
 }
 
+/* 启动弹跳：点击分区后其图标如 macOS 应用启动般上下弹跳，页面窗口浮出期间持续；
+   动画期间压过悬停放大（animation 优先于 transition），结束由 onAnimationEnd 复位 */
+.itemLaunching > :first-child {
+  animation: dockBounce var(--app-dur-launch) var(--app-ease-standard);
+}
+
+@keyframes dockBounce {
+  0% {
+    transform: translateY(0);
+  }
+  18% {
+    transform: translateY(-14px);
+  }
+  36% {
+    transform: translateY(0);
+  }
+  54% {
+    transform: translateY(-8px);
+  }
+  70% {
+    transform: translateY(0);
+  }
+  84% {
+    transform: translateY(-3px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .itemLaunching > :first-child {
+    animation: none;
+  }
+}
+
 .separator {
   width: 1px;
   height: 24px;
