@@ -6,11 +6,10 @@
 
 import { useEffect, useState } from 'react'
 import { useAppSelector } from '@/hooks/useAppSelector'
+import type { ResolvedTheme } from '@/constants/designTokens'
 
 /** 主题镜像 key，index.html 内联脚本按此读取；改动需同步内联脚本 */
 export const THEME_STORAGE_KEY = 'apex-admin:theme'
-
-export type ResolvedTheme = 'light' | 'dark'
 
 export function useTheme(): ResolvedTheme {
   const theme = useAppSelector((state) => state.settings.theme)
