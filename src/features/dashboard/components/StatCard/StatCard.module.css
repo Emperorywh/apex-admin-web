@@ -1,4 +1,8 @@
 .card {
+  background: var(--app-card-bg);
+  border: 1px solid var(--app-card-line);
+  border-radius: var(--app-radius-panel);
+  box-shadow: var(--app-card-shadow);
   display: flex;
   align-items: center;
   gap: var(--app-space-3);
@@ -62,7 +66,7 @@
   width: 64px;
   height: 22px;
   border-radius: var(--app-radius-badge);
-  background: var(--app-highlight);
+  background: var(--app-divider);
   animation: pulse 1.2s ease-in-out infinite;
 }
 

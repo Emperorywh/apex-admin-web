@@ -19,7 +19,7 @@
 }
 
 .emptyRing {
-  stroke: var(--app-highlight-soft);
+  stroke: var(--app-divider);
 }
 
 .centerContent {

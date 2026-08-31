@@ -47,7 +47,7 @@
 .track {
   height: 9px;
   border-radius: var(--app-radius-pill);
-  background: var(--app-highlight-soft);
+  background: var(--app-divider);
   overflow: hidden;
 }
 

@@ -74,8 +74,8 @@ function DashboardPanel({
   children: ReactNode
 }) {
   return (
-    <section className={`ds-card ${styles.panel} ${spanClass}`}>
-      <h3 className={`ds-card-title ${styles.panelTitle}`}>{title}</h3>
+    <section className={`${styles.card} ${styles.panel} ${spanClass}`}>
+      <h3 className={`${styles.cardTitle} ${styles.panelTitle}`}>{title}</h3>
       <div className={styles.panelBody} style={{ height: bodyHeight }}>
         {children}
       </div>

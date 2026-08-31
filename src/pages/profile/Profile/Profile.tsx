@@ -16,8 +16,8 @@ export default function Profile() {
 
   return (
     <div className={styles.wrap}>
-      <section className="ds-card ds-card-p">
-        <div className={`ds-card-title ${styles.title}`}>{t('账户信息')}</div>
+      <section className={styles.card}>
+        <div className={`${styles.cardTitle} ${styles.title}`}>{t('账户信息')}</div>
         <Descriptions column={1} size="small" labelStyle={{ width: 96, fontWeight: 700 }}>
           <Descriptions.Item label={t('用户名')}>{user.username}</Descriptions.Item>
           <Descriptions.Item label={t('显示名')}>{user.displayName}</Descriptions.Item>
@@ -27,8 +27,8 @@ export default function Profile() {
           </Descriptions.Item>
         </Descriptions>
       </section>
-      <section className="ds-card ds-card-p">
-        <div className={`ds-card-title ${styles.title}`}>{t('编辑资料')}</div>
+      <section className={styles.card}>
+        <div className={`${styles.cardTitle} ${styles.title}`}>{t('编辑资料')}</div>
         <ProfileForm user={user} />
       </section>
     </div>

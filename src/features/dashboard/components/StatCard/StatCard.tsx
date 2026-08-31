@@ -49,7 +49,7 @@ export function StatCard({
         : styles.deltaBad
 
   return (
-    <div className={`${styles.card} ds-card`}>
+    <div className={styles.card}>
       <span className={`${styles.tile} ${styles[`tile${tone}`]}`}>
         <Icon size={18} strokeWidth={2} />
       </span>

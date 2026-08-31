@@ -60,7 +60,7 @@
 }
 
 .hoverDot {
-  stroke: var(--app-card-line);
+  stroke: var(--app-card-bg);
   stroke-width: 1.5;
 }
 
