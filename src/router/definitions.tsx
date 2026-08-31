@@ -95,7 +95,7 @@ export const appRouteDefinitions = defineAppRoutes([
   {
     id: 'root',
     path: '/',
-    meta: { title: '企业运营中心' },
+    meta: { title: '调度系统' },
     children: [
       {
         id: 'root-index',
@@ -573,3 +573,33 @@ export const ROUTE_IDS = ids as Readonly<Record<RouteId, RouteId>>
 
 /** id → 完整访问路径；由树推导，禁止手写副本 */
 export const ROUTE_PATHS = paths as Readonly<Record<RouteId, string>>
+
+/** 常驻页签播种数据：affixTab 叶子的规范化地址（无 search）与路由 id */
+export interface AffixTabSeed {
+  key: string
+  routeId: string
+  pathname: string
+}
+
+/** 收集全部 affixTab 页面路由（按定义顺序）；页签状态初始化时据此播种，刷新后常驻页签不丢失 */
+export function collectAffixTabSeeds(): AffixTabSeed[] {
+  const seeds: AffixTabSeed[] = []
+  const walk = (definitions: readonly AppRouteDefinition[], basePath: string): void => {
+    for (const definition of definitions) {
+      const path = joinPath(basePath, definition.path)
+      if (definition.children?.length) {
+        walk(definition.children, path)
+        continue
+      }
+      if (
+        definition.loadPage &&
+        definition.meta.affixTab === true &&
+        definition.meta.hideInTabs !== true
+      ) {
+        seeds.push({ key: path, routeId: definition.id, pathname: path })
+      }
+    }
+  }
+  walk(appRouteDefinitions, '/')
+  return seeds
+}

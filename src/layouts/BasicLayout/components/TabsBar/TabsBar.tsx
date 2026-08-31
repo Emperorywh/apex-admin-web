@@ -29,7 +29,7 @@ import { useAppDispatch } from '@/hooks/useAppDispatch'
 import { useAppSelector } from '@/hooks/useAppSelector'
 import { IconTile } from '@/layouts/BasicLayout/components/IconTile/IconTile'
 import { routeIconTone } from '@/layouts/BasicLayout/components/IconTile/iconTones'
-import { findRouteMeta } from '@/router/projections'
+import { findRouteIcon, findRouteMeta } from '@/router/projections'
 import {
   allTabsClosed,
   leftTabsClosed,
@@ -47,8 +47,9 @@ const SCROLL_STEP_PX = 260
 export function TabsBar() {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
-  // 页签菜单文案在 common，路由标题在 menu（显式 ns 不会回退 defaultNS，需并列声明）
-  const { t } = useTranslation(['common', 'menu'])
+  // 页签菜单文案在 common，路由标题在 menu；nsMode: 'fallback' 让 t 依次查找整个
+  // ns 数组——react-i18next 默认只取数组第一个 ns 作为查找空间，并列声明并不生效
+  const { t } = useTranslation(['common', 'menu'], { nsMode: 'fallback' })
   const tabs = useAppSelector((state) => state.tabs.tabs)
   const activeTabKey = useAppSelector((state) => state.tabs.activeTabKey)
 
@@ -188,13 +189,13 @@ interface SortableTabProps {
 }
 
 function SortableTab({ tab, active, contextMenu, onActivate, onClose }: SortableTabProps) {
-  const { t } = useTranslation(['common', 'menu'])
+  const { t } = useTranslation(['common', 'menu'], { nsMode: 'fallback' })
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: tab.key,
     disabled: tab.affix,
   })
   const meta = findRouteMeta(tab.routeId)
-  const Icon = meta?.icon
+  const Icon = findRouteIcon(tab.routeId)
   const tone = routeIconTone(tab.routeId)
 
   const style: React.CSSProperties = {

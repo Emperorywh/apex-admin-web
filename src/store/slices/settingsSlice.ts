@@ -3,7 +3,7 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
-import type { AppLanguage } from '@/i18n/i18n'
+import { readStoredLanguage, type AppLanguage } from '@/i18n/i18n'
 
 /** 主题三态：light / dark 为具体值，system 跟随系统偏好（由 useTheme 解析） */
 export type AppTheme = 'light' | 'dark' | 'system'
@@ -13,8 +13,9 @@ interface SettingsState {
   theme: AppTheme
 }
 
+/** locale 取持久化偏好：与 i18next 初始语言一致，否则 App 启动即把语言拉回 zh-CN 并覆盖存储 */
 const initialState: SettingsState = {
-  locale: 'zh-CN',
+  locale: readStoredLanguage(),
   theme: 'light',
 }
 

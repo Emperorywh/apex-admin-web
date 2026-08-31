@@ -3,7 +3,7 @@
  */
 
 export default {
-  '企业运营中心': 'Enterprise Operations Center',
+  '调度系统': 'Dispatch System',
   '通用后台管理模板 · 多语言 · 多页签 · 页面保活':
     'General admin template · i18n · multi-tabs · keep-alive',
   '用户名': 'Username',

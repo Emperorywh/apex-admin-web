@@ -13,11 +13,11 @@ import { GlobalProgress } from '@/components/GlobalProgress/GlobalProgress'
 import { useAppDispatch } from '@/hooks/useAppDispatch'
 import { useAppSelector } from '@/hooks/useAppSelector'
 import { useAuth } from '@/hooks/useAuth'
-import { ROUTE_IDS } from '@/router/definitions'
+import { collectAffixTabSeeds, ROUTE_IDS } from '@/router/definitions'
 import { buildLoginPath } from '@/router/redirect'
 import { findRouteMeta } from '@/router/projections'
 import type { RouteHandle, RouteMeta } from '@/router/router.types'
-import { tabSynced } from '@/store/slices/tabsSlice'
+import { affixTabsSeeded, tabSynced } from '@/store/slices/tabsSlice'
 import { normalizeSearchString } from '@/utils/url'
 import { DockMenu } from '@/layouts/BasicLayout/components/DockMenu/DockMenu'
 import { Header } from '@/layouts/BasicLayout/components/Header/Header'
@@ -54,6 +54,11 @@ export function BasicLayout() {
   const { t } = useTranslation('menu')
 
   const leaf = useMemo(() => resolveLeaf(matches), [matches])
+
+  /* 常驻页签播种：刷新/重登后从路由定义恢复 affix 页签；先于页签同步，保证 affix 位于固定区 */
+  useEffect(() => {
+    dispatch(affixTabsSeeded(collectAffixTabSeeds()))
+  }, [dispatch])
 
   /* 页签同步：hash 变化只更新快照（同 key 替换），hideInTabs 不生成页签 */
   useEffect(() => {
@@ -110,7 +115,7 @@ export function BasicLayout() {
   const activeTitle = activeTab ? findRouteMeta(activeTab.routeId)?.title : leaf?.meta.title
   useEffect(() => {
     if (activeTitle) {
-      document.title = `${t(activeTitle)} · ${t('企业运营中心')}`
+      document.title = `${t(activeTitle)} · ${t('调度系统')}`
     }
   }, [activeTitle, t])
 

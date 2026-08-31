@@ -3,20 +3,16 @@
 
 .dock {
   flex: none;
-  /* margin: 0 auto 17px; */
   height: var(--app-dock-h);
   padding: 0 14px;
   display: flex;
   align-items: center;
   justify-content: flex-start;
   gap: 4px;
-  /* border-radius: 999px; */
   background: var(--app-dock-bg);
   backdrop-filter: var(--app-glass-filter);
   -webkit-backdrop-filter: var(--app-glass-filter);
-  /* border: 1px solid var(--app-glass-line); */
   box-shadow: var(--app-dock-shadow);
-  /* max-width: calc(100vw - 32px); */
   /* 菜单项较多时横向滚动；隐藏滚动条保持胶囊外观 */
   overflow-x: auto;
   overflow-y: hidden;

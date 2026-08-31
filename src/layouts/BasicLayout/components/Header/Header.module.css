@@ -23,10 +23,9 @@
   min-width: 0;
 }
 
-.apple {
+.brandIcon {
   width: 19px;
   height: 19px;
-  color: var(--app-text);
   flex: 0 0 auto;
 }
 

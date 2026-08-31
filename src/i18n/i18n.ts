@@ -38,7 +38,8 @@ export function normalizeLanguage(raw: string | null | undefined): AppLanguage {
   return 'zh-CN'
 }
 
-function readStoredLanguage(): AppLanguage {
+/** 读取持久化语言偏好（无偏好或不可读时回退默认语言）；供 i18n 初始化与 settings 切片共用 */
+export function readStoredLanguage(): AppLanguage {
   try {
     return normalizeLanguage(localStorage.getItem(STORAGE_KEY_LANGUAGE))
   } catch {

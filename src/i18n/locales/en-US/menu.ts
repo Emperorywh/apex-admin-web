@@ -3,7 +3,7 @@
  */
 
 export default {
-  '企业运营中心': 'Enterprise Operations Center',
+  '调度系统': 'Dispatch System',
   '工作台': 'Workspace',
   '个人中心': 'My Profile',
   '页面不存在': 'Not Found',

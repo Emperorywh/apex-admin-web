@@ -5,9 +5,13 @@
  * - tab.key 为规范化地址，同一 key 只有一个缓存实例
  * - cached=false 表示页签仍在但 Activity 实例被 LRU 淘汰，再激活时重新挂载
  * - revision 递增用于「刷新当前页签」：外层以新 React key 重建并取消旧 scope 请求
+ * - affix 常驻页签由布局层挂载时从路由定义播种（cached=false，首次访问才挂载实例），
+ *   刷新浏览器与会话重置后自动恢复，无需持久化
+ * - 会话失效（主动登出 / 401 刷新失败）即整体重置，避免下个会话恢复上个会话的页签
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
+import { sessionExpired } from '@/store/slices/authSlice'
 
 /** 非固定页签的最大缓存实例数；affix 页签不计入 */
 const PAGE_CACHE_MAX_ENTRIES = 10
@@ -52,6 +56,20 @@ interface TabsState {
   seq: number
 }
 
+/** 布局层播种常驻页签时的输入（路由定义的 affixTab 叶子，结构兼容即可） */
+export interface AffixTabSeedInput {
+  key: string
+  routeId: string
+  pathname: string
+}
+
+interface TabsState {
+  tabs: TabEntry[]
+  activeTabKey: string | null
+  /** 全局递增的激活序号 */
+  seq: number
+}
+
 const initialState: TabsState = {
   tabs: [],
   activeTabKey: null,
@@ -68,6 +86,23 @@ const tabsSlice = createSlice({
   name: 'tabs',
   initialState,
   reducers: {
+    /** 挂载时播种 affix 常驻页签（cached=false，首次访问才挂载实例）；已存在的 key 跳过 */
+    affixTabsSeeded(state, action: PayloadAction<AffixTabSeedInput[]>) {
+      for (const seed of action.payload) {
+        if (state.tabs.some((tab) => tab.key === seed.key)) continue
+        state.tabs.push({
+          key: seed.key,
+          routeId: seed.routeId,
+          affix: true,
+          closable: false,
+          cached: false,
+          // location.key 为占位：首次访问被 tabSynced 以真实 location 覆盖
+          location: { pathname: seed.pathname, search: '', hash: '', key: 'seed' },
+          revision: 0,
+          activatedSeq: 0,
+        })
+      }
+    },
     /** Data Router location 变化后的页签同步（upsert + 激活 + LRU 淘汰） */
     tabSynced(state, action: PayloadAction<TabSyncPayload>) {
       const { tabKey, cacheable } = action.payload
@@ -159,9 +194,14 @@ const tabsSlice = createSlice({
       state.tabs.splice(to, 0, moved)
     },
   },
+  extraReducers: (builder) => {
+    /** 会话失效即清空全部页签与页面缓存实例（登出在 Header，401 在 request 层，统一在此收敛） */
+    builder.addCase(sessionExpired, () => initialState)
+  },
 })
 
 export const {
+  affixTabsSeeded,
   tabSynced,
   tabClosed,
   otherTabsClosed,

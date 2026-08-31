@@ -3,7 +3,7 @@
  */
 
 export default {
-  企业运营中心: 'Enterprise Operations Center',
+  调度系统: 'Dispatch System',
   '切换语言': 'Switch language',
   '切换主题': 'Switch theme',
   '浅色': 'Light',

@@ -17,10 +17,10 @@
   min-height: 0;
   display: grid;
   overflow: hidden;
-  background: var(--app-glass-window);
-  backdrop-filter: var(--app-glass-filter-window);
-  -webkit-backdrop-filter: var(--app-glass-filter-window);
-  box-shadow: var(--app-window-shadow);
+  padding: 12px 8px;
+  background: var(--app-dock-bg);
+  backdrop-filter: var(--app-glass-filter);
+  -webkit-backdrop-filter: var(--app-glass-filter);
 }
 
 /* PageCacheHost 输出的每个页面滚动容器堆叠在同一单元格 */

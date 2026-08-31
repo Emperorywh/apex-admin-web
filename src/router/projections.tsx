@@ -236,3 +236,32 @@ export function findDefinition(routeId: string): AppRouteDefinition | undefined 
   })
   return found
 }
+
+/** 从根到目标定义的祖先链（含自身）；未命中返回 undefined */
+function findDefinitionChain(routeId: string): AppRouteDefinition[] | undefined {
+  const visit = (
+    definitions: readonly AppRouteDefinition[],
+    chain: AppRouteDefinition[],
+  ): AppRouteDefinition[] | undefined => {
+    for (const definition of definitions) {
+      const next = [...chain, definition]
+      if (definition.id === routeId) return next
+      if (definition.children?.length) {
+        const found = visit(definition.children, next)
+        if (found) return found
+      }
+    }
+    return undefined
+  }
+  return visit(appRouteDefinitions, [])
+}
+
+/**
+ * 路由展示图标：自身声明优先；未声明时自上而下继承祖先图标，
+ * 使无图标的子级页面继承所属一级菜单的图标
+ */
+export function findRouteIcon(routeId: string): LucideIcon | undefined {
+  const chain = findDefinitionChain(routeId)
+  const own = chain?.[chain.length - 1]?.meta.icon
+  return own ?? chain?.find((definition) => definition.meta.icon)?.meta.icon
+}

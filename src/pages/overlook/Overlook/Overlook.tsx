@@ -1,9 +1,15 @@
-/**
- * 调度监控页占位：菜单复刻阶段仅展示路由名称。
- */
-
-import { PagePlaceholder } from '@/components/PagePlaceholder/PagePlaceholder'
+import { useEffect } from "react"
 
 export default function Overlook() {
-  return <PagePlaceholder title="调度监控" />
+
+  useEffect(() => {
+    console.log('Overlook mounted')
+    return () => {
+      console.log('Overlook unmounted')
+    }
+  }, [])
+
+  return <div>
+    <h1>调度监控</h1>
+  </div>
 }

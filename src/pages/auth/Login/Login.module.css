@@ -27,10 +27,9 @@
   margin-bottom: 8px;
 }
 
-.apple {
+.brandIcon {
   width: 26px;
   height: 26px;
-  color: var(--app-text);
 }
 
 .name {
