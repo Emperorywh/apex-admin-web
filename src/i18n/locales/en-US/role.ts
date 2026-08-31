@@ -12,6 +12,8 @@ const role: Record<string, string> = {
   升序: 'Ascending',
   降序: 'Descending',
   重置: 'Reset',
+  搜索角色标识或角色名称: 'Search by role code or role name',
+  分配权限: 'Assign Permissions',
   新增角色: 'New Role',
   // 表格列
   角色标识: 'Role Code',
@@ -23,7 +25,6 @@ const role: Record<string, string> = {
   操作: 'Actions',
   编辑: 'Edit',
   删除: 'Delete',
-  查看权限: 'View Permissions',
   内置: 'Built-in',
   // 语境差异（固定 context 名，规格 §12）
   启用_status: 'Enabled',
@@ -50,12 +51,24 @@ const role: Record<string, string> = {
   确认删除: 'Confirm Delete',
   创建角色成功: 'Role created successfully',
   保存成功: 'Saved successfully',
+  '保存失败，请稍后重试': 'Save failed. Please try again later.',
   删除成功: 'Deleted successfully',
   目标角色: 'Target role',
+  // 权限目录分组与权限码文案（分配权限 Drawer）
+  用户权限: 'User Permissions',
+  角色权限: 'Role Permissions',
+  授权操作: 'Assignment Operations',
+  菜单权限: 'Menu Permissions',
+  查看用户: 'View users',
+  维护用户: 'Manage users',
+  查看角色: 'View roles',
+  维护角色: 'Manage roles',
+  '分配角色与权限': 'Assign roles & permissions',
+  查看菜单: 'View menus',
+  维护菜单: 'Manage menus',
   成员数: 'Members',
   暂无权限: 'No permissions assigned',
   关闭: 'Close',
-  '权限加载失败，请关闭后重试': 'Failed to load permissions. Please close and try again.',
 }
 
 export default role

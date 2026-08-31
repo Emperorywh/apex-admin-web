@@ -12,6 +12,7 @@ const user: Record<string, string> = {
   升序: 'Ascending',
   降序: 'Descending',
   重置: 'Reset',
+  '搜索用户名、显示名称或邮箱': 'Search by username, display name, or email',
   新增用户: 'New User',
   // 表格列
   用户名: 'Username',
@@ -51,10 +52,9 @@ const user: Record<string, string> = {
   确认删除: 'Confirm Delete',
   创建用户成功: 'User created successfully',
   保存成功: 'Saved successfully',
+  '保存失败，请稍后重试': 'Save failed. Please try again later.',
   删除成功: 'Deleted successfully',
   目标用户: 'Target user',
-  '角色加载失败，请关闭后重试': 'Failed to load roles. Please close and try again.',
-  '角色分配失败，请稍后重试': 'Failed to assign roles. Please try again later.',
 }
 
 export default user

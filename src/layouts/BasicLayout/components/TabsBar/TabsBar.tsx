@@ -43,7 +43,6 @@ import {
 } from '@dnd-kit/sortable'
 import { ROUTE_FALLBACK_PATH } from '@/constants/route.constants'
 import { COMMON_NAMESPACE, MENU_NAMESPACE } from '@/i18n/i18n'
-import { abortRequestScope } from '@/services/request/requestScope'
 import { cacheEntriesRemoved, cacheRevisionBumped } from '@/store/slices/pageCache.slice'
 import { tabsRemoved, tabsReordered, type TabItem } from '@/store/slices/tabs.slice'
 import type { RootState } from '@/store/store'
@@ -181,12 +180,11 @@ export function TabsBar({ pageContainerRef }: TabsBarProps) {
 
   const closeTab = useCallback((tab: TabItem) => removeAndActivate([tab.key]), [removeAndActivate])
 
-  // 刷新当前（规格 §9.3）：revision 递增 + 取消该 scope，Activity 以新 React key 重建；
+  // 刷新当前（规格 §9.3）：revision 递增，Activity 以新 React key 重建；
   // 右键非激活页签时先导航到该页签再刷新，保持「刷新当前」语义
   const refreshTab = useCallback(
     (tab: TabItem) => {
       dispatch(cacheRevisionBumped({ key: tab.key }))
-      abortRequestScope(tab.key)
       if (tab.key !== activeKey) {
         navigate(tabLocationTarget(tab.location))
       }

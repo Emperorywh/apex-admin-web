@@ -1,24 +1,20 @@
 /**
- * 页面缓存宿主（规格 §4.1/§4.5/§9.1/§9.3）：
+ * 页面缓存宿主（规格 §4.1/§4.5/§9.1/§9.3，纯前端模式）：
  * - 为每个可缓存页签保持稳定 key 的 <Activity mode="visible|hidden">，隐藏页保留
  *   React state 与 DOM（含独立滚动容器 scrollTop），Effect 由 Activity 生命周期清理/重建；
  * - 每个 Activity 内是 CachedRouteView：以该页签不可变 location 快照调用
  *   useRoutes(renderRoutes, snapshot)，独立获得路由上下文（§20 闸门 ①）；
- * - 每个缓存实例独立 PageErrorBoundary + Suspense（页面锚点自带）+ 请求 scope
- *   （RequestScopeProvider 按实例提供 scopeId，消费 TASK-006 产出）；
+ * - 每个缓存实例独立 PageErrorBoundary + Suspense（页面锚点自带）；
  * - 依据 Data Router 当前 location 同步页签：启动重建 affix 页签、打开/替换快照、
  *   执行 LRU 容量淘汰（PAGE_CACHE_MAX_ENTRIES 只统计非 affix，当前页与 affix 永不淘汰）；
- * - noCache/hideInTabs 页面只渲染当前实例（live 视图），离开即卸载、不进入 Activity/LRU；
- * - 页签隐藏/离开时取消该 scope 的在途请求（§17.12）；关闭/淘汰随 Activity 卸载取消。
+ * - noCache/hideInTabs 页面只渲染当前实例（live 视图），离开即卸载、不进入 Activity/LRU。
  * 禁止缓存 Data Router 的 <Outlet/> 或 useOutlet() 结果——本组件只经纯渲染投影渲染页面。
  */
-import { Activity, useEffect, useLayoutEffect, useMemo, useRef } from 'react'
+import { Activity, useLayoutEffect, useMemo, useRef } from 'react'
 import { useLocation, useMatches, type RouteObject } from 'react-router'
 import { useDispatch, useSelector } from 'react-redux'
 import { PAGE_CACHE_MAX_ENTRIES } from '@/constants/app.constants'
-import { RequestScopeProvider } from '@/components/RequestScopeProvider/RequestScopeProvider'
 import { PageActiveContext } from '@/hooks/usePageActive'
-import { abortRequestScope } from '@/services/request/requestScope'
 import { cacheEntriesRemoved, cacheEntryTouched } from '@/store/slices/pageCache.slice'
 import { tabOpened } from '@/store/slices/tabs.slice'
 import type { RootState } from '@/store/store'
@@ -95,21 +91,7 @@ export function PageCacheHost({ renderRoutes, affixTabRoutes }: PageCacheHostPro
     }
   }, [lruOrder, affixKeys, visibleKey, dispatch])
 
-  // 页签隐藏/离开取消其 scope 的在途请求（规格 §7.4-6/§17.12）：
-  // - 隐藏：Activity 销毁 Effect，RequestScopeProvider 的清理函数随即 abort 该 scope；
-  // - 关闭/淘汰：从缓存集合移除的实例统一在此 abort——隐藏实例的 Effect 已随隐藏销毁，
-  //   卸载不再触发清理，必须显式取消。
   const cachedKeys = useMemo(() => new Set(lruOrder), [lruOrder])
-  const prevCachedKeysRef = useRef<ReadonlySet<string>>(cachedKeys)
-  useEffect(() => {
-    const previous = prevCachedKeysRef.current
-    prevCachedKeysRef.current = cachedKeys
-    for (const key of previous) {
-      if (!cachedKeys.has(key)) {
-        abortRequestScope(key)
-      }
-    }
-  }, [cachedKeys])
 
   return (
     <div className={styles.host} data-region="page-cache-host">
@@ -122,11 +104,9 @@ export function PageCacheHost({ renderRoutes, affixTabRoutes }: PageCacheHostPro
             <Activity key={`${tab.key}::${revisions[tab.key] ?? 0}`} mode={visible ? 'visible' : 'hidden'}>
               <section className={styles.pagePane} data-page-pane={tab.key}>
                 <PageErrorBoundary>
-                  <RequestScopeProvider scopeId={tab.key}>
-                    <PageActiveContext.Provider value={visible}>
-                      <CachedRouteView routes={renderRoutes} snapshot={tab.location} />
-                    </PageActiveContext.Provider>
-                  </RequestScopeProvider>
+                  <PageActiveContext.Provider value={visible}>
+                    <CachedRouteView routes={renderRoutes} snapshot={tab.location} />
+                  </PageActiveContext.Provider>
                 </PageErrorBoundary>
               </section>
             </Activity>
@@ -136,11 +116,9 @@ export function PageCacheHost({ renderRoutes, affixTabRoutes }: PageCacheHostPro
         // noCache/hideInTabs 页面：只渲染当前实例，key 随地址变化，离开即卸载（规格 §9.1）
         <section key={`live::${view.key}`} className={styles.pagePane} data-page-pane={view.key} data-live-pane="">
           <PageErrorBoundary>
-            <RequestScopeProvider scopeId={view.key}>
-              <PageActiveContext.Provider value={true}>
-                <CachedRouteView routes={renderRoutes} snapshot={view.snapshot} />
-              </PageActiveContext.Provider>
-            </RequestScopeProvider>
+            <PageActiveContext.Provider value={true}>
+              <CachedRouteView routes={renderRoutes} snapshot={view.snapshot} />
+            </PageActiveContext.Provider>
           </PageErrorBoundary>
         </section>
       )}

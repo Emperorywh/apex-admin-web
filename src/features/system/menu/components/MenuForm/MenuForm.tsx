@@ -1,38 +1,18 @@
 /**
- * 菜单创建/编辑表单（对齐真实后端写入契约，后端请求体 extra="forbid"）：
- * 创建与编辑共用字段集 { parentId, menuType, title, name?, path?, component?, icon?, sortOrder, visible }，
- * 但提交契约不同构——编辑请求体不含 parentId/menuType/sortOrder（menuType 创建后不可变更，
- * 层级与排序调整走独立端点 PUT /menus/:id/hierarchy），表单据编辑目标原值对比，
- * parentId/sortOrder 有变化时附带 hierarchy 载荷由页面追加调用。
- * 按类型条件约束：link 必须设置 path（外部 URL）；name/component 为 page/link 的路由元数据。
- * 条件字段 preserve=false：类型切换即从表单存储移除隐藏值，提交 DTO 不外泄。
- * VALIDATION.FAILED.errors 字段映射（规格 §14.4）：已知字段写入对应表单项错误，
- * 未知字段和非校验类错误显示为表单上方的页面级 Alert；
- * 提交请求由页面以 silent 发出，错误呈现全部由本表单承担（避免与全局提示重复）。
+ * 菜单创建/编辑表单（纯前端模式）：
+ * 共用字段集 { parentId, menuType, title, name?, path?, component?, icon?, sortOrder, visible }；
+ * 编辑模式 menuType 禁改（类型回显为禁用输入框），parentId/sortOrder 可调整并由页面在
+ * 内存树中移动层级。按类型条件约束：link 必须设置 path（外部 URL）；name/component 为
+ * page/link 的路由元数据；条件字段 preserve=false，类型切换即从表单存储移除隐藏值。
+ * 图标字段为本地彩色图标下拉（AppIcon 封装的已注册名集合），带实时预览。
  */
 import { useMemo, useState } from 'react'
-import { Alert, Button, Form, Input, InputNumber, Radio, TreeSelect, theme } from 'antd'
+import { Alert, Button, Form, Input, InputNumber, Radio, Select, TreeSelect, theme } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { MENU_I18N_NAMESPACE, MENU_TYPES } from '@/constants/system/menu/menu.constants'
-import { API_ERROR_CODES } from '@/constants/request.constants'
-import { getApiErrorText } from '@/i18n/errorTexts'
-import { isApiError } from '@/services/request/envelope'
-import { parseValidationFieldIssues } from '@/utils/validationDetails'
+import { AppIcon, LOCAL_ICON_PREFIX, getRegisteredLocalIconNames } from '@/components/AppIcon/AppIcon'
 import type { MenuItem } from '@/types/system/menu/menu.types'
 import type { MenuFormMode, MenuFormSubmitPayload, MenuFormValues } from './MenuForm.types'
-
-/** 各字段级错误可映射的表单项（规格 §14.4：未知字段显示页面级错误；字段名为后端 camelCase 契约键） */
-const KNOWN_FIELDS: readonly (keyof MenuFormValues)[] = [
-  'parentId',
-  'menuType',
-  'title',
-  'name',
-  'path',
-  'component',
-  'icon',
-  'sortOrder',
-  'visible',
-]
 
 export interface MenuFormProps {
   mode: MenuFormMode
@@ -42,7 +22,7 @@ export interface MenuFormProps {
   tree: MenuItem[]
   /** 提交中：由页面持有，控制提交按钮 loading */
   submitting: boolean
-  /** 提交：表单校验通过后给出写入契约载荷；抛出错误时由本表单映射呈现 */
+  /** 提交：表单校验通过后给出写入载荷；页面保证落地成功（失败路径仅兜底提示） */
   onSubmit: (payload: MenuFormSubmitPayload) => Promise<void>
   onCancel: () => void
 }
@@ -59,7 +39,13 @@ function collectSelfAndDescendantIds(nodes: readonly MenuItem[], into: Set<strin
 function buildParentTreeData(
   nodes: readonly MenuItem[],
   disabledIds: ReadonlySet<string>,
-): Array<{ key: string; value: string; title: string; disabled: boolean; children?: ReturnType<typeof buildParentTreeData> }> {
+): Array<{
+  key: string
+  value: string
+  title: string
+  disabled: boolean
+  children?: ReturnType<typeof buildParentTreeData>
+}> {
   return nodes.map((node) => ({
     key: node.id,
     value: node.id,
@@ -75,7 +61,7 @@ export function MenuForm({ mode, menu, tree, submitting, onSubmit, onCancel }: M
   const [form] = Form.useForm<MenuFormValues>()
   const [pageError, setPageError] = useState<string | null>(null)
 
-  // 编辑模式禁选自身及后代：父链成环会让树组装失去唯一根（后端 409 MENU.CYCLE_DETECTED 前置防护）
+  // 编辑模式禁选自身及后代：父链成环会让树组装失去唯一根（原后端 409 MENU.CYCLE_DETECTED 的前置防护）
   const disabledParentIds = useMemo(() => {
     if (mode !== 'edit' || menu === null) {
       return new Set<string>()
@@ -85,6 +71,23 @@ export function MenuForm({ mode, menu, tree, submitting, onSubmit, onCancel }: M
     return ids
   }, [mode, menu])
   const parentTreeData = useMemo(() => buildParentTreeData(tree, disabledParentIds), [tree, disabledParentIds])
+
+  // 图标选项：本地彩色图标注册表中菜单域的 ic-* 短名，带 AppIcon 实时预览
+  const iconOptions = useMemo(
+    () =>
+      getRegisteredLocalIconNames()
+        .filter((shortName) => shortName.startsWith('ic-'))
+        .map((shortName) => ({
+          value: shortName,
+          label: (
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: token.marginXS }}>
+              <AppIcon name={`${LOCAL_ICON_PREFIX}${shortName}`} size={16} />
+              {shortName}
+            </span>
+          ),
+        })),
+    [token.marginXS],
+  )
 
   const initialValues: MenuFormValues =
     mode === 'edit' && menu !== null
@@ -103,7 +106,7 @@ export function MenuForm({ mode, menu, tree, submitting, onSubmit, onCancel }: M
 
   const handleFinish = async (values: MenuFormValues): Promise<void> => {
     setPageError(null)
-    // name/path/component/icon 去空白，空串按契约省略（后端可选字段）
+    // name/path/component/icon 去空白，空串按可选字段省略
     const optionalFields: Pick<MenuFormValues, 'name' | 'path' | 'component' | 'icon'> = {}
     for (const key of ['name', 'path', 'component', 'icon'] as const) {
       const trimmed = values[key]?.trim()
@@ -111,59 +114,19 @@ export function MenuForm({ mode, menu, tree, submitting, onSubmit, onCancel }: M
         optionalFields[key] = trimmed
       }
     }
-    const payload: MenuFormSubmitPayload =
-      mode === 'create'
-        ? {
-            mode: 'create',
-            dto: {
-              parentId: values.parentId ?? null,
-              menuType: values.menuType,
-              title: values.title.trim(),
-              ...optionalFields,
-              sortOrder: values.sortOrder,
-              visible: values.visible,
-            },
-          }
-        : {
-            mode: 'edit',
-            dto: {
-              title: values.title.trim(),
-              ...optionalFields,
-              visible: values.visible,
-            },
-            // parentId/sortOrder 不在编辑请求体内：相对编辑目标变化时经独立层级端点调整
-            hierarchy:
-              menu !== null && (values.parentId !== menu.parentId || values.sortOrder !== menu.sortOrder)
-                ? { parentId: values.parentId ?? null, sortOrder: values.sortOrder }
-                : null,
-          }
     try {
-      await onSubmit(payload)
-    } catch (error) {
-      // VALIDATION.FAILED：已知字段映射到表单项，未知字段进页面级错误（规格 §14.4）
-      if (isApiError(error) && error.errorCode === API_ERROR_CODES.VALIDATION_FAILED) {
-        const issues = parseValidationFieldIssues(error.details) ?? []
-        const knownFields = KNOWN_FIELDS as readonly string[]
-        const fieldErrors: Array<{ name: keyof MenuFormValues; errors: string[] }> = []
-        const unknownMessages: string[] = []
-        for (const issue of issues) {
-          if (knownFields.includes(issue.field)) {
-            fieldErrors.push({ name: issue.field as keyof MenuFormValues, errors: [issue.message] })
-          } else {
-            unknownMessages.push(`${issue.field}: ${issue.message}`)
-          }
-        }
-        if (fieldErrors.length > 0) {
-          form.setFields(fieldErrors)
-        }
-        if (unknownMessages.length > 0) {
-          setPageError(unknownMessages.join('；'))
-        }
-        return
-      }
-      // 其余已知 errorCode（如成环 409 MENU.CYCLE_DETECTED）映射为前端 i18n 文案；
-      // 未知错误显示固定兜底（规格 §7.4-3）
-      setPageError(getApiErrorText(isApiError(error) ? error.errorCode : undefined))
+      await onSubmit({
+        // 编辑模式类型不可改：payload.menuType 固定为原类型，页面按原值原地更新
+        menuType: mode === 'edit' && menu !== null ? menu.menuType : values.menuType,
+        parentId: values.parentId ?? null,
+        title: values.title.trim(),
+        ...optionalFields,
+        sortOrder: values.sortOrder,
+        visible: values.visible,
+      })
+    } catch {
+      // 纯前端模式页面落地不失败；兜底提示防御未来接入异步数据源时的未映射错误
+      setPageError(t('保存失败，请稍后重试'))
     }
   }
 
@@ -182,19 +145,10 @@ export function MenuForm({ mode, menu, tree, submitting, onSubmit, onCancel }: M
         </Form.Item>
       )}
       <Form.Item name="parentId" label={t('上级菜单')}>
-        <TreeSelect
-          allowClear
-          treeDefaultExpandAll
-          placeholder={t('留空为根级菜单')}
-          treeData={parentTreeData}
-        />
+        <TreeSelect allowClear treeDefaultExpandAll placeholder={t('留空为根级菜单')} treeData={parentTreeData} />
       </Form.Item>
       {mode === 'create' ? (
-        <Form.Item
-          name="menuType"
-          label={t('类型')}
-          rules={[{ required: true, message: t('请选择菜单类型') }]}
-        >
+        <Form.Item name="menuType" label={t('类型')} rules={[{ required: true, message: t('请选择菜单类型') }]}>
           <Radio.Group
             options={[
               { label: t('目录', { context: 'menuType' }), value: MENU_TYPES.DIRECTORY },
@@ -204,7 +158,7 @@ export function MenuForm({ mode, menu, tree, submitting, onSubmit, onCancel }: M
           />
         </Form.Item>
       ) : (
-        // 菜单类型创建后不可变更（后端契约）：编辑模式仅禁用态回显
+        // 菜单类型创建后不可变更（与原后端契约一致）：编辑模式仅禁用态回显
         <Form.Item label={t('类型')}>
           <Input
             value={
@@ -259,7 +213,7 @@ export function MenuForm({ mode, menu, tree, submitting, onSubmit, onCancel }: M
               </>
             )
           }
-          // directory：不渲染 name/path/component，提交 DTO 不携带
+          // directory：不渲染 name/path/component，提交载荷不携带
           return null
         }}
       </Form.Item>
@@ -277,13 +231,15 @@ export function MenuForm({ mode, menu, tree, submitting, onSubmit, onCancel }: M
         }}
       </Form.Item>
       <Form.Item name="icon" label={t('图标')}>
-        <Input placeholder={t('选填：图标标识')} allowClear />
+        <Select
+          allowClear
+          showSearch
+          placeholder={t('选填：图标标识')}
+          options={iconOptions}
+          optionFilterProp="value"
+        />
       </Form.Item>
-      <Form.Item
-        name="sortOrder"
-        label={t('排序值')}
-        rules={[{ required: true, message: t('请输入排序值') }]}
-      >
+      <Form.Item name="sortOrder" label={t('排序值')} rules={[{ required: true, message: t('请输入排序值') }]}>
         <InputNumber min={0} precision={0} style={{ width: '100%' }} placeholder={t('请输入排序值')} />
       </Form.Item>
       <Form.Item name="visible" label={t('是否可见')}>

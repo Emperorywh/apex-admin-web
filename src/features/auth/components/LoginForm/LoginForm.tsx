@@ -1,14 +1,12 @@
 /**
- * 登录表单（规格 §14.2）：用户名/密码校验、登录中状态与回跳目标展示。
- * 提交经 useLogin 走认证会话登录状态机（auth.service.login → token/epoch → profile → 导航意图）；
- * 登录请求为 silent（规格 §7.2/§6.3），失败文案由本表单以行内 Alert 呈现，避免全局提示重复。
+ * 登录表单（纯前端模式）：用户名/密码校验、登录中状态与回跳目标展示。
+ * 提交经 useLogin 走本地登录状态机（写入 token/权限快照 → 导航意图），任意账号密码均可登录；
+ * 本地登录不会失败，行内 Alert 仅作意外异常的兜底展示。
  */
 import { useState } from 'react'
 import { Alert, Button, Form, Input } from 'antd'
 import { Lock, UserRound } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { API_ERROR_FALLBACK_TEXT, getApiErrorText } from '@/i18n/errorTexts'
-import { isApiError } from '@/services/request/envelope'
 import { useLogin, type LoginSubmitValues } from '@/features/auth/hooks/useLogin'
 import styles from './LoginForm.module.css'
 
@@ -24,10 +22,9 @@ export function LoginForm() {
     setErrorText(null)
     try {
       await submit(values)
-    } catch (error) {
-      // 已知 errorCode 映射为本地化文案；未知错误显示固定兜底文案（规格 §7.4-3）
-      const errorCode = isApiError(error) ? error.errorCode : undefined
-      setErrorText(errorCode !== undefined ? getApiErrorText(errorCode) : t(API_ERROR_FALLBACK_TEXT))
+    } catch {
+      // 纯前端模式登录不会失败；兜底文案仅防御意外异常
+      setErrorText(t('登录失败，请稍后重试'))
     }
   }
 

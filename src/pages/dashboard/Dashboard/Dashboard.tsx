@@ -1,32 +1,36 @@
 /**
- * Dashboard 页面（规格 §14.2/§15）：唯一默认 affix 页签（规格 §4.2），页面权限 dashboard:view。
- * 统计卡片区（userCount/enabledUserCount/roleCount/todayLoginCount，SPEC_UI2 §8 slash
- * workbench 式：彩色浅底图标块 + 大数字 + 环比文案 + Sparkline 迷你趋势图，趋势序列
- * 由 overview 既有时间序列推导）+ 三类图表（登录趋势折线、用户增长柱形、角色分布环形）；
- * 数据统一来自 GET /dashboard/overview（useDashboard），图表经 useECharts 渲染并随页签
- * 激活态与主题变化重建（规格 §9.2/§15）；标题文案经 dashboard 命名空间翻译（规格 §12）。
+ * Dashboard 页面（AGV 调度概览，纯前端模式）：
+ * 数据来自 dashboard.demoData 的确定性演示数据（无请求层、无随机数）。
+ * 统计卡片区（在线 AGV / 今日任务 / 平均任务时长 / 今日异常，SPEC_UI2 §8 workbench
+ * 式：彩色浅底图标块 + 大数值 + 环比文案 + Sparkline 迷你趋势）+ 七个图表面板
+ * （24H 吞吐折线、状态环形、区域柱形、利用率排行条形、任务类型玫瑰、区域时段热力、
+ * 完成率仪表盘）；图表经 useECharts 渲染并随页签激活态与主题变化重建（规格 §9.2/§15）；
+ * 文案经 dashboard 命名空间翻译（规格 §12）。
  */
-import { useMemo, useRef } from 'react'
-import { Button, Card, Col, Empty, Row, Spin, theme } from 'antd'
-import { LogIn, ShieldCheck, UserCheck, UsersRound } from 'lucide-react'
+import { useCallback, useMemo, useRef } from 'react'
+import { Card, Col, Row, theme } from 'antd'
+import { Bot, Route, Timer, TriangleAlert } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { AGV_DASHBOARD_DEMO_DATA } from '@/constants/dashboard/dashboard.demoData'
 import { DASHBOARD_I18N_NAMESPACE } from '@/constants/dashboard/dashboard.constants'
 import { OverviewCard } from '@/features/dashboard/components/OverviewCard/OverviewCard'
-import { useDashboard } from '@/features/dashboard/hooks/useDashboard'
 import { useECharts } from '@/hooks/useECharts'
 import { usePageActive } from '@/hooks/usePageActive'
-import type { DashboardOverview } from '@/types/dashboard/dashboard.types'
 import type { EChartsCoreOption } from 'echarts/core'
 import {
+  buildAreaTaskOption,
+  buildCompletionGaugeOption,
   buildDashboardChartTheme,
-  buildLoginTrendOption,
-  buildRoleDistributionOption,
-  buildUserGrowthOption,
+  buildHeatmapOption,
+  buildStatusDistributionOption,
+  buildTaskTypeOption,
+  buildThroughputOption,
+  buildUtilizationOption,
 } from './Dashboard.charts'
 import styles from './Dashboard.module.css'
 
-/** 图表面板：Card 标题 + 图表容器；option 为 null（暂无数据）时不写入图表数据 */
-function ChartPanel({ title, option, active }: { title: string; option: EChartsCoreOption | null; active: boolean }) {
+/** 图表面板：Card 标题 + 图表容器 */
+function ChartPanel({ title, option, active }: { title: string; option: EChartsCoreOption; active: boolean }) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   useECharts(containerRef, option, { active })
   return (
@@ -36,133 +40,126 @@ function ChartPanel({ title, option, active }: { title: string; option: EChartsC
   )
 }
 
-/** 序列取值数组：{ date, count }[] → number[]（按时间升序） */
-function seriesValues(series: ReadonlyArray<{ count: number }>): number[] {
-  return series.map((point) => point.count)
-}
-
-/** 带符号差值文案：如 +3 / -2 / +0（环比展示用） */
-function signedDiff(diff: number): string {
+/** 带符号差值文案：如 +16 / -0.6 / +0（绝对值环比展示用） */
+function signedDelta(current: number, previous: number): string {
+  const diff = Number((current - previous).toFixed(1))
   return `${diff >= 0 ? '+' : ''}${diff}`
 }
 
-/** 统计卡衍生数据：趋势序列与环比文案（全部由 overview 既有时间序列确定性推导） */
-function deriveStatTrends(overview: DashboardOverview, t: (key: string, options?: Record<string, unknown>) => string) {
-  const userGrowth = seriesValues(overview.userGrowth)
-  const loginTrend = seriesValues(overview.loginTrend)
-  // 启用用户无独立序列：按当前启用占比对增长序列等比缩放（确定性推导）
-  const enabledRatio = overview.stats.userCount === 0 ? 0 : overview.stats.enabledUserCount / overview.stats.userCount
-  const enabledSeries = userGrowth.map((count) => Math.round(count * enabledRatio))
-  const growthDelta =
-    userGrowth.length >= 2 ? userGrowth[userGrowth.length - 1] - userGrowth[0] : 0
-  const loginDelta = loginTrend.length >= 2 ? loginTrend[loginTrend.length - 1] - loginTrend[loginTrend.length - 2] : 0
-  return {
-    userTrend: userGrowth,
-    userDelta: t('近{{days}}日 {{diff}}', { days: userGrowth.length, diff: signedDiff(growthDelta) }),
-    enabledTrend: enabledSeries,
-    enabledDelta: t('近{{days}}日 {{diff}}', {
-      days: enabledSeries.length,
-      diff: signedDiff(enabledSeries.length >= 2 ? enabledSeries[enabledSeries.length - 1] - enabledSeries[0] : 0),
-    }),
-    loginTrend,
-    loginDelta: t('较昨日 {{diff}}', { diff: signedDiff(loginDelta) }),
+/** 带符号百分比差值文案：如 +6.3 / -1.2（比率环比展示用，保留一位小数） */
+function signedPercentDelta(current: number, previous: number): string {
+  if (previous === 0) {
+    return '+0'
   }
+  const percent = Number((((current - previous) / previous) * 100).toFixed(1))
+  return `${percent >= 0 ? '+' : ''}${percent}`
 }
 
 export function Dashboard() {
   const { t } = useTranslation(DASHBOARD_I18N_NAMESPACE)
-  const { overview, loading, refresh } = useDashboard()
   // 页签激活态：隐藏页图表暂停 resize 监听，重新激活后延迟重建/resize（规格 §9.2/§15）
   const active = usePageActive()
   const { token } = theme.useToken()
+  const snapshot = AGV_DASHBOARD_DEMO_DATA
+  const { stats } = snapshot
   const chartTheme = useMemo(() => buildDashboardChartTheme(token), [token])
-  const loginTrendOption = useMemo(
-    () => (overview === null ? null : buildLoginTrendOption(overview, chartTheme)),
-    [overview, chartTheme],
+  const translate = useCallback((key: string): string => t(key), [t])
+
+  const completionRate =
+    stats.todayTaskCount === 0 ? 0 : Number(((stats.todayCompletedCount / stats.todayTaskCount) * 100).toFixed(1))
+
+  const options = useMemo(
+    () => ({
+      throughput: buildThroughputOption(snapshot, chartTheme, translate),
+      status: buildStatusDistributionOption(snapshot, chartTheme, translate),
+      area: buildAreaTaskOption(snapshot, chartTheme, translate),
+      utilization: buildUtilizationOption(snapshot, chartTheme),
+      taskType: buildTaskTypeOption(snapshot, chartTheme, translate),
+      heatmap: buildHeatmapOption(snapshot, chartTheme, translate),
+      completion: buildCompletionGaugeOption(
+        snapshot,
+        chartTheme,
+        t('较昨日 {{diff}}%', { diff: signedPercentDelta(completionRate, stats.yesterdayCompletionRate) }),
+      ),
+    }),
+    [snapshot, chartTheme, translate, t, completionRate, stats.yesterdayCompletionRate],
   )
-  const userGrowthOption = useMemo(
-    () => (overview === null ? null : buildUserGrowthOption(overview, chartTheme)),
-    [overview, chartTheme],
-  )
-  const roleDistributionOption = useMemo(
-    () => (overview === null ? null : buildRoleDistributionOption(overview, chartTheme)),
-    [overview, chartTheme],
-  )
-  const statTrends = useMemo(() => (overview === null ? null : deriveStatTrends(overview, t)), [overview, t])
 
   return (
     <div className={styles.dashboard}>
       <Row gutter={[12, 12]}>
         <Col xs={12} xl={6}>
           <OverviewCard
-            title="用户总数"
-            value={overview?.stats.userCount ?? 0}
-            icon={UsersRound}
+            title="在线AGV"
+            value={stats.agvOnline}
+            suffix="台"
+            icon={Bot}
             tone="primary"
-            trend={statTrends?.userTrend}
-            delta={statTrends?.userDelta}
-            loading={loading && overview === null}
+            trend={snapshot.onlineTrend}
+            delta={t('在线率 {{percent}}%', { percent: ((stats.agvOnline / stats.agvTotal) * 100).toFixed(1) })}
           />
         </Col>
         <Col xs={12} xl={6}>
           <OverviewCard
-            title="启用用户"
-            value={overview?.stats.enabledUserCount ?? 0}
-            icon={UserCheck}
+            title="今日任务"
+            value={stats.todayTaskCount}
+            suffix="单"
+            icon={Route}
             tone="success"
-            trend={statTrends?.enabledTrend}
-            delta={statTrends?.enabledDelta}
-            loading={loading && overview === null}
+            trend={snapshot.cumulativeTaskTrend}
+            delta={t('较昨日 {{diff}}%', {
+              diff: signedPercentDelta(stats.todayTaskCount, stats.yesterdayTaskCount),
+            })}
           />
         </Col>
         <Col xs={12} xl={6}>
           <OverviewCard
-            title="角色数量"
-            value={overview?.stats.roleCount ?? 0}
-            icon={ShieldCheck}
+            title="平均任务时长"
+            value={stats.avgTaskDurationMin}
+            suffix="分钟"
+            icon={Timer}
             tone="warning"
-            loading={loading && overview === null}
+            trend={snapshot.durationTrend}
+            delta={t('较昨日 {{diff}}', {
+              diff: signedDelta(stats.avgTaskDurationMin, stats.yesterdayAvgTaskDurationMin),
+            })}
           />
         </Col>
         <Col xs={12} xl={6}>
           <OverviewCard
-            title="今日登录"
-            value={overview?.stats.todayLoginCount ?? 0}
-            icon={LogIn}
+            title="今日异常"
+            value={stats.todayAlarmCount}
+            suffix="次"
+            icon={TriangleAlert}
             tone="error"
-            trend={statTrends?.loginTrend}
-            delta={statTrends?.loginDelta}
-            loading={loading && overview === null}
+            trend={snapshot.alarmTrend}
+            delta={t('较昨日 {{diff}}', { diff: signedDelta(stats.todayAlarmCount, stats.yesterdayAlarmCount) })}
           />
         </Col>
       </Row>
-      {overview === null ? (
-        loading ? (
-          <div className={styles.chartLoading}>
-            <Spin />
-          </div>
-        ) : (
-          <Card>
-            <Empty description={t('概览数据加载失败')}>
-              <Button type="primary" onClick={() => void refresh()}>
-                {t('重试')}
-              </Button>
-            </Empty>
-          </Card>
-        )
-      ) : (
-        <Row gutter={[12, 12]}>
-          <Col xs={24} xl={16}>
-            <ChartPanel title={t('登录趋势')} option={loginTrendOption} active={active} />
-          </Col>
-          <Col xs={24} xl={8}>
-            <ChartPanel title={t('角色分布')} option={roleDistributionOption} active={active} />
-          </Col>
-          <Col xs={24}>
-            <ChartPanel title={t('用户增长')} option={userGrowthOption} active={active} />
-          </Col>
-        </Row>
-      )}
+      <Row gutter={[12, 12]}>
+        <Col xs={24} xl={16}>
+          <ChartPanel title={t('任务吞吐趋势')} option={options.throughput} active={active} />
+        </Col>
+        <Col xs={24} xl={8}>
+          <ChartPanel title={t('AGV状态分布')} option={options.status} active={active} />
+        </Col>
+        <Col xs={24} md={12} xl={8}>
+          <ChartPanel title={t('区域任务量分布')} option={options.area} active={active} />
+        </Col>
+        <Col xs={24} md={12} xl={8}>
+          <ChartPanel title={t('AGV利用率排行')} option={options.utilization} active={active} />
+        </Col>
+        <Col xs={24} md={12} xl={8}>
+          <ChartPanel title={t('任务类型分布')} option={options.taskType} active={active} />
+        </Col>
+        <Col xs={24} xl={16}>
+          <ChartPanel title={t('区域时段任务热力')} option={options.heatmap} active={active} />
+        </Col>
+        <Col xs={24} xl={8}>
+          <ChartPanel title={t('任务完成率')} option={options.completion} active={active} />
+        </Col>
+      </Row>
     </div>
   )
 }

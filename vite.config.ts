@@ -1,23 +1,11 @@
 import { fileURLToPath } from 'node:url'
 import react from '@vitejs/plugin-react'
-import { defineConfig, loadEnv } from 'vite'
+import { defineConfig } from 'vite'
 
 /**
- * 启动时校验环境变量；非法值使 dev/build 直接失败。
- * 校验发生在 Vite 配置加载阶段，dev 与 build 均会执行。
+ * 纯前端模式：无后端 API 依赖，不需要环境变量校验与 /api 代理。
  */
-function assertEnv(env: Record<string, string>): void {
-  const apiBaseUrl = env.VITE_API_BASE_URL
-  if (apiBaseUrl !== undefined && !/^(\/|https?:\/\/)/.test(apiBaseUrl)) {
-    throw new Error(`[env] VITE_API_BASE_URL 非法：${apiBaseUrl}，必须以 / 或 http(s):// 开头`)
-  }
-}
-
-export default defineConfig(({ mode }) => {
-  // 读取包括 PROXY_TARGET 在内的全部环境变量；PROXY_TARGET 不带 VITE_ 前缀，不暴露给客户端
-  const env = loadEnv(mode, process.cwd(), '')
-  assertEnv(env)
-
+export default defineConfig(() => {
   return {
     base: '/',
     plugins: [react()],
@@ -26,16 +14,6 @@ export default defineConfig(({ mode }) => {
         // 唯一路径别名 @ -> src，基于配置文件位置解析，不依赖当前工作目录
         '@': fileURLToPath(new URL('./src', import.meta.url)),
       },
-    },
-    server: {
-      proxy: env.PROXY_TARGET
-        ? {
-            '/api': {
-              target: env.PROXY_TARGET,
-              changeOrigin: true,
-            },
-          }
-        : undefined,
     },
     build: {
       rollupOptions: {

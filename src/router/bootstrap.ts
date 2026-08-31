@@ -1,14 +1,11 @@
 /**
- * 路由启动接线（规格 §4.3/§6.2）：
- * - 创建 Data Router，并注册两个「路由无关导航通道」的消费回调：
- *   ① authNavigation——post-login（redirect 参数经 redirect.ts 五步同源校验后执行合法回跳或
- *   /dashboard）、post-logout（回登录页不带 redirect）；
- *   ② sessionCleanup——会话过期/清理跳登录（地址已由 buildLoginTarget 完成同源校验）。
- * - 登录提交后的最终导航：useLogin → 登录状态机产出 post-login 意图 → 本接线消费执行。
- * - 失权页签权限解析通道已随会话内权限变更机制移除（规格 §5.4 v1.14）。
+ * 路由启动接线（规格 §4.3/§6.2，纯前端模式）：
+ * 创建 Data Router，并注册「路由无关导航通道」的消费回调：
+ * authNavigation——post-login（redirect 参数经 redirect.ts 五步同源校验后执行合法回跳或
+ * /dashboard）、post-logout（回登录页不带 redirect）。
+ * 登录提交后的最终导航：useLogin → 登录状态机产出 post-login 意图 → 本接线消费执行。
  */
 import { registerAuthNavigator, type AuthNavigator } from '@/services/auth/authNavigation'
-import { registerSessionExpiredNavigator } from '@/services/request/sessionCleanup'
 import { readSanitizedRedirectTarget } from './redirect'
 import { createAppRouter, type AppRouter } from './router'
 
@@ -31,13 +28,11 @@ export function createAuthNavigator(navigate: RouterNavigate): AuthNavigator {
   }
 }
 
-/** 注册全部路由相关导航通道：返回清理函数，测试用于还原全局注册表 */
+/** 注册路由相关导航通道：返回清理函数，测试用于还原全局注册表 */
 export function connectRouterNavigation(navigate: RouterNavigate): () => void {
   registerAuthNavigator(createAuthNavigator(navigate))
-  registerSessionExpiredNavigator((loginTarget) => navigate(loginTarget, { replace: true }))
   return () => {
     registerAuthNavigator(null)
-    registerSessionExpiredNavigator(null)
   }
 }
 

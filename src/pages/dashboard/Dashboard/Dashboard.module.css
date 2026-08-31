@@ -18,10 +18,3 @@
   width: 100%;
   height: 320px;
 }
-
-.chartLoading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 320px;
-}

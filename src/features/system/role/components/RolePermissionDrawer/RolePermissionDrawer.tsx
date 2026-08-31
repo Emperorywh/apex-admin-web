@@ -1,106 +1,137 @@
 /**
- * 角色权限查看 Drawer（对齐真实后端 rbac 接口，只读）：
- * 打开时经 GET /roles/:roleId 拉取角色详情（RoleDetailResponse），展示已分配权限码
- * 全集与成员数。后端暂无「权限点目录/树」查询端点（GET /permissions/tree 不存在，
- * 仅有当前用户视角的 GET /me/permissions），无法渲染可勾选的全量权限树，
- * 分配操作（PUT /roles/:roleId/permissions 已在 service 就绪）待后端补齐目录端点后接入。
+ * 角色权限分配 Drawer（纯前端模式）：
+ * 目标角色当前权限码由页面经内存分配表（role → permissionCodes 全量替换语义）以 props
+ * 注入，按模块分组的权限目录（permission.constants.ts 的 PERMISSIONS 全集）以复选框
+ * 呈现，支持分组全选；提交后由页面更新分配表。原 GET/PUT /roles/:id 的网络环节已移除。
  * Drawer 关闭即销毁内容（destroyOnHidden + 页面按目标角色 id 重建），下次打开重新初始化。
  */
-import { useEffect, useState } from 'react'
-import type { AxiosRequestConfig } from 'axios'
-import { Alert, Button, Drawer, Empty, Spin, Tag, theme } from 'antd'
+import { useState } from 'react'
+import { Button, Checkbox, Drawer, Tag, theme } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { ROLE_I18N_NAMESPACE } from '@/constants/system/role/role.constants'
-import { usePageRequest } from '@/hooks/usePageRequest'
-import { getRoleDetail } from '@/services/system/role/role.service'
-import type { Role, RoleDetail } from '@/types/system/role/role.types'
+import { PERMISSIONS } from '@/constants/permission.constants'
+import type { Role } from '@/types/system/role/role.types'
+
+/**
+ * 权限目录分组（模块 → 权限码）：码值引用 PERMISSIONS 常量，页面不出现权限魔法字符串。
+ * 后端动作粒度为 read/write 两级，同一写码被多个语义 key 复用（如 SYSTEM_USER_CREATE/
+ * UPDATE/DELETE 同值），分组内以 Set 去重后每码一项。
+ */
+const PERMISSION_GROUPS: ReadonlyArray<{ labelKey: string; codes: readonly string[] }> = [
+  {
+    labelKey: '用户权限',
+    codes: [PERMISSIONS.SYSTEM_USER_LIST, PERMISSIONS.SYSTEM_USER_CREATE],
+  },
+  {
+    labelKey: '角色权限',
+    codes: [PERMISSIONS.SYSTEM_ROLE_LIST, PERMISSIONS.SYSTEM_ROLE_CREATE],
+  },
+  {
+    labelKey: '授权操作',
+    codes: [PERMISSIONS.SYSTEM_USER_ASSIGN_ROLE, PERMISSIONS.SYSTEM_ROLE_ASSIGN_PERMISSION],
+  },
+  {
+    labelKey: '菜单权限',
+    codes: [PERMISSIONS.SYSTEM_MENU_LIST, PERMISSIONS.SYSTEM_MENU_CREATE],
+  },
+]
+
+/** 权限码 → 文案 key（与分组同一去重口径：同一码值只保留一份文案） */
+const PERMISSION_LABEL_KEYS: Record<string, string> = {
+  [PERMISSIONS.SYSTEM_USER_LIST]: '查看用户',
+  [PERMISSIONS.SYSTEM_USER_CREATE]: '维护用户',
+  [PERMISSIONS.SYSTEM_ROLE_LIST]: '查看角色',
+  [PERMISSIONS.SYSTEM_ROLE_CREATE]: '维护角色',
+  [PERMISSIONS.SYSTEM_USER_ASSIGN_ROLE]: '分配角色与权限',
+  [PERMISSIONS.SYSTEM_MENU_LIST]: '查看菜单',
+  [PERMISSIONS.SYSTEM_MENU_CREATE]: '维护菜单',
+}
 
 export interface RolePermissionDrawerProps {
   open: boolean
-  /** 查看目标角色；open 为 true 时必须非空 */
+  /** 分配目标角色；open 为 true 时必须非空 */
   role: Role | null
+  /** 目标角色当前已分配权限码全集（初始勾选） */
+  assignedCodes: string[]
+  /** 目标角色成员数（演示口径：与 user 演示分配数据一致） */
+  memberCount: number
+  /** 提交中：由页面持有，控制提交按钮 loading */
+  submitting: boolean
+  /** 提交：参数为选中的权限码列表（分配契约按编码全量替换） */
+  onSubmit: (permissionCodes: string[]) => Promise<void>
   onClose: () => void
 }
 
-export function RolePermissionDrawer({ open, role, onClose }: RolePermissionDrawerProps) {
+export function RolePermissionDrawer({
+  open,
+  role,
+  assignedCodes,
+  memberCount,
+  submitting,
+  onSubmit,
+  onClose,
+}: RolePermissionDrawerProps) {
   const { t } = useTranslation(ROLE_I18N_NAMESPACE)
   const { token } = theme.useToken()
-  const pageRequest = usePageRequest()
-  const [detail, setDetail] = useState<RoleDetail | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [loadError, setLoadError] = useState(false)
+  // 勾选值为权限码（提交契约）；随 Drawer 重建以目标角色当前权限初始化
+  const [checked, setChecked] = useState<string[]>(assignedCodes)
 
-  // Drawer destroyOnHidden：每次打开重新挂载，拉取目标角色的权限详情
-  useEffect(() => {
-    if (!open || role === null) {
-      return
-    }
-    const controller = new AbortController()
-    setLoading(true)
-    setLoadError(false)
-    // TSX 中泛型箭头函数需尾逗号消歧（<T,>），否则被解析为 JSX 标签
-    const sendWithSignal = <T,>(config: AxiosRequestConfig): Promise<T> =>
-      pageRequest<T>({ ...config, signal: controller.signal })
-    void getRoleDetail(role.id, sendWithSignal)
-      .then((result) => {
-        if (controller.signal.aborted) {
-          return
-        }
-        setDetail(result)
-        setLoading(false)
-      })
-      .catch(() => {
-        // 取消静默；真实失败提示由请求层统一弹出，这里只标记加载失败并允许重开重试
-        if (controller.signal.aborted) {
-          return
-        }
-        setLoadError(true)
-        setLoading(false)
-      })
-    return () => {
-      controller.abort()
-    }
-  }, [open, role, pageRequest])
+  /** 将一组权限码的勾选态整体替换（分组全选/取消与单组勾选共用） */
+  const replaceGroup = (codes: readonly string[], values: readonly string[]): void => {
+    setChecked((prev) => [...prev.filter((code) => !codes.includes(code)), ...values])
+  }
+
+  const handleSubmit = async (): Promise<void> => {
+    await onSubmit(checked)
+  }
 
   return (
-    <Drawer
-      title={t('查看权限')}
-      placement="right"
-      width={420}
-      open={open}
-      onClose={onClose}
-      destroyOnHidden
-    >
+    <Drawer title={t('分配权限')} placement="right" width={420} open={open} onClose={onClose} destroyOnHidden>
       {role !== null && (
         <p style={{ color: token.colorTextSecondary, marginTop: 0 }}>
           {t('目标角色')}：{role.displayName}（{role.code}）
         </p>
       )}
-      {loadError && (
-        <Alert type="error" showIcon message={t('权限加载失败，请关闭后重试')} style={{ marginBottom: token.marginSM }} />
-      )}
-      {loading ? (
-        <Spin />
-      ) : detail !== null ? (
-        <>
-          <p style={{ color: token.colorTextSecondary }}>
-            {t('成员数')}：{detail.memberCount}
-          </p>
-          {detail.permissionCodes.length > 0 ? (
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: token.marginXS }}>
-              {detail.permissionCodes.map((code) => (
-                <Tag key={code}>{code}</Tag>
-              ))}
+      <p style={{ color: token.colorTextSecondary }}>
+        {t('成员数')}：{memberCount}
+      </p>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: token.marginLG }}>
+        {PERMISSION_GROUPS.map((group) => {
+          const codes = [...new Set(group.codes)]
+          const checkedInGroup = codes.filter((code) => checked.includes(code))
+          const allChecked = checkedInGroup.length === codes.length
+          return (
+            <div key={group.labelKey}>
+              <Checkbox
+                checked={allChecked}
+                indeterminate={checkedInGroup.length > 0 && !allChecked}
+                onChange={(event) => replaceGroup(codes, event.target.checked ? codes : [])}
+              >
+                {t(group.labelKey)}
+              </Checkbox>
+              <Checkbox.Group
+                value={checkedInGroup}
+                onChange={(values) => replaceGroup(codes, values as string[])}
+                style={{ display: 'flex', flexDirection: 'column', gap: token.marginXS, paddingLeft: token.marginLG }}
+              >
+                {codes.map((code) => (
+                  <Checkbox key={code} value={code}>
+                    {t(PERMISSION_LABEL_KEYS[code] ?? code)}
+                    <Tag style={{ marginLeft: token.marginXS }} color="default">
+                      {code}
+                    </Tag>
+                  </Checkbox>
+                ))}
+              </Checkbox.Group>
             </div>
-          ) : (
-            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={t('暂无权限')} />
-          )}
-        </>
-      ) : (
-        !loadError && <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={t('暂无权限')} />
-      )}
+          )
+        })}
+      </div>
       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: token.marginSM, marginTop: token.marginLG }}>
-        <Button onClick={onClose}>{t('关闭')}</Button>
+        <Button onClick={onClose}>{t('取消')}</Button>
+        <Button type="primary" loading={submitting} onClick={() => void handleSubmit()}>
+          {t('保存')}
+        </Button>
       </div>
     </Drawer>
   )

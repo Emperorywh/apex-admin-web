@@ -14,14 +14,26 @@ import type { RefObject } from 'react'
 import { theme } from 'antd'
 // use 起别名避免与 React Hook 命名冲突触发 react-hooks/rules-of-hooks
 import { dispose, init, use as registerEChartsModules } from 'echarts/core'
-import { BarChart, LineChart, PieChart } from 'echarts/charts'
-import { GridComponent, LegendComponent, TooltipComponent } from 'echarts/components'
+import { BarChart, GaugeChart, HeatmapChart, LineChart, PieChart } from 'echarts/charts'
+import { GridComponent, LegendComponent, TooltipComponent, VisualMapComponent } from 'echarts/components'
 import { SVGRenderer } from 'echarts/renderers'
 import type { EChartsCoreOption, EChartsType } from 'echarts/core'
 
-// 按需注册（规格 §15）：当前模板图表仅使用折线/柱形/饼（环）与 Grid/Tooltip/Legend；
-// renderer 固定 SVG：无 Canvas 依赖，任何无 Canvas 环境同样可初始化渲染
-registerEChartsModules([LineChart, BarChart, PieChart, GridComponent, TooltipComponent, LegendComponent, SVGRenderer])
+// 按需注册（规格 §15）：当前模板图表使用折线/柱形/饼（环）/仪表盘/热力与
+// Grid/Tooltip/Legend/VisualMap；renderer 固定 SVG：无 Canvas 依赖，任何无 Canvas
+// 环境同样可初始化渲染
+registerEChartsModules([
+  LineChart,
+  BarChart,
+  PieChart,
+  GaugeChart,
+  HeatmapChart,
+  GridComponent,
+  TooltipComponent,
+  LegendComponent,
+  VisualMapComponent,
+  SVGRenderer,
+])
 
 /** 防抖 resize 的 trailing 等待毫秒数：拖拽或连续窗口变化期间只保留最后一次 resize */
 const CHART_RESIZE_DEBOUNCE_MS = 150
@@ -40,8 +52,10 @@ type AntdToken = ReturnType<typeof theme.useToken>['token']
 function buildChartThemeSignature(token: AntdToken): string {
   return [
     token.colorPrimary,
+    token.colorPrimaryBg,
     token.colorText,
     token.colorTextDescription,
+    token.colorTextQuaternary,
     token.colorBorderSecondary,
     token.colorBgContainer,
     token.fontSize,

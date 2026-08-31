@@ -58,7 +58,9 @@ const systemMenu: Record<string, string> = {
   确认删除: 'Confirm Delete',
   创建菜单成功: 'Menu created successfully',
   保存成功: 'Saved successfully',
+  '保存失败，请稍后重试': 'Save failed. Please try again later.',
   删除成功: 'Deleted successfully',
+  '存在子菜单，无法删除': 'This menu has sub-menus and cannot be deleted',
 }
 
 export default systemMenu

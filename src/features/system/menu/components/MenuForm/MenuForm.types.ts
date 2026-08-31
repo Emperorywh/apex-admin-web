@@ -1,16 +1,11 @@
 /**
- * MenuForm 私有类型（规格 §3.4，对齐真实后端写入契约）：
+ * MenuForm 私有类型（规格 §3.4）：
  * 表单模式、表单值与提交载荷只被本组件与菜单管理页消费，紧邻实现共置；
- * 写入契约 DTO 的权威定义位于 menu.service.types.ts，此处仅引用。
+ * 纯前端模式下写入载荷由本文件收敛（原 menu service DTO 已随请求层移除）。
  */
-import type {
-  MenuCreateRequestDto,
-  MenuHierarchyRequestDto,
-  MenuUpdateRequestDto,
-} from '@/services/system/menu/menu.service.types'
-import type { MenuType } from '@/types/system/menu/menu.types'
+import type { MenuItem, MenuType } from '@/types/system/menu/menu.types'
 
-/** 表单模式：创建与编辑共用一套表单字段，但提交契约不同构（编辑不含 menuType，层级走独立端点） */
+/** 表单模式：创建与编辑共用一套字段；编辑模式下 menuType 禁改（与原后端契约一致） */
 export type MenuFormMode = 'create' | 'edit'
 
 /**
@@ -29,7 +24,33 @@ export interface MenuFormValues {
   visible: boolean
 }
 
-/** 提交载荷：创建为单一写入契约；编辑 = 基本信息契约 + 可选层级调整（parentId/sortOrder 变化时非空） */
-export type MenuFormSubmitPayload =
-  | { mode: 'create'; dto: MenuCreateRequestDto }
-  | { mode: 'edit'; dto: MenuUpdateRequestDto; hierarchy: MenuHierarchyRequestDto | null }
+/**
+ * 提交载荷：创建/编辑统一形状（menuType 编辑模式下等于原值）；
+ * parentId/sortOrder 直接随载荷提交，由页面在内存树中插入或原地更新并按需移动层级。
+ */
+export interface MenuFormSubmitPayload {
+  parentId: string | null
+  menuType: MenuType
+  title: string
+  name?: string
+  path?: string
+  component?: string
+  icon?: string
+  sortOrder: number
+  visible: boolean
+}
+
+/** 编辑目标菜单的表单回显数据（可空字段回显统一为空串） */
+export function toMenuFormValues(menu: MenuItem): MenuFormValues {
+  return {
+    parentId: menu.parentId,
+    menuType: menu.menuType,
+    title: menu.title,
+    name: menu.name ?? '',
+    path: menu.path ?? '',
+    component: menu.component ?? '',
+    icon: menu.icon ?? '',
+    sortOrder: menu.sortOrder,
+    visible: menu.visible,
+  }
+}

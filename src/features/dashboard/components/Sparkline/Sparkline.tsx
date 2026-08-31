@@ -20,7 +20,13 @@ export interface SparklineProps {
 /** 折线内边距，单位 px：避免线贴边裁剪 */
 const SPARKLINE_PADDING_PX = 2
 
-export function Sparkline({ data, width = 96, height = 32, color = 'var(--ant-color-primary)', filled = true }: SparklineProps) {
+export function Sparkline({
+  data,
+  width = 96,
+  height = 32,
+  color = 'var(--ant-color-primary)',
+  filled = true,
+}: SparklineProps) {
   if (data.length < 2) {
     return null
   }
