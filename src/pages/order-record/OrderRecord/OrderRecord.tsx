@@ -5,7 +5,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
-import { Button, Card, DatePicker, Input, Select, Space, Table, Tag, type TablePaginationConfig } from 'antd'
+import { Button, DatePicker, Input, Select, Space, Table, Tag, type TablePaginationConfig } from 'antd'
 import type { Dayjs } from 'dayjs'
 import { RotateCcw, RefreshCw, Search } from 'lucide-react'
 import { useOrderList } from '@/features/order-record/hooks/useOrderList'
@@ -130,7 +130,7 @@ export default function OrderRecord() {
   }
 
   return (
-    <Card variant="borderless" styles={{ body: { paddingTop: 12 } }}>
+    <div>
       {/* 页面标题由页签承载，顶部只保留工具栏：筛选居左、刷新居右 */}
       <div style={{ marginBottom: 12, display: 'flex', justifyContent: 'space-between', gap: 8 }}>
         <Space size={8} wrap>
@@ -204,6 +204,6 @@ export default function OrderRecord() {
         pagination={pagination}
         scroll={{ x: 1820 }}
       />
-    </Card>
+    </div>
   )
 }

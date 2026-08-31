@@ -4,8 +4,9 @@
   max-width: 860px;
 }
 
-.card {
-  border-radius: 12px;
-  border: 1px solid var(--app-card-line);
-  box-shadow: inset 0 1px 0 var(--app-highlight);
+/* 卡片标题下的分隔线（原 antd Card header 的视觉） */
+.title {
+  margin: 0 0 var(--app-space-3);
+  padding-bottom: var(--app-space-2);
+  border-bottom: 1px solid var(--app-divider);
 }

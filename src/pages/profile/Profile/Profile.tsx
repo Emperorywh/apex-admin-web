@@ -2,7 +2,7 @@
  * 个人中心：账户信息 + 资料编辑。
  */
 
-import { Card, Descriptions, Tag } from 'antd'
+import { Descriptions, Tag } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/hooks/useAuth'
 import { ProfileForm } from '@/features/profile/components/ProfileForm/ProfileForm'
@@ -16,11 +16,8 @@ export default function Profile() {
 
   return (
     <div className={styles.wrap}>
-      <Card
-        title={t('账户信息')}
-        className={styles.card}
-        styles={{ header: { borderBottom: '1px solid var(--app-divider)' } }}
-      >
+      <section className="ds-card ds-card-p">
+        <div className={`ds-card-title ${styles.title}`}>{t('账户信息')}</div>
         <Descriptions column={1} size="small" labelStyle={{ width: 96, fontWeight: 700 }}>
           <Descriptions.Item label={t('用户名')}>{user.username}</Descriptions.Item>
           <Descriptions.Item label={t('显示名')}>{user.displayName}</Descriptions.Item>
@@ -29,10 +26,11 @@ export default function Profile() {
             {user.roleNames.length > 0 ? user.roleNames.map((name) => <Tag key={name}>{name}</Tag>) : '—'}
           </Descriptions.Item>
         </Descriptions>
-      </Card>
-      <Card title={t('编辑资料')} className={styles.card}>
+      </section>
+      <section className="ds-card ds-card-p">
+        <div className={`ds-card-title ${styles.title}`}>{t('编辑资料')}</div>
         <ProfileForm user={user} />
-      </Card>
+      </section>
     </div>
   )
 }

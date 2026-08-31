@@ -4,7 +4,7 @@
 
 import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { App, Badge, Button, Card, Drawer, Popconfirm, Select, Space, Table, type TablePaginationConfig } from 'antd'
+import { App, Badge, Button, Drawer, Popconfirm, Select, Space, Table, type TablePaginationConfig } from 'antd'
 import { Plus } from 'lucide-react'
 import { usePageRequest } from '@/hooks/usePageRequest'
 import { RoleForm } from '@/features/system/role/components/RoleForm/RoleForm'
@@ -159,7 +159,7 @@ export default function Role() {
   }
 
   return (
-    <Card styles={{ body: { paddingTop: 12 } }}>
+    <div>
       {/* 页面标题由页签与 document.title 承载，顶部只保留工具栏：筛选居左、主操作居右 */}
       <div
         style={{
@@ -235,6 +235,6 @@ export default function Role() {
           </div>
         ) : null}
       </Drawer>
-    </Card>
+    </div>
   )
 }

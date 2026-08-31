@@ -3,8 +3,7 @@
  * 布局与业务样式一律使用 CSS Modules；本文件只承载跨页面共享的基础层。
  *
  * 本文件是全局视觉令牌的唯一事实源（双主题：亮色在 :root，暗色覆盖在 :root[data-theme='dark']，
- * 由 useTheme 渲染期同步到 <html>）。antd 侧不维护第二份色值/圆角/字体：
- * constants/designTokens.ts 在渲染期读取此处的计算变量生成 ThemeConfig。
+ * 由 useTheme 渲染期同步到 <html>）。
  * 约束：新增令牌必须语义命名并双主题成对；组件只引用变量，不写裸色值/非标准字重。
  *
  * 材质体系（Sonoma 风）：--app-canvas 是壁纸底色渐变（挂 body + Wallpaper 组件兜底），
@@ -58,6 +57,7 @@
 
   --app-bg: #dfe9f6;
   --app-bg-2: #d4e2f2;
+  --app-page-bg: rgba(255, 255, 255, 0.24);
   --app-panel: rgba(255, 255, 255, 0.62);
   --app-line: rgba(108, 138, 184, 0.3);
   --app-line-soft: rgba(60, 90, 140, 0.09);
@@ -114,11 +114,6 @@
   --app-card-line: rgba(255, 255, 255, 0.66);
   --app-card-title: #17233b;
   --app-card-sub: #71809a;
-  /* 表格纸面：数据表是页面上唯一不透明的内容面（macOS「白纸」语义）。
-     不透明是硬约束——antd 固定列/表头遮底依赖它，半透明会让横向滚动内容透出来 */
-  --app-table-bg: #ffffff;
-  --app-table-header-bg: #f5f8fd;
-  --app-table-hover-bg: #eef4fe;
   --app-control-bg: rgba(255, 255, 255, 0.68);
   --app-control-text: #33405a;
   --app-highlight: rgba(255, 255, 255, 0.85);
@@ -159,6 +154,7 @@
 
   --app-bg: #0b101c;
   --app-bg-2: #0e1524;
+  --app-page-bg: rgba(14, 21, 38, 0.32);
   --app-panel: rgba(20, 28, 48, 0.62);
   --app-line: rgba(129, 155, 205, 0.24);
   --app-line-soft: rgba(129, 155, 205, 0.09);
@@ -209,10 +205,6 @@
   --app-card-line: rgba(160, 190, 240, 0.14);
   --app-card-title: #e9edf7;
   --app-card-sub: #93a0b8;
-  /* 表格纸面：比卡片纸面再沉一档，形成「纸上内嵌面板」的层次 */
-  --app-table-bg: #161f38;
-  --app-table-header-bg: #1d2a49;
-  --app-table-hover-bg: #243459;
   --app-control-bg: rgba(38, 50, 78, 0.7);
   --app-control-text: #ccd5e6;
   --app-highlight: rgba(255, 255, 255, 0.1);
@@ -239,9 +231,7 @@
     0 30px 80px rgba(0, 0, 0, 0.6),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
 
-  /* antd darkAlgorithm 的组件底色基准（仅暗色需要；见 constants/designTokens.ts） */
-  --app-antd-bg-base: #0d1422;
-
+  /* 彩色语义文字（胶囊/标签用，暗色下整体提亮保证对比度） */
   --app-red-text: #ff8589;
   --app-orange-text: #f2b04e;
   --app-yellow-text: #edc25f;
@@ -286,41 +276,6 @@ body {
 
 ::-webkit-scrollbar-track {
   background: transparent;
-}
-
-/* -------------------------------------------------------------------------- */
-/* antd 浮层玻璃化：弹层悬浮在玻璃窗口之上，统一为 --app-pop-bg 毛玻璃材质           */
-/* （antd v6 样式经 :where 降权，此处同名类选择器可直接覆盖，无需 !important）        */
-/* -------------------------------------------------------------------------- */
-
-.ant-dropdown .ant-dropdown-menu,
-.ant-popover .ant-popover-inner,
-.ant-modal .ant-modal-content,
-.ant-select-dropdown,
-.ant-drawer .ant-drawer-content,
-.ant-message .ant-message-notice-content,
-.ant-notification .ant-notification-notice,
-.ant-picker-dropdown .ant-picker-panel-container {
-  background: var(--app-pop-bg);
-  backdrop-filter: var(--app-glass-filter);
-  -webkit-backdrop-filter: var(--app-glass-filter);
-}
-
-.ant-popover .ant-popover-arrow:before {
-  background: var(--app-pop-bg);
-}
-
-.ant-modal-mask {
-  background: var(--app-mask);
-  backdrop-filter: blur(6px) saturate(140%);
-  -webkit-backdrop-filter: blur(6px) saturate(140%);
-}
-
-.ant-tooltip .ant-tooltip-inner {
-  background: var(--app-pop-bg);
-  color: var(--app-text);
-  backdrop-filter: var(--app-glass-filter);
-  -webkit-backdrop-filter: var(--app-glass-filter);
 }
 
 /* -------------------------------------------------------------------------- */

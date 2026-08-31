@@ -4,7 +4,7 @@
 
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { App, Badge, Button, Card, Popconfirm, Space, Table } from 'antd'
+import { App, Badge, Button, Popconfirm, Space, Table } from 'antd'
 import { Plus } from 'lucide-react'
 import { MenuForm } from '@/features/system/menu/components/MenuForm/MenuForm'
 import { useMenuTree } from '@/features/system/menu/hooks/useMenuTree'
@@ -123,7 +123,7 @@ export default function Menu() {
   ]
 
   return (
-    <Card styles={{ body: { paddingTop: 12 } }}>
+    <div>
       {/* 页面标题由页签与 document.title 承载，顶部只保留工具栏：主操作居右 */}
       <div style={{ marginBottom: 12, display: 'flex', justifyContent: 'flex-end' }}>
         <Button
@@ -155,6 +155,6 @@ export default function Menu() {
         onOk={(values) => void handleFormOk(values)}
         onCancel={() => setFormOpen(false)}
       />
-    </Card>
+    </div>
   )
 }

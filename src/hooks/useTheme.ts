@@ -1,7 +1,7 @@
 /**
  * 主题解析与应用：把 settings.theme（light / dark / system 三态）解析为具体值，
- * 落到 <html data-theme> 供 CSS 消费，并镜像到 localStorage 供 index.html
- * 内联脚本在首帧渲染前读取（防闪烁）。返回解析后的具体值（antd 算法切换用）。
+ * 落到 <html data-theme> 供全局 CSS 变量消费，并镜像到 localStorage 供 index.html
+ * 内联脚本在首帧渲染前读取（防闪烁）。
  */
 
 import { useEffect, useState } from 'react'
@@ -28,8 +28,8 @@ export function useTheme(): ResolvedTheme {
 
   const resolved: ResolvedTheme = theme === 'system' ? (systemDark ? 'dark' : 'light') : theme
 
-  /* 渲染期同步 data-theme（幂等）：antd 主题由 constants/designTokens.ts 在同一渲染期
-     读取计算样式，若延迟到 effect 会让 antd 颜色比 CSS 慢一拍 */
+  /* 渲染期同步 data-theme（幂等）：全局 CSS 变量在同一渲染期即取到目标主题，
+     若延迟到 effect 会闪一帧旧配色 */
   document.documentElement.dataset.theme = resolved
 
   useEffect(() => {

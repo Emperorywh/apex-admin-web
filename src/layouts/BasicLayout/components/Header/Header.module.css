@@ -1,10 +1,6 @@
 /* 顶部工具条：48px 悬浮玻璃条（macOS 菜单栏语义，页面内容从其下滚过），三段网格（品牌 | 页签 | 状态区） */
 
 .topbar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
   height: var(--app-topbar-h);
   display: grid;
   grid-template-columns: auto auto minmax(0, 1fr) auto auto;
@@ -18,7 +14,6 @@
   box-shadow:
     var(--app-topbar-shadow),
     inset 0 1px 0 var(--app-highlight-soft);
-  z-index: 20;
 }
 
 .brand {

@@ -1,18 +1,9 @@
 /* 每个缓存页面独立的滚动容器：自动撑满工作区全高；
-   工作区（BasicLayout）已是悬浮玻璃窗口，这里保持完全透明让窗口玻璃直接透出，
-   内容面统一由页面根节点（卡片「内容纸」）承担；底部内边距为悬浮 Dock 预留通行空间 */
+   工作区（BasicLayout）已是悬浮玻璃窗口，这里只铺一层极淡的 --app-page-bg 提亮内容区，
+   保持透明感让窗口玻璃与壁纸透出；底部内边距为悬浮 Dock 预留通行空间 */
 
 .scrollHost {
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 16px 10px 92px;
-  display: flex;
-  flex-direction: column;
-}
-
-/* 页面根节点纵向撑满：内容不足一屏时也保持「窗口里一张完整纸」的观感，
-   不再出现卡片浮在半空、下方拖一条空玻璃带的割裂感 */
-.scrollHost > * {
-  flex: 1 0 auto;
 }

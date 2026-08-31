@@ -17,12 +17,9 @@
   min-height: 0;
   display: grid;
   overflow: hidden;
-  margin: calc(var(--app-topbar-h) + 8px) 10px 12px;
-  border-radius: var(--app-radius-window);
   background: var(--app-glass-window);
   backdrop-filter: var(--app-glass-filter-window);
   -webkit-backdrop-filter: var(--app-glass-filter-window);
-  border: 1px solid var(--app-glass-line);
   box-shadow: var(--app-window-shadow);
 }
 
