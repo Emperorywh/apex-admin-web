@@ -110,6 +110,7 @@
   --app-glass-line: rgba(255, 255, 255, 0.55);
   --app-glass-window: linear-gradient(168deg, rgba(255, 255, 255, 0.52), rgba(244, 249, 255, 0.36));
   --app-pop-bg: rgba(250, 252, 255, 0.78);
+  --app-pop-bg-solid: #ffffff;
   --app-mask: rgba(20, 32, 58, 0.3);
 
   /* 卡片 / 控制 / 玻璃高光（卡片不透明：亮色纯白、暗色纯色深板） */
@@ -199,6 +200,7 @@
   --app-glass-line: rgba(160, 190, 240, 0.16);
   --app-glass-window: linear-gradient(168deg, rgba(24, 34, 58, 0.6), rgba(14, 21, 38, 0.55));
   --app-pop-bg: rgba(24, 33, 55, 0.82);
+  --app-pop-bg-solid: #182137;
   --app-mask: rgba(0, 0, 0, 0.45);
 
   --app-card-bg: #1b253d;

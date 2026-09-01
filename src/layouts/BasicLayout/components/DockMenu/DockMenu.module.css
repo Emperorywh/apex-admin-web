@@ -130,10 +130,8 @@
   flex-direction: column;
   gap: 2px;
   border-radius: var(--app-radius-panel);
-  background: var(--app-pop-bg);
-  backdrop-filter: var(--app-glass-filter);
-  -webkit-backdrop-filter: var(--app-glass-filter);
-  border: 1px solid var(--app-glass-line);
+  background: var(--app-pop-bg-solid);
+  border: 1px solid var(--app-card-line);
   box-shadow: var(--app-panel-shadow);
   /* 出现动效的缩放原点由 computePanelStyle 按触发方位内联（从哪里来） */
   animation: panelIn var(--app-dur-fast) var(--app-ease-standard);
