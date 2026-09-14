@@ -14,6 +14,13 @@
  */
 
 import {
+  /* 设备入口使用与实体对应的图标。
+     菜单和页签通过路由元数据共用，保持视觉识别一致。 */
+  ArrowDownUp,
+  DoorOpen,
+  PlugZap,
+  TrafficCone,
+  Wind,
   Box,
   Cable,
   Car,
@@ -254,32 +261,32 @@ export const appRouteDefinitions = defineAppRoutes([
                 id: 'tri-resource-tri-device-elevator',
                 path: 'elevator',
                 loadPage: () => import('@/pages/tri-device/Elevator/Elevator'),
-                meta: { title: '电梯' },
+                meta: { title: '电梯', icon: ArrowDownUp },
               },
               {
                 id: 'tri-resource-tri-device-auto-door',
                 path: 'auto-door',
                 loadPage: () => import('@/pages/tri-device/AutoDoor/AutoDoor'),
-                meta: { title: '自动门' },
+                meta: { title: '自动门', icon: DoorOpen },
               },
               {
                 // path 保持源配置原样拼写（charge-pie）
                 id: 'tri-resource-tri-device-charge-pile',
                 path: 'charge-pie',
                 loadPage: () => import('@/pages/tri-device/ModbusChargePile/ModbusChargePile'),
-                meta: { title: '充电桩' },
+                meta: { title: '充电桩', icon: PlugZap },
               },
               {
                 id: 'tri-resource-tri-device-traffic-lights',
                 path: 'traffic-lights',
                 loadPage: () => import('@/pages/tri-device/TrafficLights/TrafficLights'),
-                meta: { title: '交通灯' },
+                meta: { title: '交通灯', icon: TrafficCone },
               },
               {
                 id: 'tri-resource-tri-device-air-shower-door',
                 path: 'air-shower-door',
                 loadPage: () => import('@/pages/tri-device/AirShowerDoor/AirShowerDoor'),
-                meta: { title: '风淋门' },
+                meta: { title: '风淋门', icon: Wind },
               },
             ],
           },

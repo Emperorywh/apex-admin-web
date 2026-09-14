@@ -55,7 +55,9 @@
 
   /* ---- 布局尺寸 ---- */
   --app-topbar-h: 48px;
-  --app-dock-h: 56px;
+  /* 底栏采用紧凑的图标与名称两行布局。
+     降低整体高度，为业务工作区释放更多空间。 */
+  --app-dock-h: 68px;
   --app-font:
     'Inter Variable', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text',
     'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', Arial, sans-serif;

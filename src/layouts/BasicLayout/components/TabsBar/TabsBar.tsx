@@ -27,9 +27,7 @@ import {
 } from '@dnd-kit/sortable'
 import { useAppDispatch } from '@/hooks/useAppDispatch'
 import { useAppSelector } from '@/hooks/useAppSelector'
-import { IconTile } from '@/layouts/BasicLayout/components/IconTile/IconTile'
-import { routeIconTone } from '@/layouts/BasicLayout/components/IconTile/iconTones'
-import { findRouteIcon, findRouteMeta } from '@/router/projections'
+import { findRouteMeta } from '@/router/projections'
 import {
   allTabsClosed,
   leftTabsClosed,
@@ -195,8 +193,6 @@ function SortableTab({ tab, active, contextMenu, onActivate, onClose }: Sortable
     disabled: tab.affix,
   })
   const meta = findRouteMeta(tab.routeId)
-  const Icon = findRouteIcon(tab.routeId)
-  const tone = routeIconTone(tab.routeId)
 
   const style: React.CSSProperties = {
     transform: transform ? `translate3d(${transform.x}px, 0, 0)` : undefined,
@@ -225,11 +221,8 @@ function SortableTab({ tab, active, contextMenu, onActivate, onClose }: Sortable
         role="tab"
         aria-selected={active}
       >
-        {Icon ? (
-          <IconTile tone={tone} size={20} radius={5}>
-            <Icon size={12} strokeWidth={2} />
-          </IconTile>
-        ) : null}
+        {/* 顶部使用紧凑文字标签，与底部彩色菜单图标形成层级。
+            保留页签关闭、拖动排序及右键操作，固定标签不占关闭按钮空间。 */}
         <span className={styles.title}>{t(meta?.title ?? tab.key)}</span>
         {tab.closable ? (
           <button
@@ -243,9 +236,7 @@ function SortableTab({ tab, active, contextMenu, onActivate, onClose }: Sortable
           >
             <X size={14} />
           </button>
-        ) : (
-          <span className={styles.closePlaceholder} aria-hidden />
-        )}
+        ) : null}
       </div>
     </Dropdown>
   )

@@ -1,10 +1,11 @@
 /**
  * 底部 Dock 菜单：macOS 风格玻璃坞，只承载菜单树顶层分区入口（不再平铺全部叶子页）。
  *
- * - 含子级的分区：悬停/点击在 Dock 上方弹出纯白菜单面板，孙级分组沿面板侧边逐级飞出
+ * - 含子级的分区：悬停/点击在 Dock 上方弹出磨砂玻璃面板，孙级分组沿面板侧边逐级飞出
  * - 叶子分区（如调度监控）：点击直接导航；当前所在分区整组高亮
  * - 打开页面（叶子分区或面板项）时所属分区图标做 macOS 启动弹跳，动画结束自动复位
- * - 面板为纯文本原生 macOS 菜单样式；Escape、点击外部、地址变化均收起；悬停移到叶子分区/废纸篓时收起悬停展开的面板
+ * - 面板以分区标题、图标和数量呈现层次；Escape、点击外部、地址变化均收起
+ * - 悬停移到叶子分区/废纸篓时收起悬停展开的面板
  * - 尾部「废纸篓」承载关闭全部页签并释放缓存
  */
 
@@ -12,7 +13,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, typ
 import { useLocation, useNavigate } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import { App } from 'antd'
-import { ChevronRight, Trash2 } from 'lucide-react'
+import { ArrowUpRight, Check, ChevronLeft, ChevronRight, Folder, LayoutGrid, Trash2 } from 'lucide-react'
 import { buildMenuRoutes } from '@/router/projections'
 import type { MenuNode } from '@/router/projections'
 import { useAppDispatch } from '@/hooks/useAppDispatch'
@@ -21,10 +22,12 @@ import { routeIconTone } from '@/layouts/BasicLayout/components/IconTile/iconTon
 import { allTabsClosed } from '@/store/slices/tabsSlice'
 import styles from '@/layouts/BasicLayout/components/DockMenu/DockMenu.module.css'
 
-/** 弹出面板宽度（px）；与 .panel 宽度一致，用于视口边缘收拢 */
-const PANEL_WIDTH = 232
-/** 面板与触发元素的最大高度（px）；与 .panel max-height 一致，用于纵向收拢 */
-const PANEL_MAX_HEIGHT = 360
+/**
+ * 弹层采用更宽的图文布局，尺寸通过内联样式统一传递。
+ * 实际宽高再受视口约束，避免窄屏或长菜单超出可用区域。
+ */
+const PANEL_WIDTH = 272
+const PANEL_MAX_HEIGHT = 420
 /** 面板与锚点间距（px） */
 const PANEL_GAP = 10
 /** 子面板与父面板的间距（px）：比主面板更贴合，接近 macOS 子菜单的贴附感 */
@@ -65,6 +68,15 @@ function clamp(value: number, min: number, max: number): number {
 }
 
 /**
+ * 两侧都放不下完整面板时采用叠层导航。
+ * 此时仅响应点击展开，避免悬停生成的子面板覆盖原点击目标而误触页面。
+ */
+function hasFlyoutSpace(anchor: PanelAnchor): boolean {
+  return anchor.right + FLYOUT_GAP + PANEL_WIDTH <= window.innerWidth - VIEWPORT_PADDING
+    || anchor.left - FLYOUT_GAP - PANEL_WIDTH >= VIEWPORT_PADDING
+}
+
+/**
  * 依据锚点与层级计算面板固定定位：顶层悬于 Dock 项上方（缩放原点在面板底边，向触发项生长）；
  * 子级顶部对齐触发项（macOS 子菜单贴附锚点），缩放原点取贴附侧边；
  * panelHeight 为面板实际高度，仅在底部放不下时按需整体上移——短面板不再被最大高度预留推向远处
@@ -72,20 +84,30 @@ function clamp(value: number, min: number, max: number): number {
 function computePanelStyle(anchor: PanelAnchor, depth: number, panelHeight = PANEL_MAX_HEIGHT): CSSProperties {
   const viewWidth = window.innerWidth
   const viewHeight = window.innerHeight
+  /* 同时约束主菜单和子菜单，短视口仍保留滚动空间。
+     子菜单沿用实际测量高度，避免按最大高度产生不必要的跳位。 */
+  const width = Math.min(PANEL_WIDTH, viewWidth - VIEWPORT_PADDING * 2)
+  const maxHeight = Math.min(PANEL_MAX_HEIGHT, depth === 0
+    ? anchor.top - PANEL_GAP - VIEWPORT_PADDING
+    : viewHeight - VIEWPORT_PADDING * 2)
   if (depth === 0) {
     return {
-      left: clamp(anchor.centerX - PANEL_WIDTH / 2, VIEWPORT_PADDING, viewWidth - VIEWPORT_PADDING - PANEL_WIDTH),
+      width,
+      maxHeight,
+      left: clamp(anchor.centerX - width / 2, VIEWPORT_PADDING, viewWidth - VIEWPORT_PADDING - width),
       bottom: viewHeight - anchor.top + PANEL_GAP,
       transformOrigin: '50% 100%',
     }
   }
   const besideRight = anchor.right + FLYOUT_GAP
-  const flipLeft = besideRight + PANEL_WIDTH > viewWidth - VIEWPORT_PADDING
+  const flipLeft = besideRight + width > viewWidth - VIEWPORT_PADDING
   const left = flipLeft
-    ? Math.max(VIEWPORT_PADDING, anchor.left - FLYOUT_GAP - PANEL_WIDTH)
+    ? Math.max(VIEWPORT_PADDING, anchor.left - FLYOUT_GAP - width)
     : besideRight
   const maxTop = Math.max(VIEWPORT_PADDING, viewHeight - VIEWPORT_PADDING - panelHeight)
   return {
+    width,
+    maxHeight,
     left,
     top: clamp(anchor.top - 6, VIEWPORT_PADDING, maxTop),
     transformOrigin: flipLeft ? '100% 50%' : '0% 50%',
@@ -235,7 +257,9 @@ export function DockMenu() {
         onScroll={closeAll}
       >
         {sections.map((section) => {
-          const Icon = section.icon
+          /* 每个分区始终显示上方图标和下方名称。
+             未配置图标时使用统一兜底，保证底栏各项对齐。 */
+          const Icon = section.icon ?? LayoutGrid
           const sectionActive = subtreeContains(section, location.pathname)
           const launching = launchingId === section.routeId
           return (
@@ -246,7 +270,9 @@ export function DockMenu() {
                 (sectionActive ? `${styles.item} ${styles.itemActive}` : styles.item) +
                 (launching ? ` ${styles.itemLaunching}` : '')
               }
-              aria-expanded={trail[0]?.node.routeId === section.routeId}
+              title={tMenu(section.title)}
+              aria-current={sectionActive ? 'true' : undefined}
+              aria-expanded={section.children.length > 0 ? trail[0]?.node.routeId === section.routeId : undefined}
               aria-haspopup={section.children.length > 0 ? 'menu' : undefined}
               onMouseEnter={(event) => hoverSection(section, event.currentTarget)}
               onMouseLeave={() => {
@@ -261,11 +287,11 @@ export function DockMenu() {
                 }
               }}
             >
-              {Icon ? (
-                <IconTile tone={routeIconTone(section.routeId)} size={24} radius={5}>
-                  <Icon size={15} strokeWidth={2} />
-                </IconTile>
-              ) : null}
+              {/* 缩小图标底座与内部字形，适配紧凑底栏。
+                  保留下方名称，维持原有菜单识别方式。 */}
+              <IconTile tone={routeIconTone(section.routeId)} size={28} radius={8}>
+                <Icon size={17} strokeWidth={2} />
+              </IconTile>
               <span className={styles.label}>{tMenu(section.title)}</span>
             </button>
           )
@@ -273,24 +299,37 @@ export function DockMenu() {
         <span className={styles.separator} aria-hidden="true" />
         <button
           type="button"
-          className={styles.item}
+          className={`${styles.item} ${styles.trash}`}
           title={tCommon('关闭全部页签并清空缓存')}
+          aria-label={tCommon('关闭全部页签并清空缓存')}
           onMouseEnter={dismissHoverPanel}
           onClick={clearTabs}
         >
-          <Trash2 size={18} strokeWidth={2} />
+          {/* 清理页签入口独立放在分隔线后。
+              同步缩小线性图标，并保留完整无障碍名称。 */}
+          <Trash2 size={26} strokeWidth={1.5} />
         </button>
       </nav>
       {trail.map((entry, depth) => (
         <DockMenuPanel
           key={entry.node.routeId}
-          items={entry.node.children}
+          node={entry.node}
           anchor={entry.anchor}
           depth={depth}
           openChildId={trail[depth + 1]?.node.routeId ?? null}
           activePathname={location.pathname}
-          onHoverGroup={(node, element) => expandNested(node, element, depth + 1)}
+          onHoverGroup={(node, element) => {
+            /* 窄屏保留明确的点击展开，桌面继续支持悬停穿行。
+               依据实际锚点空间判断，兼容不同宽度的窗口。 */
+            if (hasFlyoutSpace(anchorOf(element))) expandNested(node, element, depth + 1)
+          }}
           onOpenGroup={(node, element) => expandNested(node, element, depth + 1)}
+          onBack={() => setTrail((prev) => prev.slice(0, depth))}
+          onHoverLeaf={() => {
+            /* 切换到叶子项时移除之前的子分组。
+               避免旧子面板遮挡当前选择，也用于滚动时清理失效锚点。 */
+            setTrail((prev) => prev.length > depth + 1 ? prev.slice(0, depth + 1) : prev)
+          }}
           onNavigate={(node) => {
             /* 先取面板所属分区：closeAll 清空 trail 后弹跳要落在 Dock 图标上 */
             const sectionId = trail[0]?.node.routeId ?? null
@@ -307,32 +346,47 @@ export function DockMenu() {
 }
 
 interface DockMenuPanelProps {
-  items: readonly MenuNode[]
+  /**
+   * 分组节点同时提供标题、图标与子项。
+   * 展示信息直接来自路由树，避免维护重复的菜单元数据。
+   */
+  node: MenuNode
   anchor: PanelAnchor
   depth: number
   openChildId: string | null
   activePathname: string
   onHoverGroup: (node: MenuNode, element: HTMLButtonElement) => void
   onOpenGroup: (node: MenuNode, element: HTMLButtonElement) => void
+  onHoverLeaf: () => void
+  onBack: () => void
   onNavigate: (node: MenuNode) => void
   onMouseEnter: () => void
   onMouseLeave: () => void
 }
 
-/** 纯白菜单面板：原生 macOS 菜单样式的纯文本项；分组项悬停向侧边展开下一级 */
+/**
+ * 磨砂玻璃菜单：标题明确当前分组，图标辅助扫描，计数提示下级规模。
+ * 叶子项与分组共用行布局，保持悬停、当前页和键盘焦点的反馈一致。
+ */
 function DockMenuPanel({
-  items,
+  node,
   anchor,
   depth,
   openChildId,
   activePathname,
   onHoverGroup,
   onOpenGroup,
+  onHoverLeaf,
+  onBack,
   onNavigate,
   onMouseEnter,
   onMouseLeave,
 }: DockMenuPanelProps) {
   const { t } = useTranslation('menu')
+  const { t: tCommon } = useTranslation('common')
+  const items = node.children
+  const GroupIcon = node.icon ?? Folder
+  const stacked = depth > 0 && !hasFlyoutSpace(anchor)
   const panelRef = useRef<HTMLDivElement>(null)
   /* 首帧按最大高度兜底定位，挂载后量取实际高度重算，使子面板贴附触发项而非按最大高度预留 */
   const [style, setStyle] = useState(() => computePanelStyle(anchor, depth))
@@ -349,43 +403,66 @@ function DockMenuPanel({
       ref={panelRef}
       className={styles.panel}
       data-dock-menu
-      role="menu"
       style={style}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
+      {/* 标题与数量保持独立于滚动列表，长菜单中也能识别当前位置。
+          数量只表示实际下级入口，不混入设备在线状态等业务信息。 */}
+      <div className={styles.panelHeader}>
+        {/* 窄屏叠层可能遮挡父菜单，提供可聚焦的返回入口。
+            桌面侧向展开仍使用分组图标，保持紧凑布局。 */}
+        {stacked ? (
+          <button type="button" className={styles.panelBack} aria-label={tCommon('返回上级菜单')} onClick={onBack}>
+            <ChevronLeft size={19} strokeWidth={1.8} />
+          </button>
+        ) : <IconTile tone={routeIconTone(node.routeId)} size={34} radius={10}>
+          <GroupIcon size={19} strokeWidth={1.8} />
+        </IconTile>}
+        <div className={styles.panelHeading}>
+          <span className={styles.panelEyebrow}>{tCommon(depth === 0 ? '快捷导航' : '子级菜单')}</span>
+          <span className={styles.panelTitle}>{t(node.title)}</span>
+        </div>
+        <span className={styles.panelTotal} aria-label={tCommon('入口数量')}>{items.length.toString().padStart(2, '0')}</span>
+      </div>
+      <div className={styles.panelList} role="menu" aria-label={t(node.title)} onScroll={onHoverLeaf}>
       {items.map((item) => {
         const active = subtreeContains(item, activePathname)
+        const hasChildren = item.children.length > 0
+        const ItemIcon = item.icon ?? (hasChildren ? Folder : LayoutGrid)
         const className = active ? `${styles.panelItem} ${styles.panelItemActive}` : styles.panelItem
-        if (item.children.length > 0) {
-          return (
-            <button
-              key={item.routeId}
-              type="button"
-              role="menuitem"
-              aria-haspopup="menu"
-              aria-expanded={openChildId === item.routeId}
-              className={className}
-              onMouseEnter={(event) => onHoverGroup(item, event.currentTarget)}
-              onClick={(event) => onOpenGroup(item, event.currentTarget)}
-            >
-              <span className={styles.panelLabel}>{t(item.title)}</span>
-              <ChevronRight size={14} strokeWidth={2} className={styles.panelChevron} aria-hidden="true" />
-            </button>
-          )
-        }
+        /* 使用统一菜单行，避免有子级与无子级的图标、文本错位。
+           当前页使用勾选标记，分组使用真实数量及展开箭头。 */
         return (
           <button
             key={item.routeId}
             type="button"
             role="menuitem"
+            aria-haspopup={hasChildren ? 'menu' : undefined}
+            aria-expanded={hasChildren ? openChildId === item.routeId : undefined}
+            aria-current={active && !hasChildren ? 'page' : undefined}
             className={className}
-            onClick={() => onNavigate(item)}
+            title={t(item.title)}
+            onMouseEnter={(event) => hasChildren ? onHoverGroup(item, event.currentTarget) : onHoverLeaf()}
+            onFocus={onMouseEnter}
+            onClick={(event) => hasChildren ? onOpenGroup(item, event.currentTarget) : onNavigate(item)}
           >
+            <span className={styles.panelIcon} aria-hidden="true"><ItemIcon size={18} strokeWidth={1.7} /></span>
             <span className={styles.panelLabel}>{t(item.title)}</span>
+            {hasChildren ? (
+              <>
+                <span className={styles.panelCount} aria-hidden="true">{item.children.length}</span>
+                <ChevronRight size={14} strokeWidth={2} className={styles.panelChevron} aria-hidden="true" />
+              </>
+            ) : active ? (
+              <Check size={15} strokeWidth={2.2} aria-hidden="true" />
+            ) : (
+              <ArrowUpRight size={15} strokeWidth={1.8} className={styles.panelLink} aria-hidden="true" />
+            )}
           </button>
         )
       })}
+      </div>
     </div>
   )
 }

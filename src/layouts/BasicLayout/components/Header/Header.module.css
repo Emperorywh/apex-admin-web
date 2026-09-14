@@ -1,6 +1,9 @@
 /* 顶部工具条：48px 悬浮玻璃条（macOS 菜单栏语义，页面内容从其下滚过），三段网格（品牌 | 页签 | 状态区） */
 
 .topbar {
+  /* 顶栏保持固定高度，避免工作区内容将其压缩。
+     中间标签允许收缩并滚动，右侧状态区保持可操作。 */
+  flex: none;
   height: var(--app-topbar-h);
   display: grid;
   grid-template-columns: auto auto minmax(0, 1fr) auto auto;
@@ -140,4 +143,44 @@
 .avatarHeader span {
   font-size: var(--app-fs-secondary);
   color: var(--app-text-3);
+}
+
+/* 平板优先给标签留出空间；手机将标签放到顶栏第二行。
+   品牌和状态操作仍保持可见，避免页签区域被挤到零宽。 */
+@media (max-width: 1000px) {
+  .topbar {
+    gap: 8px;
+    padding-inline: 12px;
+  }
+
+  .actions {
+    gap: 4px;
+  }
+
+  .time {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .topbar {
+    height: auto;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: 42px 38px;
+    row-gap: 0;
+  }
+
+  .topbar > .divider {
+    display: none;
+  }
+
+  .actions {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .tabs {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
 }

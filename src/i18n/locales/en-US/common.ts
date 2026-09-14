@@ -33,6 +33,12 @@ export default {
   '向右滚动': 'Scroll right',
   '关闭页签': 'Close tab',
   '主导航': 'Main navigation',
+  /* 底部浮层的分组说明与无障碍数量名称。
+     与中文键保持一致，切换语言时不会残留中文提示。 */
+  '快捷导航': 'Quick navigation',
+  '子级菜单': 'Submenu',
+  '入口数量': 'Number of entries',
+  '返回上级菜单': 'Back to parent menu',
   '关闭全部页签并清空缓存': 'Close all tabs and release cache',
   '已关闭全部页签，仅保留固定页': 'All tabs closed; only the pinned tab remains',
   '新建日程': 'New event',

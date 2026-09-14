@@ -1,10 +1,10 @@
-/* 底部 Dock：布局流内独立一行，贴住视口底部并水平居中的全圆角玻璃胶囊
-   （macOS Dock 语义），图标为彩色瓷片（与页签同源配色） */
+/* 底部 Dock：参考原型的通栏玻璃底座，图标在上、菜单名称在下。
+   保持布局流内占位，工作区不会被底栏遮挡，溢出时可横向滚动。 */
 
 .dock {
   flex: none;
   height: var(--app-dock-h);
-  padding: 0 14px;
+  padding: 6px 14px;
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -33,71 +33,90 @@
 }
 
 .item {
-  min-width: 100px;
-  height: 44px;
-  padding: 0 12px;
+  /* 按内容分配宽度，不再横向拉伸填满底栏。
+     常规名称使用紧凑底座，长名称仍能完整展示。 */
+  flex: 0 0 auto;
+  min-width: 72px;
+  height: 56px;
+  /* 为图标缩放预留上下空间，名称基线保持整齐。
+     裁切仅作边界保护，正常动效不会触及背景边缘。 */
+  padding: 4px 8px;
+  overflow: hidden;
   border: 0;
-  border-radius: var(--app-radius-pill);
+  border-radius: var(--app-radius-panel);
   background: transparent;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 9px;
+  gap: 3px;
   font-size: var(--app-fs-body);
   font-weight: var(--app-fw-semibold);
   color: var(--app-text-2);
   cursor: pointer;
-  transition: var(--app-dur-base) var(--app-ease-standard);
+  transition: background-color var(--app-dur-base) var(--app-ease-standard),
+    color var(--app-dur-base) var(--app-ease-standard);
   white-space: nowrap;
 }
 
-/* Dock 放大动效：悬停时首元素（图标瓷片/废纸篓图标）上浮放大，贴近 macOS Dock 手感 */
+/* 悬停只做居中的轻微缩放，不再向上位移。
+   内边距覆盖缩放增量，图标始终完整位于按钮背景内部。 */
 .item > :first-child {
   transition: transform var(--app-dur-base) var(--app-ease-standard);
 }
 
 .item:hover > :first-child {
-  transform: translateY(-3px) scale(1.18);
+  transform: scale(1.04);
 }
 
-.item:hover {
+.item:hover,
+.item[aria-expanded='true'] {
   background: var(--app-hover-bg);
+  color: var(--app-text);
 }
 
 .itemActive,
-.itemActive:hover {
-  background: rgba(47, 127, 255, 0.16);
-  color: var(--app-blue);
+.itemActive:hover,
+.itemActive[aria-expanded='true'] {
+  background: var(--app-tab-bg);
+  color: var(--app-text);
   box-shadow: inset 0 1px 0 var(--app-highlight);
 }
 
-/* 启动弹跳：点击分区后其图标如 macOS 应用启动般上下弹跳，页面窗口浮出期间持续；
-   动画期间压过悬停放大（animation 优先于 transition），结束由 onAnimationEnd 复位 */
-.itemLaunching > :first-child {
-  animation: dockBounce var(--app-dur-launch) var(--app-ease-standard);
+/* 名称始终展示；清理按钮保留独立尺寸。
+   键盘聚焦也显示清晰描边，避免仅依赖鼠标悬停反馈。 */
+.label {
+  line-height: 16px;
+  white-space: nowrap;
 }
 
-@keyframes dockBounce {
+.trash {
+  flex: 0 0 44px;
+  min-width: 44px;
+  color: var(--app-text);
+}
+
+.item:focus-visible,
+.panelItem:focus-visible {
+  outline: 2px solid var(--app-blue);
+  outline-offset: -2px;
+}
+
+/* 点击采用原位轻压回弹，全程不放大到原尺寸以上。
+   保留动画结束事件，兼容原有的状态复位逻辑。 */
+.itemLaunching > :first-child {
+  animation: dockPress var(--app-dur-slow) var(--app-ease-standard);
+}
+
+@keyframes dockPress {
   0% {
-    transform: translateY(0);
+    transform: scale(1);
   }
-  18% {
-    transform: translateY(-14px);
-  }
-  36% {
-    transform: translateY(0);
-  }
-  54% {
-    transform: translateY(-8px);
-  }
-  70% {
-    transform: translateY(0);
-  }
-  84% {
-    transform: translateY(-3px);
+  40% {
+    transform: scale(0.9);
   }
   100% {
-    transform: translateY(0);
+    transform: scale(1);
   }
 }
 
@@ -105,47 +124,136 @@
   .itemLaunching > :first-child {
     animation: none;
   }
+
+  /* 尊重减少动态效果偏好。
+     悬停时仅保留背景反馈，不移动或缩放图标。 */
+  .item:hover > :first-child {
+    transform: none;
+  }
 }
 
 .separator {
   width: 1px;
-  height: 24px;
+  /* 分隔线随底栏缩短，保持上下留白。
+     继续区分业务菜单与清理页签入口。 */
+  height: 32px;
   background: var(--app-line);
   margin: 0 8px;
   flex: 0 0 auto;
 }
 
 /* -------------------------------------------------------------------------- */
-/* 菜单面板：Dock 上方的主面板与逐级飞出的子面板（原生 macOS 菜单样式）                  */
+/* 菜单面板：柔和磨砂玻璃、细高光边缘与分层阴影。
+   所有颜色沿用全局语义变量，亮暗主题共享结构和交互状态。 */
 /* -------------------------------------------------------------------------- */
 
 .panel {
   position: fixed;
   z-index: 60;
-  width: 232px;
-  max-height: min(60vh, 360px);
-  overflow-y: auto;
-  padding: 6px;
+  overflow: hidden;
+  padding: 8px;
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  border-radius: var(--app-radius-panel);
-  background: var(--app-pop-bg-solid);
-  border: 1px solid var(--app-card-line);
-  box-shadow: var(--app-panel-shadow);
-  /* 出现动效的缩放原点由 computePanelStyle 按触发方位内联（从哪里来） */
-  animation: panelIn var(--app-dur-fast) var(--app-ease-standard);
+  border-radius: 18px;
+  background: linear-gradient(145deg, var(--app-highlight-soft), transparent 46%), var(--app-pop-bg);
+  backdrop-filter: var(--app-glass-filter-window);
+  -webkit-backdrop-filter: var(--app-glass-filter-window);
+  border: 1px solid var(--app-glass-line);
+  box-shadow: var(--app-window-shadow), inset 0 0 0 1px var(--app-highlight-soft);
+  /* 从触发项方向轻盈展开，只改变透明度和位移。
+     避免缩放整个面板导致子菜单锚点测量失真。 */
+  animation: panelIn var(--app-dur-slow) var(--app-ease-window);
 }
 
 @keyframes panelIn {
   from {
     opacity: 0;
-    transform: translateY(4px) scale(0.98);
+    translate: 0 6px;
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    translate: 0 0;
   }
+}
+
+/* 标题使用应用图标建立与底栏的对应关系，数字使用等宽排版。
+   分隔线将分区信息与可点击入口分开，保持菜单层级清晰。 */
+.panelHeader {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 4px 6px;
+  padding: 9px 3px 14px;
+  border-bottom: 1px solid var(--app-divider);
+}
+
+.panelHeading {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+}
+
+/* 窄屏无法并排时提供返回父级的按钮。
+   尺寸与标题图标一致，切换层级不会改变标题基线。 */
+.panelBack {
+  display: grid;
+  place-items: center;
+  flex: 0 0 34px;
+  height: 34px;
+  border: 1px solid var(--app-divider);
+  border-radius: 10px;
+  background: var(--app-control-bg);
+  color: var(--app-blue-text);
+  cursor: pointer;
+}
+
+.panelBack:hover {
+  background: var(--app-hover-bg);
+}
+
+.panelBack:focus-visible {
+  outline: 2px solid var(--app-blue);
+  outline-offset: 2px;
+}
+
+.panelEyebrow {
+  color: var(--app-text-3);
+  font-size: var(--app-fs-caption);
+  font-weight: var(--app-fw-medium);
+  letter-spacing: 0.06em;
+}
+
+.panelTitle {
+  color: var(--app-text);
+  font-size: var(--app-fs-primary);
+  font-weight: var(--app-fw-semibold);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.panelTotal {
+  align-self: flex-start;
+  padding-top: 3px;
+  color: var(--app-text-4);
+  font-size: var(--app-fs-caption);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 仅入口区滚动，防止长列表挤压标题或菜单行。
+   滚动行为不传递到下层业务页面。 */
+.panelList {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 2px;
+  scrollbar-width: thin;
 }
 
 .panelItem {
@@ -153,28 +261,59 @@
   align-items: center;
   gap: var(--app-space-2);
   width: 100%;
-  height: 38px;
-  padding: 0 var(--app-space-3);
+  flex: 0 0 auto;
+  min-height: 46px;
+  padding: 6px 10px 6px 7px;
   border: 0;
-  border-radius: var(--app-radius-control);
+  border-radius: 10px;
   background: transparent;
   font-size: var(--app-fs-body);
   font-weight: var(--app-fw-semibold);
   color: var(--app-text-2);
   cursor: pointer;
-  transition: var(--app-dur-fast) var(--app-ease-standard);
+  transition: background var(--app-dur-fast) var(--app-ease-standard),
+    color var(--app-dur-fast) var(--app-ease-standard),
+    box-shadow var(--app-dur-fast) var(--app-ease-standard);
   text-align: left;
 }
 
-.panelItem:hover {
-  background: var(--app-hover-bg);
-  color: var(--app-text);
+/* 悬停与展开采用同一蓝色选区，鼠标移到子面板后仍能追踪父项。
+   当前页保留较淡的底色与勾选标记，避免只依赖颜色区分状态。 */
+.panelItem:hover,
+.panelItem:focus-visible,
+.panelItem[aria-expanded='true'] {
+  background: linear-gradient(110deg, color-mix(in srgb, var(--app-blue) 20%, transparent), color-mix(in srgb, var(--app-blue) 10%, transparent));
+  color: var(--app-blue-text);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--app-blue) 18%, transparent), inset 0 1px 0 var(--app-highlight-soft);
 }
 
-.panelItemActive,
-.panelItemActive:hover {
-  background: rgba(47, 127, 255, 0.16);
-  color: var(--app-blue);
+.panelItemActive {
+  background: color-mix(in srgb, var(--app-blue) 10%, transparent);
+  color: var(--app-blue-text);
+}
+
+.panelIcon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 30px;
+  height: 30px;
+  border-radius: 8px;
+  color: var(--app-blue-text);
+  background: color-mix(in srgb, var(--app-blue) 9%, var(--app-control-bg));
+  box-shadow: inset 0 1px 0 var(--app-highlight-soft);
+}
+
+.panelCount {
+  flex: 0 0 auto;
+  min-width: 20px;
+  padding: 2px 5px;
+  border-radius: var(--app-radius-badge);
+  background: var(--app-line-soft);
+  font-size: var(--app-fs-caption);
+  font-weight: var(--app-fw-medium);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  color: var(--app-text-3);
 }
 
 .panelLabel {
@@ -189,18 +328,63 @@
   color: var(--app-text-4);
 }
 
-@media (max-width: 1500px) {
-  .item {
-    min-width: 84px;
+/* 叶子入口在悬停及聚焦时露出跳转箭头，减少常态下的视觉噪声。
+   动效只作用于辅助图标，不改变菜单行尺寸与点击位置。 */
+.panelLink {
+  flex: 0 0 auto;
+  opacity: 0;
+  transform: translate(-3px, 3px);
+  transition: opacity var(--app-dur-base), transform var(--app-dur-base);
+}
+
+.panelItem:hover .panelLink,
+.panelItem:focus-visible .panelLink {
+  opacity: 1;
+  transform: translate(0, 0);
+}
+
+.panelItem[aria-expanded='true'] .panelChevron {
+  color: var(--app-blue-text);
+}
+
+/* 减少动态效果时直接显示面板与状态变化。
+   不支持背景模糊时回退为实色，确保复杂背景上的文字对比度。 */
+@media (prefers-reduced-motion: reduce) {
+  .panel {
+    animation: none;
+  }
+
+  .panelItem,
+  .panelLink {
+    transition: none;
+  }
+
+  .panelLink {
+    transform: none;
   }
 }
 
-@media (max-width: 1100px) {
-  .label {
-    display: none;
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .panel {
+    background: var(--app-pop-bg-solid);
+  }
+}
+
+/* 窄屏缩减间距，不隐藏菜单名称。
+   最小宽度保证点击区域，超出的入口通过底栏横向滚动访问。 */
+@media (max-width: 760px) {
+  .dock {
+    padding-inline: 6px;
+    gap: 2px;
   }
 
   .item {
-    min-width: 46px;
+    min-width: 72px;
+    padding-inline: 8px;
+  }
+
+  .trash {
+    min-width: 44px;
+    flex-basis: 44px;
   }
 }
