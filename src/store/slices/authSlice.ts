@@ -73,6 +73,13 @@ const authSlice = createSlice({
     softwareAuthorizationRequired(state) {
       state.authorizationRequired = true
     },
+    /**
+     * 软件授权恢复（T015 激活恢复接口在重查通过后派发）：清除挂起标记，
+     * 身份与纪元不变——暂停期间的草稿、页签会话与待确认任务记录因此保留。
+     */
+    softwareAuthorizationResumed(state) {
+      state.authorizationRequired = false
+    },
   },
 })
 
@@ -82,5 +89,6 @@ export const {
   restoreFinishedWithoutSession,
   sessionExpired,
   softwareAuthorizationRequired,
+  softwareAuthorizationResumed,
 } = authSlice.actions
 export default authSlice.reducer

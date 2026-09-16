@@ -47,6 +47,12 @@ export function createRouteGuardLoader(): LoaderFunction {
     if (!auth.identity) {
       return redirect(buildLoginPath(url.pathname, url.search))
     }
+    // 软件授权挂起（1001000，T015 §9.1）：业务路由一律先转授权页——
+    // 「暂停全部业务查询及操作」，直访也不例外；授权页自身放行。
+    // 激活恢复由 T018 经 resumeAfterSoftwareAuthorizationActivated 解除
+    if (auth.authorizationRequired && url.pathname !== ROUTE_PATHS['authorize-ingress']) {
+      return redirect(ROUTE_PATHS['authorize-ingress'])
+    }
     const definition = findDefinitionByPath(url.pathname)
     if (definition) {
       const { meta } = definition

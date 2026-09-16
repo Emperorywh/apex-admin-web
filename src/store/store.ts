@@ -38,6 +38,12 @@ const AUTH_PERSIST_SCHEMA_VERSION = 2
  * 会话内运行时状态，每次启动由恢复流程重建，不持久化。
  * 旧版本（模板 /users/me 形状）的持久化数据不兼容，迁移时整体丢弃：
  * 真实会话以 localStorage accessInfo + detail 核查恢复，不依赖该缓存。
+ *
+ * T015 修复：redux-persist v6 配置了自定义 migrate 时会在「每次」rehydrate
+ * 无条件调用它（版本比对是默认 createMigrate 的职责，自定义实现必须自判）。
+ * 此前实现无条件返回 identity:null，导致刷新后缓存快照必被清除、恢复流程
+ * 只能依赖 detail 重查（真实后端 detail 不可用时即弹回登录页，T013 移交问题
+ * 的根因）。现仅在存储版本与配置版本不一致时丢弃旧形状负载。
  */
 const persistedAuth = persistReducer(
   {
@@ -45,10 +51,13 @@ const persistedAuth = persistReducer(
     storage: localStorageAdapter,
     version: AUTH_PERSIST_SCHEMA_VERSION,
     whitelist: ['identity'],
-    // 仅版本不一致时触发：清空旧形状负载，_persist 由 redux-persist 重新附加。
-    // identity 必须回退为 null（登录态哨兵值）：置 undefined 会绕过全应用的
-    // `identity === null` 登录态判定，导致未登录硬刷新不被守卫拦截（T007 修复）。
-    migrate: (state) => Promise.resolve({ ...state, identity: null } as typeof state),
+    migrate: (state, version) => {
+      const storedVersion = (state as { _persist?: { version?: number } })._persist?.version
+      if (storedVersion === version) return Promise.resolve(state)
+      // 版本不一致：清空旧形状负载。identity 必须回退为 null（登录态哨兵值）：
+      // 置 undefined 会绕过全应用的 `identity === null` 登录态判定（T007 修复）。
+      return Promise.resolve({ ...state, identity: null } as typeof state)
+    },
   },
   authReducer,
 )

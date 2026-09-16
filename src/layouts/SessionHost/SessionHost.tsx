@@ -19,7 +19,7 @@ import { GlobalProgress } from '@/components/GlobalProgress/GlobalProgress'
 import { useAppDispatch } from '@/hooks/useAppDispatch'
 import { useAppSelector } from '@/hooks/useAppSelector'
 import { useAuth } from '@/hooks/useAuth'
-import { collectAffixTabSeeds, ROUTE_IDS } from '@/router/definitions'
+import { collectAffixTabSeeds, ROUTE_IDS, ROUTE_PATHS } from '@/router/definitions'
 import { resolveFirstAccessiblePath } from '@/router/firstAccessible'
 import { buildLoginPath } from '@/router/redirect'
 import { findRouteMeta } from '@/router/projections'
@@ -125,6 +125,11 @@ export function SessionHost() {
     [tabsState],
   )
   const lastLocationKeyRef = useRef(location.key)
+  /* 会话内是否出现过任意页签：挂载初期的渲染（含 StrictMode 双挂载）读到的是
+     播种/同步 dispatch 落地前的空快照，不能据此认定「用户关闭了全部页签」；
+     只有先见过页签、后变为空，才允许触发兜底导航（T015 修复的深链竞态） */
+  const hadTabsRef = useRef(false)
+  if (tabsState.tabs.length > 0) hadTabsRef.current = true
   useEffect(() => {
     /* URL 自身变化造成的差异由上方 tabSynced 对齐，属于瞬时状态：此时闭包里的
        activeTab 还是同步前的旧页签，据此跳转会立刻把地址拉回上一页，与同步
@@ -136,7 +141,13 @@ export function SessionHost() {
     if (activeTab === null) {
       /* 全部页签被关闭（T013）：不留无宿主空页，replace 回首个有权入口，
          由页签同步重新播种；满幅视图/公开路由不在此列 */
-      if (tabsState.tabs.length === 0 && !isOverlayView && !isPublicRoute && identity !== null) {
+      if (
+        tabsState.tabs.length === 0 &&
+        hadTabsRef.current &&
+        !isOverlayView &&
+        !isPublicRoute &&
+        identity !== null
+      ) {
         navigate(resolveFirstAccessiblePath(identity), { replace: true })
       }
       return
@@ -154,6 +165,17 @@ export function SessionHost() {
       navigate(buildLoginPath(location.pathname, location.search), { replace: true })
     }
   }, [isAuthenticated, isPublicRoute, navigate, location.pathname, location.search])
+
+  /* 软件授权挂起（1001000，T015）：转入授权页视图（会话内切换，不销毁页签
+     宿主）；任务停等/传输取消由失效编排器完成，草稿与页签会话保留。
+     恢复后的返回路由由 T018 授权页在激活恢复接口通过后编排 */
+  const authorizationRequired = useAppSelector((state) => state.auth.authorizationRequired)
+  const onAuthorizeRoute = leaf?.routeId === ROUTE_IDS['authorize-ingress']
+  useEffect(() => {
+    if (authorizationRequired && identity !== null && !onAuthorizeRoute) {
+      navigate(ROUTE_PATHS['authorize-ingress'], { replace: true })
+    }
+  }, [authorizationRequired, identity, onAuthorizeRoute, navigate])
 
   /* document.title：满幅视图跟随时叶子标题；常规视图跟随当前激活页签 */
   const activeTitle = isOverlayView

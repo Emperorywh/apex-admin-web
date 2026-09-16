@@ -107,4 +107,8 @@ export default {
   '存在带草稿或执行中任务的受保护页签且缓存已满。可先处理任务、保存或关闭受保护页签；仍要打开将继续，受保护页签不会被淘汰。':
     'The cache is full and some tabs are protected by drafts or running tasks. Handle, save, or close those tabs first; you can still continue — protected tabs will not be evicted.',
   '仍要打开': 'Open anyway',
+  /* T015 统一失效编排：页面撤权提示 */
+  '权限已变更': 'Permissions changed',
+  '您的页面访问权限已被调整：{{titles}} 已关闭。进行中的指令结果可能未知，系统不会自动重发。':
+    'Your page access permissions were adjusted: {{titles}} has been closed. Results of actions in progress may be unknown; the system will not resend them automatically.',
 } as const

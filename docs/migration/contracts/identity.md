@@ -45,7 +45,8 @@ if (!isIdentityEpochCurrent(epoch)) discard()   // 已切账号/重登/失效，
 
 ## 5. 已知限制与待核验
 
-- **detail 响应字段为对称假设**（`username/activated/permissionsTree/permissions`）：旧前端从未消费该接口，真实形状待 T090 环境核验后回填本合同与 DTO；信封成功但字段不足以核对身份时按核对失败清会话（安全方向）。
+- **detail 响应字段为对称假设**（`username/activated/permissionsTree/permissions`）：旧前端从未消费该接口，真实形状待 T090 环境核验后回填本合同与 DTO；信封成功但字段不足以核对身份时按核对失败清会话（安全方向）。**2026-09-17 实测补充（T015）**：真实后端 detail 对任意 token 恒返回信封 `{"code":500}`，恢复/重查实际走「不可达→保留快照」分支，真实形状核验更为紧迫。
+- **T015 增补**：本服务新增 `reverifyIdentity()`（会话中 detail 重查唯一入口，激活恢复与 403 权限重查共用，见 `contracts/invalidation-orchestration.md`）；同轮修复 restoreSession catch 误读 `error.api`（legacyGet 抛出的就是 ApiError 本体，此前 1000000/1001000 在恢复路径不可识别）与 store.ts migrate 每次刷新清空 identity（见 T015 handoff「正常修复」）。
 - 网络失败时缓存快照放行（见第 2 节结论 3）：若 T015 需要更严格的"未核验降级"展示，可消费 `restored` + 事件自行扩展，不改变本层默认行为。
 - 模板遗留：新协议业务接口（dashboard/profile/system 模板页）现无任何令牌，调用即失败；各页迁移卡接入旧协议前保持该状态，不属于身份层缺陷。
 - 守卫 loader 未登录重定向分支在当前模板接线下不生效（见 evidence T005 发现项）：**T007 补鉴权时修复并验证**。

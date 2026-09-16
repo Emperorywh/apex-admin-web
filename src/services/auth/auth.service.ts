@@ -201,19 +201,77 @@ async function runRestoreSession(): Promise<void> {
     persistIdentity(snapshot)
     store.dispatch(identityVerified({ epoch, identity: snapshot }))
   } catch (error) {
-    const api = (error as { api?: ApiError }).api
-    if (api?.code === LEGACY_ERROR_CODES.SESSION_EXPIRED) {
+    // T015 修复：legacyGet 抛出的就是 ApiError 本体（不含 .api 包装），
+    // 此前读 error.api 恒为 undefined，恢复遇 1000000/1001000 无法被识别，
+    // 统一从错误本体取 code（网络失败无 code，走保留快照分支）
+    const api = (error as { api?: ApiError }).api ?? (error as ApiError)
+    const errorCode = api?.isApiError === true ? api.code : undefined
+    if (errorCode === LEGACY_ERROR_CODES.SESSION_EXPIRED) {
       // 恢复即遇认证失效：立即清会话（D26），不进入受保护界面
       persistIdentity(null)
       store.dispatch(sessionExpired())
       return
     }
-    if (api?.code === LEGACY_ERROR_CODES.SOFTWARE_UNAUTHORIZED) {
+    if (errorCode === LEGACY_ERROR_CODES.SOFTWARE_UNAUTHORIZED) {
       // 身份仍有效但软件未授权：置挂起标记，路由编排归 T007/T018
       store.dispatch(softwareAuthorizationRequired())
       return
     }
     // 网络/服务不可达：保留缓存快照与请求头，结论仍为"已恢复"（源行为对齐）
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* 会话中重查（T015 消费）：激活恢复 / 403 权限重查共用                              */
+/* -------------------------------------------------------------------------- */
+
+/** 会话中身份核查结论；调用方据此继续编排（T015 恢复接口 / 权限撤权收敛） */
+export type IdentityReverifyOutcome =
+  | 'verified' // 核查成功：快照已按纪元守卫替换
+  | 'unauthorized' // 1001000：身份仍有效但软件未授权，挂起标记已置位
+  | 'session-expired' // 1000000 / 响应不足以核对身份 / 期间切号：会话已清除
+  | 'unreachable' // 网络或服务不可达：保留原快照，交由后续事件收敛
+
+/**
+ * 会话中重新核查身份与权限（SPEC §6.2「授权成功后重新核查身份与权限」、
+ * §8.2「刷新权限快照」）：与启动恢复共用 detail 协议与快照组装唯一实现，
+ * 结果仅按会话纪元落地——核查期间切号/重登的迟到核查被隔离。
+ * 不推进纪元：会话延续（区别于登录/失效），草稿与页签会话不受影响。
+ */
+export async function reverifyIdentity(): Promise<IdentityReverifyOutcome> {
+  const current = store.getState().auth.identity
+  // 无会话时不存在「重查」前提：按已失效结论返回，不发送业务请求
+  if (current === null) return 'session-expired'
+  const epoch = getIdentityEpoch()
+  try {
+    const data = await legacyGet<AuthDetailDataDto>(DETAIL_URL)
+    // 核查期间发生切号/重登：本次结果来自已结束的会话，直接丢弃
+    if (!isIdentityEpochCurrent(epoch)) return 'session-expired'
+    const snapshot = toSnapshotFromDetail(data, current.username)
+    if (snapshot === null) {
+      // 信封成功但无法核对身份：与会话恢复同口径，按不可信清除（安全方向）
+      persistIdentity(null)
+      store.dispatch(sessionExpired())
+      return 'session-expired'
+    }
+    persistIdentity(snapshot)
+    store.dispatch(identityVerified({ epoch, identity: snapshot }))
+    return 'verified'
+  } catch (error) {
+    const api = (error as { api?: ApiError }).api
+    if (api?.code === LEGACY_ERROR_CODES.SESSION_EXPIRED) {
+      // 会话中遇 1000000：与会话恢复同口径立即清除（事件桥亦会收敛，状态幂等）
+      persistIdentity(null)
+      store.dispatch(sessionExpired())
+      return 'session-expired'
+    }
+    if (api?.code === LEGACY_ERROR_CODES.SOFTWARE_UNAUTHORIZED) {
+      // 软件仍为未授权：置位挂起标记（幂等），由调用方保持授权页视图
+      store.dispatch(softwareAuthorizationRequired())
+      return 'unauthorized'
+    }
+    // 网络失败：保留原快照与挂起状态，不伪造核查结论
+    return 'unreachable'
   }
 }
 

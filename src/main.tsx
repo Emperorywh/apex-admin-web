@@ -5,6 +5,7 @@ import { PersistGate } from 'redux-persist/integration/react'
 import App from '@/App/App'
 import { bootstrapRouter } from '@/router/bootstrap'
 import { initIdentityEventBridge, restoreSession } from '@/services/auth/auth.service'
+import { initInvalidationOrchestrator } from '@/services/auth/invalidationOrchestrator'
 import { persistor, persistRehydrated, store } from '@/store/store'
 import '@fontsource-variable/inter'
 import '@/i18n/i18n'
@@ -20,6 +21,9 @@ import '@/styles/globals.css'
 async function bootstrapApp(): Promise<void> {
   await bootstrapRouter()
   initIdentityEventBridge()
+  // 统一失效编排（T015）：403 权限重查、纪元变化中止可取消活动、
+  // 1001000 授权暂停；依赖事件桥先注册，保证身份状态先于编排收敛
+  initInvalidationOrchestrator()
   await persistRehydrated
   await restoreSession()
 }
