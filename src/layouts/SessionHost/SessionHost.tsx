@@ -13,7 +13,7 @@
 
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { Outlet, useBlocker, useLocation, useMatches, useNavigate } from 'react-router'
-import { App } from 'antd'
+import { Modal } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { GlobalProgress } from '@/components/GlobalProgress/GlobalProgress'
 import { useAppDispatch } from '@/hooks/useAppDispatch'
@@ -110,7 +110,6 @@ export function SessionHost() {
   /* 容量准入（T013 §9.1）：目标会新建页签、缓存已满且候选全部受保护时，
      在导航提交前（useBlocker 保持 blocked）弹确认——确认则继续打开（暂时
      超容量、受保护页不淘汰），取消则留在当前页；其余导航不被拦截。 */
-  const { modal } = App.useApp()
   const { t: tCommon } = useTranslation('common')
   const isAuthenticatedRef = useRef(isAuthenticated)
   isAuthenticatedRef.current = isAuthenticated
@@ -120,22 +119,6 @@ export function SessionHost() {
     return needsCapacityAdmission(to.pathname, to.search)
   }, [])
   const capacityBlocker = useBlocker(({ nextLocation: to }) => shouldCheckCapacity(to))
-  /* 每次进入 blocked（含被拦后再次导航产生的新的 blocked 状态）都重建弹窗，
-     保证 proceed/reset 绑定当前被拦导航，不残留对旧导航的引用 */
-  const blockerKey = capacityBlocker.state === 'blocked' ? capacityBlocker.location?.key ?? 'blocked' : capacityBlocker.state
-  useEffect(() => {
-    if (capacityBlocker.state !== 'blocked') return
-    const instance = modal.confirm({
-      title: tCommon('页签容量已满'),
-      content: tCommon('存在带草稿或执行中任务的受保护页签且缓存已满。可先处理任务、保存或关闭受保护页签；仍要打开将继续，受保护页签不会被淘汰。'),
-      okText: tCommon('仍要打开'),
-      cancelText: tCommon('留在当前页'),
-      onOk: () => capacityBlocker.proceed(),
-      onCancel: () => capacityBlocker.reset(),
-    })
-    return () => instance.destroy()
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- capacityBlocker 随 state/location 变化换新，故以 blockerKey 触发
-  }, [blockerKey, modal, tCommon])
 
   /* 页签操作（关闭/批量关闭）后的激活导航：URL 未变而激活页签变化时跳转到新激活页 */  const activeTab = useMemo(
     () => tabsState.tabs.find((tab) => tab.key === tabsState.activeTabKey) ?? null,
@@ -210,6 +193,24 @@ export function SessionHost() {
       <div className={styles.dockSlot}>
         <DockMenu />
       </div>
+      {/* 容量准入确认（T013）：声明式渲染——blocked 即挂载、裁决后随状态卸载，
+          由 React 保证清理；不用命令式 modal.confirm，连续拦截下它会产生无法
+          销毁的僵尸弹窗实例（与 LeaveGuardHost 同一教训）。blocked 期间再次
+          导航会换新 capacityBlocker，闭包始终 proceed/reset 当前被拦导航 */}
+      {capacityBlocker.state === 'blocked' && (
+        <Modal
+          open
+          title={tCommon('页签容量已满')}
+          okText={tCommon('仍要打开')}
+          cancelText={tCommon('留在当前页')}
+          onOk={() => capacityBlocker.proceed()}
+          onCancel={() => capacityBlocker.reset()}
+        >
+          {tCommon(
+            '存在带草稿或执行中任务的受保护页签且缓存已满。可先处理任务、保存或关闭受保护页签；仍要打开将继续，受保护页签不会被淘汰。',
+          )}
+        </Modal>
+      )}
     </div>
   )
 }

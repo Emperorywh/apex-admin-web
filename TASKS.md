@@ -127,7 +127,7 @@ T098—T105 只复核自己领域的组成任务与动作证据（A01/A07），�
 
 ### T013 — 实现内存草稿、离开保护与容量准入
 
-- **状态**：实现/资料＝实施中（功能主体已实现并接线；合同 docs/migration/contracts/page-session-leave.md）；验收＝未开始（隔离验证进行中：V01—V05 通过，证据 docs/migration/evidence/T013/；V06 轻量状态重建恢复与 V07 beforeunload 下轮补验后收口，交接见 docs/migration/handoffs/T013.md）。 预计30—40分钟。
+- **状态**：实现/资料＝实施中（功能主体已实现并接线；合同 docs/migration/contracts/page-session-leave.md）；验收＝未开始（隔离验证：V01—V05 第八轮真实后端、第九轮修复后 mock 复验均通过，证据 docs/migration/evidence/T013/；剩余 V06 轻量状态重建恢复、V07 守卫解除方向与真实刷新、退出取消路径端态，收口后标产物就绪，交接见 docs/migration/handoffs/T013.md）。 预计30—40分钟。
 - **实现依赖**：[T007](#t007)、[T011](#t011)。
 - **定位**：SPEC §8.1、§9.1、A09/A11/A13；tabsSlice、TabsBar、Dock、导航/关闭入口、T011 合同。
 - **本卡迁移**：登记内存草稿及轻量页签状态；把关闭、刷新、退出和容量准入接到同一离开协调器。先检查保护条件再淘汰或批量关闭，向 T017 暴露主动退出入口。

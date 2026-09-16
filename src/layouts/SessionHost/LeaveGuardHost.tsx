@@ -27,7 +27,11 @@ import {
   subscribeLeaveConfirms,
   syncBeforeUnloadGuard,
 } from '@/services/page-session/leaveGuard'
-import { resetPageSession } from '@/services/page-session/pageSessionStore'
+import {
+  getPageSessionSnapshot,
+  resetPageSession,
+  subscribePageSession,
+} from '@/services/page-session/pageSessionStore'
 import type {
   LeaveAction,
   LeaveConfirmRequest,
@@ -53,12 +57,14 @@ export function LeaveGuardHost() {
     resetLeaveGuard()
   }, [epoch])
 
-  /* 待确认队列与保护状态变化时同步 beforeunload 守卫 */
+  /* 待确认队列、任务快照与草稿快照任一变化都同步 beforeunload 守卫：
+     草稿登记/解除同样构成（或解除）保护条件，只依赖任务队列会漏同步 */
   const confirmQueue = useSyncExternalStore(subscribeLeaveConfirms, getLeaveConfirmsSnapshot)
   const tasksSnapshot = useSyncExternalStore(subscribeSessionTasks, getSessionTasksSnapshot)
+  const pageSessionSnapshot = useSyncExternalStore(subscribePageSession, getPageSessionSnapshot)
   useEffect(() => {
     syncBeforeUnloadGuard()
-  }, [confirmQueue, tasksSnapshot])
+  }, [confirmQueue, tasksSnapshot, pageSessionSnapshot])
 
   const pending = confirmQueue[0] ?? null
 
