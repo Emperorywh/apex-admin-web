@@ -111,4 +111,16 @@ export default {
   '权限已变更': 'Permissions changed',
   '您的页面访问权限已被调整：{{titles}} 已关闭。进行中的指令结果可能未知，系统不会自动重发。':
     'Your page access permissions were adjusted: {{titles}} has been closed. Results of actions in progress may be unknown; the system will not resend them automatically.',
+
+/* T017：用户菜单改密弹窗（旧词条优先，缺项人工补译） */
+  修改密码: "Change Password",
+  新密码: "New Password",
+  确认密码: "Confirm Password",
+  请输入新密码: "Please enter the new password",
+  请再次输入新密码: "Please enter the new password again",
+  "密码必须包含字母和数字，长度4-16位": "Password must be 4-16 characters with both letters and numbers",
+  两次输入的密码不一致: "The two passwords do not match",
+  修改密码成功: "Password changed successfully",
+  修改密码失败: "Failed to change password",
+  确定: "OK",
 } as const

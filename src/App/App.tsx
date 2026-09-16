@@ -15,6 +15,7 @@ import { RouterProvider } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import { FeedbackBridge } from '@/components/FeedbackBridge/FeedbackBridge'
 import PageLoading from '@/components/PageLoading/PageLoading'
+import { SystemFavicon } from '@/components/SystemFavicon/SystemFavicon'
 import { Wallpaper } from '@/components/Wallpaper/Wallpaper'
 import { useTheme } from '@/hooks/useTheme'
 import { buildAppTheme } from '@/constants/designTokens'
@@ -65,6 +66,8 @@ export default function App() {
     <ConfigProvider locale={antdLocale} theme={antdTheme}>
       <AntdApp>
         <Wallpaper />
+        {/* G04：站点图标读取系统配置（favicon 位置），未配置保持 index.html 默认值 */}
+        <SystemFavicon />
         <FeedbackBridge />
         <Suspense fallback={<PageLoading />}>
           <RouterProvider router={appRouter} />

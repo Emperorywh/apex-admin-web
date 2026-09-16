@@ -8,6 +8,36 @@
   padding: 24px;
 }
 
+/* 系统配置的登录背景（G04）：cover 铺满不变形；无配置时不设置，透出全局壁纸 */
+.wrap[style*='background-image'] {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* 页面级语言切换入口：固定右上角（对齐源登录页独立切换位） */
+.localeSwitch {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+}
+
+.localeTrigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border: none;
+  border-radius: var(--app-radius-control, 8px);
+  background: transparent;
+  color: var(--app-text-2);
+  cursor: pointer;
+}
+
+.localeTrigger:hover {
+  background: var(--app-hover-bg, rgba(0, 0, 0, 0.06));
+}
+
 .card {
   width: 400px;
   padding: 36px 34px 28px;

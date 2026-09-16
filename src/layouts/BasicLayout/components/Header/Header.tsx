@@ -4,34 +4,37 @@
  */
 
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router'
 import { useTranslation } from 'react-i18next'
-import { App, Dropdown, Popover, type MenuProps } from 'antd'
+import { Dropdown, Popover, type MenuProps } from 'antd'
 import dayjs from 'dayjs'
-import { Languages, LogOut, Monitor, Moon, Sun, UserRoundCog, Wifi } from 'lucide-react'
-import { ROUTE_PATHS } from '@/router/definitions'
-import { logout } from '@/services/auth/auth.service'
-import { confirmSessionExit } from '@/services/page-session/leaveGuard'
-import { apiErrorMessage, getRequestHealth, subscribeRequestHealth, type RequestHealth } from '@/services/request/request'
+import { KeyRound, LogOut, Monitor, Moon, Sun, Wifi } from 'lucide-react'
+import { LanguageMenu } from '@/components/LanguageMenu/LanguageMenu'
+import { useSystemImage } from '@/hooks/useSystemImage'
+import { getRequestHealth, subscribeRequestHealth, type RequestHealth } from '@/services/request/request'
 import { useAppDispatch } from '@/hooks/useAppDispatch'
 import { useAppSelector } from '@/hooks/useAppSelector'
 import { useAuth } from '@/hooks/useAuth'
-import { sessionExpired } from '@/store/slices/authSlice'
-import { localeChanged, themeChanged, type AppTheme } from '@/store/slices/settingsSlice'
-import type { AppLanguage } from '@/i18n/i18n'
+import { themeChanged, type AppTheme } from '@/store/slices/settingsSlice'
+import { PasswordModal } from '@/features/auth/components/PasswordModal/PasswordModal'
+import { useProtectedLogout } from '@/features/auth/hooks/useProtectedLogout'
 import { TabsBar } from '@/layouts/BasicLayout/components/TabsBar/TabsBar'
 import styles from '@/layouts/BasicLayout/components/Header/Header.module.css'
 
 /** 顶栏时钟刷新间隔（毫秒） */
 const CLOCK_TICK_INTERVAL_MS = 1_000
 
+/** 外壳品牌图默认资源：旧系统回退打包 SVG，本工程沿用现有 favicon 图标 */
+const DEFAULT_HEADER_LOGO_URL = '/favicon.ico'
+
 export function Header() {
   const { t } = useTranslation('common')
+  /* G04：品牌图读取系统配置（headerLogo），未配置回退默认资源 */
+  const { url: headerLogoUrl } = useSystemImage('headerLogo', DEFAULT_HEADER_LOGO_URL)
 
   return (
     <header className={styles.topbar}>
       <div className={styles.brand}>
-        <img className={styles.brandIcon} src="/favicon.ico" alt="" aria-hidden="true" />
+        <img className={styles.brandIcon} src={headerLogoUrl} alt="" aria-hidden="true" />
         <span className={styles.brandName}>{t('调度系统')}</span>
       </div>
 
@@ -45,7 +48,8 @@ export function Header() {
 
       <div className={styles.actions}>
         <ThemeButton />
-        <LanguageButton />
+        {/* G03：语言入口为共享组件，登录页与顶栏共用同一份五语菜单 */}
+        <LanguageMenu className={styles.iconBtn} />
         <NetworkButton />
         <ClockText />
         <AvatarMenu />
@@ -87,40 +91,6 @@ function ThemeButton() {
     >
       <button type="button" className={styles.iconBtn} title={t('切换主题')}>
         <ThemeIcon size={17} />
-      </button>
-    </Dropdown>
-  )
-}
-
-function LanguageButton() {
-  const { t } = useTranslation('common')
-  const dispatch = useAppDispatch()
-  const locale = useAppSelector((state) => state.settings.locale)
-
-  /* 五语菜单：标签用各语言原生写法（对齐旧系统词条风格），便于用户在陌生语言下回切 */
-  const items: MenuProps['items'] = [
-    { key: 'zh-CN', label: '简体中文' },
-    { key: 'zh-TW', label: '繁體中文' },
-    { key: 'en-US', label: 'English' },
-    { key: 'ja-JP', label: '日本語' },
-    { key: 'ko-KR', label: '한국어' },
-  ]
-
-  return (
-    <Dropdown
-      menu={{
-        items,
-        selectable: true,
-        selectedKeys: [locale],
-        onClick: ({ key }) => {
-          if (key !== locale) dispatch(localeChanged(key as AppLanguage))
-        },
-      }}
-      trigger={['click']}
-      placement="bottomRight"
-    >
-      <button type="button" className={styles.iconBtn} title={t('切换语言')}>
-        <Languages size={17} />
       </button>
     </Dropdown>
   )
@@ -175,9 +145,10 @@ function ClockText() {
 function AvatarMenu() {
   const { t } = useTranslation('common')
   const { identity, isRoot } = useAuth()
-  const dispatch = useAppDispatch()
-  const navigate = useNavigate()
-  const { modal, message } = App.useApp()
+  /* G01：主动退出统一走受保护退出（草稿/写入确认 → 二次确认 → 登出 → 收敛） */
+  const protectedLogout = useProtectedLogout()
+  /* G02：本人改密弹窗（源用户菜单：修改密码 + 退出，无个人中心页） */
+  const [passwordModalOpen, setPasswordModalOpen] = useState(false)
 
   const items: MenuProps['items'] = [
     {
@@ -192,47 +163,35 @@ function AvatarMenu() {
       disabled: true,
     },
     { type: 'divider' },
-    { key: 'profile', icon: <UserRoundCog size={15} />, label: t('个人中心') },
+    { key: 'password', icon: <KeyRound size={15} />, label: t('修改密码') },
     { type: 'divider' },
     { key: 'logout', icon: <LogOut size={15} />, label: t('退出登录'), danger: true },
   ]
 
-  const onClick: MenuProps['onClick'] = async ({ key }) => {
-    if (key === 'profile') {
-      navigate(ROUTE_PATHS.profile)
+  const onClick: MenuProps['onClick'] = ({ key }) => {
+    if (key === 'password') {
+      setPasswordModalOpen(true)
     } else if (key === 'logout') {
-      /* 主动退出保护（T013 §9.1）：先完成草稿/写入/传输确认——无保护时
-         confirmSessionExit 直接放行；取消则留在当前页。确认后再走登出请求。 */
-      const confirmed = await confirmSessionExit()
-      if (!confirmed) return
-      modal.confirm({
-        title: t('确认退出登录？'),
-        content: t('退出后需要重新输入账号密码。'),
-        okText: t('退出'),
-        cancelText: t('取消'),
-        onOk: async () => {
-          try {
-            // 源行为：后端登出失败时保留会话并提示，不本地登出
-            await logout()
-          } catch (error) {
-            const text = apiErrorMessage(error)
-            void message.error(text ? `${t('退出登录出错')}${text}` : t('退出登录出错'))
-            throw error
-          }
-          // 成功后统一收敛：清身份/页签/缓存，SessionHost 监听未登录自动回登录页
-          dispatch(sessionExpired())
-        },
-      })
+      void protectedLogout()
     }
   }
 
   const initials = (identity?.username ?? '—').slice(0, 2).toUpperCase()
 
   return (
-    <Dropdown menu={{ items, onClick }} trigger={['click']} placement="bottomRight">
-      <button type="button" className={styles.avatar} title={identity?.username ?? t('用户')}>
-        {initials}
-      </button>
-    </Dropdown>
+    <>
+      <Dropdown menu={{ items, onClick }} trigger={['click']} placement="bottomRight">
+        <button type="button" className={styles.avatar} title={identity?.username ?? t('用户')}>
+          {initials}
+        </button>
+      </Dropdown>
+      {/* 改密成功后复用同一受保护退出链路回登录页（源 onSuccess = 退出登录） */}
+      <PasswordModal
+        open={passwordModalOpen}
+        username={identity?.username}
+        onClose={() => setPasswordModalOpen(false)}
+        onSuccess={() => void protectedLogout()}
+      />
+    </>
   )
 }

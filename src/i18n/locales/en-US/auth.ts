@@ -12,4 +12,8 @@ export default {
   '请输入密码': 'Please enter your password',
   '用户名长度需在 2-32 个字符之间': 'Username must be 2-32 characters',
   '登录失败，请稍后重试': 'Sign-in failed. Please retry later.',
+
+/* T017：会话过期提示（旧词条优先，缺项人工补译） */
+  登录过期: "Session Expired",
+  "登录已过期，请重新登录": "Your session has expired, please log in again",
 } as const

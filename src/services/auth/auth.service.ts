@@ -168,6 +168,24 @@ export async function restoreSession(): Promise<void> {
   }
 }
 
+/**
+ * 服务内部统一的失效收敛：标记「会话过期待提示」后派发 sessionExpired。
+ * 标记写入 sessionStorage（对齐源 token_expired 机制），登录页挂载时读取并
+ * 清除、展示过期提示（P01「过期提示」）；主动退出（Header）不经过本函数，
+ * 因此不弹过期提示。
+ */
+function dispatchSessionExpired(): void {
+  try {
+    sessionStorage.setItem(SESSION_EXPIRED_NOTICE_KEY, '1')
+  } catch {
+    // 隐私模式等 storage 不可用场景：提示缺失可接受，不阻断失效收敛
+  }
+  store.dispatch(sessionExpired())
+}
+
+/** 登录页过期提示标记键（T017）：1 = 存在未展示的过期提示 */
+export const SESSION_EXPIRED_NOTICE_KEY = 'apex-admin:session-expired'
+
 async function runRestoreSession(): Promise<void> {
   const stored = readStoredAccessInfo()
   // 形状守卫已保证 username/token 非空；类型收窄仅防可选字段语义
@@ -194,7 +212,7 @@ async function runRestoreSession(): Promise<void> {
     if (snapshot === null) {
       // 信封成功但无法核对身份：按会话不可信处理，立即清除
       persistIdentity(null)
-      store.dispatch(sessionExpired())
+      dispatchSessionExpired()
       return
     }
     // 核查结果回写存储：下次刷新引导的缓存快照与服务器真值一致
@@ -209,7 +227,7 @@ async function runRestoreSession(): Promise<void> {
     if (errorCode === LEGACY_ERROR_CODES.SESSION_EXPIRED) {
       // 恢复即遇认证失效：立即清会话（D26），不进入受保护界面
       persistIdentity(null)
-      store.dispatch(sessionExpired())
+      dispatchSessionExpired()
       return
     }
     if (errorCode === LEGACY_ERROR_CODES.SOFTWARE_UNAUTHORIZED) {
@@ -251,7 +269,7 @@ export async function reverifyIdentity(): Promise<IdentityReverifyOutcome> {
     if (snapshot === null) {
       // 信封成功但无法核对身份：与会话恢复同口径，按不可信清除（安全方向）
       persistIdentity(null)
-      store.dispatch(sessionExpired())
+      dispatchSessionExpired()
       return 'session-expired'
     }
     persistIdentity(snapshot)
@@ -262,7 +280,7 @@ export async function reverifyIdentity(): Promise<IdentityReverifyOutcome> {
     if (api?.code === LEGACY_ERROR_CODES.SESSION_EXPIRED) {
       // 会话中遇 1000000：与会话恢复同口径立即清除（事件桥亦会收敛，状态幂等）
       persistIdentity(null)
-      store.dispatch(sessionExpired())
+      dispatchSessionExpired()
       return 'session-expired'
     }
     if (api?.code === LEGACY_ERROR_CODES.SOFTWARE_UNAUTHORIZED) {
@@ -293,7 +311,7 @@ export function initIdentityEventBridge(): () => void {
       // 仅在存在会话时处理一次：无会话的失效事件（登录页密码错误等）不触发登出编排
       if (store.getState().auth.identity === null) return
       persistIdentity(null)
-      store.dispatch(sessionExpired())
+      dispatchSessionExpired()
       return
     }
     if (event.type === 'authorization-required') {

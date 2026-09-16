@@ -35,6 +35,7 @@ import { Header } from '@/layouts/BasicLayout/components/Header/Header'
 import { PageCacheHost } from '@/layouts/BasicLayout/components/PageCacheHost/PageCacheHost'
 import { LeaveGuardHost } from '@/layouts/SessionHost/LeaveGuardHost'
 import { SessionTasksHost } from '@/layouts/SessionHost/SessionTasksHost'
+import { LogoutConfirmHost } from '@/features/auth/components/LogoutConfirmHost/LogoutConfirmHost'
 import styles from '@/layouts/SessionHost/SessionHost.module.css'
 
 interface ActiveLeaf {
@@ -211,6 +212,8 @@ export function SessionHost() {
         {/* T013：离开保护宿主——离开确认弹窗、beforeunload 原生守卫与
             页面会话（草稿/轻量状态）纪元复位，同处稳定会话层 */}
         <LeaveGuardHost />
+        {/* T017：退出二次确认宿主（声明式，替代命令式 modal.confirm） */}
+        <LogoutConfirmHost />
       </main>
       <div className={styles.dockSlot}>
         <DockMenu />
