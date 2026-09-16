@@ -1,0 +1,31 @@
+/**
+ * 使用低饱和背景承载状态色，保证状态醒目且不干扰表格主体信息。
+ * 在线与离线共享尺寸和排版，仅通过语义色与图标建立稳定区分。
+ */
+.networkStateTag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 72px;
+    margin-inline-end: 0;
+    padding-inline: 10px;
+    border-radius: 999px;
+    font-weight: 500;
+    line-height: 24px;
+
+    :global(.anticon) {
+        font-size: 13px;
+    }
+}
+
+.online {
+    color: #16834a;
+    background: #edfdf4;
+    border-color: #a7e8c4;
+}
+
+.offline {
+    color: #b42318;
+    background: #fff5f4;
+    border-color: #ffd0cc;
+}

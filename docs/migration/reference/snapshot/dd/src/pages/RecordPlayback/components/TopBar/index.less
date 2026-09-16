@@ -1,0 +1,50 @@
+.top_bar_container {
+    // 48px 紧凑高度：工具栏默认控件32px，上下各留8px呼吸空间，
+    // 相比原60px为地图画布多争取12px纵向空间（监控场景纵向视野更宝贵）
+    height: 48px;
+    background-color: var(--ant-color-bg-container);
+    border-bottom: 1px solid var(--ant-color-border-secondary);
+    display: flex;
+    align-items: center;
+    /* 用 gap + left_section flex:1 替代 space-between：保证左右两栏之间至少 24px 间距，
+       避免 left_section 内容增多（如新增交管筛选）后与 right_section 紧贴在一起 */
+    gap: 24px;
+    // 16px 横向内边距：配合收纳后的控件密度收紧留白，窄屏下再省16px
+    padding: 0 16px;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    z-index: 10;
+
+    .left_section {
+        display: flex;
+        align-items: center;
+        // 12px 间距：保持控件间可辨识的分组感，比原16px更紧凑
+        gap: 12px;
+        /* 占据左侧剩余空间把 right_section 推到最右；min-width:0 允许内部元素在空间不足时正确收缩 */
+        flex: 1;
+        min-width: 0;
+    }
+
+    .right_section {
+        display: flex;
+        align-items: center;
+        // 4px 间距：视图工具组内均为图标按钮，视觉上聚为单个族群
+        gap: 4px;
+        // 右侧工具组不收缩，宽度不足时由左侧的锁定车辆下拉兜底
+        flex-shrink: 0;
+    }
+
+    .divider {
+        width: 1px;
+        height: 20px;
+        background-color: var(--ant-color-border);
+        margin: 0 4px;
+    }
+
+    // 锁定车辆下拉：常规200px，空间不足时收缩至120px下限，
+    // 与查询主路径共存于首屏，不与右侧工具争抢空间
+    .vehicle_select {
+        width: 200px;
+        min-width: 120px;
+        flex: 0 1 auto;
+    }
+}

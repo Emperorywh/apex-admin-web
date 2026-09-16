@@ -1,0 +1,28 @@
+.graph_bar {
+    width: fit-content;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 0 6px;
+    z-index: 10;
+    user-select: none;
+    
+    // 工具栏图标随主题色变化，避免暗黑模式下图标不可见
+    svg {
+        fill: var(--ant-color-text);
+    }
+
+    li {
+        list-style: none;
+        padding: 4px;
+        border-radius: 4px;
+        transition: all .3s ease-in-out;
+    }
+
+    li:hover {
+        background-color: rgba(0, 0, 0, .2);
+    }
+}

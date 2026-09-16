@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# 提交消息校验同样使用纯文本输出，避免编辑器日志出现颜色控制符。
+# 只调用项目已安装的依赖，保留原有的提交消息规范检查。
+TERM=dumb FORCE_COLOR=0 npx --no-install commitlint --edit "${1}"

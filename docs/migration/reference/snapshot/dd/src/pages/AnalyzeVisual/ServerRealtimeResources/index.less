@@ -1,0 +1,740 @@
+/*
+ * 服务器实时资源监控大屏样式（移植自 server-monitor-dashboard.html）
+ *
+ * 与源文件的差异：
+ *   - 全部选择器加 sm- 前缀并收敛在 .server-monitor-screen 作用域内，避免污染全局
+ *   - body 上的背景/网格/扫描线改挂到页面根节点；本页是顶层 layout:false 路由（无布局壳），
+ *     根节点 fixed 铺满视口即等效源文件的 100vh 全屏
+ *   - 数字字体栈保留 Orbitron→Bahnschrift→Segoe UI 回退，但不引入 Google Fonts 外链
+ *     （内网部署环境无法访问外网字体服务）
+ *   - 徽标新增 sm-error（连接失败）档位，替代源文件的 demo（演示数据）档位
+ */
+
+/* 旋转虚线环 / 扫描线 / 状态点呼吸 动画（加前缀避免与全局 keyframes 冲突） */
+@keyframes sm-rot {
+    to {
+        transform: rotate(360deg);
+    }
+}
+@keyframes sm-scan {
+    to {
+        transform: translateY(560%);
+    }
+}
+@keyframes sm-pulse {
+    50% {
+        opacity: 0.35;
+    }
+}
+
+.server-monitor-screen {
+    /* 设计变量（与源文件 :root 一致，收敛到组件作用域） */
+    --sm-bg: #040a18;
+    --sm-surface: #0a1830;
+    --sm-panel-border: rgba(64, 140, 255, 0.22);
+    --sm-corner: #35c8ff;
+    --sm-text-primary: #e8f2ff;
+    --sm-text-secondary: #9fb4d8;
+    --sm-text-muted: #66779c;
+    --sm-track: #16304f;
+    --sm-accent: #3987e5;
+    --sm-warn: #fab219;
+    --sm-crit: #d03b3b;
+    --sm-ok: #1fd08a;
+    --sm-num-font: "Orbitron", "Bahnschrift", "Segoe UI", sans-serif;
+
+    /* fixed 铺满视口（本页为顶层 layout:false 路由，无布局壳，fixed 即等效 100vh 全屏） */
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    min-width: 1180px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    padding: 10px 18px 14px;
+    gap: 12px;
+    color: var(--sm-text-primary);
+    font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", sans-serif;
+    background:
+        radial-gradient(ellipse at 50% -18%, rgba(41, 98, 255, 0.2), transparent 58%),
+        radial-gradient(ellipse at 50% 118%, rgba(0, 229, 255, 0.09), transparent 55%),
+        var(--sm-bg);
+
+    /* 背景氛围：网格（径向渐隐） */
+    &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+        background:
+            repeating-linear-gradient(0deg, rgba(70, 130, 220, 0.05) 0 1px, transparent 1px 44px),
+            repeating-linear-gradient(90deg, rgba(70, 130, 220, 0.05) 0 1px, transparent 1px 44px);
+        -webkit-mask-image: radial-gradient(ellipse at 50% 40%, #000 25%, transparent 78%);
+        mask-image: radial-gradient(ellipse at 50% 40%, #000 25%, transparent 78%);
+    }
+
+    /* 背景氛围：自上而下循环扫描线 */
+    &::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: -30%;
+        height: 26%;
+        pointer-events: none;
+        z-index: 0;
+        background: linear-gradient(180deg, transparent, rgba(80, 200, 255, 0.045), transparent);
+        animation: sm-scan 9s linear infinite;
+    }
+
+    .sm-num {
+        font-family: var(--sm-num-font);
+    }
+
+    /* ============ 头部 ============ */
+    .sm-header {
+        position: relative;
+        z-index: 1;
+        flex: none;
+        height: 76px;
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        gap: 16px;
+    }
+    .sm-h-side {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+    .sm-h-right {
+        justify-content: flex-end;
+    }
+    .sm-clock {
+        .sm-date {
+            font-size: 13px;
+            color: var(--sm-text-secondary);
+            letter-spacing: 2px;
+        }
+        .sm-time {
+            font-size: 26px;
+            color: #d7ecff;
+            letter-spacing: 2px;
+            text-shadow: 0 0 14px rgba(53, 200, 255, 0.5);
+        }
+    }
+    .sm-h-center {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+    .sm-wing {
+        width: min(220px, 16vw);
+        height: 2px;
+        position: relative;
+        background: linear-gradient(90deg, transparent, rgba(53, 200, 255, 0.75));
+        &::after {
+            content: "";
+            position: absolute;
+            top: -3px;
+            width: 8px;
+            height: 8px;
+            transform: rotate(45deg);
+            background: #35c8ff;
+            box-shadow: 0 0 10px #35c8ff;
+        }
+        &.sm-left::after {
+            right: 0;
+        }
+        &.sm-right {
+            background: linear-gradient(270deg, transparent, rgba(53, 200, 255, 0.75));
+            &::after {
+                left: 0;
+            }
+        }
+    }
+    .sm-title-box {
+        text-align: center;
+        h1 {
+            margin: 0;
+            font-size: clamp(24px, 2.1vw, 34px);
+            font-weight: 700;
+            letter-spacing: 10px;
+            padding-left: 10px;
+            color: #eaf6ff;
+            text-shadow:
+                0 0 26px rgba(53, 200, 255, 0.65),
+                0 0 4px rgba(255, 255, 255, 0.35);
+        }
+    }
+    .sm-subtitle {
+        font-size: 10px;
+        letter-spacing: 6px;
+        color: #5f7bb0;
+        margin-top: 3px;
+    }
+    .sm-badge {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 14px;
+        border: 1px solid;
+        border-radius: 2px;
+        font-size: 13px;
+        letter-spacing: 2px;
+        white-space: nowrap;
+        i {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex: none;
+        }
+        &.sm-live {
+            color: #5eeab0;
+            border-color: rgba(20, 200, 140, 0.45);
+            background: rgba(16, 120, 90, 0.15);
+            i {
+                background: var(--sm-ok);
+                box-shadow: 0 0 8px var(--sm-ok);
+                animation: sm-pulse 1.6s ease-in-out infinite;
+            }
+        }
+        /* 连接失败：替代源文件的 demo（演示数据）档位，本项目不展示模拟数据 */
+        &.sm-error {
+            color: #ff9c9c;
+            border-color: rgba(208, 59, 59, 0.5);
+            background: rgba(120, 30, 30, 0.18);
+            i {
+                background: var(--sm-crit);
+                box-shadow: 0 0 8px var(--sm-crit);
+            }
+        }
+        &.sm-wait {
+            color: #8fb6ee;
+            border-color: rgba(90, 150, 240, 0.4);
+            background: rgba(40, 80, 160, 0.15);
+            i {
+                background: #3987e5;
+                box-shadow: 0 0 8px #3987e5;
+                animation: sm-pulse 1.2s ease-in-out infinite;
+            }
+        }
+    }
+    .sm-ghost-btn {
+        padding: 7px 14px;
+        font-size: 13px;
+        letter-spacing: 2px;
+        cursor: pointer;
+        color: #bfe0ff;
+        background: rgba(30, 80, 160, 0.14);
+        border: 1px solid rgba(80, 160, 255, 0.4);
+        border-radius: 2px;
+        transition:
+            background 0.2s,
+            box-shadow 0.2s;
+        &:hover {
+            background: rgba(50, 120, 220, 0.28);
+            box-shadow: 0 0 12px rgba(53, 200, 255, 0.3);
+        }
+        &:focus-visible {
+            outline: 2px solid #35c8ff;
+            outline-offset: 2px;
+        }
+    }
+
+    /* ============ 主网格 ============ */
+    .sm-main {
+        position: relative;
+        z-index: 1;
+        flex: 1;
+        min-height: 0;
+        display: grid;
+        gap: 14px;
+        grid-template-columns: minmax(300px, 1.05fr) minmax(430px, 1.8fr) minmax(300px, 1.05fr);
+    }
+    .sm-col {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        min-height: 0;
+        .sm-panel {
+            flex: 1;
+        }
+    }
+    .sm-panel-disk {
+        flex: 1.18;
+    }
+
+    /* ============ 面板 ============ */
+    .sm-panel {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        border: 1px solid var(--sm-panel-border);
+        background: linear-gradient(160deg, rgba(16, 36, 72, 0.55), rgba(8, 18, 40, 0.78));
+        box-shadow: inset 0 0 34px rgba(30, 90, 180, 0.1);
+        /* 四角科技边框 */
+        &::before {
+            content: "";
+            position: absolute;
+            inset: -1px;
+            pointer-events: none;
+            opacity: 0.95;
+            background:
+                linear-gradient(var(--sm-corner), var(--sm-corner)) 0 0 / 18px 2px,
+                linear-gradient(var(--sm-corner), var(--sm-corner)) 0 0 / 2px 18px,
+                linear-gradient(var(--sm-corner), var(--sm-corner)) 100% 0 / 18px 2px,
+                linear-gradient(var(--sm-corner), var(--sm-corner)) 100% 0 / 2px 18px,
+                linear-gradient(var(--sm-corner), var(--sm-corner)) 0 100% / 18px 2px,
+                linear-gradient(var(--sm-corner), var(--sm-corner)) 0 100% / 2px 18px,
+                linear-gradient(var(--sm-corner), var(--sm-corner)) 100% 100% / 18px 2px,
+                linear-gradient(var(--sm-corner), var(--sm-corner)) 100% 100% / 2px 18px;
+            background-repeat: no-repeat;
+        }
+    }
+    .sm-panel-title {
+        flex: none;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        height: 42px;
+        padding: 0 14px;
+        font-size: 15px;
+        letter-spacing: 3px;
+        color: var(--sm-text-primary);
+        &::before {
+            content: "";
+            width: 4px;
+            height: 15px;
+            flex: none;
+            background: linear-gradient(180deg, #35c8ff, #1a6fe0);
+            box-shadow: 0 0 9px rgba(53, 200, 255, 0.8);
+        }
+        &::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(53, 200, 255, 0.4), transparent);
+        }
+    }
+
+    /* ============ 仪表盘 ============ */
+    .sm-gauge-wrap {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        padding: 2px 10px 0;
+        svg {
+            margin: auto;
+            width: min(90%, 330px);
+            height: auto;
+        }
+    }
+    .sm-spin {
+        fill: none;
+        stroke: rgba(53, 200, 255, 0.16);
+        stroke-width: 1;
+        stroke-dasharray: 3 8;
+        transform-origin: 120px 142px;
+        animation: sm-rot 26s linear infinite;
+        &.sm-rev {
+            stroke: rgba(53, 200, 255, 0.1);
+            stroke-dasharray: 1 12;
+            animation-direction: reverse;
+            animation-duration: 38s;
+        }
+    }
+    .sm-g-track {
+        fill: none;
+        stroke: var(--sm-track);
+        stroke-width: 13;
+    }
+    .sm-g-val {
+        fill: none;
+        stroke: var(--sm-accent);
+        stroke-width: 13;
+        stroke-linecap: round;
+        stroke-dasharray: 0 100;
+        transition:
+            stroke-dasharray 0.8s cubic-bezier(0.22, 0.61, 0.36, 1),
+            stroke 0.5s;
+    }
+    .sm-g-name {
+        fill: #9fb4d8;
+        font-size: 12px;
+        letter-spacing: 5px;
+        text-anchor: middle;
+    }
+    .sm-g-num {
+        .sm-v {
+            font-family: var(--sm-num-font);
+            font-size: 34px;
+            fill: #eaf4ff;
+            text-anchor: middle;
+        }
+        .sm-pct {
+            font-size: 14px;
+            fill: #9fb4d8;
+        }
+    }
+    .sm-gauge-foot {
+        flex: none;
+        display: flex;
+        border-top: 1px dashed rgba(120, 160, 220, 0.18);
+    }
+    .sm-mini {
+        flex: 1;
+        text-align: center;
+        padding: 9px 4px 11px;
+        & + .sm-mini {
+            border-left: 1px dashed rgba(120, 160, 220, 0.18);
+        }
+    }
+    .sm-mini-k {
+        display: block;
+        font-size: 11px;
+        color: var(--sm-text-muted);
+        letter-spacing: 2px;
+    }
+    .sm-mini-v {
+        display: block;
+        margin-top: 3px;
+        font-size: 15px;
+        color: var(--sm-text-primary);
+        font-family: var(--sm-num-font);
+        &.sm-chip {
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--sm-text-secondary);
+        }
+    }
+    .sm-chip i {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+    }
+
+    /* ============ 指标卡 ============ */
+    .sm-stat-row {
+        flex: none;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+    }
+    .sm-tile {
+        position: relative;
+        padding: 12px 14px 11px;
+        overflow: hidden;
+        border: 1px solid var(--sm-panel-border);
+        background: linear-gradient(160deg, rgba(16, 36, 72, 0.55), rgba(8, 18, 40, 0.78));
+        &::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, #35c8ff, rgba(26, 111, 224, 0.15));
+        }
+    }
+    .sm-tile-k {
+        font-size: 12px;
+        color: var(--sm-text-secondary);
+        letter-spacing: 2px;
+    }
+    .sm-tile-v {
+        margin-top: 5px;
+        font-family: var(--sm-num-font);
+        font-size: clamp(18px, 1.45vw, 25px);
+        color: #eaf4ff;
+        text-shadow: 0 0 14px rgba(53, 200, 255, 0.35);
+        white-space: nowrap;
+    }
+    .sm-tile-s {
+        margin-top: 3px;
+        font-size: 11px;
+        color: var(--sm-text-muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* ============ 趋势图 ============ */
+    .sm-trend-panel {
+        flex: 1;
+        min-height: 0;
+    }
+    .sm-legend {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        margin-left: auto;
+        padding-right: 2px;
+    }
+    .sm-lg {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 12px;
+        color: var(--sm-text-secondary);
+        letter-spacing: 1px;
+        .sm-lg-line {
+            width: 16px;
+            height: 2px;
+            border-radius: 1px;
+            background: var(--sm-c);
+            box-shadow: 0 0 6px var(--sm-c);
+        }
+        b {
+            font-family: var(--sm-num-font);
+            font-weight: 500;
+            color: var(--sm-text-primary);
+            font-size: 13px;
+        }
+    }
+    /* canvas 绝对定位脱离文档流，避免「容器量 canvas、canvas 撑容器」的尺寸反馈循环 */
+    .sm-trend-body {
+        flex: 1;
+        min-height: 0;
+        position: relative;
+        canvas {
+            position: absolute;
+            left: 6px;
+            top: 2px;
+            display: block;
+        }
+    }
+    .sm-trend-foot {
+        flex: none;
+        height: 26px;
+        display: flex;
+        align-items: center;
+        padding: 0 14px;
+        font-size: 11px;
+        color: var(--sm-text-muted);
+        letter-spacing: 1px;
+        border-top: 1px dashed rgba(120, 160, 220, 0.18);
+    }
+
+    /* ============ 磁盘 ============ */
+    .sm-disk-list {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        padding: 2px 14px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 13px;
+        &::-webkit-scrollbar {
+            width: 4px;
+        }
+        &::-webkit-scrollbar-thumb {
+            background: rgba(80, 140, 220, 0.4);
+            border-radius: 2px;
+        }
+    }
+    .sm-disk-row {
+        padding: 2px 2px 0;
+        border-radius: 3px;
+        transition: background 0.15s;
+        &:hover {
+            background: rgba(60, 130, 240, 0.08);
+        }
+    }
+    .sm-dr-top {
+        display: flex;
+        align-items: baseline;
+        gap: 9px;
+    }
+    .sm-dr-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        align-self: center;
+        flex: none;
+    }
+    .sm-dr-name {
+        font-size: 14px;
+        color: var(--sm-text-primary);
+        letter-spacing: 1px;
+    }
+    .sm-dr-dev {
+        font-size: 11px;
+        color: var(--sm-text-muted);
+        font-family: var(--sm-num-font);
+    }
+    .sm-dr-pct {
+        margin-left: auto;
+        font-family: var(--sm-num-font);
+        font-size: 17px;
+        color: var(--sm-text-primary);
+    }
+    .sm-dr-bar {
+        height: 8px;
+        margin-top: 7px;
+        background: var(--sm-track);
+        border-radius: 0 4px 4px 0;
+        overflow: hidden;
+    }
+    .sm-dr-fill {
+        height: 100%;
+        width: 0;
+        border-radius: 0 4px 4px 0;
+        transition:
+            width 0.8s cubic-bezier(0.22, 0.61, 0.36, 1),
+            background 0.5s;
+    }
+    .sm-dr-sub {
+        margin-top: 5px;
+        font-size: 11px;
+        color: var(--sm-text-muted);
+        letter-spacing: 1px;
+    }
+    .sm-disk-empty {
+        margin: auto;
+        color: var(--sm-text-muted);
+        font-size: 13px;
+        letter-spacing: 2px;
+    }
+
+    /* ============ 全局悬浮提示 ============ */
+    .sm-gtip {
+        position: fixed;
+        z-index: 1050;
+        pointer-events: none;
+        min-width: 150px;
+        background: rgba(7, 17, 38, 0.96);
+        border: 1px solid rgba(80, 160, 255, 0.45);
+        border-radius: 3px;
+        padding: 8px 11px;
+        font-size: 12px;
+        box-shadow:
+            0 6px 22px rgba(0, 0, 0, 0.5),
+            0 0 14px rgba(53, 200, 255, 0.15);
+        .sm-gt-t {
+            color: var(--sm-text-muted);
+            font-size: 11px;
+            margin-bottom: 6px;
+            letter-spacing: 1px;
+            font-family: var(--sm-num-font);
+        }
+        .sm-gt-r {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 4px;
+        }
+        .sm-gt-k {
+            width: 12px;
+            height: 2px;
+            flex: none;
+        }
+        .sm-gt-n {
+            color: var(--sm-text-secondary);
+        }
+        .sm-gt-v {
+            margin-left: auto;
+            font-family: var(--sm-num-font);
+            color: var(--sm-text-primary);
+            padding-left: 14px;
+        }
+    }
+
+    /* ============ 表格视图 ============ */
+    .sm-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 1040;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(3, 8, 20, 0.78);
+        backdrop-filter: blur(3px);
+    }
+    .sm-overlay-panel {
+        width: min(860px, 92vw);
+        max-height: 84vh;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid rgba(80, 160, 255, 0.4);
+        background: #071228;
+        box-shadow: 0 0 40px rgba(30, 120, 255, 0.25);
+    }
+    .sm-overlay-head {
+        flex: none;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 13px 18px;
+        border-bottom: 1px solid rgba(80, 160, 255, 0.25);
+        font-size: 15px;
+        letter-spacing: 3px;
+    }
+    .sm-overlay-body {
+        overflow: auto;
+        padding: 0 18px;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        th,
+        td {
+            padding: 9px 10px;
+            text-align: left;
+            border-bottom: 1px solid rgba(90, 140, 220, 0.14);
+        }
+        th {
+            color: var(--sm-text-secondary);
+            font-weight: 400;
+            letter-spacing: 2px;
+            position: sticky;
+            top: 0;
+            background: #071228;
+        }
+        td {
+            color: var(--sm-text-primary);
+            &.sm-dim {
+                color: var(--sm-text-secondary);
+            }
+            .sm-num {
+                font-variant-numeric: tabular-nums;
+            }
+        }
+    }
+    .sm-overlay-foot {
+        flex: none;
+        padding: 10px 18px;
+        font-size: 11px;
+        color: var(--sm-text-muted);
+        border-top: 1px solid rgba(80, 160, 255, 0.2);
+        letter-spacing: 1px;
+    }
+}
+
+/* 窗口过小时回退为可滚动布局（与源文件的媒体查询一致） */
+@media (max-width: 1180px), (max-height: 700px) {
+    .server-monitor-screen {
+        overflow: auto;
+        .sm-main {
+            min-height: 760px;
+        }
+    }
+}
+
+/* 减弱动态偏好：关闭旋转环 / 扫描线 / 呼吸灯动画 */
+@media (prefers-reduced-motion: reduce) {
+    .server-monitor-screen {
+        .sm-spin,
+        &::after,
+        .sm-badge.sm-live i,
+        .sm-badge.sm-wait i {
+            animation: none;
+        }
+    }
+}

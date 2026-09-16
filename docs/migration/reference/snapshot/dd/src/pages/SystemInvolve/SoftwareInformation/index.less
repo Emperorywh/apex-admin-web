@@ -1,0 +1,203 @@
+.software_information {
+    min-height: calc(100vh - 60px);
+    padding: 20px;
+    box-sizing: border-box;
+    background: var(--ant-color-bg-layout);
+
+    .banner_card {
+        margin-bottom: 16px;
+        background: linear-gradient(
+            135deg,
+            var(--ant-color-primary) 0%,
+            var(--ant-color-primary-active) 100%
+        );
+        border-radius: 12px;
+        overflow: hidden;
+
+        :global {
+            .ant-card-body {
+                padding: 24px;
+            }
+        }
+
+        .banner_content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .banner_left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .banner_icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .banner_text {
+            color: #fff;
+        }
+
+        .banner_title {
+            font-size: 22px;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .banner_subtitle {
+            font-size: 13px;
+            opacity: 0.85;
+            margin-top: 4px;
+        }
+
+        .banner_right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .status_tag {
+            font-size: 14px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            margin: 0;
+        }
+
+        .activate_btn {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.6);
+            color: #fff;
+
+            &:hover,
+            &:focus {
+                background: rgba(255, 255, 255, 0.25) !important;
+                border-color: #fff !important;
+                color: #fff !important;
+            }
+        }
+    }
+
+    .stat_row {
+        margin-bottom: 16px;
+    }
+
+    .stat_card {
+        border-radius: 12px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+        transition: box-shadow 0.3s, transform 0.3s;
+
+        &:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transform: translateY(-2px);
+        }
+
+        :global {
+            .ant-statistic-title {
+                font-size: 14px;
+                color: var(--ant-color-text-secondary);
+                margin-bottom: 12px;
+
+                .anticon {
+                    margin-right: 6px;
+                    color: var(--ant-color-primary);
+                }
+            }
+
+            .ant-statistic-content {
+                font-size: 28px;
+                font-weight: 600;
+            }
+        }
+
+        .date_value {
+            font-size: 20px;
+            font-weight: 600;
+        }
+    }
+
+    .detail_row {
+        margin-bottom: 16px;
+    }
+
+    .detail_card {
+        border-radius: 12px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+        height: 100%;
+
+        :global {
+            .ant-card-head {
+                border-bottom: 1px solid var(--ant-color-border-secondary);
+                min-height: 48px;
+
+                .ant-card-head-title {
+                    font-size: 15px;
+                    font-weight: 500;
+
+                    .anticon {
+                        margin-right: 6px;
+                        color: var(--ant-color-primary);
+                    }
+                }
+            }
+
+            .ant-card-body {
+                padding: 20px 24px;
+            }
+        }
+
+        .detail_value {
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--ant-color-text);
+        }
+
+        .code_value {
+            font-size: 14px;
+            font-family: "Monaco", "Menlo", "Consolas", monospace;
+            background: var(--ant-color-bg-layout);
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin: 0 !important;
+            word-break: break-all;
+            color: var(--ant-color-text);
+            /* 激活码可能超长，超出固定高度后区域内滚动查看，不撑高卡片 */
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .hardware_info {
+            font-size: 13px;
+            font-family: "Monaco", "Menlo", "Consolas", monospace;
+            background: var(--ant-color-bg-layout);
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin: 0;
+            max-height: 320px;
+            overflow: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+            color: var(--ant-color-text);
+        }
+    }
+
+    .empty_wrapper {
+        min-height: 320px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}

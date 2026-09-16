@@ -1,0 +1,37 @@
+/* 地图容器：固定 70vh 高度，相对定位供错误占位覆盖 */
+.map_container {
+  position: relative;
+  height: 70vh;
+}
+
+/* 加载失败占位：覆盖在画布上方而不是卸载 KonvaMap（重试需要 mapRef.reload） */
+.error_overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: #fff;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+/* footer 信息行：当前行回显 + 弹窗内实时选中，位于 body 底部、按钮行之上 */
+.footer_info {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.65);
+
+  /* 失效节点红色标注「已不在地图上」 */
+  .invalid_tag {
+    margin-left: 8px;
+    color: #ff4d4f;
+  }
+}

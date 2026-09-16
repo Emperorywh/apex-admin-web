@@ -1,0 +1,45 @@
+@FormListError: #FF4D4F;
+
+html, #root {
+    height: 100%;
+    overflow: hidden;
+}
+
+.ant-pro-layout .ant-pro-layout-container {
+    height: 100vh;
+}
+
+/*
+ * Dashboard 高度链修复。
+ * 现状：.ant-pro-layout-container 是 100vh，但其内部中间层（content/section/page wrapper）
+ *   默认 height: auto，导致 .dashboard-page 的 height:100% 解析不到限定高度，
+ *   内部 overflow:auto 不触发滚动，超出部分被 #root overflow:hidden 裁切。
+ * 修复：当页面包含 .dashboard-page 时，让其所有祖先链高度透传 100%，
+ *   且允许 flex 子项缩减到内容以下（min-height:0），从而触发内部滚动。
+ * 使用 :has() 限定：仅在 Dashboard 路由激活，不污染其他页面布局。
+ */
+:has(.dashboard-page) {
+    height: 100%;
+    min-height: 0;
+}
+
+.ant-pro-layout .ant-pro-layout-content {
+    padding-inline: 0;
+    padding-block: 0;
+}
+
+.ant-form-item-explain-error {
+    color: @FormListError;
+}
+
+/* 国际化宽度适配：防止英文文本溢出表格单元格 */
+.ant-table-cell {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* 表头强制单行：精准定位表头，避免误伤展开行/描述列表等特殊单元格 */
+.ant-table-thead > tr > .ant-table-cell {
+    white-space: nowrap;
+}

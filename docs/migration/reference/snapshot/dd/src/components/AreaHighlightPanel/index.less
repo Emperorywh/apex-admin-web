@@ -1,0 +1,65 @@
+.panel_container {
+    width: 264px;
+
+    .section_title {
+        font-size: 12px;
+        color: var(--ant-color-text-secondary);
+        padding: 4px 0;
+    }
+
+    .area_list {
+        max-height: 50vh;
+        overflow: auto;
+    }
+
+    .area_row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 3px 0;
+
+        .color_dot {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            border: 1px solid rgba(0, 0, 0, 0.15);
+        }
+
+        .area_name {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .member_count {
+            flex-shrink: 0;
+            font-size: 12px;
+            color: var(--ant-color-text-secondary);
+        }
+
+        .highlight_checkbox {
+            flex-shrink: 0;
+
+            :global {
+                .ant-checkbox + span {
+                    padding-inline-start: 4px;
+                    padding-inline-end: 0;
+                }
+            }
+        }
+    }
+
+    .footer_hint {
+        margin-top: 8px;
+        padding-top: 8px;
+        border-top: 1px solid var(--ant-color-split);
+        font-size: 12px;
+        color: var(--ant-color-text-secondary);
+        display: flex;
+        align-items: flex-start;
+        gap: 4px;
+    }
+}

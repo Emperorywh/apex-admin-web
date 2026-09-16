@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 72 72">
+  <!--
+    固定性能资源：晴雨伞示意。
+    简洁轮廓用于公开演示，不包含业务图片资产。
+  -->
+  <rect width="72" height="72" rx="10" fill="#eaf0f5"/><path d="M11 35Q35-4 61 35Q54 28 47 35Q40 28 35 35Q27 29 23 35Q17 30 11 35" fill="#7898af"/><path d="M36 32v24q0 8 7 5q3-2 1-5" fill="none" stroke="#4b5864" stroke-width="3"/><path d="M35 15Q26 23 23 35m13-20q9 10 11 20" fill="none" stroke="#acc3d0" stroke-width="2"/>
+</svg>

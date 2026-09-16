@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 72 72">
+  <!--
+    固定性能资源：陶瓷杯示意。
+    四张资源在基准开始前统一加载并完成解码。
+  -->
+  <rect width="72" height="72" rx="10" fill="#f0eaf2"/><path d="M47 27h8c11 0 9 20-4 20h-5" fill="none" stroke="#aa929f" stroke-width="5"/><path d="M18 22h32v27q0 10-16 10T18 49z" fill="#cbb8c5"/><ellipse cx="34" cy="23" rx="16" ry="5" fill="#e9dfe5"/><ellipse cx="34" cy="24" rx="12" ry="3" fill="#78594e"/>
+</svg>

@@ -1,0 +1,89 @@
+/**
+ * 车辆告警码弹窗（新增 / 编辑）样式
+ *
+ * 多语言描述卡片设计要点：
+ * 1. 左侧主题色强调条：为每张卡片确立统一的视觉起始方向（解决原先“无方向感”的问题）
+ * 2. 头部(语言选择 + 删除) / 主体(告警描述 + 处理建议) 清晰分区，下方虚线分隔
+ * 3. 所有 Form.Item 继承父表单 96px labelCol，左缘完全对齐，保证整体整齐
+ */
+.record_card {
+    position: relative; // 删除按钮的 flex 参照（已内联在 header 中，保留兜底）
+    box-sizing: border-box;
+    margin-bottom: 12px;
+    // 上下 12px、左右 14px，给左侧强调条与内容之间留出呼吸空间
+    padding: 12px 14px;
+    // 容器背景、边界与强调条全部使用语义令牌，自动适配默认和暗黑主题
+    border: 1px solid var(--alarm-code-color-border-secondary);
+    border-left: 3px solid var(--alarm-code-color-primary);
+    border-radius: 8px;
+    background-color: var(--alarm-code-color-bg-container);
+    box-shadow: var(--alarm-code-box-shadow-tertiary);
+    transition: border-color 0.2s, box-shadow 0.2s;
+
+    // hover：边框 / 阴影微亮，强化可操作感
+    &:hover {
+        border-color: var(--alarm-code-color-primary-border-hover);
+        border-left-color: var(--alarm-code-color-primary);
+        box-shadow: var(--alarm-code-box-shadow-tertiary);
+    }
+
+    // 卡片内 Form.Item 统一缩小下边距（覆盖 antd 默认的 24px）
+    :global(.ant-form-item) {
+        margin-bottom: 12px;
+    }
+
+    // 强制卡片内每个 Form.Item 的 label 固定 96px、控件区撑满，
+    // 确保 语言 / 告警描述 / 处理建议 三个输入框左缘严格对齐
+    // （Form.List 嵌套场景下父表单 labelCol/wrapperCol 可能不继承，这里显式钉死）
+    :global(.ant-form-item-label) {
+        flex: 0 0 96px !important;
+        max-width: 96px !important;
+    }
+    :global(.ant-form-item-control) {
+        flex: 1 1 0% !important;
+        min-width: 0;
+    }
+
+    // 头部：语言选择 + 删除按钮；删除按钮绝对定位在头部右侧、不参与流式布局，
+    // 从而让头部 Form.Item 与主体 Form.Item 渲染方式完全一致，label / 输入框左缘严格对齐
+    .record_header {
+        position: relative; // 删除按钮绝对定位的参照基准
+        margin-bottom: 12px;
+        padding-bottom: 12px;
+        padding-right: 40px; // 右侧给删除按钮预留空间，避免 Select 与按钮重叠
+        border-bottom: 1px dashed var(--alarm-code-color-split);
+
+        :global(.ant-form-item) {
+            margin-bottom: 0;
+        }
+    }
+
+    // 主体最后一个 Form.Item 去掉下边距，避免卡片底部多余留白
+    > :global(.ant-form-item):last-child {
+        margin-bottom: 0;
+    }
+
+    // 删除按钮：绝对定位在头部右侧，垂直对齐语言输入框中线（默认 32px 控件，top:2px 居中 28px 按钮）
+    .record_remove {
+        position: absolute;
+        top: 2px;
+        right: 6px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 6px;
+        font-size: 15px;
+        color: var(--alarm-code-color-text-tertiary);
+        cursor: pointer;
+        user-select: none;
+        transition: color 0.2s, background-color 0.2s;
+
+        // hover：变红 + 浅红底，呼应系统删除色，操作意图明确
+        &:hover {
+            color: var(--alarm-code-color-error);
+            background-color: var(--alarm-code-color-error-bg);
+        }
+    }
+}

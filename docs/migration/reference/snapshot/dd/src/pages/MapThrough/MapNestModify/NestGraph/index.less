@@ -1,0 +1,9 @@
+.nest_graph {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    position: relative;
+    // 关键：避免 Konva Stage 由于 DPR=1.25/1.5 等非整数缩放时
+    // 偶发出现 0.x 像素的溢出而触发外层滚动条来回闪动
+    overflow: hidden;
+}

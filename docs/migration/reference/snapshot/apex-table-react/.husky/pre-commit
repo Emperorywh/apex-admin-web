@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# lint-staged 13 会根据登录 Shell 标记错误转义 Windows 的 stash 引用。
+# Git 子进程直接接收参数，无需该转义；仅在当前钩子中清除标记以保证备份能恢复。
+unset LOGINSHELL
+
+# 串行运行只读检查，避免失败回退与其他检查进程同时访问源码。
+# 使用纯文本日志，并限定使用本地依赖，让编辑器能显示完整结果。
+TERM=dumb FORCE_COLOR=0 npx --no-install lint-staged --concurrent false --verbose

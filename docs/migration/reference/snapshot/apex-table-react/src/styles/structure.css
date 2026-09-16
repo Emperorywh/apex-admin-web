@@ -1,0 +1,473 @@
+/*
+ * 结构样式只负责几何、滚动、交互区域和语义布局。
+ * 所有外观均由可选主题或消费方定义，动态行高只读组件输出。
+ */
+.apex-table { position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  isolation: isolate;
+  box-sizing: border-box;
+  }
+
+.apex-table *, .apex-table *::before, .apex-table *::after { box-sizing: border-box;
+  }
+
+.apex-table-viewport { flex: 1;
+  min-height: 0;
+  min-width: 0;
+  overflow: auto;
+  position: relative;
+  overflow-anchor: none;
+  }
+
+.apex-table-grid { display: block;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+  }
+
+.apex-table-header { display: block;
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  height: 44px;
+  }
+
+.apex-table-header tr, .apex-table-row { display: flex;
+  width: 100%;
+  }
+
+.apex-table-header tr { height: 44px;
+  }
+
+.apex-table-body { display: block;
+  }
+
+.apex-table-row { height: var(--apex-geometry-row-height, 48px);
+  }
+
+/*
+ * 详情行允许内容自然撑高，不继承普通行的固定高度和单行截断。
+ * 展开列与选择列保持相同的居中布局，按钮尺寸不影响轨道宽度。
+ */
+.apex-table-expanded-row { display: flex;
+  width: 100%;
+  }
+
+.apex-table-expanded-cell { display: flow-root;
+  width: 100%;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  }
+
+.apex-table-cell[data-apex-track='expansion'] { justify-content: center;
+  }
+
+.apex-table-expand-button { display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 20px;
+  height: 20px;
+  }
+
+.apex-table-cell, .apex-table-header-cell { display: flex;
+  align-items: center;
+  flex: none;
+  position: relative;
+  overflow: hidden;
+  min-height: 0;
+  }
+
+.apex-table-header-cell { overflow: visible;
+  white-space: nowrap;
+  }
+
+.apex-table-cell[data-pinned], .apex-table-header-cell[data-pinned] { position: sticky;
+  z-index: 2;
+  }
+
+.apex-table-cell[data-align='end'], .apex-table-header-cell[data-align='end'] { justify-content: flex-end;
+  text-align: right;
+  }
+
+.apex-table-cell[data-align='center'], .apex-table-header-cell[data-align='center'], .apex-table-cell[data-apex-track='selection'], .apex-table-cell[data-apex-track='number'] { justify-content: center;
+  text-align: center;
+  }
+
+.apex-table-header-content, .apex-table-cell-content { min-width: 0;
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  }
+
+.apex-table-cell-content { max-height: 100%;
+  }
+
+/*
+ * 编辑区域铺满单元格，输入控件的点击区域随列宽和行高一起变化。
+ * 布尔控件和图片保留自身尺寸，沿用列配置的内容对齐方式。
+ */
+.apex-table-cell-content:has(.apex-table-editor) { height: 100%;
+  }
+
+.apex-table-editor { display: flex;
+  align-items: center;
+  justify-content: inherit;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  max-height: 100%;
+  }
+
+.apex-table-editor > * { min-width: 0;
+  }
+
+.apex-table-editor:is([data-apex-editor='Input'], [data-apex-editor='InputNumber'], [data-apex-editor='Select'], [data-apex-editor='DatePicker'], [data-apex-editor='TimePicker'], [data-apex-editor='ColorPicker']) > * { width: 100%;
+  height: 100%;
+  }
+
+.apex-table-cell[data-align='center'] .apex-table-editor { justify-content: center;
+  }
+
+.apex-table-cell[data-align='end'] .apex-table-editor { justify-content: flex-end;
+  }
+
+/*
+ * 颜色触发器拉伸后显式居中颜色块，避免 antd 的顶端对齐造成上下错位。
+ * 色块仍保留 antd 的尺寸和透明度展示，整格仅承担布局。
+ */
+.apex-table .apex-table-editor[data-apex-editor='ColorPicker'] > * { align-items: center;
+  }
+
+/*
+ * 数字输入内部容器也需要拉伸，保证点击单元格上下留白可以直接输入。
+ * 使用 antd 的语义类定位输入框，兼容 prefixCls 和前后缀配置。
+ */
+.apex-table-editor[data-apex-editor='InputNumber'] :has(> .apex-table-editor-number-input) { height: 100%;
+  }
+
+.apex-table-editor .apex-table-editor-number-input { height: 100%;
+  }
+
+.apex-table-editor[data-apex-editor='Image'] > :first-child { flex: none;
+  }
+
+.apex-table-sort-button { display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-width: 0;
+  text-align: inherit;
+  }
+
+.apex-table-sort-icon { flex: none;
+  }
+
+/*
+ * 齿轮入口在窄序号列内居中，不改变现有列宽和行高。
+ * 图标不收缩，按钮保留完整的键盘操作区域。
+ */
+.apex-table-settings-trigger { display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 24px;
+  height: 30px;
+  margin: auto;
+  }
+
+.apex-table-settings-trigger svg { flex: none;
+  }
+
+/*
+ * 选择列只负责居中 antd 复选框，不锁定控件尺寸。
+ * 图标大小和内部布局随 antd 主题配置变化。
+ */
+.apex-table-checkbox { display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  flex: none;
+  }
+
+.apex-table-resize-handle { position: absolute;
+  width: 8px;
+  right: -4px;
+  top: 0;
+  height: 100%;
+  cursor: col-resize;
+  touch-action: none;
+  z-index: 5;
+  }
+
+.apex-table-resize-handle[data-resizing] { user-select: none;
+  }
+
+.apex-table-resize-handle::after { content: '';
+  position: absolute;
+  width: 2px;
+  height: 100%;
+  left: 3px;
+  top: 0;
+  }
+
+.apex-table-spacer { display: block;
+  pointer-events: none;
+  }
+
+.apex-table-spacer td { display: block;
+  padding: 0;
+  border: 0;
+  }
+
+.apex-table-toolbar { display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  flex: none;
+  min-height: 48px;
+  gap: var(--apex-table-control-gap, 8px);
+  }
+
+.apex-table-selection-summary { display: flex;
+  align-items: center;
+  gap: var(--apex-table-control-gap, 8px);
+  }
+
+.apex-table-pagination { display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--apex-table-control-gap, 8px);
+  flex: none;
+  min-height: 56px;
+  }
+
+.apex-table-page-buttons { display: flex;
+  align-items: center;
+  margin-left: auto;
+  gap: 4px;
+  }
+
+.apex-table-page-item { display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  }
+
+.apex-table-jump { display: flex;
+  align-items: center;
+  gap: 6px;
+  }
+
+.apex-table-jump input { width: 48px;
+  }
+
+.apex-table-empty, .apex-table-error { position: sticky;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 180px;
+  gap: 16px;
+  }
+
+.apex-table-skeleton { position: sticky;
+  left: 0;
+  overflow: hidden;
+  }
+
+.apex-table-skeleton-row { display: flex;
+  align-items: center;
+  gap: 32px;
+  padding: 0 16px;
+  height: var(--apex-geometry-row-height, 48px);
+  }
+
+.apex-table-skeleton-row span { display: block;
+  height: 12px;
+  flex: 1;
+  }
+
+/*
+ * 配置弹窗使用浏览器顶层模态布局，与原表格高度和滚动裁切解耦。
+ * 内容区独立滚动，标题、操作提示与确认按钮始终保留在弹窗内。
+ * 五列配置采用紧凑宽度，窄屏时只让配置表格横向滚动。
+ */
+.apex-table.apex-table-settings-modal { position: fixed;
+  inset: 0;
+  margin: auto;
+  padding: 0;
+  width: min(640px, calc(100vw - 32px));
+  max-width: none;
+  max-height: calc(100dvh - 32px);
+  overflow: hidden;
+  }
+
+.apex-table-settings-modal:not([open]) { display: none;
+  }
+
+.apex-table-column-settings { min-height: 0;
+  max-height: min(720px, calc(100dvh - 34px));
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  }
+
+.apex-table-column-list { overflow: auto;
+  min-height: 0;
+  margin: 0 12px;
+  overscroll-behavior: contain;
+  }
+
+.apex-table-panel-title { display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  flex: none;
+  }
+
+.apex-table-settings-tools { display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  flex: none;
+  }
+
+.apex-table-settings-tools p { margin: 0;
+  padding: 6px 8px;
+  flex: 1;
+  }
+
+.apex-table-settings-tools button { flex: none;
+  }
+
+.apex-table-settings-grid { width: 100%;
+  min-width: 588px;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+  }
+
+.apex-table-settings-grid th, .apex-table-settings-grid td { height: 40px;
+  padding: 0 10px;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  }
+
+.apex-table-settings-grid th { position: sticky;
+  top: 0;
+  z-index: 2;
+  }
+
+.apex-table-settings-grid td:first-child { padding: 0;
+  text-align: center;
+  }
+
+.apex-table-settings-grid td:nth-child(3), .apex-table-settings-grid td:nth-child(5) { padding: 0 4px;
+  }
+
+.apex-table-settings-grid input, .apex-table-settings-grid select { width: 100%;
+  min-width: 0;
+  height: 32px;
+  padding: 4px 6px;
+  }
+
+.apex-table .apex-table-drag-handle { position: relative;
+  width: 100%;
+  height: 39px;
+  padding: 0;
+  touch-action: none;
+  cursor: grab;
+  }
+
+.apex-table-drag-grip { display: none;
+  }
+
+.apex-table-drag-handle:hover:not(:disabled) .apex-table-drag-number, .apex-table-drag-handle:focus-visible .apex-table-drag-number, .apex-table-settings-row[data-dragging] .apex-table-drag-number { display: none;
+  }
+
+.apex-table-drag-handle:hover:not(:disabled) .apex-table-drag-grip, .apex-table-drag-handle:focus-visible .apex-table-drag-grip, .apex-table-settings-row[data-dragging] .apex-table-drag-grip { display: inline;
+  }
+
+.apex-table-settings-row[data-dragging] { position: relative;
+  z-index: 3;
+  }
+
+.apex-table .apex-table-settings-switch { position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 23px;
+  min-height: 0;
+  padding: 0;
+  vertical-align: middle;
+  }
+
+.apex-table-settings-switch::after { content: '';
+  position: absolute;
+  width: 19px;
+  height: 19px;
+  top: 2px;
+  left: 2px;
+  }
+
+.apex-table-settings-switch[aria-checked='true']::after { transform: translateX(21px);
+  }
+
+.apex-table-settings-footer { display: flex;
+  justify-content: center;
+  gap: 24px;
+  padding: 10px 12px;
+  flex: none;
+  }
+
+.apex-table-panel-message { flex: none;
+  padding: 0 12px;
+  }
+
+.apex-table-panel-message:not(:empty) { padding-top: 8px;
+  padding-bottom: 8px;
+  }
+
+@media (prefers-reduced-motion: reduce) { .apex-table-settings-row { transition: none !important;
+  } }
+
+@media (max-width: 600px) { .apex-table-settings-tools { align-items: stretch;
+  flex-wrap: wrap;
+  }
+  }
+
+/*
+ * 内置浮层结构仅用于提示组件。
+ * 业务菜单使用 antd Dropdown 自身的布局和层级。
+ */
+.apex-table-tooltip { z-index: var(--apex-table-overlay-z-index, 20);
+  max-width: min(360px, calc(100vw - 16px));
+  pointer-events: none;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  }
+
+.apex-table-tooltip-trigger { display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  }
+
+.apex-table .apex-table-visually-hidden { position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+  }

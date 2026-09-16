@@ -1,0 +1,29 @@
+const columns = [
+    {
+        title: t("任务编号"),
+        dataIndex: "orderKey",
+        width: 150
+    },
+    {
+        title: t("节点ID"),
+        dataIndex: "nodeId",
+        ellipsis: true
+    },
+    {
+        title: t("地图名称"),
+        dataIndex: "mapName"
+    },
+    {
+        title: (
+            <Space>
+                <Icon />
+                {t("自定义")}
+            </Space>
+        ),
+        dataIndex: "custom"
+    },
+    {
+        title: t("操作"),
+        dataIndex: "action"
+    }
+];

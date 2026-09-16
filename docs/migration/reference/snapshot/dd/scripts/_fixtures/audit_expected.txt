@@ -1,0 +1,13 @@
+=== 英文表头过长建议表 ===
+[key] 指定车辆组
+  EN: "Assigned Vehicle Group" (22 chars)
+  width: 180 (约可容 22 字符)  ⚠️ 触发省略 → 建议瘦身
+[key] 任务编号
+  EN: "Task ID" (7 chars)
+  width: 150 (约可容 18 字符)  OK
+[key] 地图名称
+  EN: "Map Name" (8 chars)
+  width: 150 (默认, 约可容 18 字符)  OK
+[key] 节点ID
+  EN: "Node ID" (7 chars)
+  width: 150 (默认, 约可容 18 字符)  OK

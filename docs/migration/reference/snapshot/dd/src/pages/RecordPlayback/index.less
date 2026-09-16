@@ -1,0 +1,146 @@
+.container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--ant-color-bg-layout);
+    overflow: hidden;
+
+    &:fullscreen {
+        height: 100vh;
+    }
+
+    .spinContainer {
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+
+        .loadingMask {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(255, 255, 255, 0.3);
+            z-index: 10;
+        }
+
+        .mapSkeleton {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background-color: #f8f9fa;
+            overflow: hidden;
+
+            .gridBackground {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-image: 
+                    linear-gradient(to right, #e0e0e0 1px, transparent 1px),
+                    linear-gradient(to bottom, #e0e0e0 1px, transparent 1px);
+                background-size: 80px 80px;
+                opacity: 0.8;
+            }
+
+            .skeletonNodes {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                grid-template-rows: repeat(3, 1fr);
+                gap: 100px;
+                padding: 40px;
+            }
+
+            .skeletonNode {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                position: relative;
+
+                &::before,
+                &::after {
+                    content: '';
+                    position: absolute;
+                    background: linear-gradient(90deg, transparent, #d0d0d0, transparent);
+                    animation: shimmer 2s infinite;
+                }
+
+                &::before {
+                    width: 100px;
+                    height: 2px;
+                    left: 50%;
+                    top: 50%;
+                }
+
+                &::after {
+                    width: 2px;
+                    height: 80px;
+                    left: 50%;
+                    top: 50%;
+                }
+            }
+
+            .nodeCircle {
+                width: 24px;
+                height: 24px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #e8e8e8, #d0d0d0);
+                border: 2px solid #c0c0c0;
+                position: relative;
+                z-index: 1;
+                animation: pulse 1.5s ease-in-out infinite;
+            }
+
+            .skeletonHint {
+                position: absolute;
+                bottom: 48px;
+                left: 50%;
+                transform: translateX(-50%);
+                color: #1890ff;
+                font-size: 16px;
+                font-weight: 500;
+                background: #fff;
+                padding: 16px 32px;
+                border-radius: 8px;
+                box-shadow: 0 4px 16px rgba(24, 144, 255, 0.15);
+                border: 1px solid #91d5ff;
+                z-index: 10;
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                opacity: 0.3;
+            }
+            50% {
+                opacity: 0.8;
+            }
+            100% {
+                opacity: 0.3;
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 0.6;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+        }
+    }
+}

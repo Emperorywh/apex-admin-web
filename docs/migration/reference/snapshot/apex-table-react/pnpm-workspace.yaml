@@ -1,0 +1,18 @@
+overrides:
+  # 将文档站的国际化依赖限定到支持 React 19 的同主版本。
+  # 保留 dumi 的既有接口，同时满足更新后的 TypeScript 类型要求。
+  'dumi>react-intl': 7.1.14
+  # Umi 的旧页面头管理依赖尚未声明支持 React 19。
+  # 仅替换该依赖边，使用保留 Helmet 接口且支持 React 19 的版本。
+  '@umijs/renderer-react>react-helmet-async': 3.0.0
+
+allowBuilds:
+  # 允许文件监听器和编译工具执行安装脚本，以准备所需的原生模块及可执行文件。
+  # pnpm 的构建授权必须使用布尔值，占位文本会导致安装阶段报错。
+  '@parcel/watcher': true
+  '@swc/core': true
+  # 这两个包的安装脚本仅展示赞助提示，跳过不会影响运行。
+  # 显式填写 false，避免被 pnpm 视为尚未审核的构建脚本。
+  core-js: false
+  core-js-pure: false
+  esbuild: true

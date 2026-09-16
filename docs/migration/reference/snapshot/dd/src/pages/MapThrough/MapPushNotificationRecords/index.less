@@ -1,0 +1,49 @@
+.map_push_records {
+    box-sizing: border-box;
+    padding: 20px;
+
+    // 顶部工具栏：仅放刷新按钮，右对齐
+    .toolbar {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        margin: 0 0 16px 0;
+    }
+
+    // 展开行内嵌的子记录表格，给一点上下内边距与主表区分
+    .sub_table_wrap {
+        padding: 4px 0;
+    }
+
+    // 子记录表格上方的条件查询区：车辆名称关键字 + 推送状态下拉，横向排列
+    .sub_filter_bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+
+        // 车辆名称输入框（带前缀图标，宽度落在 ant-input-affix-wrapper 上）
+        :global(.ant-input-affix-wrapper) {
+            width: 220px;
+        }
+
+        // 推送状态下拉，比输入框略窄
+        :global(.ant-select) {
+            width: 160px;
+        }
+    }
+
+    // 空值占位（无子记录 / 无失败原因等）使用次级文本色，适配明暗主题
+    .empty {
+        color: var(--ant-color-text-tertiary, rgba(0, 0, 0, 0.35));
+    }
+
+    // 展开图标列：内容是按钮而非文本，全局 .ant-table-cell 的 text-overflow:ellipsis
+    // 会对它误伤（裁切图标 / 让邻列的 ... 紧贴图标）；此处豁免省略规则并居中图标
+    :global(.ant-table-row-expand-icon-cell) {
+        overflow: visible;
+        text-overflow: clip;
+        white-space: normal;
+        text-align: center;
+    }
+}

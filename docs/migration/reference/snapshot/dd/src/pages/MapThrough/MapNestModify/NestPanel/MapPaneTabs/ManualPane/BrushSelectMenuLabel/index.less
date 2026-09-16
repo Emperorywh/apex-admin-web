@@ -1,0 +1,92 @@
+.trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 12px;
+}
+
+.hintIcon {
+    flex: none;
+    font-size: 12px;
+    opacity: 0.62;
+    transition: opacity 0.2s ease;
+}
+
+.trigger:hover .hintIcon {
+    opacity: 1;
+}
+
+/**
+ * 提示内容沿用 Ant Design Tooltip 的主题色，仅定义信息层级和节奏。
+ * 固定适中的阅读宽度，避免步骤文案形成过长单行或遮挡大面积画布。
+ */
+.tooltip {
+    max-width: 296px;
+}
+
+.content {
+    width: 264px;
+    padding: 2px 0;
+}
+
+.title {
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 20px;
+}
+
+.steps {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-top: 9px;
+}
+
+.step {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    line-height: 20px;
+}
+
+.stepIndex {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    margin-top: 1px;
+    border: 1px solid rgb(255 255 255 / 32%);
+    border-radius: 50%;
+    background: rgb(255 255 255 / 12%);
+    font-size: 11px;
+    line-height: 18px;
+}
+
+/**
+ * 步骤之下的补充说明段落：命中目标特性、Ctrl 翻转规则、退出方式。
+ * 第一段（featureTip）用顶部分割线与上方步骤区分；
+ * 中间段（ctrlTip）自带分割线保持节奏；
+ * 末段（exitTip）紧跟前一段时去掉重复分割线，保持成组阅读。
+ */
+.featureTip,
+.ctrlTip,
+.exitTip {
+    margin-top: 9px;
+    padding-top: 8px;
+    border-top: 1px solid rgb(255 255 255 / 16%);
+    color: rgb(255 255 255 / 78%);
+    font-size: 12px;
+    line-height: 18px;
+}
+
+/* 紧跟在另一段之后的说明去掉重复分割线，保持成组节奏 */
+.featureTip + .ctrlTip,
+.featureTip + .exitTip,
+.ctrlTip + .exitTip {
+    margin-top: 5px;
+    padding-top: 0;
+    border-top: 0;
+}

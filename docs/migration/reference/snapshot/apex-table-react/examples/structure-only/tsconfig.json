@@ -1,0 +1,10 @@
+{
+  /*
+   * 独立示例在核心产物生成后检查公开入口，避免源码类型检查依赖 dist。
+   * 清空源码别名验证实际产物；与主项目一致跳过第三方声明自身检查。
+   * antd 6.6.4 的图片和日期底层声明存在继承冲突，业务源码仍使用 strict 检查。
+   */
+  "extends": "../../tsconfig.json",
+  "compilerOptions": { "noEmit": true, "skipLibCheck": true, "paths": {} },
+  "include": ["App.tsx"]
+}

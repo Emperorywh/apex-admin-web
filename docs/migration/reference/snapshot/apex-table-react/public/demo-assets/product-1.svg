@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 72 72">
+  <!--
+    固定性能资源：保温杯示意。
+    图片视口与其他样本一致，解码后不改变行高。
+  -->
+  <rect width="72" height="72" rx="10" fill="#e9f0ed"/><rect x="25" y="17" width="22" height="44" rx="8" fill="#537266"/><rect x="24" y="14" width="24" height="10" rx="4" fill="#344e45"/><rect x="29" y="27" width="3" height="26" rx="1.5" fill="#9cb5a6"/><path d="M34 14V9h6v5" fill="none" stroke="#344e45" stroke-width="3"/>
+</svg>

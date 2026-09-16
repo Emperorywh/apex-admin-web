@@ -1,0 +1,68 @@
+.alarm_code {
+    box-sizing: border-box;
+    padding: 20px;
+
+    .search {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 0 0 20px 0;
+    }
+
+    // 单条告警描述单元格：上方描述、下方处理建议（仅展示当前界面语言对应的一条）
+    .locale_item {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    // 描述行：语言标签 + 告警描述（说明“是什么告警”）
+    .locale_desc {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        line-height: 22px;
+    }
+
+    .locale_tag {
+        margin-inline-end: 0;
+        flex-shrink: 0;
+    }
+
+    .locale_text {
+        color: var(--alarm-code-color-text);
+        word-break: break-word;
+    }
+
+    // 处理建议行：灯泡图标 + 建议内容（说明“怎么处理这个告警”）
+    // 使用 Ant Design 警告语义色作为次级提示，保证明暗主题下都有足够对比度
+    .locale_hint {
+        display: flex;
+        align-items: flex-start;
+        gap: 6px;
+        padding-left: 2px;
+        font-size: 12px;
+        line-height: 20px;
+        color: var(--alarm-code-color-warning-text);
+    }
+
+    .hint_icon {
+        flex-shrink: 0;
+        margin-top: 2px;
+        color: var(--alarm-code-color-warning);
+    }
+
+    .hint_text {
+        word-break: break-word;
+    }
+
+    // 建议为空时的占位提示
+    .locale_hint_empty {
+        font-size: 12px;
+        color: var(--alarm-code-color-text-tertiary);
+    }
+
+    .empty {
+        color: var(--alarm-code-color-text-tertiary);
+    }
+}

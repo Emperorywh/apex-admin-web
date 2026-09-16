@@ -1,0 +1,26 @@
+const columns = [
+    {
+        title: t("指定车辆组"),
+        dataIndex: "appointVehicleGroupName",
+        width: 180
+    },
+    {
+        title: t("任务编号"),
+        dataIndex: "orderKey",
+        width: 150,
+        render: (value) => (
+            <span style={{ maxWidth: "100%" }}>
+                <Tooltip title={value}>{value}</Tooltip>
+            </span>
+        )
+    },
+    {
+        title: t("地图名称"),
+        dataIndex: "mapName"
+    },
+    {
+        title: t("节点ID"),
+        dataIndex: "nodeId",
+        ellipsis: true
+    }
+];

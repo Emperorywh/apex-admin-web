@@ -1,0 +1,48 @@
+/*
+ * 多地图点边组合页面样式。
+ * 自定义颜色统一由页面组件注入 Ant Design 语义 token，确保默认与暗黑主题保持一致。
+ */
+.point_edge_combination {
+    height: 100%;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+
+    /* 顶部标题区域 */
+    .header_bar {
+        margin-bottom: 16px;
+
+        .page_title {
+            margin: 0 0 4px;
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--point-edge-color-text);
+        }
+
+        .page_desc {
+            margin: 0;
+            font-size: 13px;
+            color: var(--point-edge-color-text-secondary);
+        }
+    }
+
+    /* 操作工具栏 */
+    .actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+    }
+
+    /* 单元格主要文本 */
+    .cell_primary {
+        font-weight: 500;
+        color: var(--point-edge-color-text);
+    }
+
+    /* 单元格弱化文本 */
+    .cell_muted {
+        color: var(--point-edge-color-text-secondary);
+        font-size: 13px;
+    }
+}

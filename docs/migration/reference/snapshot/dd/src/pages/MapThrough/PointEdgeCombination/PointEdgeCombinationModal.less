@@ -1,0 +1,30 @@
+/* 多地图点边组合弹窗样式：
+   固定 Transfer 穿梭框左右两栏的宽高，
+   防止长文本内容把列宽撑开（默认 item-text 缺少 min-width/overflow 约束会被撑开） */
+.point_edge_combination_modal {
+    :global {
+        /* 列容器：宽高固定，改为纵向弹性布局，避免内容撑开 */
+        .ant-transfer-list {
+            width: 500px;
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 列内容区：占据剩余高度，超出滚动 */
+        .ant-transfer-list-body {
+            flex: 1;
+            min-height: 0;
+            overflow: auto;
+        }
+
+        /* 列表项文本：超出省略，配合 title 悬停可见完整名称 */
+        .ant-transfer-list-content-item-text {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+    }
+}

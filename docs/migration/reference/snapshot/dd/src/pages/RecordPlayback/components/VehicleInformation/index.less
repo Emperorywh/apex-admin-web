@@ -1,0 +1,75 @@
+.tooltip {
+    position: fixed;
+    z-index: 110;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, .4), 0 0 12px rgba(0, 0, 0, .1);
+}
+
+/*
+ * 拖拽标题样式与总览页车辆 tooltip 保持一致。
+ * 样式只负责暴露拖拽入口，不和车辆回放数据、弹窗交互产生耦合。
+ */
+.dragTitle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 28px;
+    padding: 2px 8px 2px 4px;
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+    white-space: nowrap;
+    border: 1px dashed rgba(22, 119, 255, .68);
+    border-radius: 6px;
+    background: linear-gradient(90deg, rgba(22, 119, 255, .14), rgba(250, 173, 20, .12));
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .42);
+    transition: background-color .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+
+.dragTitle:hover {
+    border-color: rgba(22, 119, 255, .92);
+    background: linear-gradient(90deg, rgba(22, 119, 255, .2), rgba(250, 173, 20, .18));
+    box-shadow: 0 0 0 2px rgba(22, 119, 255, .1), inset 0 0 0 1px rgba(255, 255, 255, .56);
+}
+
+.dragTitle:active {
+    cursor: grabbing;
+    border-color: rgba(22, 119, 255, 1);
+}
+
+.dragIcon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    color: #fff;
+    font-size: 14px;
+    border-radius: 4px;
+    background: #1677ff;
+    box-shadow: 0 2px 6px rgba(22, 119, 255, .28);
+}
+
+.dragTitleText {
+    /* 跟随 antd 文本色，避免暗黑模式下深色文字叠在深色标题上不可见 */
+    color: var(--ant-color-text);
+    font-weight: 600;
+    line-height: 20px;
+}
+
+.dragHint {
+    display: inline-flex;
+    align-items: center;
+    height: 20px;
+    padding: 0 6px;
+    /*
+     * 提示文案用 antd 次要文本色（明暗均可读），琥珀语义交给下方的背景框与边框承担；
+     * 不再写死 #ad6800，否则暗黑深色标题上对比度不足。
+     */
+    color: var(--ant-color-text-secondary);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 20px;
+    border: 1px solid rgba(250, 173, 20, .45);
+    border-radius: 4px;
+    background: rgba(250, 173, 20, .18);
+}

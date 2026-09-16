@@ -1,0 +1,332 @@
+/*
+ * 浅色主题保持业务列表的细边框、浅蓝表头和蓝色操作色。
+ * 变量均限定在组件根下，可让同一页面的不同表格采用不同品牌主题。
+ */
+.apex-table {
+  --apex-table-bg: #fff;
+  --apex-table-header-bg: #f3f8ff;
+  --apex-table-text-color: #243651;
+  --apex-table-muted-color: #7c8ba1;
+  --apex-table-accent-color: #126bfa;
+  --apex-table-row-hover-bg: #f6f9fd;
+  --apex-table-row-selected-bg: #eaf4ff;
+  --apex-table-disabled-color: #9aa7b9;
+  --apex-table-focus-color: #126bfa;
+  --apex-table-border-color: #e4ebf4;
+  --apex-table-radius: 7px;
+  --apex-table-pinned-shadow: 3px 0 7px -5px #536b91;
+  --apex-table-font-family: -apple-system, blinkmacsystemfont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+  --apex-table-font-size: 13px;
+  --apex-table-padding-inline: 12px;
+  --apex-table-control-gap: 8px;
+  --apex-table-icon-size: 14px;
+  --apex-table-overlay-z-index: 20;
+
+  color: var(--apex-table-text-color);
+  background: var(--apex-table-bg);
+  border: 1px solid var(--apex-table-border-color);
+  border-radius: var(--apex-table-radius);
+  font: var(--apex-table-font-size)/1.5 var(--apex-table-font-family);
+}
+
+.apex-table-header { background: var(--apex-table-header-bg);
+  }
+
+.apex-table-cell, .apex-table-header-cell { padding: 0 var(--apex-table-padding-inline);
+  border-right: 1px solid var(--apex-table-border-color);
+  border-bottom: 1px solid var(--apex-table-border-color);
+  }
+
+.apex-table-header-cell { font-weight: 600;
+  background: var(--apex-table-header-bg);
+  }
+
+.apex-table-row { background: var(--apex-table-bg);
+  }
+
+.apex-table-row:hover { background: var(--apex-table-row-hover-bg);
+  }
+
+.apex-table-row[data-selected] { background: var(--apex-table-row-selected-bg);
+  }
+
+/*
+ * 详情复用现有浅色背景与边框变量，品牌主题可继续统一覆盖。
+ * 加减按钮保持紧凑，键盘焦点与悬停沿用通用控件反馈。
+ */
+.apex-table-expanded-cell { padding: 12px var(--apex-table-padding-inline);
+  background: var(--apex-table-row-hover-bg);
+  border-bottom: 1px solid var(--apex-table-border-color);
+  }
+
+.apex-table .apex-table-expand-button { min-height: 0;
+  padding: 0;
+  border-radius: 3px;
+  line-height: 1;
+  }
+
+.apex-table-cell[data-pinned] { background: inherit;
+  }
+
+.apex-table-cell[data-pinned='start'], .apex-table-header-cell[data-pinned='start'] { box-shadow: var(--apex-table-pinned-shadow);
+  }
+
+.apex-table-cell[data-pinned='end'], .apex-table-header-cell[data-pinned='end'] { box-shadow: -3px 0 7px -5px var(--apex-table-muted-color);
+  }
+
+/*
+ * 单元格承担编辑器的边界，控件背景透明以透出行悬停和选中底色。
+ * 内边距移到控件内部，使输入区域覆盖整格，保留现有文字起始位置。
+ * 只调整单元格内的触发器，不改变 antd 弹层、勾选标记和开关样式。
+ * 同时移除输入包裹层的聚焦轮廓，避免带前后缀的输入控件出现双框。
+ */
+.apex-table-cell:has(.apex-table-editor) { padding: 0;
+  }
+
+.apex-table .apex-table-editor:is([data-apex-editor='Input'], [data-apex-editor='InputNumber'], [data-apex-editor='Select'], [data-apex-editor='DatePicker'], [data-apex-editor='TimePicker'], [data-apex-editor='ColorPicker']) > * { padding-inline: var(--apex-table-padding-inline);
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  font: inherit;
+  text-align: inherit;
+  outline: none;
+  }
+
+.apex-table .apex-table-editor input { font: inherit;
+  text-align: inherit;
+  }
+
+.apex-table .apex-table-editor .apex-table-editor-number-input { padding-inline: 0;
+  }
+
+.apex-table-editor:is([data-apex-editor='Checkbox'], [data-apex-editor='Switch'], [data-apex-editor='Radio'], [data-apex-editor='Image']) { padding-inline: var(--apex-table-padding-inline);
+  }
+
+.apex-table .apex-table-editor[data-apex-editor='ColorPicker'] > * { justify-content: inherit;
+  }
+
+/*
+ * 焦点框沿整格内缘绘制，复用当前蓝色主题，且不挤动列宽和行高。
+ * 浮层取得焦点后仍标记来源单元格，伪元素不拦截操作或覆盖固定列阴影。
+ */
+.apex-table-cell:has(.apex-table-editor:focus-within, .apex-table-editor[data-apex-popup-open])::after { content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border: 1px solid var(--apex-table-focus-color);
+  pointer-events: none;
+  }
+
+.apex-table .apex-table-editor:focus-visible, .apex-table .apex-table-editor :focus-visible { outline: none;
+  }
+
+/*
+ * 原生工具栏控件继续使用表格主题，内置编辑器的控件样式交给 antd。
+ * 排除编辑器后代，避免通用按钮高度和边框覆盖开关、颜色及日期控件。
+ */
+.apex-table button:not(:where(.apex-table-editor *)), .apex-table input:not(:where(.apex-table-editor *)), .apex-table select:not(:where(.apex-table-editor *)) { font: inherit;
+  color: inherit;
+  }
+
+.apex-table button:not(:where(.apex-table-editor *)), .apex-table select:not(:where(.apex-table-editor *)), .apex-table-jump input { min-height: 30px;
+  padding: 3px 9px;
+  background: var(--apex-table-bg);
+  border: 1px solid var(--apex-table-border-color);
+  border-radius: 5px;
+  }
+
+.apex-table button:not(:where(.apex-table-editor *)) { cursor: pointer;
+  }
+
+.apex-table button:hover:not(:disabled, :where(.apex-table-editor *)) { color: var(--apex-table-accent-color);
+  border-color: var(--apex-table-accent-color);
+  }
+
+.apex-table button:disabled:not(:where(.apex-table-editor *)), .apex-table input:disabled:not(:where(.apex-table-editor *)), .apex-table select:disabled:not(:where(.apex-table-editor *)) { color: var(--apex-table-disabled-color);
+  cursor: not-allowed;
+  }
+
+.apex-table a { color: var(--apex-table-accent-color);
+  text-decoration: none;
+  }
+
+.apex-table a:hover { text-decoration: underline;
+  }
+
+.apex-table :focus-visible { outline: 2px solid var(--apex-table-focus-color);
+  outline-offset: 2px;
+  }
+
+.apex-table .apex-table-sort-button { padding: 0;
+  min-height: 32px;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  font-weight: inherit;
+  }
+
+.apex-table-sort-icon { font-size: var(--apex-table-icon-size);
+  color: var(--apex-table-muted-color);
+  margin-left: 6px;
+  }
+
+/*
+ * 设置按钮沿用表头底色与操作色，以齿轮作为唯一可见内容。
+ * 悬停和键盘焦点继续使用表格现有的交互反馈。
+ */
+.apex-table .apex-table-settings-trigger { padding: 0;
+  background: none;
+  border: 0;
+  }
+
+.apex-table [aria-sort='ascending'] .apex-table-sort-icon, .apex-table [aria-sort='descending'] .apex-table-sort-icon { color: var(--apex-table-accent-color);
+  }
+
+.apex-table-resize-handle:hover::after, .apex-table-resize-handle[data-resizing]::after { background: var(--apex-table-accent-color);
+  }
+
+.apex-table-toolbar, .apex-table-pagination { padding: 10px 12px;
+  }
+
+.apex-table-toolbar { border-bottom: 1px solid var(--apex-table-border-color);
+  }
+
+.apex-table-pagination { border-top: 1px solid var(--apex-table-border-color);
+  font-variant-numeric: tabular-nums;
+  }
+
+.apex-table-pagination button { min-width: 30px;
+  }
+
+.apex-table-pagination [aria-current='page'] { background: var(--apex-table-accent-color);
+  border-color: var(--apex-table-accent-color);
+  color: var(--apex-table-bg);
+  }
+
+.apex-table-total, .apex-table-empty, .apex-table-panel-message { color: var(--apex-table-muted-color);
+  }
+
+.apex-table-selection-summary { color: var(--apex-table-accent-color);
+  }
+
+.apex-table .apex-table-selection-summary button { min-height: 24px;
+  padding: 0 4px;
+  border: 0;
+  color: var(--apex-table-muted-color);
+  }
+
+/*
+ * 表格主题只装饰内置提示浮层。
+ * 业务菜单的外观交由 antd Dropdown 主题管理。
+ */
+.apex-table-tooltip { background: var(--apex-table-bg);
+  color: var(--apex-table-text-color);
+  border: 1px solid var(--apex-table-border-color);
+  border-radius: var(--apex-table-radius);
+  box-shadow: 0 10px 30px #25385624;
+  padding: 8px 12px;
+  }
+
+/*
+ * 配置弹窗沿用表格字体和主题，使用细网格、交替行色与紧凑开关。
+ * 提示、拖动高亮和确认按钮统一复用现有蓝色主题变量。
+ */
+.apex-table-settings-modal::backdrop { background: #18223566;
+  }
+
+.apex-table.apex-table-settings-modal { box-shadow: 0 16px 64px #14213d40;
+  }
+
+.apex-table-column-settings:focus { outline: none;
+  }
+
+.apex-table-panel-title { border-bottom: 1px solid var(--apex-table-border-color);
+  }
+
+.apex-table-panel-title button { border: 0;
+  font-size: 20px;
+  line-height: 1;
+  }
+
+.apex-table-settings-tools p { color: var(--apex-table-accent-color);
+  background: var(--apex-table-header-bg);
+  border: 1px solid var(--apex-table-border-color);
+  border-radius: 4px;
+  }
+
+.apex-table-settings-grid { border-top: 1px solid var(--apex-table-border-color);
+  border-left: 1px solid var(--apex-table-border-color);
+  }
+
+.apex-table-settings-grid th, .apex-table-settings-grid td { border-right: 1px solid var(--apex-table-border-color);
+  border-bottom: 1px solid var(--apex-table-border-color);
+  }
+
+.apex-table-settings-grid th { background: var(--apex-table-header-bg);
+  font-weight: 500;
+  }
+
+.apex-table-settings-grid th span { color: var(--apex-table-accent-color);
+  }
+
+.apex-table-settings-row { background: var(--apex-table-bg);
+  }
+
+.apex-table-settings-row:nth-child(even) { background: var(--apex-table-row-hover-bg);
+  }
+
+.apex-table-settings-row:hover, .apex-table-settings-row:focus-within, .apex-table-settings-row[data-dragging] { background: var(--apex-table-row-selected-bg);
+  }
+
+.apex-table-settings-grid input { background: transparent;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  }
+
+.apex-table-settings-grid input:hover:not(:disabled), .apex-table-settings-grid input:focus { background: var(--apex-table-bg);
+  border-color: var(--apex-table-border-color);
+  }
+
+.apex-table .apex-table-drag-handle { background: transparent;
+  border: 0;
+  border-radius: 0;
+  }
+
+.apex-table .apex-table-settings-switch { background: var(--apex-table-muted-color);
+  border: 0;
+  border-radius: 20px;
+  }
+
+.apex-table .apex-table-settings-switch[aria-checked='true'] { background: var(--apex-table-accent-color);
+  }
+
+.apex-table-settings-switch::after { background: #fff;
+  border-radius: 50%;
+  }
+
+.apex-table .apex-table-settings-switch:disabled { opacity: 0.5;
+  }
+
+.apex-table-settings-footer { border-top: 1px solid var(--apex-table-border-color);
+  }
+
+.apex-table-settings-footer button { min-width: 100px;
+  }
+
+.apex-table .apex-table-settings-confirm, .apex-table .apex-table-settings-confirm:hover:not(:disabled) { color: #fff;
+  background: var(--apex-table-accent-color);
+  border-color: var(--apex-table-accent-color);
+  }
+
+.apex-table-skeleton-row span { background: var(--apex-table-header-bg);
+  border-radius: 4px;
+  animation: apex-table-pulse 1.4s ease-in-out infinite alternate;
+  }
+
+.apex-table-error strong { font-weight: 500;
+  }
+@keyframes apex-table-pulse { to { opacity: 0.4;
+  } }
+@media (prefers-reduced-motion: reduce) { .apex-table-skeleton-row span { animation: none;
+  } }

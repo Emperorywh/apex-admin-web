@@ -1,0 +1,49 @@
+/* 弹窗 body 限高内部滚动：多地图组时不撑破屏幕 */
+.modal_body {
+    max-height: calc(100vh - 220px);
+    overflow-y: auto;
+    /* 给滚动条留位，避免压住表单右边缘 */
+    padding-right: 8px;
+}
+
+.group_card {
+    margin-bottom: 16px;
+
+    /* 组头右侧工具区：行搜索 + 只看未填完整 + 期望点位数量 + 获取建议 + 清空 + 删除组 */
+    .group_toolbar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* 行数统计行（仅统计文本，右对齐） */
+    .row_toolbar {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+
+        .row_stats {
+            margin-left: auto;
+            color: rgba(0, 0, 0, 0.45);
+            font-size: 12px;
+
+            /* 半填行计数用红色引起注意 */
+            .invalid_count {
+                margin-left: 8px;
+                color: #ff4d4f;
+            }
+        }
+    }
+
+    /* 半填行高亮：选了节点缺坐标或反之，提示用户补全 */
+    .invalid_row {
+        td {
+            background: #fff1f0 !important;
+        }
+    }
+
+    /* 「添加映射行」与上方行表格拉开间距 */
+    .add_row {
+        margin-top: 12px;
+    }
+}

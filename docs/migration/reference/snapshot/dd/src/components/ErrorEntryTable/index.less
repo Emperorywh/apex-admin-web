@@ -1,0 +1,10 @@
+.errorEntryTable {
+	// 宽度交由调用方外层容器决定，组件内表格 100% 自适应填充
+	width: 100%;
+
+	:global(.ant-table-cell) {
+		// 长文本换行、不省略截断，配合 tableLayout="fixed" 保证列宽稳定
+		white-space: normal;
+		word-break: break-word;
+	}
+}

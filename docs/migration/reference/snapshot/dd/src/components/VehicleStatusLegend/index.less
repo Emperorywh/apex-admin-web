@@ -1,0 +1,98 @@
+/**
+ * 车辆状态图例样式。
+ * 面板底色/边框/文字一律使用 AntD CSS 变量，暗黑/亮色主题自适应（不写死白色），
+ * 与 GraphBar/index.less 中 svg { fill: var(--ant-color-text) } 的既有做法一致。
+ */
+.vehicle_status_legend {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    user-select: none;
+
+    // 展开面板：固定在按钮上方，向上生长
+    .panel {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        padding: 8px 10px;
+        border: 1px solid var(--ant-color-border-secondary);
+        border-radius: 6px;
+        background: var(--ant-color-bg-container);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
+        // 画布过矮时（如 Overlook 分栏拖高面板后）内部滚动，不溢出画布
+        max-height: calc(100% - 16px);
+        overflow: auto;
+    }
+
+    .item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        line-height: 1.4;
+        white-space: nowrap;
+        color: var(--ant-color-text);
+    }
+
+    // 10×10 色块容器（状态 / 告警 / 装饰三组共用）
+    .swatch {
+        box-sizing: border-box;
+        flex-shrink: 0;
+        width: 10px;
+        height: 10px;
+        border-radius: 2px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    // 状态色块：填充 + 描边双色（填充与描边颜色均内联给定）
+    .status_swatch {
+        border: 2px solid transparent;
+    }
+
+    // 组间分隔线：1px 横向通栏，颜色随主题
+    .divider {
+        width: 100%;
+        height: 1px;
+        background: var(--ant-color-split);
+    }
+
+    // 装饰图形的深灰底衬：白色载货线 / 充电三角在白色面板上不可见（与 robotProperty.textFill 同色）
+    .backing {
+        background: #37474F;
+    }
+
+    // 有任务：蓝色圆点（无底衬）
+    .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+    }
+
+    // 载货：白色横线
+    .line {
+        width: 8px;
+        height: 2px;
+    }
+
+    // 充电标识：白色实心三角（CSS border 技巧，带色边的颜色内联给定）
+    .triangle {
+        width: 0;
+        height: 0;
+        border-top: 4px solid transparent;
+        border-bottom: 4px solid transparent;
+        border-right: 6px solid transparent;
+    }
+
+    // 车头方向：黄色竖线
+    .headline {
+        width: 2px;
+        height: 8px;
+    }
+}

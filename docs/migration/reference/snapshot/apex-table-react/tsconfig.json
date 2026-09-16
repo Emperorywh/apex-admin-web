@@ -1,0 +1,43 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    /*
+     * 面向现代 ESM 浏览器，保留原生迭代器与异步语义。
+     * 显式目标同时用于独立类型消费，不依赖文档临时配置。
+     */
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "declaration": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    /*
+     * 使用现代 JSX 转换，满足 React 19 的编译要求。
+     * 该运行时同样支持 React 18，保留组件库的双版本消费能力。
+     */
+    "jsx": "react-jsx",
+    "baseUrl": "./",
+    "paths": {
+      /*
+       * 文档示例按公开包名检查组件和适配器类型，与文档构建的源码映射保持一致。
+       * 仅声明示例所需的公开入口，其他子路径继续按包的 exports 解析。
+       */
+      "apex-table-react": ["src/index.ts"],
+      "apex-table-react/adapters/local-column-preferences": ["src/adapters/local-column-preferences.ts"],
+      /*
+       * @ 统一指向源码目录，支持入口导入与目录内文件导入。
+       * father 构建会读取此映射，文档构建同步使用相同别名。
+       */
+      "@": ["src"],
+      "@/*": ["src/*"],
+      "@@/*": [".dumi/tmp/*"],
+      "ApexTableReact": ["src"],
+      "ApexTableReact/*": ["src/*", "*"]
+    }
+  },
+  /*
+   * 类型检查覆盖组件源码、构建配置、文档示例与本地主题插槽。
+   * 性能测试目录已清理，示例数据由文档目录独立维护。
+   */
+  "include": [".dumirc.ts", ".fatherrc.ts", ".dumi/theme/**/*", "src/**/*", "docs/demos/**/*"]
+}

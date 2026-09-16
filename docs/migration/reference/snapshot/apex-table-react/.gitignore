@@ -1,0 +1,14 @@
+node_modules
+/dist
+# 文档构建产物可由 docs:build 随时重新生成。
+# 保留本地预览文件，但不将其纳入源码版本管理。
+/docs-dist
+# 本地打包文件与文档示例构建元数据可以按命令重建。
+# 临时产物统一保存在 .artifacts，不纳入源码版本管理。
+/.artifacts
+# 独立主题示例由文档构建生成，保留 examples 下的源码。
+/public/structure-only/
+.dumi/tmp
+.dumi/tmp-test
+.dumi/tmp-production
+.DS_Store
