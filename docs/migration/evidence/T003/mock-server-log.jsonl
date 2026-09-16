@@ -1,0 +1,24 @@
+{"t":"2026-09-16T09:16:17.313Z","note":"mock-legacy listening on 9377"}
+{"t":"2026-09-16T09:16:55.801Z","method":"GET","path":"/fms/v1/t003/echo","query":{},"authorization":null,"accept-language":null}
+{"t":"2026-09-16T09:17:02.183Z","method":"GET","path":"/fms/v1/t003/echo","query":{},"authorization":null,"accept-language":null}
+{"t":"2026-09-16T09:19:01.516Z","method":"GET","path":"/fms/v1/t003/echo","query":{},"authorization":"Bearer already-prefixed-token","accept-language":"zh-CN"}
+{"t":"2026-09-16T09:19:21.495Z","method":"GET","path":"/fms/v1/t003/echo","query":{},"authorization":"Bearer already-prefixed-token","accept-language":"zh-CN"}
+{"t":"2026-09-16T09:19:21.504Z","method":"GET","path":"/fms/v1/t003/echo","query":{},"authorization":"Bearer raw-token-123","accept-language":"zh-CN"}
+{"t":"2026-09-16T09:19:21.508Z","method":"GET","path":"/fms/v1/t003/page","query":{},"authorization":"Bearer raw-token-123","accept-language":"zh-CN"}
+{"t":"2026-09-16T09:19:53.828Z","method":"GET","path":"/fms/v1/t003/echo","query":{},"authorization":"Bearer already-prefixed-token","accept-language":"zh-CN"}
+{"t":"2026-09-16T09:19:53.831Z","method":"GET","path":"/fms/v1/t003/echo","query":{},"authorization":"Bearer raw-token-123","accept-language":"zh-CN"}
+{"t":"2026-09-16T09:19:53.835Z","method":"GET","path":"/fms/v1/t003/page","query":{},"authorization":"Bearer raw-token-123","accept-language":"zh-CN"}
+{"t":"2026-09-16T09:20:19.172Z","method":"GET","path":"/fms/v1/t003/biz-fail","query":{},"authorization":"Bearer raw-token-123","accept-language":"zh-CN"}
+{"t":"2026-09-16T09:20:19.177Z","method":"GET","path":"/fms/v1/t003/expired","query":{},"authorization":"Bearer raw-token-123","accept-language":"zh-CN"}
+{"t":"2026-09-16T09:20:19.183Z","method":"GET","path":"/fms/v1/t003/unauthorized","query":{},"authorization":"Bearer raw-token-123","accept-language":"zh-CN"}
+{"t":"2026-09-16T09:20:19.189Z","method":"GET","path":"/fms/v1/t003/malformed","query":{},"authorization":"Bearer raw-token-123","accept-language":"zh-CN"}
+{"t":"2026-09-16T09:20:42.845Z","method":"GET","path":"/fms/v1/t003/export","query":{},"authorization":"Bearer raw-token-123","accept-language":"zh-CN"}
+{"t":"2026-09-16T09:20:42.857Z","method":"GET","path":"/fms/v1/t003/export-json-error","query":{},"authorization":"Bearer raw-token-123","accept-language":"zh-CN"}
+{"t":"2026-09-16T09:20:42.861Z","method":"GET","path":"/fms/v1/t003/export-json-error-labeled","query":{},"authorization":"Bearer raw-token-123","accept-language":"zh-CN"}
+{"t":"2026-09-16T09:21:01.087Z","method":"GET","path":"/fms/v1/t003/write-count","query":{},"authorization":"Bearer raw-token-123","accept-language":"zh-CN"}
+{"t":"2026-09-16T09:21:01.092Z","method":"GET","path":"/fms/v1/t003/write-count","query":{},"authorization":"Bearer raw-token-123","accept-language":"zh-CN"}
+{"t":"2026-09-16T09:21:01.096Z","method":"POST","path":"/fms/v1/t003/write","query":{"delay":"1500"},"authorization":"Bearer raw-token-123","accept-language":"zh-CN","writeHitsTotal":1}
+{"t":"2026-09-16T09:21:03.210Z","method":"GET","path":"/fms/v1/t003/write-count","query":{},"authorization":"Bearer raw-token-123","accept-language":"zh-CN"}
+{"t":"2026-09-16T09:21:03.214Z","method":"POST","path":"/fms/v1/t003/write","query":{},"authorization":"Bearer raw-token-123","accept-language":"zh-CN","writeHitsTotal":2}
+{"t":"2026-09-16T09:21:03.226Z","method":"GET","path":"/fms/v1/t003/write-count","query":{},"authorization":"Bearer raw-token-123","accept-language":"zh-CN"}
+{"t":"2026-09-16T09:21:24.769Z","method":"GET","path":"/fms/v1/t003/native","query":{"fileId":"7","name":"备份"},"authorization":null,"accept-language":"zh-CN","nativeHitsTotal":1}

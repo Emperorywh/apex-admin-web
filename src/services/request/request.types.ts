@@ -34,13 +34,17 @@ export interface ApiFieldError {
 /** 规范化后的 API 错误；后端 problem+json 与前端本地错误统一收敛到此形状 */
 export interface ApiError {
   readonly isApiError: true
-  /** 稳定错误码：<MODULE>.<REASON> 或 CLIENT.* */
+  /** 稳定错误码：<MODULE>.<REASON> 或 CLIENT.* / LEGACY.* */
   readonly code: string
   /** HTTP 状态码；网络错误为 0 */
   readonly status: number
   readonly title: string
   readonly detail?: string
   readonly errors?: ApiFieldError[]
+  /** 旧协议业务码原文（如 1000000/1001000）；仅旧协议错误携带 */
+  readonly bizCode?: number
+  /** 旧协议业务 message 原文（后端已按请求语言本地化）；仅旧协议错误携带 */
+  readonly bizMessage?: string
 }
 
 /** 请求可选项 */
