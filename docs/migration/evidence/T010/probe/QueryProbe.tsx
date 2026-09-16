@@ -1,13 +1,14 @@
 /**
- * 【临时验证页，提交前移除】T010 查询控制器探针：
- * 双实例（独立链路）+ 1 秒轮询 + 可控 tag/delay/fail，用于采集
- * 慢请求竞态、连续失败、隐藏/恢复与关闭销毁的请求时间线。
- * 源码副本保留在 docs/migration/evidence/T010/probe/ 供复现。
+ * 【验证探针，仅复现用，不在 src 中】T010 查询控制器探针（2026-09-16 验收收尾轮实际使用版本）：
+ * 双实例（独立链路）：A 带 1 秒轮询、B 不轮询——B 仅在挂载与可见性恢复时
+ * 各发一次请求，使"恢复立即请求"（V03b）与"关闭/隐藏中止在途"（V04、document 分支）
+ * 的时间线证据无歧义。复现时以 /query-probe 临时路由挂回（提交前从 src 移除）。
  */
 
 import { useState } from 'react'
 import { legacyGet } from '@/services/request/legacy/legacyRequest'
 import { PAGE_POLLING, usePageQuery } from '@/hooks/page-query'
+import type { PagePollingPolicy } from '@/hooks/page-query'
 
 interface QueryEcho {
   tag: string
@@ -20,8 +21,16 @@ interface ProbeParams {
   fail: number
 }
 
-/** 探针实例：把 fetch 会计入局部计数，用于目视断言“在途 + 定时器”不堆叠 */
-function ProbeInstance({ id, initial }: { id: string; initial: ProbeParams }) {
+/** 探针实例：polling 缺省即不轮询；fetch 会计入局部计数，用于目视断言请求发起时机 */
+function ProbeInstance({
+  id,
+  initial,
+  polling,
+}: {
+  id: string
+  initial: ProbeParams
+  polling?: PagePollingPolicy
+}) {
   const [params, setParams] = useState<ProbeParams>(initial)
   const [issued, setIssued] = useState(0)
 
@@ -31,7 +40,7 @@ function ProbeInstance({ id, initial }: { id: string; initial: ProbeParams }) {
       return legacyGet<QueryEcho>('/fms/v1/dev/query', { ...p }, { signal })
     },
     params,
-    polling: PAGE_POLLING.taskRecords,
+    polling,
   })
 
   return (
@@ -39,7 +48,7 @@ function ProbeInstance({ id, initial }: { id: string; initial: ProbeParams }) {
       data-probe={id}
       style={{ border: '1px solid #888', padding: 12, margin: 12, maxWidth: 560, fontFamily: 'monospace' }}
     >
-      <h3>实例 {id}</h3>
+      <h3>实例 {id}{polling ? '（轮询）' : '（不轮询）'}</h3>
       <div>
         tag:
         <input
@@ -72,7 +81,7 @@ export default function QueryProbe() {
   return (
     <div style={{ padding: 16 }}>
       <h2>T010 查询探针（临时页面）</h2>
-      <ProbeInstance id="A" initial={{ tag: 'A0', delay: 0, fail: 0 }} />
+      <ProbeInstance id="A" initial={{ tag: 'A0', delay: 0, fail: 0 }} polling={PAGE_POLLING.taskRecords} />
       <ProbeInstance id="B" initial={{ tag: 'B0', delay: 0, fail: 0 }} />
     </div>
   )

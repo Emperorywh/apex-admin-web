@@ -107,7 +107,7 @@ T098—T105 只复核自己领域的组成任务与动作证据（A01/A07），�
 
 ### T010 — 建立可见性驱动的查询与轮询
 
-- **状态**：实现/资料＝产物就绪（合同 docs/migration/contracts/page-query.md）；验收＝未开始（V01/V02/V03a/V05/V06 隔离证据见 docs/migration/evidence/T010/，V03b/V04/document 分支待补，交接见 docs/migration/handoffs/T010.md）。 预计30—40分钟。
+- **状态**：实现/资料＝产物就绪（合同 docs/migration/contracts/page-query.md）；验收＝隔离验证通过（2026-09-16，V01—V06 及 document 分支证据见 docs/migration/evidence/T010/，前台真实轮询频率归 T090 复核，交接见 docs/migration/handoffs/T010.md）。 预计30—40分钟。
 - **实现依赖**：[T003](#t003)、[T007](#t007)。
 - **定位**：SPEC §6.3、§9.2、A07/A12；usePageActive、usePageRequest、RequestScopeProvider。
 - **本卡迁移**：改造现有查询 scope，加入可见性、恢复刷新及过期响应隔离；按源调用点提供轮询策略，交付统一查询接口。

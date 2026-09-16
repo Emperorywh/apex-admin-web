@@ -53,8 +53,9 @@ const server = http.createServer((req, res) => {
       ms: Date.now() - started,
       method: req.method,
       url: req.url,
-      /* 客户端中止判定：'aborted' 事件在响应完成前被客户端中断时触发 */
-      aborted: clientAborted,
+      /* 客户端中止判定：'aborted' 事件在响应完成前被客户端中断时触发；
+         再以 res.destroyed 兜底（socket 断开但事件时序差异时不漏记） */
+      aborted: clientAborted || res.destroyed,
       ...extra,
     })
 
