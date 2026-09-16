@@ -11,23 +11,29 @@
  *   （宿主层级），保证切页签/切布局时任务继续接收回执。
  */
 
-import { useEffect, useMemo, useRef } from 'react'
-import { Outlet, useLocation, useMatches, useNavigate } from 'react-router'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
+import { Outlet, useBlocker, useLocation, useMatches, useNavigate } from 'react-router'
+import { App } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { GlobalProgress } from '@/components/GlobalProgress/GlobalProgress'
 import { useAppDispatch } from '@/hooks/useAppDispatch'
 import { useAppSelector } from '@/hooks/useAppSelector'
 import { useAuth } from '@/hooks/useAuth'
 import { collectAffixTabSeeds, ROUTE_IDS } from '@/router/definitions'
+import { resolveFirstAccessiblePath } from '@/router/firstAccessible'
 import { buildLoginPath } from '@/router/redirect'
 import { findRouteMeta } from '@/router/projections'
-import { buildObjectTabKey } from '@/router/objectTab'
+import { resolveTabIdentity } from '@/router/tabIdentity'
 import type { RouteHandle, RouteMeta } from '@/router/router.types'
 import { affixTabsSeeded, tabSynced } from '@/store/slices/tabsSlice'
-import { normalizeSearchString } from '@/utils/url'
+import {
+  collectProtectedTabKeys,
+  needsCapacityAdmission,
+} from '@/services/page-session/leaveGuard'
 import { DockMenu } from '@/layouts/BasicLayout/components/DockMenu/DockMenu'
 import { Header } from '@/layouts/BasicLayout/components/Header/Header'
 import { PageCacheHost } from '@/layouts/BasicLayout/components/PageCacheHost/PageCacheHost'
+import { LeaveGuardHost } from '@/layouts/SessionHost/LeaveGuardHost'
 import { SessionTasksHost } from '@/layouts/SessionHost/SessionTasksHost'
 import styles from '@/layouts/SessionHost/SessionHost.module.css'
 
@@ -56,7 +62,7 @@ export function SessionHost() {
   const matches = useMatches()
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, identity } = useAuth()
   const tabsState = useAppSelector((state) => state.tabs)
   const { t } = useTranslation('menu')
 
@@ -76,42 +82,62 @@ export function SessionHost() {
     dispatch(affixTabsSeeded(collectAffixTabSeeds()))
   }, [dispatch])
 
-  /* 页签同步：hideInTabs 视图不生成页签；对象详情按「路径 + 对象标识」生成稳定 key */
+  /* 页签同步：hideInTabs 视图不生成页签；对象详情按「路径 + 对象标识」生成稳定 key。
+     身份规则收敛在 router/tabIdentity（页面侧 usePageSession 共用）；
+     受保护页签清单按保护快照现算传入，LRU 淘汰时豁免（T013 §9.1） */
   useEffect(() => {
-    if (leaf === null || leaf.meta.hideInTabs) return
-    const search = normalizeSearchString(location.search)
-    let tabKey = leaf.meta.tabKeyMode === 'pathname' ? location.pathname : `${location.pathname}${search}`
-    let tabSearch = search
-    if (leaf.meta.objectParam !== undefined) {
-      // 对象页签：兼容旧裸 query 并归一到规范参数，其余 query 不参与身份。
-      // 页签快照统一存储规范参数形式的 search：激活导航据此把裸 query 地址
-      // replace 成规范形式，二次同步命中同一页签只更新快照，不会因
-      // normalizeSearchString 给裸 key 补「=」而产生第二个无身份页签
-      const resolved = buildObjectTabKey(location.pathname, location.search, leaf.meta.objectParam)
-      tabKey = resolved.key
-      if (resolved.objectKey !== null) {
-        tabSearch = `?${leaf.meta.objectParam}=${encodeURIComponent(resolved.objectKey)}`
-      }
-    }
+    if (leaf === null) return
+    const identity = resolveTabIdentity(leaf.meta, location)
+    if (identity === null) return
     dispatch(
       tabSynced({
-        tabKey,
+        tabKey: identity.tabKey,
         routeId: leaf.routeId,
         affix: leaf.meta.affixTab === true,
         closable: leaf.meta.affixTab !== true,
         cacheable: leaf.meta.noCache !== true,
         location: {
           pathname: location.pathname,
-          search: tabSearch,
+          search: identity.tabSearch,
           hash: location.hash,
           key: location.key,
         },
+        protectedTabKeys: collectProtectedTabKeys(),
       }),
     )
   }, [dispatch, leaf, location.pathname, location.search, location.hash, location.key])
 
-  /* 页签操作（关闭/批量关闭）后的激活导航：URL 未变而激活页签变化时跳转到新激活页 */
-  const activeTab = useMemo(
+  /* 容量准入（T013 §9.1）：目标会新建页签、缓存已满且候选全部受保护时，
+     在导航提交前（useBlocker 保持 blocked）弹确认——确认则继续打开（暂时
+     超容量、受保护页不淘汰），取消则留在当前页；其余导航不被拦截。 */
+  const { modal } = App.useApp()
+  const { t: tCommon } = useTranslation('common')
+  const isAuthenticatedRef = useRef(isAuthenticated)
+  isAuthenticatedRef.current = isAuthenticated
+  const shouldCheckCapacity = useCallback((to: { pathname: string; search: string }) => {
+    /* 认证失效跳转登录页永不拦截；容量判定在守卫回调内同步完成 */
+    if (!isAuthenticatedRef.current) return false
+    return needsCapacityAdmission(to.pathname, to.search)
+  }, [])
+  const capacityBlocker = useBlocker(({ nextLocation: to }) => shouldCheckCapacity(to))
+  /* 每次进入 blocked（含被拦后再次导航产生的新的 blocked 状态）都重建弹窗，
+     保证 proceed/reset 绑定当前被拦导航，不残留对旧导航的引用 */
+  const blockerKey = capacityBlocker.state === 'blocked' ? capacityBlocker.location?.key ?? 'blocked' : capacityBlocker.state
+  useEffect(() => {
+    if (capacityBlocker.state !== 'blocked') return
+    const instance = modal.confirm({
+      title: tCommon('页签容量已满'),
+      content: tCommon('存在带草稿或执行中任务的受保护页签且缓存已满。可先处理任务、保存或关闭受保护页签；仍要打开将继续，受保护页签不会被淘汰。'),
+      okText: tCommon('仍要打开'),
+      cancelText: tCommon('留在当前页'),
+      onOk: () => capacityBlocker.proceed(),
+      onCancel: () => capacityBlocker.reset(),
+    })
+    return () => instance.destroy()
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- capacityBlocker 随 state/location 变化换新，故以 blockerKey 触发
+  }, [blockerKey, modal, tCommon])
+
+  /* 页签操作（关闭/批量关闭）后的激活导航：URL 未变而激活页签变化时跳转到新激活页 */  const activeTab = useMemo(
     () => tabsState.tabs.find((tab) => tab.key === tabsState.activeTabKey) ?? null,
     [tabsState],
   )
@@ -124,13 +150,20 @@ export function SessionHost() {
       lastLocationKeyRef.current = location.key
       return
     }
-    if (activeTab === null) return
+    if (activeTab === null) {
+      /* 全部页签被关闭（T013）：不留无宿主空页，replace 回首个有权入口，
+         由页签同步重新播种；满幅视图/公开路由不在此列 */
+      if (tabsState.tabs.length === 0 && !isOverlayView && !isPublicRoute && identity !== null) {
+        navigate(resolveFirstAccessiblePath(identity), { replace: true })
+      }
+      return
+    }
     const target = `${activeTab.location.pathname}${activeTab.location.search}${activeTab.location.hash}`
     const current = `${location.pathname}${location.search}${location.hash}`
     if (target !== current) {
       navigate(target, { replace: true })
     }
-  }, [activeTab, location.pathname, location.search, location.hash, location.key, navigate])
+  }, [activeTab, identity, isOverlayView, isPublicRoute, location.pathname, location.search, location.hash, location.key, navigate, tabsState.tabs.length])
 
   /* 会话失效：跳登录页并携带回跳地址（页签与缓存已由 sessionExpired 统一清空） */
   useEffect(() => {
@@ -170,6 +203,9 @@ export function SessionHost() {
             布局与页签宿主之上），保证切页签/进全屏/切布局时任务继续接收回执；
             纪元变化（登出/切账号/失效）时由宿主清空旧会话任务记录 */}
         <SessionTasksHost />
+        {/* T013：离开保护宿主——离开确认弹窗、beforeunload 原生守卫与
+            页面会话（草稿/轻量状态）纪元复位，同处稳定会话层 */}
+        <LeaveGuardHost />
       </main>
       <div className={styles.dockSlot}>
         <DockMenu />

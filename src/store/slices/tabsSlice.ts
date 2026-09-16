@@ -13,8 +13,8 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 import { sessionExpired } from '@/store/slices/authSlice'
 
-/** 非固定页签的最大缓存实例数；affix 页签不计入 */
-const PAGE_CACHE_MAX_ENTRIES = 10
+/** 非固定页签的最大缓存实例数；affix 页签不计入（容量准入判定复用此常量） */
+export const PAGE_CACHE_MAX_ENTRIES = 10
 
 /** 可序列化的 location 快照；state 固定为 null */
 export interface TabLocationSnapshot {
@@ -47,6 +47,11 @@ export interface TabSyncPayload {
   /** noCache 路由为 false：仅当前实例、离开即卸载 */
   cacheable: boolean
   location: TabLocationSnapshot
+  /**
+   * 受保护页签（有草稿/执行中或待确认写入/在途传输）：LRU 淘汰时豁免。
+   * 由宿主在每次页签同步时按保护快照现算传入（§9.1 缓存淘汰行）。
+   */
+  protectedTabKeys?: readonly string[]
 }
 
 interface TabsState {
@@ -74,12 +79,6 @@ const initialState: TabsState = {
   tabs: [],
   activeTabKey: null,
   seq: 0,
-}
-
-/** 保留 affix 与目标页签，关闭其余；返回新的激活 key */
-function closeOthers(tabs: TabEntry[], keepKey: string): { tabs: TabEntry[]; activeTabKey: string } {
-  const next = tabs.filter((tab) => tab.affix || !tab.closable || tab.key === keepKey)
-  return { tabs: next, activeTabKey: keepKey }
 }
 
 const tabsSlice = createSlice({
@@ -129,54 +128,38 @@ const tabsSlice = createSlice({
       }
       state.activeTabKey = tabKey
 
-      // LRU：仅统计非 affix 缓存实例，当前激活页永不被淘汰
+      // LRU：仅统计非 affix 缓存实例，当前激活页永不被淘汰；
+      // 受保护页签（草稿/执行中或待确认任务/在途传输）豁免淘汰（§9.1），
+      // 全部候选受保护时宁可暂时超出容量，也不丢状态
       if (cacheable) {
+        const protectedKeys = new Set(action.payload.protectedTabKeys ?? [])
         const cachedNonAffix = state.tabs
-          .filter((tab) => tab.cached && !tab.affix && tab.key !== tabKey)
+          .filter(
+            (tab) =>
+              tab.cached && !tab.affix && tab.key !== tabKey && !protectedKeys.has(tab.key),
+          )
           .sort((a, b) => a.activatedSeq - b.activatedSeq)
         for (const victim of cachedNonAffix.slice(0, Math.max(0, cachedNonAffix.length - (PAGE_CACHE_MAX_ENTRIES - 1)))) {
           victim.cached = false
         }
       }
     },
-    /** 关闭单个页签；若关闭的是当前页，优先激活右侧、其次左侧 */
-    tabClosed(state, action: PayloadAction<string>) {
-      const index = state.tabs.findIndex((tab) => tab.key === action.payload)
-      if (index < 0) return
-      const wasActive = state.activeTabKey === action.payload
-      state.tabs.splice(index, 1)
-      if (wasActive) {
-        const right = state.tabs[index]
-        const left = state.tabs[index - 1]
+    /**
+     * 关闭一组页签（原子批量）：离开协调器统一确认后调用，一次 dispatch
+     * 全部生效——取消确认时不产生任何部分关闭。关闭激活页签时优先激活
+     * 原位置右侧、其次左侧的存留页签（与原单关语义一致）。
+     */
+    tabsClosed(state, action: PayloadAction<string[]>) {
+      const keys = new Set(action.payload)
+      if (keys.size === 0) return
+      const firstRemovedIndex = state.tabs.findIndex((tab) => keys.has(tab.key))
+      state.tabs = state.tabs.filter((tab) => !keys.has(tab.key))
+      if (state.activeTabKey !== null && keys.has(state.activeTabKey)) {
+        // 首个被关页签之前的页签全部存留，新数组该下标即原位置右侧邻居
+        const right = state.tabs[firstRemovedIndex]
+        const left = state.tabs[firstRemovedIndex - 1]
         state.activeTabKey = right?.key ?? left?.key ?? state.tabs[0]?.key ?? null
       }
-    },
-    /** 关闭其他页签（affix 永不受影响） */
-    otherTabsClosed(state, action: PayloadAction<string>) {
-      const result = closeOthers(state.tabs, action.payload)
-      state.tabs = result.tabs
-      state.activeTabKey = result.activeTabKey
-    },
-    /** 关闭左侧页签 */
-    leftTabsClosed(state, action: PayloadAction<string>) {
-      const index = state.tabs.findIndex((tab) => tab.key === action.payload)
-      if (index < 0) return
-      const removedActive = state.tabs.slice(0, index).some((tab) => tab.key === state.activeTabKey)
-      state.tabs = state.tabs.filter((tab, i) => i >= index || !tab.closable || tab.affix)
-      if (removedActive) state.activeTabKey = action.payload
-    },
-    /** 关闭右侧页签 */
-    rightTabsClosed(state, action: PayloadAction<string>) {
-      const index = state.tabs.findIndex((tab) => tab.key === action.payload)
-      if (index < 0) return
-      const removedActive = state.tabs.slice(index + 1).some((tab) => tab.key === state.activeTabKey)
-      state.tabs = state.tabs.filter((tab, i) => i <= index || !tab.closable || tab.affix)
-      if (removedActive) state.activeTabKey = action.payload
-    },
-    /** 关闭全部页签：只保留 affix 并激活第一个 */
-    allTabsClosed(state) {
-      state.tabs = state.tabs.filter((tab) => tab.affix || !tab.closable)
-      state.activeTabKey = state.tabs[0]?.key ?? null
     },
     /** 刷新页签：revision +1，重建组件并重新进入缓存 */
     tabRefreshed(state, action: PayloadAction<string>) {
@@ -203,11 +186,7 @@ const tabsSlice = createSlice({
 export const {
   affixTabsSeeded,
   tabSynced,
-  tabClosed,
-  otherTabsClosed,
-  leftTabsClosed,
-  rightTabsClosed,
-  allTabsClosed,
+  tabsClosed,
   tabRefreshed,
   tabMoved,
 } = tabsSlice.actions

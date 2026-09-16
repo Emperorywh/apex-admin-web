@@ -16,11 +16,11 @@ import { App } from 'antd'
 import { ArrowUpRight, Check, ChevronLeft, ChevronRight, Folder, LayoutGrid, Trash2 } from 'lucide-react'
 import { buildMenuRoutes, filterMenuByPermission } from '@/router/projections'
 import type { MenuNode } from '@/router/projections'
-import { useAppDispatch } from '@/hooks/useAppDispatch'
+import { useAppSelector } from '@/hooks/useAppSelector'
 import { useAuth } from '@/hooks/useAuth'
 import { IconTile } from '@/layouts/BasicLayout/components/IconTile/IconTile'
 import { routeIconTone } from '@/layouts/BasicLayout/components/IconTile/iconTones'
-import { allTabsClosed } from '@/store/slices/tabsSlice'
+import { requestCloseTabs } from '@/services/page-session/leaveGuard'
 import styles from '@/layouts/BasicLayout/components/DockMenu/DockMenu.module.css'
 
 /**
@@ -122,13 +122,14 @@ function subtreeContains(node: MenuNode, pathname: string): boolean {
 }
 
 export function DockMenu() {
-  const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const location = useLocation()
   const { t: tCommon } = useTranslation('common')
   const { t: tMenu } = useTranslation('menu')
   const { message } = App.useApp()
   const { hasMenu, isRoot } = useAuth()
+  /* 废纸篓关闭范围在发起时确定：affix 不可关，其余经协调器统一确认（T013） */
+  const tabs = useAppSelector((state) => state.tabs.tabs)
 
   /* 菜单树按当前身份过滤（SPEC §8.2）：叶子须持 menuCode，rootOnly 对非 root 隐藏，
      空分组整组隐藏；暂缓模块按原权限展示，deferred 标记由渲染层标注「下一轮实现」 */
@@ -249,8 +250,12 @@ export function DockMenu() {
   }
 
   const clearTabs = () => {
-    dispatch(allTabsClosed())
-    void message.success(tCommon('已关闭全部页签，仅保留固定页'))
+    /* 关闭全部走离开协调器：有草稿/任务先确认，取消时不部分关闭（T013 §9.1） */
+    void requestCloseTabs(tabs.filter((tab) => tab.closable && !tab.affix).map((tab) => tab.key)).then(
+      (closed) => {
+        if (closed) void message.success(tCommon('已关闭全部页签，仅保留固定页'))
+      },
+    )
   }
 
   return (

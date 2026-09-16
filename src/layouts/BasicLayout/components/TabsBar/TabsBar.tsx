@@ -30,15 +30,10 @@ import { useAppSelector } from '@/hooks/useAppSelector'
 import { findRouteMeta } from '@/router/projections'
 import { resolveObjectKey } from '@/router/objectTab'
 import {
-  allTabsClosed,
-  leftTabsClosed,
-  otherTabsClosed,
-  rightTabsClosed,
-  tabClosed,
-  tabMoved,
-  tabRefreshed,
-  type TabEntry,
-} from '@/store/slices/tabsSlice'
+  requestCloseTabs,
+  requestRefreshTab,
+} from '@/services/page-session/leaveGuard'
+import { tabMoved, type TabEntry } from '@/store/slices/tabsSlice'
 import styles from '@/layouts/BasicLayout/components/TabsBar/TabsBar.module.css'
 
 const SCROLL_STEP_PX = 260
@@ -92,12 +87,10 @@ export function TabsBar() {
     [navigate],
   )
 
-  const close = useCallback(
-    (key: string) => {
-      dispatch(tabClosed(key))
-    },
-    [dispatch],
-  )
+  /** 单关/批量关全部经离开协调器：有保护先确认，取消时不部分关闭（T013 §9.1） */
+  const close = useCallback((key: string) => {
+    void requestCloseTabs([key])
+  }, [])
 
   const buildContextMenu = useCallback(
     (tab: TabEntry): MenuProps => ({
@@ -110,16 +103,31 @@ export function TabsBar() {
         { key: 'right', label: t('关闭右侧页签') },
         { key: 'all', label: t('关闭全部页签') },
       ],
+      /* 批量范围在发起时按当前页签列表确定：affix 不可关；其余交给协调器
+         统一检查与确认，确认后一次 dispatch 原子生效 */
       onClick: ({ key }) => {
-        if (key === 'refresh') dispatch(tabRefreshed(tab.key))
-        else if (key === 'close') dispatch(tabClosed(tab.key))
-        else if (key === 'others') dispatch(otherTabsClosed(tab.key))
-        else if (key === 'left') dispatch(leftTabsClosed(tab.key))
-        else if (key === 'right') dispatch(rightTabsClosed(tab.key))
-        else if (key === 'all') dispatch(allTabsClosed())
+        if (key === 'refresh') void requestRefreshTab(tab.key)
+        else if (key === 'close') void requestCloseTabs([tab.key])
+        else if (key === 'others') {
+          void requestCloseTabs(
+            tabs.filter((item) => item.closable && !item.affix && item.key !== tab.key).map((item) => item.key),
+          )
+        } else if (key === 'left') {
+          const index = tabs.findIndex((item) => item.key === tab.key)
+          void requestCloseTabs(
+            tabs.slice(0, index).filter((item) => item.closable && !item.affix).map((item) => item.key),
+          )
+        } else if (key === 'right') {
+          const index = tabs.findIndex((item) => item.key === tab.key)
+          void requestCloseTabs(
+            tabs.slice(index + 1).filter((item) => item.closable && !item.affix).map((item) => item.key),
+          )
+        } else if (key === 'all') {
+          void requestCloseTabs(tabs.filter((item) => item.closable && !item.affix).map((item) => item.key))
+        }
       },
     }),
-    [dispatch, t],
+    [t, tabs],
   )
 
   const onDragEnd = useCallback(

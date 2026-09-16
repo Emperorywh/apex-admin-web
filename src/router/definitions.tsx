@@ -153,6 +153,13 @@ export const appRouteDefinitions = defineAppRoutes([
         },
       },
       {
+        // T013 验证探针（临时路由）：验证完成即移除，副本存 evidence/T013/probe/
+        id: 'dev-page-session-probe',
+        path: 'dev/page-session-probe',
+        loadPage: () => import('@/pages/dev/page-session-probe/PageSessionProbe'),
+        meta: { title: '页面会话探针', hideInMenu: true },
+      },
+      {
         id: 'over-look',
         path: 'over-look',
         // 本轮暂缓：直访/菜单命中统一暂缓提示，不加载监控模块（原实现文件留待下一轮）

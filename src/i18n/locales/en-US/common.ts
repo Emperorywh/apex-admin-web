@@ -86,4 +86,25 @@ export default {
     'Missing task key: enter from the task list, or use ?orderTaskKey=<task key>',
   '缺少车辆标识：请从车辆列表进入，或按 ?vehicleKey=<车辆标识> 访问':
     'Missing vehicle key: enter from the vehicle list, or use ?vehicleKey=<vehicle key>',
+  /* T013 离开保护与容量准入 */
+  '关闭页签前请确认': 'Confirm before closing this tab',
+  '刷新页签前请确认': 'Confirm before refreshing this tab',
+  '批量关闭页签前请确认': 'Confirm before closing these tabs',
+  '退出登录前请确认': 'Confirm before signing out',
+  '停止等待并关闭': 'Stop waiting and close',
+  '停止等待并刷新': 'Stop waiting and refresh',
+  '停止等待并全部关闭': 'Stop waiting and close all',
+  '停止等待并退出': 'Stop waiting and sign out',
+  '留在当前页': 'Stay on this page',
+  '停止等待不能撤销后端执行；结果未知时请稍后在来源页核查，系统不会自动重发。':
+    'Stopping the wait does not cancel execution on the server; if the result is unknown, verify later on the source tab. Nothing is resent automatically.',
+  '会话级任务（不隶属页签）': 'Session-level tasks (not tied to a tab)',
+  '草稿': 'Draft',
+  '执行中': 'Running',
+  '待确认': 'Unconfirmed',
+  '传输中': 'Transferring',
+  '页签容量已满': 'Tab capacity is full',
+  '存在带草稿或执行中任务的受保护页签且缓存已满。可先处理任务、保存或关闭受保护页签；仍要打开将继续，受保护页签不会被淘汰。':
+    'The cache is full and some tabs are protected by drafts or running tasks. Handle, save, or close those tabs first; you can still continue — protected tabs will not be evicted.',
+  '仍要打开': 'Open anyway',
 } as const

@@ -11,6 +11,7 @@ import dayjs from 'dayjs'
 import { Languages, LogOut, Monitor, Moon, Sun, UserRoundCog, Wifi } from 'lucide-react'
 import { ROUTE_PATHS } from '@/router/definitions'
 import { logout } from '@/services/auth/auth.service'
+import { confirmSessionExit } from '@/services/page-session/leaveGuard'
 import { apiErrorMessage, getRequestHealth, subscribeRequestHealth, type RequestHealth } from '@/services/request/request'
 import { useAppDispatch } from '@/hooks/useAppDispatch'
 import { useAppSelector } from '@/hooks/useAppSelector'
@@ -191,10 +192,14 @@ function AvatarMenu() {
     { key: 'logout', icon: <LogOut size={15} />, label: t('退出登录'), danger: true },
   ]
 
-  const onClick: MenuProps['onClick'] = ({ key }) => {
+  const onClick: MenuProps['onClick'] = async ({ key }) => {
     if (key === 'profile') {
       navigate(ROUTE_PATHS.profile)
     } else if (key === 'logout') {
+      /* 主动退出保护（T013 §9.1）：先完成草稿/写入/传输确认——无保护时
+         confirmSessionExit 直接放行；取消则留在当前页。确认后再走登出请求。 */
+      const confirmed = await confirmSessionExit()
+      if (!confirmed) return
       modal.confirm({
         title: t('确认退出登录？'),
         content: t('退出后需要重新输入账号密码。'),
@@ -209,7 +214,7 @@ function AvatarMenu() {
             void message.error(text ? `${t('退出登录出错')}${text}` : t('退出登录出错'))
             throw error
           }
-          // 成功后统一收敛：清身份/页签/缓存，BasicLayout 监听未登录自动回登录页
+          // 成功后统一收敛：清身份/页签/缓存，SessionHost 监听未登录自动回登录页
           dispatch(sessionExpired())
         },
       })
