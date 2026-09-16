@@ -28,6 +28,16 @@ export class ApiRequestError extends Error {
 
 export function toApiError(error: unknown): ApiError {
   if (error instanceof ApiRequestError) return error.api
+  // 请求层各通道（旧协议 legacyCall 等）直接抛出规范化 ApiError 形状对象；
+  // 识别并原样透传，避免被降级为 CLIENT.UNKNOWN 丢失 bizCode 与错误分类
+  // （消费方如会话任务控制器依赖 code 区分取消/业务失败/结果待确认）
+  if (
+    error !== null &&
+    typeof error === 'object' &&
+    (error as ApiError).isApiError === true
+  ) {
+    return error as ApiError
+  }
   if (axios.isAxiosError(error)) return fromAxiosError(error)
   return {
     isApiError: true,

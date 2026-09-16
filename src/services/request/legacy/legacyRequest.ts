@@ -51,6 +51,35 @@ export function setLegacyToken(token: string | null): void {
   legacyToken = token
 }
 
+/**
+ * 会话任务传输引擎（T011）专用：XHR 上传不经 axios 实例与拦截器，
+ * 由本方法提供与 JSON 通道完全一致的请求头（单一 Bearer Authorization +
+ * 当前语言 Accept-Language），避免第二份头部组装逻辑。
+ */
+export function buildLegacyRequestHeaders(): Record<string, string> {
+  const headers: Record<string, string> = {
+    // 与请求拦截器同源：i18next 为全局单例，T016 五语切换后自动生效
+    'Accept-Language': i18next.language || 'zh-CN',
+  }
+  const authorization = buildAuthorizationHeader(legacyToken)
+  if (authorization) headers.Authorization = authorization
+  return headers
+}
+
+/**
+ * 会话任务传输引擎（T011）专用：把 XHR 通道产生的错误按 JSON 通道
+ * 同样的规则发入事件总线（1000000/1001000 有专属事件，其余为
+ * request-error）；身份层（T005 事件桥）因此对上传与普通请求行为一致。
+ * 主动取消（CLIENT.CANCELLED）不产生事件，与 emitErrorEvent 内部一致。
+ */
+export function reportLegacyRequestError(
+  error: ApiError,
+  url?: string,
+  method?: string,
+): void {
+  emitErrorEvent(error, url, method)
+}
+
 /* -------------------------------------------------------------------------- */
 /* 事件总线：认证失效 / 授权缺失 / 请求错误                                        */
 /* -------------------------------------------------------------------------- */

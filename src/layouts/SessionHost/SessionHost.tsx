@@ -28,6 +28,7 @@ import { normalizeSearchString } from '@/utils/url'
 import { DockMenu } from '@/layouts/BasicLayout/components/DockMenu/DockMenu'
 import { Header } from '@/layouts/BasicLayout/components/Header/Header'
 import { PageCacheHost } from '@/layouts/BasicLayout/components/PageCacheHost/PageCacheHost'
+import { SessionTasksHost } from '@/layouts/SessionHost/SessionTasksHost'
 import styles from '@/layouts/SessionHost/SessionHost.module.css'
 
 interface ActiveLeaf {
@@ -166,7 +167,9 @@ export function SessionHost() {
           overlayActive={isOverlayView}
         />
         {/* T011 挂载点：会话级写入/文件传输任务层挂载于此（与 PageCacheHost 同级、
-            布局与页签宿主之上），保证切页签/进全屏/切布局时任务继续接收回执 */}
+            布局与页签宿主之上），保证切页签/进全屏/切布局时任务继续接收回执；
+            纪元变化（登出/切账号/失效）时由宿主清空旧会话任务记录 */}
+        <SessionTasksHost />
       </main>
       <div className={styles.dockSlot}>
         <DockMenu />
