@@ -44,3 +44,15 @@
 | 表格库正式 npm 发布 | `0.1.0` 已可用；后续修复需再发布 | 用户执行 `npm publish`（本轮不授权自动发布） | T021/T022/T024 联调、T107 正式切换 |
 | 网关（SPA 回退 + /fms、/rcsFlow 代理） | 未提供 | 测试网关信息由用户提供 | T106 |
 | 本地 FastAPI 后端（/api） | 本机未运行（实测 502 连接拒绝） | `C:\code\apex-admin` 本地启动 | 模板既有 /api 功能联调（本轮迁移主要走旧前缀） |
+
+## 5. 补正（T018，2026-09-17）：`APEX_DEV_LEGACY_TARGET` 的实际注入方式
+
+T018 真实联调实测：`vite.config.ts` 在配置求值期直接读 `process.env.APEX_DEV_LEGACY_TARGET`，
+`.env.local` **不会**被注入该变量（按 §2 注明「已填 .env.local」的启动方式，`/fms` 前缀仍不注册、请求 404）。
+正确启动方式为内联环境变量：
+
+```bash
+APEX_DEV_LEGACY_TARGET=http://<旧后端>:8888 pnpm dev
+```
+
+§4 表中「填 `.env.local`」的表述自本条起以本节为准；代理前缀、转发行为与 V04 系列结论不变。

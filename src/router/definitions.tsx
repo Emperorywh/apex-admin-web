@@ -129,7 +129,7 @@ export const appRouteDefinitions = defineAppRoutes([
     loadPage: () => import('@/pages/authorize-ingress/AuthorizeIngress/AuthorizeIngress'),
     // 软件授权页属于登录会话内的视图切换（1001000 时身份保留），
     // 隐藏外壳但不销毁会话层的页签缓存宿主
-    meta: sessionOverlayMeta('软件授权'),
+    meta: { ...sessionOverlayMeta('软件授权'), i18nNamespaces: ['auth'] },
   },
   {
     id: 'root',
@@ -461,7 +461,11 @@ export const appRouteDefinitions = defineAppRoutes([
             path: 'software-information',
             loadPage: () =>
               import('@/pages/system-involve/SoftwareInformation/SoftwareInformation'),
-            meta: { title: '软件信息', menuCode: MENU_PERM.SYSTEM_SOFTWARE_VIEW },
+            meta: {
+              title: '软件信息',
+              menuCode: MENU_PERM.SYSTEM_SOFTWARE_VIEW,
+              i18nNamespaces: ['system'],
+            },
           },
           {
             // SPEC §8.2 修正：源 .umirc.ts 遗漏 access，菜单与直访统一要求

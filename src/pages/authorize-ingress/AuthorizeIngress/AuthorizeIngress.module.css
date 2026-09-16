@@ -1,0 +1,360 @@
+/*
+ * 软件授权页样式（P02，迁移自源 index.less @ e570b8df）。
+ * 设计方向：与「服务器资源监控大屏」一致的深蓝科技风——
+ * 藏青底色 + 网格/扫描线氛围 + 青蓝辉光，面板复用大屏的四角科技边框语言。
+ * 本页为自包含暗色设计（源即不随全局主题切换），色值为源样式原样保留。
+ */
+
+/* 主题变量（取自源大屏的深蓝色板） */
+.auth {
+  --auth-corner: #35c8ff;
+  --auth-accent: #3987e5;
+  --auth-panel-border: rgba(64, 140, 255, 0.22);
+  --auth-text-primary: #e8f2ff;
+  --auth-text-secondary: #9fb4d8;
+  --auth-text-muted: #66779c;
+  --auth-num-font: 'Orbitron', 'Bahnschrift', 'Segoe UI', sans-serif;
+
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  color: var(--auth-text-primary);
+  /* 背景与大屏一致：顶部蓝色径向辉光 + 底部青色回光 + 藏青基底 */
+  background:
+    radial-gradient(ellipse at 50% -18%, rgba(41, 98, 255, 0.2), transparent 58%),
+    radial-gradient(ellipse at 50% 118%, rgba(0, 229, 255, 0.09), transparent 55%),
+    #040a18;
+}
+
+/* 背景氛围：网格（径向渐隐，参数与大屏相同） */
+.auth::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(0deg, rgba(70, 130, 220, 0.05) 0 1px, transparent 1px 44px),
+    repeating-linear-gradient(90deg, rgba(70, 130, 220, 0.05) 0 1px, transparent 1px 44px);
+  mask-image: radial-gradient(ellipse at 50% 40%, #000 25%, transparent 78%);
+}
+
+/* 背景氛围：自上而下循环扫描线（营造「监控终端」在场感） */
+.auth::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -30%;
+  height: 26%;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent, rgba(80, 200, 255, 0.045), transparent);
+  animation: auth-scan 9s linear infinite;
+}
+
+/* 装饰性水印：超大描边英文，强化「授权」主题记忆点，纯装饰不参与交互 */
+.watermark {
+  position: absolute;
+  bottom: -0.18em;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: clamp(120px, 22vw, 300px);
+  font-weight: 700;
+  font-family: 'Arial Black', Arial, sans-serif;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(80, 160, 255, 0.07);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.card {
+  position: relative;
+  width: 480px;
+  max-width: calc(100vw - 48px);
+  padding: 40px 44px 36px;
+  /* 面板质感与大屏一致：斜向深蓝渐变 + 细蓝边 + 内辉光 */
+  background: linear-gradient(160deg, rgba(16, 36, 72, 0.72), rgba(8, 18, 40, 0.85));
+  border: 1px solid var(--auth-panel-border);
+  box-shadow:
+    inset 0 0 34px rgba(30, 90, 180, 0.1),
+    0 24px 64px rgba(0, 0, 0, 0.55),
+    0 0 60px rgba(53, 200, 255, 0.08);
+  backdrop-filter: blur(6px);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  /* 入场动画：整体上浮淡入 */
+  animation: auth-card-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* 四角科技边框（复用大屏面板的标志性语言） */
+.card::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  pointer-events: none;
+  opacity: 0.95;
+  background:
+    linear-gradient(var(--auth-corner), var(--auth-corner)) 0 0 / 18px 2px,
+    linear-gradient(var(--auth-corner), var(--auth-corner)) 0 0 / 2px 18px,
+    linear-gradient(var(--auth-corner), var(--auth-corner)) 100% 0 / 18px 2px,
+    linear-gradient(var(--auth-corner), var(--auth-corner)) 100% 0 / 2px 18px,
+    linear-gradient(var(--auth-corner), var(--auth-corner)) 0 100% / 18px 2px,
+    linear-gradient(var(--auth-corner), var(--auth-corner)) 0 100% / 2px 18px,
+    linear-gradient(var(--auth-corner), var(--auth-corner)) 100% 100% / 18px 2px,
+    linear-gradient(var(--auth-corner), var(--auth-corner)) 100% 100% / 2px 18px;
+  background-repeat: no-repeat;
+}
+
+/* 顶部徽章区：钥匙图标 + 圆环，呼吸脉冲暗示「等待激活」 */
+.emblem {
+  position: relative;
+  align-self: center;
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(53, 200, 255, 0.1);
+  border: 1px solid rgba(53, 200, 255, 0.4);
+  color: var(--auth-corner);
+  margin-bottom: 20px;
+  box-shadow: 0 0 24px rgba(53, 200, 255, 0.18);
+}
+
+/* 外圈脉冲环：缩放 + 淡出循环 */
+.emblem::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 50%;
+  border: 1px solid rgba(53, 200, 255, 0.5);
+  animation: auth-pulse 2.4s ease-out infinite;
+}
+
+/* 标题行：两侧翼形装饰线（大屏头部语言的卡片内微缩版） */
+.titleRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+}
+
+.wing {
+  width: 56px;
+  height: 2px;
+  position: relative;
+  background: linear-gradient(90deg, transparent, rgba(53, 200, 255, 0.75));
+}
+
+/* 翼端菱形光点 */
+.wing::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  width: 8px;
+  height: 8px;
+  transform: rotate(45deg);
+  background: var(--auth-corner);
+  box-shadow: 0 0 10px var(--auth-corner);
+}
+
+.wingLeft::after {
+  right: 0;
+}
+
+.wingRight {
+  background: linear-gradient(270deg, transparent, rgba(53, 200, 255, 0.75));
+}
+
+.wingRight::after {
+  left: 0;
+}
+
+.title {
+  margin: 0;
+  text-align: center;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 8px;
+  padding-left: 8px;
+  color: #eaf6ff;
+  text-shadow:
+    0 0 22px rgba(53, 200, 255, 0.6),
+    0 0 4px rgba(255, 255, 255, 0.3);
+}
+
+/* 英文小标题：大字距描边感，与大屏副标题同款处理 */
+.titleEn {
+  margin: 8px 0 0;
+  text-align: center;
+  font-size: 10px;
+  letter-spacing: 5px;
+  color: #5f7bb0;
+  font-family: var(--auth-num-font);
+}
+
+.subtitle {
+  margin: 18px 0 26px;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--auth-text-secondary);
+}
+
+/* 硬件码区块：内凹面板 + 数字字体，突出「机器指纹」的技术感 */
+.fieldLabel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: var(--auth-text-muted);
+}
+
+.copyBtn {
+  display: inline-flex;
+  align-items: center;
+  color: var(--auth-text-muted);
+  font-size: 12px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.copyBtn:hover {
+  color: var(--auth-corner);
+}
+
+.hardwareId {
+  padding: 12px 14px;
+  background: rgba(4, 10, 24, 0.6);
+  border: 1px solid rgba(64, 140, 255, 0.25);
+  box-shadow: inset 0 0 18px rgba(30, 90, 180, 0.12);
+  /* 数字字体栈与大屏一致；硬件码为编码串，等宽 + 加宽字距提升可读性 */
+  font-family: var(--auth-num-font);
+  font-size: 15px;
+  letter-spacing: 0.12em;
+  color: #9fe0ff;
+  text-shadow: 0 0 12px rgba(53, 200, 255, 0.35);
+  word-break: break-all;
+  margin-bottom: 24px;
+}
+
+/* 结果待确认内联提示（不伪装成败，保留重试入口） */
+.pendingNotice {
+  margin: 12px 0 0;
+  text-align: center;
+  font-size: 12px;
+  color: #f5c451;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+/* 返回登录：大屏同款幽灵按钮（半透明蓝底 + 细蓝边） */
+.backBtn {
+  flex: 1;
+  height: 40px;
+  border-radius: 2px;
+  background: rgba(30, 80, 160, 0.14);
+  border-color: rgba(80, 160, 255, 0.4);
+  color: #bfe0ff;
+  letter-spacing: 2px;
+}
+
+.backBtn:hover {
+  background: rgba(50, 120, 220, 0.28) !important;
+  border-color: rgba(80, 160, 255, 0.4) !important;
+  color: #bfe0ff !important;
+  box-shadow: 0 0 12px rgba(53, 200, 255, 0.3);
+}
+
+/* 激活授权：青→蓝渐变主按钮，hover 时上浮发光 */
+.submitBtn {
+  flex: 2;
+  height: 40px;
+  border: none;
+  border-radius: 2px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: #032040;
+  background: linear-gradient(135deg, #5fd8ff, var(--auth-corner) 45%, #1a6fe0);
+  box-shadow: 0 4px 16px rgba(53, 200, 255, 0.28);
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+
+.submitBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(53, 200, 255, 0.45);
+  color: #032040;
+  background: linear-gradient(135deg, #7fe2ff, #45d0ff 45%, #2680f0);
+}
+
+/*
+ * 禁用态（未输入激活码）：覆盖 hover 渐变与发光，
+ * 退化为低对比灰蓝态，明确表达「不可激活」
+ */
+.submitBtn:disabled,
+.submitBtn:disabled:hover {
+  background: rgba(80, 140, 220, 0.12);
+  color: rgba(159, 180, 216, 0.4);
+  box-shadow: none;
+  transform: none;
+}
+
+/* 卡片入场：上浮 + 淡入 */
+@keyframes auth-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 徽章外圈脉冲呼吸 */
+@keyframes auth-pulse {
+  0% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  70% {
+    opacity: 0;
+    transform: scale(1.55);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.55);
+  }
+}
+
+/* 扫描线循环（命名加 auth- 前缀，避免与全局 keyframes 冲突） */
+@keyframes auth-scan {
+  to {
+    transform: translateY(560%);
+  }
+}
+
+/* 减弱动态偏好：关闭扫描线与脉冲动画 */
+@media (prefers-reduced-motion: reduce) {
+  .auth::after,
+  .emblem::after {
+    animation: none;
+  }
+}

@@ -1,0 +1,214 @@
+/*
+ * 软件信息页样式（P29，迁移自源 index.less @ e570b8df）。
+ * 源样式的 antd CSS 变量（--ant-color-*）桥接为全局 --app-* 主题变量，
+ * 跟随亮/暗主题切换（T016 主题合同）；布局与源保持一致。
+ */
+
+.wrap {
+  min-height: 100%;
+  padding: var(--app-space-5);
+  box-sizing: border-box;
+}
+
+/* 横幅卡：主题色渐变 + 白字，右上角状态标签与激活入口 */
+.bannerCard {
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, var(--app-blue) 0%, var(--app-blue-2) 100%);
+  border-radius: var(--app-radius-panel);
+  overflow: hidden;
+}
+
+.bannerCard :global(.ant-card-body) {
+  padding: 24px;
+}
+
+.bannerContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.bannerLeft {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.bannerIcon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.bannerText {
+  color: #fff;
+}
+
+.bannerTitle {
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.bannerSubtitle {
+  font-size: 13px;
+  opacity: 0.85;
+  margin-top: 4px;
+}
+
+.bannerRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.statusTag {
+  font-size: 14px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  margin: 0;
+}
+
+/* 横幅上的激活按钮：半透明白底 ghost（源样式原样保留） */
+.activateBtn {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.6);
+  color: #fff;
+}
+
+.activateBtn:hover,
+.activateBtn:focus {
+  background: rgba(255, 255, 255, 0.25) !important;
+  border-color: #fff !important;
+  color: #fff !important;
+}
+
+.statRow {
+  margin-bottom: 16px;
+}
+
+.statCard {
+  border-radius: var(--app-radius-panel);
+  box-shadow: var(--app-card-shadow);
+  transition:
+    box-shadow 0.3s,
+    transform 0.3s;
+}
+
+.statCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.statCard :global(.ant-statistic-title) {
+  font-size: 14px;
+  color: var(--app-text-3);
+  margin-bottom: 12px;
+}
+
+.statCard :global(.ant-statistic-title) svg {
+  margin-right: 6px;
+  color: var(--app-blue);
+  vertical-align: -2px;
+}
+
+.statCard :global(.ant-statistic-content) {
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.detailRow {
+  margin-bottom: 16px;
+}
+
+.detailCard {
+  border-radius: var(--app-radius-panel);
+  box-shadow: var(--app-card-shadow);
+  height: 100%;
+}
+
+.detailCard :global(.ant-card-head) {
+  border-bottom: 1px solid var(--app-divider);
+  min-height: 48px;
+}
+
+.detailCard :global(.ant-card-head-title) {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.detailCard :global(.ant-card-head-title) svg {
+  margin-right: 6px;
+  color: var(--app-blue);
+  vertical-align: -2px;
+}
+
+.detailCard :global(.ant-card-body) {
+  padding: 20px 24px;
+}
+
+.detailValue {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--app-text);
+}
+
+/* 激活码：等宽字体深底块；可能超长，固定高度内滚动查看 */
+.codeValue {
+  font-size: 14px;
+  font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+  background: var(--app-canvas);
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin: 0 !important;
+  word-break: break-all;
+  color: var(--app-text);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+/* 硬件信息：多行机器指纹，pre 保留换行并在固定高度内滚动 */
+.hardwareInfo {
+  font-size: 13px;
+  font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+  background: var(--app-canvas);
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin: 0;
+  max-height: 320px;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+  color: var(--app-text);
+}
+
+.emptyWrapper {
+  min-height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 激活结果待确认提示条：警示色文字 + 核查入口（结果未知不伪装成败） */
+.pendingNotice {
+  margin-top: 12px;
+  padding: 8px 14px;
+  border: 1px solid var(--app-orange);
+  border-radius: var(--app-radius-control);
+  color: var(--app-orange);
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}

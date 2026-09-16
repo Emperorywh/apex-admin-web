@@ -70,6 +70,17 @@ export const MENU_PERM = {
 /** 菜单权限码字面量联合类型 */
 export type MenuPermCode = (typeof MENU_PERM)[keyof typeof MENU_PERM]
 
+/**
+ * 按钮（动作）权限码常量（迁移自旧系统 PERM_BUTTON @ e570b8df，按页面卡逐个补充）。
+ * 与后端权限源中 type=BUTTON 的 code 一一对应，值不改名；页面经
+ * useAuth().hasButton 判定（平铺集合 + 特权短路），无权时动作入口条件渲染
+ * 隐藏（源 §7.1 行为）。
+ */
+export const BUTTON_PERM = {
+  /** P29 软件信息页「激活软件」入口（banner 与空态两处共用） */
+  SYSTEM_SOFTWARE_ACTIVATE: 'system:software:activate',
+} as const
+
 /** 对象详情页签的规范化查询参数名（SPEC §8.1：路由+业务对象标识） */
 export const OBJECT_TAB_PARAMS = {
   orderInfo: 'orderTaskKey',
