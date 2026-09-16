@@ -87,7 +87,7 @@ T098—T105 只复核自己领域的组成任务与动作证据（A01/A07），�
 
 ### T005 — 接通旧身份恢复与唯一权限模型
 
-- **状态**：实现/资料＝未开始；验收＝未开始。 预计30—40分钟。
+- **状态**：实现/资料＝产物就绪；验收＝隔离验证通过（2026-09-16，证据见 docs/migration/evidence/T005/、合同见 docs/migration/contracts/identity.md、交接见 docs/migration/handoffs/T005.md）。 预计30—40分钟。
 - **实现依赖**：[T003](#t003)。
 - **定位**：SPEC §6.2、§8.2、D06/D08/D24/D26；旧认证、access.ts；auth service/store、bootstrap、useLogin。
 - **本卡迁移**：替换临时直通登录和模板身份协议，接通旧 login/detail/logout；移除 refresh 与认证重放。建立唯一会话/权限快照及事件接口，供 T007/T015/T017/T079 消费，不并存两套身份状态。

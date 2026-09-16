@@ -29,13 +29,24 @@ const localStorageAdapter = {
   removeItem: (key: string): Promise<void> => Promise.resolve(localStorage.removeItem(key)),
 }
 
-/** 字段级白名单：auth 只持久化 user（令牌只在内存） */
+/** 认证域独立版本：v1 为模板 user 形状，v2 起为旧协议 identity 快照，跨版本丢弃 */
+const AUTH_PERSIST_SCHEMA_VERSION = 2
+
+/**
+ * 字段级白名单：auth 只持久化 identity（唯一身份快照的非敏感部分）。
+ * token 不进 Redux/持久化（由 identity.storage 管理）；epoch/restored 是
+ * 会话内运行时状态，每次启动由恢复流程重建，不持久化。
+ * 旧版本（模板 /users/me 形状）的持久化数据不兼容，迁移时整体丢弃：
+ * 真实会话以 localStorage accessInfo + detail 核查恢复，不依赖该缓存。
+ */
 const persistedAuth = persistReducer(
   {
     key: PERSIST_KEYS.AUTH,
     storage: localStorageAdapter,
-    version: PERSIST_SCHEMA_VERSION,
-    whitelist: ['user'],
+    version: AUTH_PERSIST_SCHEMA_VERSION,
+    whitelist: ['identity'],
+    // 仅版本不一致时触发：清空旧形状负载，_persist 由 redux-persist 重新附加
+    migrate: (state) => Promise.resolve({ ...state, identity: undefined } as typeof state),
   },
   authReducer,
 )

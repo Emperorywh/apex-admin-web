@@ -1,0 +1,16 @@
+{"t":"2026-09-16T09:48:06.485Z","method":"POST","url":"/fms/v1/auth/authorize/login","auth":"","body":{"username":"probe","password":"x"}}
+{"t":"2026-09-16T09:55:11.615Z","method":"GET","url":"/fms/v1/auth/authorize/detail","auth":"Bearer token-normal","body":{}}
+{"t":"2026-09-16T09:55:32.395Z","method":"GET","url":"/fms/v1/auth/authorize/detail","auth":"Bearer token-normal","body":{}}
+{"t":"2026-09-16T09:55:57.699Z","method":"GET","url":"/fms/v1/auth/authorize/detail","auth":"Bearer token-expired","body":{}}
+{"t":"2026-09-16T09:55:57.814Z","method":"GET","url":"/fms/v1/auth/authorize/detail","auth":"Bearer token-inactive","body":{}}
+{"t":"2026-09-16T09:56:20.420Z","method":"GET","url":"/fms/v1/auth/authorize/detail","auth":"Bearer token-expired","body":{}}
+{"t":"2026-09-16T09:56:20.428Z","method":"GET","url":"/fms/v1/auth/authorize/detail","auth":"Bearer token-inactive","body":{}}
+{"t":"2026-09-16T09:56:47.977Z","method":"POST","url":"/fms/v1/auth/authorize/login","auth":"Bearer token-inactive","body":{"username":"normal","password":"2bda2998d9b0ee197da142a0447f6725"}}
+{"t":"2026-09-16T09:56:47.981Z","method":"POST","url":"/fms/v1/auth/authorize/login","auth":"Bearer token-inactive","body":{"username":"normal","password":"5d7845ac6ee7cfffafc5fe5f35cf666d"}}
+{"t":"2026-09-16T09:56:47.986Z","method":"POST","url":"/fms/v1/auth/authorize/login","auth":"Bearer token-normal","body":{"username":"inactive-user","password":"5d7845ac6ee7cfffafc5fe5f35cf666d"}}
+{"t":"2026-09-16T09:56:47.992Z","method":"POST","url":"/fms/v1/auth/authorize/logout","auth":"Bearer token-inactive","body":{}}
+{"t":"2026-09-16T09:56:47.997Z","method":"POST","url":"/fms/v1/auth/authorize/logout","auth":"","body":{}}
+{"t":"2026-09-16T09:57:14.454Z","method":"POST","url":"/fms/v1/auth/authorize/login","auth":"","body":{"username":"normal","password":"2bda2998d9b0ee197da142a0447f6725"}}
+{"t":"2026-09-16T09:57:14.460Z","method":"POST","url":"/fms/v1/auth/authorize/logout","auth":"Bearer token-logout-fail","body":{}}
+{"t":"2026-09-16T09:57:14.463Z","method":"POST","url":"/fms/v1/auth/authorize/logout","auth":"Bearer token-normal","body":{}}
+{"t":"2026-09-16T09:58:08.824Z","method":"POST","url":"/fms/v1/auth/authorize/login","auth":"","body":{"username":"normal","password":"5d7845ac6ee7cfffafc5fe5f35cf666d"}}

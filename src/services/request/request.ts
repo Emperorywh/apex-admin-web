@@ -1,32 +1,19 @@
 /**
- * HTTP 基础设施：唯一 axios 实例。
+ * HTTP 基础设施：新协议（/api/v1）axios 实例。
  * - 成功响应直接返回资源 JSON 本体（协议无 code envelope）
  * - 失败统一收敛为 ApiError（RFC 9457 problem+json / 客户端错误）
- * - 401 时以单飞方式刷新令牌（refreshToken 位于 HttpOnly Cookie，不进 JSON）并重放原请求
+ * - 身份协议已切换旧后端（auth.service，T005）：本通道不再持有令牌、
+ *   不再有 /auth/refresh 刷新与 401 重放（SPEC §6.2：不启动两套认证）；
+ *   存量模板接口在各自迁移卡接入旧协议前保持原样调用。
  */
 
-import axios, {
-  AxiosError,
-  type AxiosRequestConfig,
-  type InternalAxiosRequestConfig,
-} from 'axios'
+import axios, { AxiosError, type AxiosRequestConfig } from 'axios'
 import {
-  API_ERROR_CODES,
   CLIENT_ERROR_CODES,
   DEFAULT_API_BASE_URL,
-  REFRESH_LOCK_TTL_MS,
-  REFRESH_TIMEOUT_MS,
   REQUEST_TIMEOUT_MS,
 } from '@/services/request/request.constants'
 import type { ApiError } from '@/services/request/request.types'
-import { sessionExpired } from '@/store/slices/authSlice'
-
-/** axios 配置扩展：刷新重放标记，防止循环 */
-declare module 'axios' {
-  export interface AxiosRequestConfig {
-    _retriedAfterRefresh?: boolean
-  }
-}
 
 /** 抛出的请求错误；携带规范化 ApiError，调用方用 toApiError 还原 */
 export class ApiRequestError extends Error {
@@ -98,16 +85,6 @@ function fail(api: ApiError): never {
 }
 
 /* -------------------------------------------------------------------------- */
-/* 令牌持有（内存态；页面刷新后依赖 Cookie refreshToken 恢复）                        */
-/* -------------------------------------------------------------------------- */
-
-let accessToken: string | null = null
-
-export function setAccessToken(token: string | null): void {
-  accessToken = token
-}
-
-/* -------------------------------------------------------------------------- */
 /* 请求健康状态（顶栏网络指示）                                                    */
 /* -------------------------------------------------------------------------- */
 
@@ -149,11 +126,6 @@ const http = axios.create({
   timeout: REQUEST_TIMEOUT_MS,
 })
 
-http.interceptors.request.use((config) => {
-  if (accessToken) config.headers.set('Authorization', `Bearer ${accessToken}`)
-  return config
-})
-
 http.interceptors.response.use(
   (response) => {
     recordHealth(true)
@@ -171,7 +143,6 @@ http.interceptors.response.use(
 )
 
 async function handleRequestError(error: AxiosError): Promise<unknown> {
-  const config = error.config as (InternalAxiosRequestConfig & AxiosRequestConfig) | undefined
   const canceled = error.code === 'ERR_CANCELED' || axios.isCancel(error)
   const responded = Boolean(error.response)
   const responseStatus = error.response?.status ?? 0
@@ -187,74 +158,9 @@ async function handleRequestError(error: AxiosError): Promise<unknown> {
 
   if (!canceled) recordHealth(responded && error.code !== 'APEX_HTML_RESPONSE' && !unreachable)
 
-  const isAuthCall =
-    config?.url?.includes('/auth/login') === true ||
-    config?.url?.includes('/auth/refresh') === true
-
-  // 401 统一码：刷新令牌并重放（登录/刷新自身除外）
-  if (
-    responded &&
-    error.response?.status === 401 &&
-    (error.response.data as { code?: string } | undefined)?.code ===
-      API_ERROR_CODES.UNAUTHENTICATED &&
-    !isAuthCall &&
-    config &&
-    !config._retriedAfterRefresh
-  ) {
-    try {
-      await refreshAccessToken()
-      const retryConfig: InternalAxiosRequestConfig = { ...config, _retriedAfterRefresh: true }
-      return await http.request(retryConfig)
-    } catch {
-      expireSession()
-      fail({
-        isApiError: true,
-        code: API_ERROR_CODES.UNAUTHENTICATED,
-        status: 401,
-        title: '登录已过期，请重新登录',
-      })
-    }
-  }
-
+  // 401 不再触发刷新重放：本通道不承载身份；统一按失败抛出，
+  // 会话失效编排只由旧协议事件（auth.service 事件桥）驱动
   fail(fromAxiosError(error))
-}
-
-/* -------------------------------------------------------------------------- */
-/* 刷新令牌单飞                                                                  */
-/* -------------------------------------------------------------------------- */
-
-let refreshPromise: Promise<string> | null = null
-let refreshLockUntil = 0
-
-async function refreshAccessToken(): Promise<string> {
-  if (refreshPromise) return refreshPromise
-  if (Date.now() < refreshLockUntil) {
-    return Promise.reject(new Error('刷新令牌处于冷却期'))
-  }
-  refreshLockUntil = Date.now() + REFRESH_LOCK_TTL_MS
-  refreshPromise = axios
-    .post('/auth/refresh', null, { baseURL: apiBaseUrl, timeout: REFRESH_TIMEOUT_MS })
-    .then((response) => {
-      const token = (response.data as { accessToken?: string } | null)?.accessToken
-      if (!token) throw new Error('刷新响应缺少 accessToken')
-      setAccessToken(token)
-      return token
-    })
-    .finally(() => {
-      refreshPromise = null
-    })
-  return refreshPromise
-}
-
-/* -------------------------------------------------------------------------- */
-/* 会话失效分发                                                                 */
-/* -------------------------------------------------------------------------- */
-
-function expireSession(): void {
-  setAccessToken(null)
-  import('@/store/store').then(({ store }) => {
-    store.dispatch(sessionExpired())
-  })
 }
 
 /* -------------------------------------------------------------------------- */

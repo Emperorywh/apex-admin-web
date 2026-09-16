@@ -1,14 +1,16 @@
 /**
- * 登录表单：用户名 + 密码，成功后按 redirect 参数回跳。
- * 后端未接入期间登录直通，密码仅做必填校验。
+ * 登录表单：用户名 + 密码，成功后按激活状态与 redirect 参数分流（SPEC P01）。
+ * - activated === false（严格判定，源行为）→ 进入软件授权页；
+ * - 其余按 redirect 回跳首个目标（有权入口选择归 T007 路由宿主）。
  */
 
 import { App, Button, Form, Input } from 'antd'
 import { Lock, UserRound } from 'lucide-react'
 import { useNavigate, useSearchParams } from 'react-router'
 import { useTranslation } from 'react-i18next'
-import { USERNAME_MAX_LENGTH, USERNAME_MIN_LENGTH, LOGIN_REDIRECT_QUERY_KEY } from '@/constants/auth/auth.constants'
+import { LOGIN_REDIRECT_QUERY_KEY } from '@/constants/auth/auth.constants'
 import { FALLBACK_PATH } from '@/constants/route.constants'
+import { ROUTE_PATHS } from '@/router/definitions'
 import { useLogin } from '@/features/auth/hooks/useLogin'
 import { apiErrorMessage } from '@/services/request/request'
 import styles from '@/features/auth/components/LoginForm/LoginForm.module.css'
@@ -28,7 +30,12 @@ export function LoginForm() {
 
   const handleFinish = async (values: LoginFormValues) => {
     try {
-      await submit(values)
+      const snapshot = await submit(values)
+      // 源判定：仅 activated === false 进入授权流程；字段缺失视为已激活
+      if (snapshot.activated === false) {
+        navigate(ROUTE_PATHS['authorize-ingress'], { replace: true })
+        return
+      }
       const redirect = searchParams.get(LOGIN_REDIRECT_QUERY_KEY)
       navigate(redirect && redirect.startsWith('/') ? redirect : FALLBACK_PATH, { replace: true })
     } catch (error) {
@@ -39,13 +46,11 @@ export function LoginForm() {
 
   return (
     <Form<LoginFormValues> layout="vertical" requiredMark={false} onFinish={handleFinish}>
+      {/* 源登录表单仅做必填校验，无用户名长度约束（长度边界属用户管理表单规则） */}
       <Form.Item
         name="username"
         label={t('用户名')}
-        rules={[
-          { required: true, message: t('请输入用户名') },
-          { min: USERNAME_MIN_LENGTH, max: USERNAME_MAX_LENGTH, message: t('用户名长度需在 2-32 个字符之间') },
-        ]}
+        rules={[{ required: true, message: t('请输入用户名') }]}
       >
         <Input size="large" prefix={<UserRound size={16} />} placeholder={t('用户名')} autoComplete="username" />
       </Form.Item>

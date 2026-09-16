@@ -11,7 +11,7 @@ import dayjs from 'dayjs'
 import { Languages, LogOut, Monitor, Moon, Sun, UserRoundCog, Wifi } from 'lucide-react'
 import { ROUTE_PATHS } from '@/router/definitions'
 import { logout } from '@/services/auth/auth.service'
-import { getRequestHealth, subscribeRequestHealth, type RequestHealth } from '@/services/request/request'
+import { apiErrorMessage, getRequestHealth, subscribeRequestHealth, type RequestHealth } from '@/services/request/request'
 import { useAppDispatch } from '@/hooks/useAppDispatch'
 import { useAppSelector } from '@/hooks/useAppSelector'
 import { useAuth } from '@/hooks/useAuth'
@@ -168,18 +168,19 @@ function ClockText() {
 
 function AvatarMenu() {
   const { t } = useTranslation('common')
-  const { user } = useAuth()
+  const { identity, isRoot } = useAuth()
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
-  const { modal } = App.useApp()
+  const { modal, message } = App.useApp()
 
   const items: MenuProps['items'] = [
     {
       key: 'header',
       label: (
         <span className={styles.avatarHeader}>
-          <strong>{user?.displayName ?? '—'}</strong>
-          <span>{user?.roleNames.join(' / ') ?? t('未分配角色')}</span>
+          {/* 旧协议身份只有账号名；特权分支按源 isRootUser 判定展示 */}
+          <strong>{identity?.username ?? '—'}</strong>
+          <span>{isRoot ? t('特权账号') : t('普通账号')}</span>
         </span>
       ),
       disabled: true,
@@ -200,17 +201,27 @@ function AvatarMenu() {
         okText: t('退出'),
         cancelText: t('取消'),
         onOk: async () => {
-          await logout()
+          try {
+            // 源行为：后端登出失败时保留会话并提示，不本地登出
+            await logout()
+          } catch (error) {
+            const text = apiErrorMessage(error)
+            void message.error(text ? `${t('退出登录出错')}${text}` : t('退出登录出错'))
+            throw error
+          }
+          // 成功后统一收敛：清身份/页签/缓存，BasicLayout 监听未登录自动回登录页
           dispatch(sessionExpired())
         },
       })
     }
   }
 
+  const initials = (identity?.username ?? '—').slice(0, 2).toUpperCase()
+
   return (
     <Dropdown menu={{ items, onClick }} trigger={['click']} placement="bottomRight">
-      <button type="button" className={styles.avatar} title={user?.displayName ?? t('用户')}>
-        {user?.initials ?? '—'}
+      <button type="button" className={styles.avatar} title={identity?.username ?? t('用户')}>
+        {initials}
       </button>
     </Dropdown>
   )
