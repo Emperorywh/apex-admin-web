@@ -1,12 +1,13 @@
 /**
  * 角色列表 Hook：分页 / 状态筛选 / 排序。
+ * 查询生命周期统一由 usePageQuery 接管（可见性、过期响应隔离、取消）。
  */
 
-import { useCallback, useEffect, useState } from 'react'
-import { usePageRequest } from '@/hooks/usePageRequest'
+import { useCallback, useState } from 'react'
+import { usePageQuery } from '@/hooks/page-query'
 import { DEFAULT_PAGE_SIZE } from '@/services/request/request.constants'
 import { pageRoles } from '@/services/system/role/role.service'
-import { isCancelledError, toApiError } from '@/services/request/request'
+import { toApiError } from '@/services/request/request'
 import type { EntityStatus } from '@/services/request/request.types'
 import type { RoleEntity } from '@/types/system/role/role.types'
 
@@ -28,41 +29,24 @@ export interface UseRoleListResult {
 }
 
 export function useRoleList(): UseRoleListResult {
-  const { signal, revision } = usePageRequest()
-  const [items, setItems] = useState<RoleEntity[]>([])
-  const [total, setTotal] = useState(0)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const [query, setQueryState] = useState<RoleListQuery>({ page: 1, pageSize: DEFAULT_PAGE_SIZE })
-  const [reloadToken, setReloadToken] = useState(0)
 
-  const reload = useCallback(() => setReloadToken((token) => token + 1), [])
+  const page = usePageQuery({
+    fetcher: (params, { signal }) => pageRoles(params, { signal }),
+    params: query,
+  })
 
   const setQuery = useCallback((patch: Partial<RoleListQuery>) => {
     setQueryState((prev) => ({ ...prev, ...patch }))
   }, [])
 
-  useEffect(() => {
-    let active = true
-    setLoading(true)
-    setError(null)
-    pageRoles(query, { signal })
-      .then((page) => {
-        if (!active) return
-        setItems(page.items)
-        setTotal(page.total)
-      })
-      .catch((caught) => {
-        if (!active || isCancelledError(caught)) return
-        setError(toApiError(caught).title)
-      })
-      .finally(() => {
-        if (active) setLoading(false)
-      })
-    return () => {
-      active = false
-    }
-  }, [query, signal, reloadToken, revision])
-
-  return { items, total, loading, error, query, setQuery, reload }
+  return {
+    items: page.data?.items ?? [],
+    total: page.data?.total ?? 0,
+    loading: page.loading,
+    error: page.error ? toApiError(page.error).title : null,
+    query,
+    setQuery,
+    reload: page.reload,
+  }
 }

@@ -1,11 +1,12 @@
 /**
  * 菜单树 Hook：拉取扁平列表并按 parentId 组装为树。
+ * 查询生命周期统一由 usePageQuery 接管（可见性、过期响应隔离、取消）。
  */
 
-import { useCallback, useEffect, useState } from 'react'
-import { usePageRequest } from '@/hooks/usePageRequest'
+import { useCallback } from 'react'
+import { usePageQuery } from '@/hooks/page-query'
 import { listMenus } from '@/services/system/menu/menu.service'
-import { isCancelledError, toApiError } from '@/services/request/request'
+import { toApiError } from '@/services/request/request'
 import type { MenuTreeNode } from '@/types/system/menu/menu.types'
 
 export interface UseMenuTreeResult {
@@ -39,34 +40,17 @@ function buildTree(
 }
 
 export function useMenuTree(): UseMenuTreeResult {
-  const { signal, revision } = usePageRequest()
-  const [tree, setTree] = useState<MenuTreeNode[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [reloadToken, setReloadToken] = useState(0)
+  const page = usePageQuery({
+    fetcher: (_params, { signal }) => listMenus({ signal }),
+    params: null,
+  })
 
-  const reload = useCallback(() => setReloadToken((token) => token + 1), [])
+  const reload = useCallback(() => page.reload(), [page.reload])
 
-  useEffect(() => {
-    let active = true
-    setLoading(true)
-    setError(null)
-    listMenus({ signal })
-      .then((items) => {
-        if (!active) return
-        setTree(buildTree(items))
-      })
-      .catch((caught) => {
-        if (!active || isCancelledError(caught)) return
-        setError(toApiError(caught).title)
-      })
-      .finally(() => {
-        if (active) setLoading(false)
-      })
-    return () => {
-      active = false
-    }
-  }, [signal, reloadToken, revision])
-
-  return { tree, loading, error, reload }
+  return {
+    tree: page.data ? buildTree(page.data) : [],
+    loading: page.loading,
+    error: page.error ? toApiError(page.error).title : null,
+    reload,
+  }
 }
