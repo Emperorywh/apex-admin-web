@@ -97,9 +97,13 @@ function LanguageButton() {
   const dispatch = useAppDispatch()
   const locale = useAppSelector((state) => state.settings.locale)
 
+  /* 五语菜单：标签用各语言原生写法（对齐旧系统词条风格），便于用户在陌生语言下回切 */
   const items: MenuProps['items'] = [
-    { key: 'zh-CN', label: '中文' },
+    { key: 'zh-CN', label: '简体中文' },
+    { key: 'zh-TW', label: '繁體中文' },
     { key: 'en-US', label: 'English' },
+    { key: 'ja-JP', label: '日本語' },
+    { key: 'ko-KR', label: '한국어' },
   ]
 
   return (
@@ -159,7 +163,8 @@ function ClockText() {
     const timer = setInterval(() => setNow(dayjs()), CLOCK_TICK_INTERVAL_MS)
     return () => clearInterval(timer)
   }, [])
-  const zh = i18n.language === 'zh-CN'
+  /* 中文（简/繁）使用「M月D日」格式并显示本地化星期；其余语言用英文月名格式 */
+  const zh = i18n.language.startsWith('zh')
   return (
     <div className={styles.time} title={t('当前时间')}>
       {zh ? now.format('M月D日 ddd　HH:mm') : now.format('MMM D ddd HH:mm')}

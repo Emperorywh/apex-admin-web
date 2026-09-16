@@ -8,6 +8,9 @@ import { Suspense, useEffect, useMemo } from 'react'
 import { App as AntdApp, ConfigProvider } from 'antd'
 import zhCN from 'antd/locale/zh_CN'
 import enUS from 'antd/locale/en_US'
+import zhTW from 'antd/locale/zh_TW'
+import jaJP from 'antd/locale/ja_JP'
+import koKR from 'antd/locale/ko_KR'
 import { RouterProvider } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import { FeedbackBridge } from '@/components/FeedbackBridge/FeedbackBridge'
@@ -15,13 +18,26 @@ import PageLoading from '@/components/PageLoading/PageLoading'
 import { Wallpaper } from '@/components/Wallpaper/Wallpaper'
 import { useTheme } from '@/hooks/useTheme'
 import { buildAppTheme } from '@/constants/designTokens'
-import { changeAppLanguage } from '@/i18n/i18n'
+import { changeAppLanguage, type AppLanguage } from '@/i18n/i18n'
 import { findRouteMeta } from '@/router/projections'
 import { appRouter } from '@/router/router'
 import { store } from '@/store/store'
 import { useAppDispatch } from '@/hooks/useAppDispatch'
 import { useAppSelector } from '@/hooks/useAppSelector'
 import { localeChanged } from '@/store/slices/settingsSlice'
+
+/**
+ * antd locale 映射表（对齐旧系统 app.tsx ANTD_LOCALE_MAP）：
+ * 按当前语言注入 antd 组件内置文案（分页、日期选择器、弹窗按钮等），
+ * 覆盖全部五语，避免日/韩/繁中界面混入简中组件文案。
+ */
+const ANTD_LOCALE_MAP: Record<AppLanguage, typeof zhCN> = {
+  'zh-CN': zhCN,
+  'en-US': enUS,
+  'zh-TW': zhTW,
+  'ja-JP': jaJP,
+  'ko-KR': koKR,
+}
 
 export default function App() {
   const dispatch = useAppDispatch()
@@ -43,7 +59,7 @@ export default function App() {
     })
   }, [dispatch, locale, i18n])
 
-  const antdLocale = locale === 'zh-CN' ? zhCN : enUS
+  const antdLocale = ANTD_LOCALE_MAP[locale]
 
   return (
     <ConfigProvider locale={antdLocale} theme={antdTheme}>

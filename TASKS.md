@@ -147,7 +147,7 @@ T098—T105 只复核自己领域的组成任务与动作证据（A01/A07），�
 
 ### T016 — 补齐五语运行时与公共控件主题桥接
 
-- **状态**：实现/资料＝未开始；验收＝未开始。 预计30—40分钟。
+- **状态**：实现/资料＝产物就绪（合同 docs/migration/contracts/language-theme.md）；验收＝隔离验证通过（2026-09-17，V01—V05 证据见 docs/migration/evidence/T016/，Accept-Language 真实抓包归 T090 定向补验，交接见 docs/migration/handoffs/T016.md）。 预计30—40分钟。
 - **实现依赖**：[T001](#t001)、[T007](#t007)。
 - **定位**：SPEC §11、D16/D17；i18n.ts、App、settingsSlice、globals.css、designTokens、旧 locales。
 - **本卡迁移**：扩展现有语言运行时和公共词条，桥接 antd/dayjs/请求语言及主题；为表格、图表提供接入约定。领域词条随页面迁移。
