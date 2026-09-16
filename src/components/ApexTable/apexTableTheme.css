@@ -1,0 +1,28 @@
+/*
+ * ApexTable 主题桥：把库内置的 `--apex-table-*` 变量接到全局 `--app-*` 令牌
+ * （T016 合同 §5：表格只消费全局 CSS 变量，不在表格层写死颜色）。
+ *
+ * - `--app-*` 在 globals.css 以 `:root` / `:root[data-theme='dark']` 双主题定义，
+ *   深浅色切换由 data-theme 全局生效，本文件不出现第二套颜色值；
+ * - 表头/悬停/选中三处淡蓝底用 color-mix 从 `--app-blue` 与卡片底色现场混合，
+ *   两套主题各自得到正确的浅色层次；
+ * - 库默认变量挂在组件根 `.apex-table`（特异性 (0,1,0)）上，且实际注入
+ *   次序随异步 chunk 漂移；`.apex-table.apex-table` 提到 (0,2,0)，
+ *   不依赖加载顺序地稳定压过库默认值，仍允许单表用 style 覆盖品牌变量。
+ */
+
+.apex-table.apex-table {
+  --apex-table-bg: var(--app-card-bg);
+  --apex-table-header-bg: color-mix(in srgb, var(--app-blue) 7%, var(--app-card-bg));
+  --apex-table-text-color: var(--app-text);
+  --apex-table-muted-color: var(--app-text-3);
+  --apex-table-accent-color: var(--app-blue);
+  --apex-table-row-hover-bg: color-mix(in srgb, var(--app-blue) 4%, var(--app-card-bg));
+  --apex-table-row-selected-bg: color-mix(in srgb, var(--app-blue) 12%, var(--app-card-bg));
+  --apex-table-disabled-color: var(--app-text-4);
+  --apex-table-focus-color: var(--app-blue);
+  --apex-table-border-color: var(--app-card-line);
+  --apex-table-radius: var(--app-radius-control);
+  --apex-table-font-family: var(--app-font);
+  --apex-table-font-size: var(--app-fs-body);
+}

@@ -171,6 +171,17 @@ export const appRouteDefinitions = defineAppRoutes([
         },
       },
       {
+        id: 'dev-apex-table-probe',
+        path: 'dev/apex-table-probe',
+        // T021 临时探针：ApexTable 能力演示与取证，验证完成后随收尾移除
+        loadPage: () => import('@/pages/dev/ApexTableProbe/ApexTableProbe'),
+        meta: {
+          title: '表格能力探针',
+          hideInMenu: true,
+          i18nNamespaces: ['common'],
+        },
+      },
+      {
         id: 'vehicle-deploy',
         path: 'vehicle-deploy',
         meta: { title: '车辆管理', icon: Car, menuCode: MENU_PERM.VEHICLE_MANAGE },
