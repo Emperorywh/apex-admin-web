@@ -6,8 +6,9 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react'
 import { isRouteErrorResponse } from 'react-router'
 import { Button, Result } from 'antd'
-import { FALLBACK_PATH } from '@/constants/route.constants'
 import i18next from '@/i18n/i18n'
+import { resolveFirstAccessiblePath } from '@/router/firstAccessible'
+import { store } from '@/store/store'
 
 interface RouterErrorBoundaryProps {
   /** 作为 errorElement 挂载时可无 children */
@@ -48,7 +49,12 @@ export class RouterErrorBoundary extends Component<RouterErrorBoundaryProps, Rou
           <Button key="reload" type="primary" onClick={() => window.location.reload()}>
             {i18next.t('重新加载')}
           </Button>,
-          <Button key="home" onClick={() => window.location.assign(FALLBACK_PATH)}>
+          <Button
+            key="home"
+            onClick={() =>
+              window.location.assign(resolveFirstAccessiblePath(store.getState().auth.identity ?? {}))
+            }
+          >
             {i18next.t('返回工作台')}
           </Button>,
         ]}

@@ -1,8 +1,7 @@
 /**
- * 路由层外的稳定回退地址。
+ * 路由层外的稳定锚点常量。
  * 路由 id 与 path 的唯一来源是 @/router/definitions.tsx（树节点推导）；
- * 此处仅保留 components/features 等不可依赖 router 层的模块所需的锚点。
+ * 安全返回/默认入口不再是静态地址：统一由 @/router/firstAccessible 按
+ * 当前身份解析「首个有权且本轮已实现的业务页」（跳过暂缓模块），
+ * 不能用可能指向暂缓页的固定路径兜底（SPEC §4/P41）。
  */
-
-/** 错误页与登录无有效回跳时的回退地址；对应 definitions.tsx 中 over-look 节点 */
-export const FALLBACK_PATH = '/over-look'

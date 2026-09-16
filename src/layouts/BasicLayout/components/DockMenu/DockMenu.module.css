@@ -388,3 +388,18 @@
     flex-basis: 44px;
   }
 }
+
+/* 暂缓模块「下一轮实现」标注：Dock 分区与面板行内共用的小号提示，
+   只作状态标注，不改变行/分区的点击与导航行为 */
+.labelDeferred,
+.panelDeferred {
+  margin-left: 4px;
+  padding: 0 4px;
+  border-radius: var(--app-radius-badge);
+  border: 1px solid var(--app-text-4);
+  color: var(--app-text-3);
+  font-size: var(--app-fs-caption);
+  font-style: normal;
+  line-height: 1.4;
+  white-space: nowrap;
+}

@@ -23,12 +23,17 @@ interface PageCacheHostProps {
   currentLocation: Location
   currentRouteId: string
   currentMeta: RouteMeta | null
+  /**
+   * 会话内满幅视图激活（全屏/暂缓提示/404/无权限/软件授权）：
+   * 全部缓存页签转入隐藏态——DOM 与 state 保留，Effects 卸载、查询暂停（SPEC §9.1）。
+   */
+  overlayActive?: boolean
 }
 
 /** 关闭动画的兜底清理时限：正常由图层 pageClose 的 animationend 先行移除（如系统关闭动画时） */
 const CLOSE_FALLBACK_MS = 1000
 
-export function PageCacheHost({ currentLocation, currentRouteId, currentMeta }: PageCacheHostProps) {
+export function PageCacheHost({ currentLocation, currentRouteId, currentMeta, overlayActive = false }: PageCacheHostProps) {
   const tabs = useAppSelector((state) => state.tabs.tabs)
   const activeTabKey = useAppSelector((state) => state.tabs.activeTabKey)
 
@@ -107,9 +112,12 @@ export function PageCacheHost({ currentLocation, currentRouteId, currentMeta }: 
       {tabs
         .filter((tab) => tab.cached)
         .map((tab) => (
-          <Activity key={tab.key} mode={tab.key === activeTabKey ? 'visible' : 'hidden'}>
+          <Activity
+            key={tab.key}
+            mode={!overlayActive && tab.key === activeTabKey ? 'visible' : 'hidden'}
+          >
             <PageLayer>
-              <CachedPage tab={tab} isActive={tab.key === activeTabKey} />
+              <CachedPage tab={tab} isActive={!overlayActive && tab.key === activeTabKey} />
             </PageLayer>
           </Activity>
         ))}

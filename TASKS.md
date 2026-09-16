@@ -97,7 +97,7 @@ T098—T105 只复核自己领域的组成任务与动作证据（A01/A07），�
 
 ### T007 — 统一路由、对象页签与稳定会话缓存宿主
 
-- **状态**：实现/资料＝未开始；验收＝未开始。 预计30—40分钟。
+- **状态**：实现/资料＝产物就绪；验收＝隔离验证通过（2026-09-16，证据见 docs/migration/evidence/T007/、合同见 docs/migration/contracts/routing-host.md、交接见 docs/migration/handoffs/T007.md）。 预计30—40分钟。
 - **实现依赖**：[T005](#t005)。
 - **定位**：SPEC §8—9、A04/A06/A09/A16；definitions/projections/guard/redirect、tabsSlice、BasicLayout/PageCacheHost。
 - **本卡迁移**：沿现有路由单源补鉴权、暂缓入口及 P41/P42；接通统一返回和对象页签身份。将缓存宿主提升到稳定会话层，为 T011 留挂载点；解除额外模板入口引用。

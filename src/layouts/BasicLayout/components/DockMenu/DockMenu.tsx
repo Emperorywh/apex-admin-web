@@ -14,9 +14,10 @@ import { useLocation, useNavigate } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import { App } from 'antd'
 import { ArrowUpRight, Check, ChevronLeft, ChevronRight, Folder, LayoutGrid, Trash2 } from 'lucide-react'
-import { buildMenuRoutes } from '@/router/projections'
+import { buildMenuRoutes, filterMenuByPermission } from '@/router/projections'
 import type { MenuNode } from '@/router/projections'
 import { useAppDispatch } from '@/hooks/useAppDispatch'
+import { useAuth } from '@/hooks/useAuth'
 import { IconTile } from '@/layouts/BasicLayout/components/IconTile/IconTile'
 import { routeIconTone } from '@/layouts/BasicLayout/components/IconTile/iconTones'
 import { allTabsClosed } from '@/store/slices/tabsSlice'
@@ -127,8 +128,14 @@ export function DockMenu() {
   const { t: tCommon } = useTranslation('common')
   const { t: tMenu } = useTranslation('menu')
   const { message } = App.useApp()
+  const { hasMenu, isRoot } = useAuth()
 
-  const sections = useMemo(() => buildMenuRoutes(), [])
+  /* 菜单树按当前身份过滤（SPEC §8.2）：叶子须持 menuCode，rootOnly 对非 root 隐藏，
+     空分组整组隐藏；暂缓模块按原权限展示，deferred 标记由渲染层标注「下一轮实现」 */
+  const sections = useMemo(
+    () => filterMenuByPermission(buildMenuRoutes(), hasMenu, isRoot),
+    [hasMenu, isRoot],
+  )
   const [trail, setTrail] = useState<TrailEntry[]>([])
   /** 正在播放启动弹跳的分区（routeId）；动画结束由 onAnimationEnd 复位 */
   const [launchingId, setLaunchingId] = useState<string | null>(null)
@@ -288,11 +295,16 @@ export function DockMenu() {
               }}
             >
               {/* 缩小图标底座与内部字形，适配紧凑底栏。
-                  保留下方名称，维持原有菜单识别方式。 */}
+                  保留下方名称，维持原有菜单识别方式；暂缓分区追加标记。 */}
               <IconTile tone={routeIconTone(section.routeId)} size={28} radius={8}>
                 <Icon size={17} strokeWidth={2} />
               </IconTile>
-              <span className={styles.label}>{tMenu(section.title)}</span>
+              <span className={styles.label}>
+                {tMenu(section.title)}
+                {section.deferred && (
+                  <em className={styles.labelDeferred}>{tCommon('下一轮实现')}</em>
+                )}
+              </span>
             </button>
           )
         })}
@@ -448,7 +460,13 @@ function DockMenuPanel({
             onClick={(event) => hasChildren ? onOpenGroup(item, event.currentTarget) : onNavigate(item)}
           >
             <span className={styles.panelIcon} aria-hidden="true"><ItemIcon size={18} strokeWidth={1.7} /></span>
-            <span className={styles.panelLabel}>{t(item.title)}</span>
+            <span className={styles.panelLabel}>
+              {t(item.title)}
+              {/* 暂缓模块行内标注「下一轮实现」，与直访提示页一致（SPEC §1.2） */}
+              {item.deferred && !hasChildren && (
+                <em className={styles.panelDeferred}>{tCommon('下一轮实现')}</em>
+              )}
+            </span>
             {hasChildren ? (
               <>
                 <span className={styles.panelCount} aria-hidden="true">{item.children.length}</span>

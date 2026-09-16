@@ -1,9 +1,11 @@
 /**
  * 三投影生成：
- * 1. accessRoutes —— 注册给 createBrowserRouter；认证 loader、重定向、空锚点叶子
+ * 1. accessRoutes —— 注册给 createBrowserRouter（包在稳定会话宿主 SessionHost 内）；
+ *    除登录页外全部路由挂认证/授权守卫；业务页输出空锚点，由会话宿主的
+ *    PageCacheHost 统一渲染（页签缓存 / 会话内视图切换）
  * 2. renderRoutes —— 无 loader/action，仅结构与 React.lazy 页面；供 CachedRouteView 以
  *    useRoutes(renderRoutes, locationSnapshot) 渲染，使每个缓存页签拥有独立路由上下文
- * 3. menuRoutes   —— 按 hideInMenu 过滤；供底部 Dock 菜单与快捷入口
+ * 3. menuRoutes   —— 按 hideInMenu 过滤的结构树；供 Dock 菜单做权限过滤后呈现
  *
  * 三份投影与 lazy 组件均在模块初始化时只生成一次，保持引用稳定。
  */
@@ -14,11 +16,9 @@ import { useTranslation } from 'react-i18next'
 import type { LucideIcon } from 'lucide-react'
 import PageLoading from '@/components/PageLoading/PageLoading'
 import { RouterErrorBoundary } from '@/components/RouterErrorBoundary/RouterErrorBoundary'
-import { BasicLayout } from '@/layouts/BasicLayout/BasicLayout'
 import { BlankLayout } from '@/layouts/BlankLayout/BlankLayout'
 import { appRouteDefinitions, joinPath, ROUTE_IDS } from '@/router/definitions'
-import { createRouteGuardLoader } from '@/router/guard'
-import { ROOT_REDIRECT_TARGET } from '@/router/redirect'
+import { createFirstAccessibleLoader, createRouteGuardLoader } from '@/router/guard'
 import type { AppRouteDefinition, RouteMeta } from '@/router/router.types'
 
 /* -------------------------------------------------------------------------- */
@@ -53,11 +53,7 @@ function I18nPageGate({
 /* accessRoutes                                                               */
 /* -------------------------------------------------------------------------- */
 
-function toAccessNode(
-  definition: AppRouteDefinition,
-  isProtected: boolean,
-  isTopLevel: boolean,
-): RouteObject {
+function toAccessNode(definition: AppRouteDefinition, isTopLevel = false): RouteObject {
   // RouteObject 为可辨识联合：index 与 path 必须在构造期确定
   const node: RouteObject = definition.index
     ? { id: definition.id, handle: { meta: definition.meta }, index: true }
@@ -66,35 +62,38 @@ function toAccessNode(
         handle: { meta: definition.meta },
         ...(definition.path !== undefined ? { path: definition.path } : {}),
       }
+  // 顶层节点挂错误边界：loader/guard 抛错时有稳定恢复动作（重定向不抛错，不受影响）
   if (isTopLevel) node.errorElement = <RouterErrorBoundary />
 
-  if (isProtected) {
-    if (definition.index || definition.redirect) {
-      // index 与 redirect 节点固定 replace：index 未声明目标时回退受保护首页；
-      // 目标节点自带认证守卫，此处不再重复校验
-      node.loader = () => redirect(definition.redirect ?? ROOT_REDIRECT_TARGET)
-    } else {
-      node.loader = createRouteGuardLoader()
-    }
-  }
-
-  if (definition.children?.length) {
-    node.children = definition.children.map((child) =>
-      toAccessNode(child, isProtected, false),
-    )
-    if (definition.id === ROUTE_IDS['root']) {
-      // BasicLayout 在受保护根只挂载一次；业务页由 PageCacheHost 渲染
-      node.element = <BasicLayout />
+  // 公开路由（登录页）：Data Router 直接渲染，无守卫、不进会话宿主
+  if (definition.meta.public === true) {
+    if (definition.loadPage) {
+      const LazyPage = getLazyPage(definition)
+      node.element = wrapPublicPage(<LazyPage />)
     }
     return node
   }
 
-  if (definition.loadPage && !isProtected) {
-    // 公开叶子（登录、显式 404）由 Data Router 直接渲染
-    const LazyPage = getLazyPage(definition)
-    node.element = wrapPublicPage(<LazyPage />)
+  if (definition.index || definition.redirect) {
+    if (definition.id === ROUTE_IDS['root-index']) {
+      // 受保护根默认入口：解析首个有权且本轮已实现的业务页（跳过暂缓）
+      node.loader = createFirstAccessibleLoader()
+    } else {
+      // 其余 index 与重定向节点固定 replace：目标节点自带守卫，此处不重复校验
+      const target = definition.redirect
+      if (!target) throw new Error(`路由 ${definition.id} 缺少重定向目标`)
+      node.loader = () => redirect(target)
+    }
+  } else if (definition.loadPage) {
+    // 业务叶子（含全屏/暂缓/404 等会话内视图）：统一守卫，输出空锚点由 PageCacheHost 渲染
+    node.loader = createRouteGuardLoader()
   }
-  // 受保护业务叶子：空锚点，不直接渲染业务页
+
+  if (definition.children?.length) {
+    node.children = definition.children.map((child) => toAccessNode(child))
+    // 受保护根只是结构节点：BasicLayout 已被稳定会话宿主 SessionHost 取代
+    return node
+  }
   return node
 }
 
@@ -107,7 +106,7 @@ function wrapPublicPage(children: ReactNode): ReactNode {
 }
 
 export const accessRoutes: RouteObject[] = appRouteDefinitions.map((definition) =>
-  toAccessNode(definition, definition.id === ROUTE_IDS['root'], true),
+  toAccessNode(definition, true),
 )
 
 /* -------------------------------------------------------------------------- */
@@ -148,7 +147,7 @@ function toRenderNode(definition: AppRouteDefinition): RouteObject {
 export const renderRoutes: RouteObject[] = appRouteDefinitions.map(toRenderNode)
 
 /* -------------------------------------------------------------------------- */
-/* menuRoutes                                                                 */
+/* menuRoutes 与权限过滤                                                       */
 /* -------------------------------------------------------------------------- */
 
 export interface MenuNode {
@@ -156,6 +155,12 @@ export interface MenuNode {
   path: string
   title: string
   icon?: LucideIcon
+  /** 菜单权限码（叶子与分组一致携带）；过滤与暂缓标记共用 */
+  menuCode?: string
+  /** 特权专属入口：非 root 用户菜单与直访均不可见（对齐源 access.ts ROOT_ONLY 行为） */
+  rootOnly?: boolean
+  /** 本轮暂缓模块：按原权限展示并标注「下一轮实现」 */
+  deferred?: boolean
   children: MenuNode[]
 }
 
@@ -176,6 +181,9 @@ function filterMenuNodes(
         path,
         title: definition.meta.title,
         icon: definition.meta.icon,
+        menuCode: definition.meta.menuCode,
+        rootOnly: definition.meta.rootOnly,
+        deferred: definition.meta.deferred,
         children,
       })
     } else if (!definition.index && (definition.loadPage || definition.redirect)) {
@@ -184,6 +192,9 @@ function filterMenuNodes(
         path,
         title: definition.meta.title,
         icon: definition.meta.icon,
+        menuCode: definition.meta.menuCode,
+        rootOnly: definition.meta.rootOnly,
+        deferred: definition.meta.deferred,
         children: [],
       })
     }
@@ -198,6 +209,32 @@ export function buildMenuRoutes(): MenuNode[] {
   if (rootIndex < 0) return tree
   const root = tree[rootIndex]
   return [...root.children, ...tree.filter((_, index) => index !== rootIndex)]
+}
+
+/**
+ * 按当前身份过滤菜单树（SPEC §8.2）：
+ * - 叶子要求持有其 menuCode（祖先填充已在权限模型内完成）；
+ * - rootOnly 入口对非 root 隐藏（对齐源 access.ts：ROOT_ONLY 码一律 false）；
+ * - 无任何可见子项的分组整组隐藏（与结构过滤一致）；
+ * - 暂缓模块不在此特判：按原权限展示，deferred 标记供呈现「下一轮实现」。
+ * 过滤在渲染期执行（依赖身份快照），不参与模块级单次生成。
+ */
+export function filterMenuByPermission(
+  nodes: MenuNode[],
+  hasMenu: (code: string) => boolean,
+  isRoot: boolean,
+): MenuNode[] {
+  const result: MenuNode[] = []
+  for (const node of nodes) {
+    if (node.children.length > 0) {
+      const children = filterMenuByPermission(node.children, hasMenu, isRoot)
+      if (children.length > 0) result.push({ ...node, children })
+      continue
+    }
+    if (node.rootOnly === true && !isRoot) continue
+    if (node.menuCode !== undefined && hasMenu(node.menuCode)) result.push(node)
+  }
+  return result
 }
 
 /** 拍平菜单树为叶子列表（Dock、快捷入口等扁平导航使用） */

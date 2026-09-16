@@ -45,8 +45,10 @@ const persistedAuth = persistReducer(
     storage: localStorageAdapter,
     version: AUTH_PERSIST_SCHEMA_VERSION,
     whitelist: ['identity'],
-    // 仅版本不一致时触发：清空旧形状负载，_persist 由 redux-persist 重新附加
-    migrate: (state) => Promise.resolve({ ...state, identity: undefined } as typeof state),
+    // 仅版本不一致时触发：清空旧形状负载，_persist 由 redux-persist 重新附加。
+    // identity 必须回退为 null（登录态哨兵值）：置 undefined 会绕过全应用的
+    // `identity === null` 登录态判定，导致未登录硬刷新不被守卫拦截（T007 修复）。
+    migrate: (state) => Promise.resolve({ ...state, identity: null } as typeof state),
   },
   authReducer,
 )

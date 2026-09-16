@@ -9,8 +9,8 @@ import { Lock, UserRound } from 'lucide-react'
 import { useNavigate, useSearchParams } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import { LOGIN_REDIRECT_QUERY_KEY } from '@/constants/auth/auth.constants'
-import { FALLBACK_PATH } from '@/constants/route.constants'
 import { ROUTE_PATHS } from '@/router/definitions'
+import { resolveFirstAccessiblePath } from '@/router/firstAccessible'
 import { useLogin } from '@/features/auth/hooks/useLogin'
 import { apiErrorMessage } from '@/services/request/request'
 import styles from '@/features/auth/components/LoginForm/LoginForm.module.css'
@@ -37,7 +37,11 @@ export function LoginForm() {
         return
       }
       const redirect = searchParams.get(LOGIN_REDIRECT_QUERY_KEY)
-      navigate(redirect && redirect.startsWith('/') ? redirect : FALLBACK_PATH, { replace: true })
+      // 无有效回跳时解析首个有权且本轮已实现的业务页（跳过暂缓模块，SPEC §4）
+      navigate(
+        redirect && redirect.startsWith('/') ? redirect : resolveFirstAccessiblePath(snapshot),
+        { replace: true },
+      )
     } catch (error) {
       const text = apiErrorMessage(error)
       void message.error(text || t('登录失败，请稍后重试'))

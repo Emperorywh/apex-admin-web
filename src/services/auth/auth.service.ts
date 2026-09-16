@@ -144,7 +144,31 @@ export async function logout(): Promise<void> {
  *
  * 全程不存储、不读取密码。
  */
+/**
+ * 会话恢复完成门（T007）：restoreSession 无论结论如何都会置 resolve。
+ * 守卫 loader 在路由模块初始化期即运行，早于启动引导完成；守卫必须等待
+ * 本门拿到确定性登录结论（identity/restored 已落定），否则硬刷新会被误判
+ * 为未登录而弹回登录页。
+ */
+let resolveSessionRestoreGate: (() => void) | null = null
+const sessionRestoreGate = new Promise<void>((resolve) => {
+  resolveSessionRestoreGate = resolve
+})
+
+export function awaitSessionRestored(): Promise<void> {
+  return sessionRestoreGate
+}
+
 export async function restoreSession(): Promise<void> {
+  try {
+    await runRestoreSession()
+  } finally {
+    resolveSessionRestoreGate?.()
+    resolveSessionRestoreGate = null
+  }
+}
+
+async function runRestoreSession(): Promise<void> {
   const stored = readStoredAccessInfo()
   // 形状守卫已保证 username/token 非空；类型收窄仅防可选字段语义
   const storedToken = stored?.token

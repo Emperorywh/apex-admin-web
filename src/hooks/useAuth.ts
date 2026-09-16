@@ -38,8 +38,9 @@ export function useAuth(): UseAuthResult {
   )
 
   return {
-    identity,
-    isAuthenticated: identity !== null,
+    identity: identity ?? null,
+    // isAuthenticated 用 falsy 判定兜底：持久化迁移等路径不得让 undefined 冒充已登录（T007）
+    isAuthenticated: identity != null,
     isRoot: isRootUser(identity?.username),
     hasMenu,
     hasButton,

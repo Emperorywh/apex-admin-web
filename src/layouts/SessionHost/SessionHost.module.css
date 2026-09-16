@@ -1,0 +1,48 @@
+/* 稳定会话宿主外壳：布局结构与原 BasicLayout 一致（顶栏悬浮 + 工作区堆叠网格 +
+   底部 Dock），但宿主挂在全部受保护路由之上——进入全屏、暂缓提示、404、无权限
+   等会话内视图时仅隐藏外壳（shellBare），页签缓存宿主不销毁（SPEC §8.1）。 */
+
+.shell {
+  position: relative;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* 顶栏/底栏插槽：display:contents 保持原 flex 布局不变，隐藏时整体 display:none */
+.headerSlot,
+.dockSlot {
+  display: contents;
+}
+
+.shellBare .headerSlot,
+.shellBare .dockSlot {
+  display: none;
+}
+
+.workspace {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  overflow: hidden;
+  padding: 8px;
+  background: var(--app-dock-bg);
+  backdrop-filter: var(--app-glass-filter);
+  -webkit-backdrop-filter: var(--app-glass-filter);
+}
+
+/* 会话内满幅视图（全屏/暂缓/404/无权限/软件授权）：去掉窗口留白，页面铺满视口 */
+.shellBare .workspace {
+  padding: 0;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* PageCacheHost 输出的每个页面图层（窗口容器，承载开合动画）堆叠在同一单元格 */
+.workspace > * {
+  grid-area: 1 / 1;
+  min-height: 0;
+}

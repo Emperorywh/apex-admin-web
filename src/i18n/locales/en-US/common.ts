@@ -61,4 +61,29 @@ export default {
   '操作': 'Actions',
   '操作失败，请稍后重试': 'Something went wrong. Please retry later.',
   '加载失败，点击重试': 'Failed to load. Click to retry.',
+  /* T007：暂缓模块提示与对象页签身份（zh-CN key 即中文文案，五语补齐归 T016） */
+  '下一轮实现': 'Next release',
+  '该模块将在下一轮实现，当前版本暂未开放':
+    'This module will be delivered in the next release and is not available yet',
+  '返回本轮可用页面': 'Back to available pages',
+  '退出失败，会话已保留': 'Sign-out failed; the session is kept',
+  '无权限': 'No permission',
+  '暂无本轮可用业务页面，相关模块将在下一轮实现':
+    'No pages are available in this release; related modules will be delivered in the next release',
+  '当前账号无权访问该页面或没有可用业务页面':
+    'This account has no access to the requested page, or no available pages',
+  '退出并重新登录': 'Sign out and sign in again',
+  '任务详情': 'Task Details',
+  '车辆详情': 'Vehicle Details',
+  '任务标识': 'Task key',
+  '车辆标识': 'Vehicle key',
+  '对象页签': 'Object tab',
+  '本页签按任务标识独立缓存，与其他任务互不覆盖':
+    'This tab is cached per task key and never overlaps other tasks',
+  '本页签按车辆标识独立缓存，与其他车辆互不覆盖':
+    'This tab is cached per vehicle key and never overlaps other vehicles',
+  '缺少任务标识：请从任务列表进入，或按 ?orderTaskKey=<任务标识> 访问':
+    'Missing task key: enter from the task list, or use ?orderTaskKey=<task key>',
+  '缺少车辆标识：请从车辆列表进入，或按 ?vehicleKey=<车辆标识> 访问':
+    'Missing vehicle key: enter from the vehicle list, or use ?vehicleKey=<vehicle key>',
 } as const

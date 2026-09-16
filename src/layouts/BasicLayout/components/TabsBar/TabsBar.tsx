@@ -28,6 +28,7 @@ import {
 import { useAppDispatch } from '@/hooks/useAppDispatch'
 import { useAppSelector } from '@/hooks/useAppSelector'
 import { findRouteMeta } from '@/router/projections'
+import { resolveObjectKey } from '@/router/objectTab'
 import {
   allTabsClosed,
   leftTabsClosed,
@@ -193,6 +194,10 @@ function SortableTab({ tab, active, contextMenu, onActivate, onClose }: Sortable
     disabled: tab.affix,
   })
   const meta = findRouteMeta(tab.routeId)
+  /** 对象页签：标题追加业务对象标识，区分同一路由的不同对象（SPEC §8.1） */
+  const objectKey = meta?.objectParam !== undefined
+    ? resolveObjectKey(tab.location.search, meta.objectParam)
+    : null
 
   const style: React.CSSProperties = {
     transform: transform ? `translate3d(${transform.x}px, 0, 0)` : undefined,
@@ -222,8 +227,12 @@ function SortableTab({ tab, active, contextMenu, onActivate, onClose }: Sortable
         aria-selected={active}
       >
         {/* 顶部使用紧凑文字标签，与底部彩色菜单图标形成层级。
-            保留页签关闭、拖动排序及右键操作，固定标签不占关闭按钮空间。 */}
-        <span className={styles.title}>{t(meta?.title ?? tab.key)}</span>
+            保留页签关闭、拖动排序及右键操作，固定标签不占关闭按钮空间；
+            对象页签追加对象标识，两任务/两车辆页签可分辨。 */}
+        <span className={styles.title}>
+          {t(meta?.title ?? tab.key)}
+          {objectKey ? ` · ${objectKey}` : ''}
+        </span>
         {tab.closable ? (
           <button
             type="button"
