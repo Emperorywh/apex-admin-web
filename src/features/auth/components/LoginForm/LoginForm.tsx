@@ -1,6 +1,8 @@
 /**
- * 登录表单：用户名 + 密码，成功后按 redirect 参数回跳。
- * 后端未接入期间登录直通，密码仅做必填校验。
+ * 登录表单：用户名 + 密码，成功后按回跳参数或登录落点导航。
+ * 会话由 useLogin 经真实登录接口构建（T00.3）；落点规则见 @/router/routeAccess：
+ * 未激活 → 软件授权页；首页可用优先；否则首个有权限且已完成迁移的业务页；
+ * 回跳仅接受站内、存在且当前可用的目标（规格 5.11 / D29）。
  */
 
 import { App, Button, Form, Input } from 'antd'
@@ -8,9 +10,10 @@ import { Lock, UserRound } from 'lucide-react'
 import { useNavigate, useSearchParams } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import { USERNAME_MAX_LENGTH, USERNAME_MIN_LENGTH, LOGIN_REDIRECT_QUERY_KEY } from '@/constants/auth/auth.constants'
-import { FALLBACK_PATH } from '@/constants/route.constants'
 import { useLogin } from '@/features/auth/hooks/useLogin'
 import { apiErrorMessage } from '@/services/request/request'
+import { resolveLandingPath, resolveSafeRedirectPath } from '@/router/routeAccess'
+import { store } from '@/store/store'
 import styles from '@/features/auth/components/LoginForm/LoginForm.module.css'
 
 interface LoginFormValues {
@@ -29,8 +32,14 @@ export function LoginForm() {
   const handleFinish = async (values: LoginFormValues) => {
     try {
       await submit(values)
-      const redirect = searchParams.get(LOGIN_REDIRECT_QUERY_KEY)
-      navigate(redirect && redirect.startsWith('/') ? redirect : FALLBACK_PATH, { replace: true })
+      // sessionReady 已落库：直接读 store 最新会话（组件闭包中的旧快照不可靠）
+      const auth = store.getState().auth
+      // 深链接回跳校验：仅放行站内且有权限、已完成迁移的目标，否则落登录落点
+      const safeRedirect = resolveSafeRedirectPath(
+        searchParams.get(LOGIN_REDIRECT_QUERY_KEY),
+        auth,
+      )
+      navigate(safeRedirect ?? resolveLandingPath(auth), { replace: true })
     } catch (error) {
       const text = apiErrorMessage(error)
       void message.error(text || t('登录失败，请稍后重试'))

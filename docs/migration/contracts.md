@@ -20,16 +20,20 @@
 | 取消/重试 | 主动取消（AbortSignal）静默：不报错、不判离线、不计健康；任何请求不自动重放（无刷新令牌协议，过期即重新登录） | 已落地（T00.3） |
 | 健康反馈 | 有真实后端响应（含业务拒绝）= ok；无响应/HTML/网关错误 = error；取消不参与统计 | 已落地（T00.3） |
 
-## 2. 会话与权限契约（owner：T00；T00.3 已落地会话部分，权限消费 T00.4）
+## 2. 会话与权限契约（owner：T00；T00.3 会话、T00.4 权限与路由已落地）
 
 | 项 | 契约 | 状态 |
 | --- | --- | --- |
 | 登录 | `POST /auth/authorize/login`（OpenAPI 已核实）：请求 `{username, password(MD5)}`，响应 `data: UserAuth{token, activated, user, roles, permissions, permissionsTree}` 一次性构建会话 | 已落地（登录成功路径待真实凭据联验，G03） |
-| 持久化 | token/activated/user/roles/permissions/permissionsTree 经 redux-persist 全量持久化（auth schema v2），刷新/重启恢复前端上下文；不存密码；模板时代旧会话（v1）迁移为未登录态 | 已落地（T00.3） |
+| 持久化 | token/activated/user/roles/permissions/permissionsTree 经 redux-persist 全量持久化（auth schema v2），刷新/重启恢复前端上下文；不存密码；模板时代旧会话（v1）迁移为未登录态。T00.4 联调修复：自定义 migrate 此前无条件重置会话，现按存储版本分流（<v2 重置、v2 原样恢复）；存储键含 redux-persist 默认前缀（`persist:apex-admin:auth`） | 已落地并经真实浏览器恢复实证（T00.4） |
 | 会话失效收敛 | 业务码 1000000 → 请求层单飞处理：清令牌、一次性提示、派发 `sessionExpired`，BasicLayout 统一跳登录并携带回跳；无重定向风暴 | 已落地（T00.3） |
-| 多窗口退出 | `storage` 事件监听 `apex-admin:auth` 持久化键，其他窗口清空会话时本窗口同步清空；登录不做跨窗口同步 | 已落地（T00.3） |
+| 多窗口退出 | `storage` 事件监听持久化键（`persist:apex-admin:auth`，T00.4 修正键名缺前缀缺陷），其他窗口清空会话时本窗口同步清空；登录不做跨窗口同步 | 已落地（键名已实证修正，跨窗口行为待真实双窗口复验） |
 | 无刷新接口 | 不实现静默刷新；过期重新登录（D05/G01/G02，模板 refresh/me 调用已删除） | 已落地（T00.3） |
-| 权限来源 | 后端菜单树（permissionsTree）+ 按钮码（permissions）在会话中持久化；父子/祖先与半选语义、`root`/`administrator` 特殊规则由 T00.4 消费 | 数据已持久化；消费待 T00.4 |
+| 权限码契约 | `PERM`（菜单码）/ `PERM_BUTTON`（按钮码）/ `ROOT_ONLY_CODES`（auth:manage、auth:user:view、auth:role:view）定义于 `src/constants/auth/permission.constants.ts`，码值与旧系统逐一核实对齐；历史码值交叉保留：任务工艺页挂 `mission-flow:view`、工艺管理页挂 `mission-template:view`；载具类型/数据库备份旧路由未写 access（登录即可达，P06/P30 核对后再定，不凭空造码） | 已落地（T00.4） |
+| 权限判定 | 纯函数 `@/utils/auth/permission`（isRootUser/flattenMenuCodes/hasButtonCode）+ 路由访问核心 `@/router/routeAccess`（buildAccessContext/hasMenuAccess/isLeafAvailable/resolveLandingPath/resolveDirectoryLandingPath/resolveSafeRedirectPath）；超管（root/administrator）短路全放行；菜单码扁平化 + 基于定义树的祖先填充（有子菜单则父分组可见）− root 专属码；按钮码 hook `usePermission()`（超管短路） | 已落地（T00.4） |
+| 路由守卫 | 定义树 meta.perm 挂码；认证+权限守卫覆盖全部非 public 入口（含布局外独立页 order-info/vehicle-info/server-resource-monitor/authorize-ingress/no-permission，不因 layout:false 公开）；目录 index 与受保护根 index 按会话动态解析落点（目录索引不指向无权限/未迁移页）；迁移过渡页（meta.migrationPending）渲染统一占位、不加载页面代码（无请求）、不作落点候选；页面任务完成后由统筹移除标记 | 已落地并经 17 项真实浏览器场景实证（T00.4） |
+| 登录落点 | activated=false → `/authorize-ingress`（D29）；首页（/dashboard，P34 合并后同码 dashboard-realtime:view）可用优先；否则菜单顺序首个「有权限且已完成迁移」业务页；全部不可用 → `/no-permission`；登录回跳仅接受站内、存在且可用的目标（resolveSafeRedirectPath） | 已落地并实证（T00.4） |
+| 权限拒绝 | 阻止操作 + 提示重新登录；不伪造刷新 | 已确认（规格 5.9）；页面接入随各页任务 |
 | 权限拒绝 | 阻止操作 + 提示重新登录；不伪造刷新 | 已确认（规格 5.9）；页面接入随各页任务 |
 
 ## 3. 表格契约（owner：T00，T00.5 落地）
@@ -94,3 +98,4 @@
 | 2026-09-17 | 全部 | 初始化框架 | T00 run-20260917-121624-7468 | — |
 | 2026-09-17 | 请求基础路径/代理/时区/表格组件 | `DEFAULT_API_BASE_URL` `/api/v1`→`/fms/v1`；dev 代理默认目标 `10.11.2.67:8888`、`/fms` 不改写；新增 `DEPLOY_TIMEZONE`（`VITE_DEPLOY_TIMEZONE`）；安装 `apex-table-react@0.1.0` | T00（T00.2 run） | 现有模板 service 的相对请求路径随之指向 `/fms/v1`；模板旧协议（envelope/错误形状）仍待 T00.3 重写，期间模板页面联调不可用属预期 |
 | 2026-09-17 | 请求协议/认证/会话 | T00.3 落地：Result 解包（code=200）、业务码常量（1000000/1001000/1000010）、ApiError 带 businessCode、文件通道透传、Bearer + Accept-Language 头、移除 refresh/me/logout(旧路径) 假定、会话持久化（auth schema v1→v2）、authBridge 令牌同步与多窗口退出、profile 虚构接口删除；`DEFAULT_PAGE_SIZE` 保留为通用默认；安装 spark-md5@3.0.2 | T00（本轮 run） | `api` 调用方语义变化：返回值为 Result.data（非原始 body）、code≠200 抛 `ApiRequestError`；auth 会话消费方（Header/Profile/useLogin/guard）已同步适配；删除 `userPatched`/`loadSession`/`MeResponseDto`/`API_ERROR_CODES` 等模板导出；`EntityStatus`/`PageQuery`/`PageResult` 保留为模板遗留类型（已标注不得在新代码引用，随 P03/P31/P32/P34 替换后删除） |
+| 2026-09-17 | 权限与路由 | T00.4 落地：权限码常量（PERM/PERM_BUTTON/ROOT_ONLY_CODES，码值与旧系统逐一核实对齐）、权限纯函数与路由访问核心（超管短路/祖先填充/落点解析/回跳校验）、定义树 meta.perm 挂码 + migrationPending/public 标记、认证+权限守卫覆盖独立页、目录与首页动态落点、迁移过渡占位（MigrationPending，pending 页不加载页面代码）、DockMenu 权限剪枝、affix 播种按权限过滤、usePermission 按钮码 hook、LoginForm 落点接入；连带修复 T00.3 缺陷：store migrate 无条件重置（持久化恢复失效）与 authBridge 监听键名缺 persist: 前缀（多窗口退出同步失效） | T00（本轮 run） | 全部路由 meta 增加 perm 字段（页面任务按钮权限经 usePermission 消费 PERM_BUTTON）；页面任务完成后由统筹移除本页 migrationPending 标记（definitions.tsx 单点）；菜单消费者必须传访问上下文（buildMenuRoutes 签名变更，DockMenu 已适配） |

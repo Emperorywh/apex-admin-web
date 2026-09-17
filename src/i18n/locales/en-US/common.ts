@@ -62,4 +62,7 @@ export default {
     'Response does not follow the dispatch protocol (missing Result envelope).',
   '请求失败（HTTP {{status}}）': 'Request failed (HTTP {{status}})',
   '业务处理失败（code={{code}}）': 'Operation failed (code {{code}})',
+  /* 迁移过渡占位（T00.4：未迁移页面统一呈现，不进入业务代码） */
+  '该功能正在迁移中，迁移完成后开放使用':
+    'This feature is being migrated and will be available once the migration completes.',
 } as const

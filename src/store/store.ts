@@ -42,10 +42,24 @@ const persistedAuth = persistReducer(
     storage: localStorageAdapter,
     version: AUTH_SCHEMA_VERSION,
     whitelist: ['token', 'activated', 'user', 'roles', 'permissions', 'permissionsTree'],
-    // 迁移保留 _persist 元数据（版本号由 redux-persist 迁移后统一推进），
-    // 业务字段全部重置为未登录初始态
-    migrate: (state) =>
-      Promise.resolve({ ...initialAuthState, _persist: state?._persist ?? { version: AUTH_SCHEMA_VERSION, rehydrated: false } }),
+    /**
+     * 版本迁移（v2 起）：redux-persist 的自定义 migrate 在每次 rehydrate 都会执行
+     * （并非仅版本不匹配时），因此必须按存储版本分流——
+     * 低于 v2 的旧结构（模板伪会话）重置为未登录初始态；v2 会话原样恢复。
+     * 此前无条件重置导致刷新后持久化会话被丢弃（T00.4 联调发现并修复）。
+     */
+    migrate: (state, version) => {
+      const storedVersion = state?._persist?.version ?? version
+      if (storedVersion < AUTH_SCHEMA_VERSION) {
+        // 旧版本结构不兼容：重置为未登录初始态，保留 _persist 元数据继续流程
+        return Promise.resolve({
+          ...initialAuthState,
+          _persist: state?._persist ?? { version: AUTH_SCHEMA_VERSION, rehydrated: false },
+        })
+      }
+      // 当前版本：原样恢复持久化会话（字段以 whitelist 为准）
+      return Promise.resolve(state)
+    },
   },
   authReducer,
 )

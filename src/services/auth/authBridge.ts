@@ -11,8 +11,8 @@ import { setAccessToken } from '@/services/request/request'
 import { sessionExpired } from '@/store/slices/authSlice'
 import { store } from '@/store/store'
 
-/** auth 切片的持久化键（与 store.ts 的 PERSIST_KEYS.AUTH 保持一致） */
-const AUTH_PERSIST_KEY = 'apex-admin:auth'
+/** auth 切片的持久化键：与 store.ts 的 PERSIST_KEYS.AUTH 一致，并含 redux-persist 默认 keyPrefix（persist:） */
+const AUTH_PERSIST_KEY = 'persist:apex-admin:auth'
 
 /** 解析 redux-persist 写入的 auth 状态（非法内容返回 null 由调用方忽略） */
 function parsePersistedAuth(raw: string | null): { user: unknown; token: unknown } | null {

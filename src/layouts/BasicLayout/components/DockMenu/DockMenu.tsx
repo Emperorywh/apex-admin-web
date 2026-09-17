@@ -14,9 +14,11 @@ import { useLocation, useNavigate } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import { App } from 'antd'
 import { ArrowUpRight, Check, ChevronLeft, ChevronRight, Folder, LayoutGrid, Trash2 } from 'lucide-react'
+import { buildAccessContext } from '@/router/routeAccess'
 import { buildMenuRoutes } from '@/router/projections'
 import type { MenuNode } from '@/router/projections'
 import { useAppDispatch } from '@/hooks/useAppDispatch'
+import { useAppSelector } from '@/hooks/useAppSelector'
 import { IconTile } from '@/layouts/BasicLayout/components/IconTile/IconTile'
 import { routeIconTone } from '@/layouts/BasicLayout/components/IconTile/iconTones'
 import { allTabsClosed } from '@/store/slices/tabsSlice'
@@ -127,8 +129,12 @@ export function DockMenu() {
   const { t: tCommon } = useTranslation('common')
   const { t: tMenu } = useTranslation('menu')
   const { message } = App.useApp()
+  // 会话切片：菜单按登录返回的权限树过滤（T00.4），登录/登出/换号后自动重建
+  const auth = useAppSelector((state) => state.auth)
 
-  const sections = useMemo(() => buildMenuRoutes(), [])
+  /* 菜单投影按会话权限剪枝：无权限的叶子隐藏，目录无可见子级时整组隐藏；
+     迁移过渡页保留入口（点开为统一迁移占位），与暂缓页呈现策略一致 */
+  const sections = useMemo(() => buildMenuRoutes(buildAccessContext(auth)), [auth])
   const [trail, setTrail] = useState<TrailEntry[]>([])
   /** 正在播放启动弹跳的分区（routeId）；动画结束由 onAnimationEnd 复位 */
   const [launchingId, setLaunchingId] = useState<string | null>(null)

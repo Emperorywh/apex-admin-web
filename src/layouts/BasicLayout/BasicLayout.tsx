@@ -15,7 +15,8 @@ import { useAppSelector } from '@/hooks/useAppSelector'
 import { useAuth } from '@/hooks/useAuth'
 import { collectAffixTabSeeds, ROUTE_IDS } from '@/router/definitions'
 import { buildLoginPath } from '@/router/redirect'
-import { findRouteMeta } from '@/router/projections'
+import { buildAccessContext, isLeafAvailable } from '@/router/routeAccess'
+import { findDefinition, findRouteMeta } from '@/router/projections'
 import type { RouteHandle, RouteMeta } from '@/router/router.types'
 import { affixTabsSeeded, tabSynced } from '@/store/slices/tabsSlice'
 import { normalizeSearchString } from '@/utils/url'
@@ -50,15 +51,23 @@ export function BasicLayout() {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const { isAuthenticated } = useAuth()
+  const auth = useAppSelector((state) => state.auth)
   const tabsState = useAppSelector((state) => state.tabs)
   const { t } = useTranslation('menu')
 
   const leaf = useMemo(() => resolveLeaf(matches), [matches])
 
-  /* 常驻页签播种：刷新/重登后从路由定义恢复 affix 页签；先于页签同步，保证 affix 位于固定区 */
+  /* 常驻页签播种：刷新/重登后从路由定义恢复 affix 页签；先于页签同步，保证 affix 位于固定区。
+     播种按当前会话过滤：无权限或迁移过渡中的 affix 页（如迁移期的合并首页）不播种，
+     避免出现用户不可进入或仅呈现占位的常驻页签；页面迁移完成后自动恢复播种。 */
   useEffect(() => {
-    dispatch(affixTabsSeeded(collectAffixTabSeeds()))
-  }, [dispatch])
+    const ctx = buildAccessContext(auth)
+    const seeds = collectAffixTabSeeds().filter((seed) => {
+      const definition = findDefinition(seed.routeId)
+      return definition !== undefined && isLeafAvailable(definition, ctx)
+    })
+    dispatch(affixTabsSeeded(seeds))
+  }, [dispatch, auth])
 
   /* 页签同步：hash 变化只更新快照（同 key 替换），hideInTabs 不生成页签 */
   useEffect(() => {
