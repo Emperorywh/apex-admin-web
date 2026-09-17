@@ -7,7 +7,7 @@
 
 | 项 | 契约 | 状态 |
 | --- | --- | --- |
-| 基础路径 | `/fms/v1/...`，严格按 OpenAPI operation，不改写路径 | 已确认（规格 4.2） |
+| 基础路径 | `/fms/v1/...`，严格按 OpenAPI operation，不改写路径；`DEFAULT_API_BASE_URL='/fms/v1'` 已落地（`VITE_API_BASE_URL` 可覆盖）；dev 代理 `/fms` 原样转发（默认目标 `http://10.11.2.67:8888`，`APEX_DEV_PROXY_TARGET` 可覆盖） | 已落地（T00.2；协议包装 T00.3） |
 | 成功判定 | HTTP 成功且业务 `code=200`；不依赖 `message === 'success'` | 已确认（规格 4.2） |
 | 响应包装 | `code/message/timestamp/data` 统一解包；void/列表/分页/文件各有类型 | 待 T00.3 实现 |
 | 错误 | 统一归一化 ApiError（HTTP 状态 + 业务码 + 详情）；非 200 业务码不进成功分支 | 待 T00.3 实现 |
@@ -33,7 +33,7 @@
 
 | 项 | 契约 | 状态 |
 | --- | --- | --- |
-| 组件 | 官方 npm `apex-table-react`（当前未安装，T00.2 安装）；无 antd Table/自绘 table | 已确认（A07） |
+| 组件 | 官方 npm `apex-table-react@0.1.0`（T00.2 已安装并提交锁文件；类型探针验证 React 19/TS 6 兼容）；无 antd Table/自绘 table | 已安装（A07）；运行时适配 T00.5 |
 | request 模式 | 零基 pageIndex → 后端 pageNo；返回 `data/rowCount` | 已确认（规格 6.2） |
 | data 模式 | 仅真实完整小集合与草稿行 | 已确认（规格 6.2） |
 | 行 ID | 稳定业务标识；嵌套行区分作用域 | 已确认 |
@@ -82,10 +82,11 @@
 | --- | --- | --- |
 | 语言 | 五语言 `zh-CN/en-US/zh-TW/ja-JP/ko-KR`；中文 key 即文案；命名空间懒加载 | 已确认（D34） |
 | 语言存储 | 当前持久化设置为唯一来源；同源 `umi_locale` 一次迁移 | 已确认（18.4） |
-| 时区 | 部署时区优先，缺省 Asia/Shanghai，环境配置提供 | 已确认（D23） |
+| 时区 | 部署时区优先，缺省 Asia/Shanghai，环境配置提供；`DEPLOY_TIMEZONE` 常量已落地（`VITE_DEPLOY_TIMEZONE` 注入，唯一定义点 `src/constants/datetime.ts`），页面不得各自硬编码 | 已落地（D23）；展示工具 T00.7 接入 |
 
 ## 8. 契约变更日志
 
 | 日期 | 契约 | 变更 | 操作者 | 消费者影响 |
 | --- | --- | --- | --- | --- |
 | 2026-09-17 | 全部 | 初始化框架 | T00 run-20260917-121624-7468 | — |
+| 2026-09-17 | 请求基础路径/代理/时区/表格组件 | `DEFAULT_API_BASE_URL` `/api/v1`→`/fms/v1`；dev 代理默认目标 `10.11.2.67:8888`、`/fms` 不改写；新增 `DEPLOY_TIMEZONE`（`VITE_DEPLOY_TIMEZONE`）；安装 `apex-table-react@0.1.0` | T00（本轮 run） | 现有模板 service 的相对请求路径随之指向 `/fms/v1`；模板旧协议（envelope/错误形状）仍待 T00.3 重写，期间模板页面联调不可用属预期 |

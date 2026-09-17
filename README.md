@@ -2,7 +2,7 @@
 
 通用后台管理系统前端模板：多语言、多页签、页面保活，布局复刻 macOS 风格设计稿（顶部状态栏 / 标签栏 / 核心内容 / 底部 Dock）。
 
-视觉与交互基准见 [docs/macos_ui_ux_design_guide_v3.md](docs/macos_ui_ux_design_guide_v3.md)；全局设计令牌定义于 `src/styles/globals.css`，antd 侧经 `src/constants/designTokens.ts` 桥接。
+视觉与交互基线：以现有布局（macOS 外壳：顶栏 / 页签 / 内容 / Dock）、实际组件与全局设计令牌为准——令牌定义于 `src/styles/globals.css`，antd 侧经 `src/constants/designTokens.ts` 桥接。（原引用的 `docs/macos_ui_ux_design_guide_v3.md` 不存在，迁移期间不伪称该文档存在，详见 docs/migration/gaps.md G16。）
 
 ## 技术栈
 
@@ -15,7 +15,7 @@ pnpm install
 pnpm dev          # http://localhost:5173
 ```
 
-后端（`C:\code\apex-admin`，FastAPI）默认代理到 `http://localhost:8000`，可用 `APEX_DEV_PROXY_TARGET` 覆盖。
+调度系统后端经 dev 同源代理转发：默认目标 `http://10.11.2.67:8888`（OpenAPI 联调环境），前端统一请求 `/fms/v1/...` 相对路径，代理对 `/fms` 前缀原样转发、不改写路径；可用 `APEX_DEV_PROXY_TARGET` 覆盖目标，生产由同源反向代理转发 `/fms`。
 
 ## 常用命令
 

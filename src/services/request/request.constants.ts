@@ -2,8 +2,15 @@
  * 请求基础设施常量：超时、稳定错误码、协议默认值。
  */
 
-/** API 基础路径默认值；可被 VITE_API_BASE_URL 覆盖 */
-export const DEFAULT_API_BASE_URL = '/api/v1'
+/**
+ * API 基础路径默认值（迁移规格 4.4 节 D31）：
+ * - 调度系统后端统一前缀为 /fms/v1，所有业务 service 只拼相对 endpoint，
+ *   最终请求路径形如 /fms/v1/dispatcher/...；
+ * - dev 环境经 Vite 同源代理把 /fms 原样转发到联调服务器（不做 rewrite）；
+ * - 生产环境由同源反向代理转发 /fms；
+ * - 仅在部署拓扑变化时可经 VITE_API_BASE_URL 覆盖，业务代码不得硬编码主机/IP/协议。
+ */
+export const DEFAULT_API_BASE_URL = '/fms/v1'
 
 /** 常规请求超时（毫秒） */
 export const REQUEST_TIMEOUT_MS = 15_000

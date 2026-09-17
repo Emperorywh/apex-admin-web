@@ -131,20 +131,23 @@ operationId 全表见 `openapi-inventory.md`。每个页面任务开工时逐 op
 | 历史系统文件页面、旧动作策略代码 | 待逐页复核 | 无入口不迁；不因文件名删除仍被引用的共享模块 | 各页任务 |
 | 旧全局监控 WebSocket | 硬编码 ws 地址（监控用） | G14；不迁回暂缓监控页 | T00/H01 |
 
-## 7. 目标项目检查与依赖基线
+## 7. 目标项目检查与依赖基线（T00.2 复核更新）
 
-| 项 | 状态（2026-09-17） | 处理责任 |
+| 项 | 状态（2026-09-17 T00.2） | 处理责任 |
 | --- | --- | --- |
-| `pnpm lint`（oxlint） | ✅ 通过：150 文件 0 警告 0 错误 | — |
-| `pnpm typecheck`（tsc -b --noEmit） | ✅ 通过 | — |
-| `pnpm check:structure` | ❌ 失败：`scripts/check-structure.mjs` 不存在（package.json 已引用） | T00.2 修复脚本后必须真实执行 |
-| `pnpm build` | 本轮未跑（T00.2 一并验证） | T00.2 |
-| antd | `^6.6.1`（规格核实正式版 6.6.4；T00.2 重核 latest 并锁版本） | T00.2 |
-| apex-table-react | **未安装**（目标依赖清单中不存在；规格核实 0.1.0） | T00.2/T00.5 安装并验证 |
+| `pnpm lint`（oxlint） | ✅ 通过：152 文件 0 警告 0 错误 | — |
+| `pnpm typecheck`（tsc -b --noEmit） | ✅ 通过（含 apex-table-react 类型探针） | — |
+| `pnpm check:structure` | ✅ 已修复：`scripts/check-structure.mjs` 落地并实测通过；违规注入自测可抓深层相对导入/伪绝对导入/跨 feature 导入/硬编码 URL 与 IPv4/index.tsx | — |
+| `pnpm build` | ✅ 通过（tsc -b + vite build） | — |
+| antd | `^6.6.1`；npm latest 重核 = 6.6.4，与 React 19 兼容，锁文件已提交 | — |
+| apex-table-react | ✅ 已安装 0.1.0（npm latest）；peerDeps react ^18‖^19 兼容；类型探针验证后删除 | T00.5 落地 Apex 适配 |
 | react / vite / ts | 19.2 / 8.2 / ~6.0.2 与规格一致 | — |
 | i18n | 仅 zh-CN + en-US；`locales/` 仅 en-US 目录 | T00.8 扩五语言 |
 | mock 文件 | `src/services/dashboard/dashboard.mock.ts`、`src/services/order-record/order.mock.ts` 存在 | P03/P34 清理，V01 审计 |
-| README 视觉指南 | 引用 `docs/macos_ui_ux_design_guide_v3.md`；CLAUDE.md 已将其列为视觉基准（文件现存），规格勘察时缺失的表述以现状为准 | T00.2 复核（G16） |
+| dev 代理 | ✅ 默认目标 `http://10.11.2.67:8888`（`APEX_DEV_PROXY_TARGET` 可覆盖）；`/fms` 前缀原样转发不改写；上游路径保持 `/fms/v1/...` | — |
+| API 基础路径 | ✅ `DEFAULT_API_BASE_URL = '/fms/v1'`（`VITE_API_BASE_URL` 可覆盖） | T00.3 协议改造衔接 |
+| 部署时区 | ✅ `src/constants/datetime.ts` 落地 `DEPLOY_TIMEZONE`（`VITE_DEPLOY_TIMEZONE` 注入，缺省 Asia/Shanghai）；展示工具 T00.7 接入 | T00.7 |
+| README 视觉指南 | **勘误**：`docs/macos_ui_ux_design_guide_v3.md` 经全仓库查找确认不存在（T00.1 曾登记「文件现存」有误）；README/CLAUDE.md 失效引用已改为「以现有布局/token 为视觉基线」（G16） | 已处理 |
 
 ## 8. 旧五语言资源基线
 
@@ -164,9 +167,9 @@ operationId 全表见 `openapi-inventory.md`。每个页面任务开工时逐 op
 
 ## 10. 检查故障清单（T00.1 登记，T00.2 起修复）
 
-1. `check:structure` 引用不存在的 `scripts/check-structure.mjs` → `pnpm check` 不可用（G16）。
-2. 依赖清单缺 `apex-table-react`，业务表格无从替换 → T00.2 安装、T00.5 验证。
+1. ~~`check:structure` 引用不存在的 `scripts/check-structure.mjs` → `pnpm check` 不可用（G16）~~ → ✅ T00.2 已修复并实测（含违规注入自测）。
+2. ~~依赖清单缺 `apex-table-react`，业务表格无从替换 → T00.2 安装、T00.5 验证~~ → ✅ T00.2 已安装 0.1.0（类型探针通过）；Apex 运行时适配归 T00.5。
 3. `SUPPORTED_LANGUAGES` 仅两语言，`normalizeLanguage` 行为待核 → T00.8。
 4. 认证服务假登录 + 虚构 `/users/me`、`/auth/logout` → T00.3。
-5. 请求层协议为模板 REST（`/api/v1`、无 envelope、RFC 9457、Cookie 刷新），与调度 `/fms/v1` + `code/message/data/timestamp` 包装不匹配 → T00.3。
-6. dev 代理指向 `http://localhost:8000`（`APEX_DEV_PROXY_TARGET` 可覆盖），需改为调度目标默认 `http://10.11.2.67:8888` 并明确前缀处理 → T00.2。
+5. 请求层协议为模板 REST（`/api/v1`、无 envelope、RFC 9457、Cookie 刷新），与调度 `/fms/v1` + `code/message/data/timestamp` 包装不匹配 → T00.3（基础路径已在 T00.2 改为 `/fms/v1`，协议包装仍待 T00.3）。
+6. ~~dev 代理指向 `http://localhost:8000`，需改为调度目标默认 `http://10.11.2.67:8888` 并明确前缀处理 → T00.2~~ → ✅ T00.2 已改：默认 `http://10.11.2.67:8888`，`/fms` 原样转发不改写。

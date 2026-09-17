@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 通用后台管理系统前端模板（macOS 风格布局：顶部状态栏 / 标签栏 / 内容 / 底部 Dock）。技术栈：React 19.2（`<Activity>` 保活）· TypeScript 6 · Vite 8 · antd 6 · react-router 8（Data Router）· Redux Toolkit + redux-persist · axios · react-i18next · CSS Modules。Node ≥ 22.22.0，pnpm 11.21.0。
 
-**视觉与交互基准是 [docs/macos_ui_ux_design_guide_v3.md](docs/macos_ui_ux_design_guide_v3.md)**（Web 环境边界为准，v3.1 起：命令系统 / 选择模型 / 反馈矩阵 / 工作区状态恢复不在范围内）。视觉令牌唯一事实源是 `src/styles/globals.css`，约定见下方「视觉令牌与容器约定」。
+**视觉与交互基线是现有布局、实际组件与全局设计令牌**（原引用的 `docs/macos_ui_ux_design_guide_v3.md` 不存在，见 docs/migration/gaps.md G16；Web 环境边界：命令系统 / 选择模型 / 反馈矩阵 / 工作区状态恢复不在范围内）。视觉令牌唯一事实源是 `src/styles/globals.css`，约定见下方「视觉令牌与容器约定」。
 
 ## 常用命令
 
@@ -20,7 +20,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 | `pnpm check` | 以上全部，提交前必须通过 |
 
 - 本仓库无测试框架；验证靠 `pnpm check` + 手动预览（`pnpm preview`）。
-- 后端（`C:\code\apex-admin`，FastAPI）经 dev 代理转发，默认 `http://localhost:8000`，可用环境变量 `APEX_DEV_PROXY_TARGET` 覆盖。
+- 调度系统后端经 dev 同源代理转发：默认 `http://10.11.2.67:8888`（可用环境变量 `APEX_DEV_PROXY_TARGET` 覆盖）；前端统一请求 `/fms/v1/...` 相对路径，代理对 `/fms` 前缀原样转发不改写，生产由同源反向代理转发。
 - Pre-commit（Husky）：先 `tsc -b --noEmit` 再 lint-staged（对暂存文件跑 oxlint）；只检查不格式化，禁止 `--fix`。
 - 不引入 ESLint/Prettier/Tailwind/Less。
 
@@ -53,7 +53,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### HTTP 层（后端协议）
 
-`src/services/request/request.ts` 是唯一 axios 实例。后端协议：`/api/v1` 基础路径；**成功响应无 code envelope，直接返回资源 JSON 本体**；失败为 RFC 9457 problem+json，统一收敛为 `ApiError`（`toApiError`/`apiErrorMessage`/`isCancelledError`）；分页查询 `page/pageSize/sort`（sort 单参数，`-` 前缀降序）；实体状态 `active | disabled`。accessToken 只存内存，401 时以单飞刷新（refreshToken 在 HttpOnly Cookie，不进 JSON）并重放原请求；刷新失败派发 `sessionExpired` 清空登录态。
+`src/services/request/request.ts` 是唯一 axios 实例。后端协议：`/fms/v1` 基础路径；**成功响应无 code envelope，直接返回资源 JSON 本体**；失败为 RFC 9457 problem+json，统一收敛为 `ApiError`（`toApiError`/`apiErrorMessage`/`isCancelledError`）；分页查询 `page/pageSize/sort`（sort 单参数，`-` 前缀降序）；实体状态 `active | disabled`。accessToken 只存内存，401 时以单飞刷新（refreshToken 在 HttpOnly Cookie，不进 JSON）并重放原请求；刷新失败派发 `sessionExpired` 清空登录态。
 
 ### 状态与 i18n
 
