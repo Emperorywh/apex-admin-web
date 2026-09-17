@@ -92,20 +92,24 @@ function ThemeButton() {
   )
 }
 
+/** 语言菜单项：语言名用各自语言书写（不译），用户无需先懂当前界面语言即可识别 */
+const LANGUAGE_MENU_ITEMS: MenuProps['items'] = [
+  { key: 'zh-CN', label: '简体中文' },
+  { key: 'zh-TW', label: '繁體中文' },
+  { key: 'en-US', label: 'English' },
+  { key: 'ja-JP', label: '日本語' },
+  { key: 'ko-KR', label: '한국어' },
+]
+
 function LanguageButton() {
   const { t } = useTranslation('common')
   const dispatch = useAppDispatch()
   const locale = useAppSelector((state) => state.settings.locale)
 
-  const items: MenuProps['items'] = [
-    { key: 'zh-CN', label: '中文' },
-    { key: 'en-US', label: 'English' },
-  ]
-
   return (
     <Dropdown
       menu={{
-        items,
+        items: LANGUAGE_MENU_ITEMS,
         selectable: true,
         selectedKeys: [locale],
         onClick: ({ key }) => {

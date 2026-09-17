@@ -8,7 +8,8 @@ import { readStoredLanguage, type AppLanguage } from '@/i18n/i18n'
 /** 主题三态：light / dark 为具体值，system 跟随系统偏好（由 useTheme 解析） */
 export type AppTheme = 'light' | 'dark' | 'system'
 
-interface SettingsState {
+/** 应用设置状态形状（store 持久化 migrate 恢复时按此构造完整状态） */
+export interface SettingsState {
   locale: AppLanguage
   theme: AppTheme
 }

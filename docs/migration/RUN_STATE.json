@@ -1,7 +1,7 @@
 {
   "版本说明": "调度系统迁移串行调度状态。由定时任务每小时触发一次，每次最多推进一个任务；写入必须整体原子替换。",
-  "最近更新时间": "2026-09-17T09:35:00.000Z",
-  "当前运行标识": "run-20260917-164052-9742（本轮已结束，锁已释放）",
+  "最近更新时间": "2026-09-17T10:55:00.000Z",
+  "当前运行标识": "run-20260917-183059-10593（本轮已结束，锁已释放）",
   "锁": "docs/migration/.lock（mkdir 原子目录锁，内含 lock.json）",
   "工作目录": "C:\\code\\apex-admin-web",
   "分支": "apple-rxx",
@@ -451,24 +451,21 @@
   "当前任务": {
     "任务ID": "T00",
     "状态": "进行中",
-    "当前里程碑": "T00.8 五语言基座（下一轮起点）",
+    "当前里程碑": "T00.9 冻结交接（下一轮起点）",
     "本轮已完成内容": [
-      "T00.7 时间/时区工具：deployDayjs（utc/timezone 单点装配，消费 DEPLOY_TIMEZONE）+ datetimeDisplay（墙钟字符串按部署时区、带偏移换算、纯日期零点、不可解析返回 null 不猜，缺失展示统一 —）",
-      "T00.7 统计空值/单位工具：metricFormat（0 与缺失严格区分、safeRatio 除零→null 不产 Infinity/虚假 0%、formatPercent/formatWithUnit/secondsToHours；具体公式归页面 owner）",
-      "T00.7 控制确认/未知/批量反馈契约：CommandOutcome 三态（accepted/completed/unknown，提交≠完成）+ confirmCommand（列对象与影响、危险按钮、固定附注）+ summarizeBatchOutcomes/summarizeWholeBatch/formatBatchSummaryText（只归纳真实逐项、缺项计入未知、整批不编造逐项成功）",
-      "T00.7 共享选项契约：OpenAPI 逐项核对并登记 contracts.md 第 5 节（地图/站点/车辆/分组/载具/动作/工艺模板/驱动×5/电梯/角色/品牌，method+path+参数）；useStaticOptions（scope 取消/防乱序/失败清空/取消静默）+ optionFallback（失效保留原值、不静默选第一项、保存前批量失效检测）",
-      "T00.7 只读地图共享能力：services/map（getMapInfo+getSimpleMaps，结构异常抛错不以空画布冒充成功）+ components/ReadOnlyMap 组件族 11 文件（三层渲染/节点与路径选点/定位高亮/回填回调/ref API；失败态 StateBlock offline 内闭环；不引入编辑/监控/回放）",
-      "T00.7 依赖：react 19.2.8→19.3.0（minor）、react-konva@19.3.0、konva@^9.3.20（与旧系统实装一致；10.5 未完成等价验证不采用）、@types/react 19.3.0；vite optimizeDeps 预声明 react-konva（预打包陈旧产物曾致双 React 实例 Invalid hook call，预声明后消除）",
-      "T00.7 i18n：共享 map 命名空间（en-US 6 键 + 懒加载表注册）+ common 追加 8 键（命令/批量/选项失效文案）；zh-TW/ja/ko 回退登记 i18n-missing.md；i18n-map.md 登记命名空间归属",
-      "T00.7 验证：四项检查通过（198 文件 lint 0 警告、typecheck、structure 196 文件、build）；浏览器机制实证——26 项纯函数断言全过；地图三层 canvas 像素级渲染确认；回显/选点命中→onChange 完整 DTO 回填端到端；hitFunc 命中区像素确认；IAB 环境 rAF 抑制导致动画类（fitView/闪烁/缩放）登记随 P07 真实浏览器联验"
+      "T00.8 五语言类型与归一化：SUPPORTED_LANGUAGES 扩为 zh-CN/zh-TW/en-US/ja-JP/ko-KR；normalizeLanguage 精确归一化（繁中变体 zh-tw/zh-hk/zh-mo/zh-hant* 保留 zh-TW 不误并入简中；ja*/ko*/en* 精确；未知回退 zh-CN）",
+      "T00.8 四语言懒加载基座：i18n.ts 语言×命名空间懒加载表，新增 zh-TW/ja-JP/ko-KR 三目录五分片（common 81 键、menu 60 键、auth 8 键、error 7 键、map 6 键，key 集合与 en-US 一致）；查无 loader 返回空资源经 fallbackLng 自然回退简中；旧系统既有真译（重試/再試行/재시도、權限管理/権限管理/권한 관리等 12 组）全部沿用",
+      "T00.8 语言偏好单一真相源与 umi_locale 一次迁移：readStoredLanguage 唯一读取入口（新 key 缺失时读旧 umi_locale → 写新 key、删旧 key）；settings 持久化补 migrate 以独立语言 key 为恢复真相源——浏览器首轮验证暴露「持久化镜像把语言拉回旧值覆盖迁移结果」缺陷，修复后复验通过",
+      "T00.8 antd/dayjs/html lang 同步与失败回滚：App.tsx ANTD_LOCALES 五语言映射；changeAppLanguage 预加载失败抛错不改状态，App catch 回滚到实际语言（失败保留原语言机制）；Header 语言菜单扩五项（各语言自书）；dayjs locale 与 document.documentElement.lang 随切换同步",
+      "T00.8 台账：i18n-map.md 填充基座映射结论与 umi_locale 迁移；i18n-missing.md 移除已补齐登记（StateBlock 7/T00.6 11/T00.7 8/map 6 键），保留页面私有分片回退；terminology.md 填充已定术语表",
+      "T00.8 验证：四项检查通过（213 文件 lint 0 警告、typecheck、structure 211 文件、build）；真实浏览器全链路实证——五语言切换各轮 html lang/持久化/菜单文案正确、繁中日韩不误映射、ja-JP 下页面私有分片回退简中不炸、en-US 刷新恢复、umi_locale 迁移落位、fr-FR 非法残留归一化不挂起（T00.7 发现的 useSuspense 挂起边界收敛）、日文登录页资源、退出后语言偏好保留；验证数据已清理"
     ],
     "未完成步骤": [
-      "T00.8 五语言基座：五语言类型/normalizeLanguage 扩展（zh-TW/ja-JP/ko-KR 精确保留不误映射）/懒加载器与 locale 映射；补齐 StateBlock/页签传输/命令与地图文案繁中日韩译文（i18n-missing.md 逐键登记）；同源 umi_locale 一次迁移；antd/Apex/dayjs/Intl/html lang 同步；持久化语言恢复路径统一经 normalizeLanguage（本轮发现 settings 恢复直接 changeLanguage 未过 normalize，不支持语言会致 useSuspense 挂起——T00.8 收敛单点）",
-      "T00.9 冻结交接：contracts.md 冻结、真实纵向样板、公共导出清点、各页 namespace/文件归属终版、过渡期 mock 页面退出运行路径复核",
-      "跨里程碑待办不变：G03 登录成功路径联验（B1 放行前必须）；useVisiblePolling/传输通道/地图动画类随首个消费页联验；getMapInfo 响应 schema 按 OpenAPI 未定义（通配媒体类型），联调时逐字段核实登记差异"
+      "T00.9 冻结交接：contracts.md 冻结、真实纵向样板确认、公共导出清点、各页 namespace/文件归属终版（含本轮新增三语言目录与懒加载表登记规则）、过渡期 mock 页面退出运行路径复核",
+      "跨里程碑待办不变：G03 登录成功路径联验（B1 放行前必须）；useVisiblePolling/传输通道/地图动画类随首个消费页联验；antd 控件 locale 弹窗按钮文案随首个消费者页面（P03 等）联验；切换失败保留原语言的真实网络失败场景随页面任务联调覆盖；getMapInfo 响应 schema 联调逐字段核实"
     ],
-    "下一步": "T00.8 五语言基座：先扩展 normalizeLanguage 与懒加载表（zh-TW/ja-JP/ko-KR 精确支持），再迁公共/菜单/认证/错误资源四语言，补齐 i18n-missing.md 登记的回退键，并收敛持久化语言恢复路径",
-    "阻塞原因": "部分受阻（不阻塞 T00.8/T00.9 机制开发）：真实登录成功路径、带令牌授权只读联验、root/administrator 真实身份验证需测试账号凭据（外部条件，不猜口令）；已登记 G03，B1 放行（P01）前必须补验。getMapInfo 带令牌联验随 P07；地图动画类随 P07 真实浏览器（IAB rAF 抑制）；useVisiblePolling 随首个实时页；传输通道随 P08/P09/P25"
+    "下一步": "T00.9 冻结交接：核对 contracts.md 与实际公共导出一致、登记各页 namespace/文件归属终版、复核过渡期 mock 页面不可达，完成 T00 退出检查（A03–A13、A16/A17/A20/A22/A23 公共部分与 I01/I04–I07 基础能力证据）",
+    "阻塞原因": "部分受阻（不阻塞 T00.9 机制开发）：真实登录成功路径、带令牌授权只读联验、root/administrator 真实身份验证需测试账号凭据（外部条件，不猜口令）；已登记 G03，B1 放行（P01）前必须补验。getMapInfo 带令牌联验随 P07；地图动画类随 P07 真实浏览器（IAB rAF 抑制）；useVisiblePolling 随首个实时页；传输通道随 P08/P09/P25；antd 控件 locale 随首个消费者页面"
   },
   "验证结果": [
     {
@@ -590,7 +587,27 @@
       "命令": "地图 fitView/闪烁/滚轮缩放动画；getMapInfo 带令牌联验",
       "结果": "受阻：前者 IAB 验证环境 rAF 被抑制（实测 requestAnimationFrame 不执行），随 P07 真实浏览器联验；后者需登录凭据（G03）",
       "日期": "2026-09-17"
+    },
+    {
+      "命令": "pnpm lint / typecheck / check:structure / build（T00.8）",
+      "结果": "全部通过（213 文件 lint 0 警告 0 错误；211 源文件结构检查；tsc+vite build 成功）",
+      "日期": "2026-09-17"
+    },
+    {
+      "命令": "真实浏览器五语言切换全链路（T00.8：zh-CN/zh-TW/ja-JP/ko-KR/en-US 各轮）",
+      "结果": "通过：html lang 与持久化同步、菜单文案逐语言正确（旧真译沿用）、繁中日韩不误映射、页面私有分片回退简中不炸、日文登录页资源完整、退出后语言偏好保留",
+      "日期": "2026-09-17"
+    },
+    {
+      "命令": "umi_locale 一次迁移 + 非法语言值恢复（T00.8）",
+      "结果": "通过：旧 key 迁移落位繁中且旧 key 删除（首轮暴露 settings 镜像覆盖缺陷，单一真相源修复后复验通过）；fr-FR 非法残留归一化 zh-CN 不挂起（T00.7 useSuspense 挂起边界收敛实证）；验证后测试数据全部清除",
+      "日期": "2026-09-17"
+    },
+    {
+      "命令": "antd 控件 locale 弹窗按钮 / 切换失败真实网络场景",
+      "结果": "待联验：映射表全覆盖（typecheck 强制）+ zh-CN「登 录」空格特征实证；随首个消费者页面（P03 等）覆盖",
+      "日期": "2026-09-17"
     }
   ],
-  "证据位置": "docs/migration/tasks/T00.md（T00.7 交付物与验证证据表）、docs/migration/contracts.md（第 5/5.1/7 节 + 变更日志）、docs/migration/i18n-missing.md（T00.7 回退登记）、docs/migration/i18n-map.md（命名空间归属）"
+  "证据位置": "docs/migration/tasks/T00.md（T00.8 交付物与验证证据表）、docs/migration/i18n-map.md（基座映射结论 + umi_locale 迁移）、docs/migration/i18n-missing.md（已补齐项移除后登记）、docs/migration/terminology.md（已定术语表）、src/i18n/locales/{zh-TW,ja-JP,ko-KR}/（15 个基座资源文件）"
 }

@@ -4,8 +4,10 @@
 
 import { configureStore } from '@reduxjs/toolkit'
 import { persistReducer, persistStore } from 'redux-persist'
+import { readStoredLanguage } from '@/i18n/i18n'
 import authReducer, { initialAuthState } from '@/store/slices/authSlice'
 import settingsReducer from '@/store/slices/settingsSlice'
+import type { SettingsState } from '@/store/slices/settingsSlice'
 import tabsReducer from '@/store/slices/tabsSlice'
 
 /** redux-persist 持久化 key（统一前缀 apex-admin） */
@@ -64,13 +66,29 @@ const persistedAuth = persistReducer(
   authReducer,
 )
 
-/** 字段级白名单：settings 持久化 locale 与 theme */
+/**
+ * 字段级白名单：settings 持久化 locale 与 theme。
+ * 恢复路径统一收敛（T00.8）：
+ * - locale 以独立语言 key（apex-admin:lang）为单一真相源——readStoredLanguage
+ *   内含 normalizeLanguage（旧值/非法值归一化）与 umi_locale 一次迁移，
+ *   持久化切片里的 locale 只是运行时镜像；若直接恢复镜像值，会在旧 key
+ *   刚迁移、镜像仍存旧语言时把 App effect 拉回旧语言，覆盖迁移结果。
+ * - theme 异常时回退亮色。
+ */
 const persistedSettings = persistReducer(
   {
     key: PERSIST_KEYS.SETTINGS,
     storage: localStorageAdapter,
     version: SETTINGS_SCHEMA_VERSION,
     whitelist: ['locale', 'theme'],
+    migrate: (state) => {
+      const restored = (state ?? {}) as Partial<SettingsState>
+      return Promise.resolve({
+        locale: readStoredLanguage(),
+        theme: restored.theme ?? 'light',
+        _persist: state?._persist ?? { version: SETTINGS_SCHEMA_VERSION, rehydrated: false },
+      })
+    },
   },
   settingsReducer,
 )

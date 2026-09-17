@@ -2,28 +2,56 @@
  * i18next 初始化与语言治理。
  *
  * - key 即中文文案：keySeparator/nsSeparator 关闭，zh-CN 不维护资源文件
- * - en-US 资源按命名空间懒加载（路由通过 meta.i18nNamespaces 声明）
- * - 切换语言先预加载基础与已打开页签命名空间并集，再 changeLanguage
+ * - 其余四语言资源按命名空间懒加载（路由通过 meta.i18nNamespaces 声明）
+ * - 切换语言先预加载基础与已打开页签命名空间并集，再 changeLanguage；
+ *   预加载失败时保留原语言（调用方回滚状态），不会出现半翻译页面
  */
 
 import i18next, { type BackendModule, type CallbackError } from 'i18next'
 import dayjs from 'dayjs'
 import { initReactI18next } from 'react-i18next'
+// 五个 locale 包静态注册（体积小）；展示层可输出对应语言的相对时间等文案，
+// 解析与时区行为不受影响（DoD 14：日期数值展示不改协议）
 import 'dayjs/locale/zh-cn'
+import 'dayjs/locale/zh-tw'
+import 'dayjs/locale/en'
+import 'dayjs/locale/ja'
+import 'dayjs/locale/ko'
 import { setRequestLanguage } from '@/services/request/request'
 
-export const SUPPORTED_LANGUAGES = ['zh-CN', 'en-US'] as const
+/**
+ * 全站支持的五种语言。zh-TW 为独立语言而非 zh-CN 的变体：
+ * normalizeLanguage 对繁中/日/韩精确保留，不误映射回简中。
+ */
+export const SUPPORTED_LANGUAGES = ['zh-CN', 'zh-TW', 'en-US', 'ja-JP', 'ko-KR'] as const
 export type AppLanguage = (typeof SUPPORTED_LANGUAGES)[number]
 export const DEFAULT_LANGUAGE: AppLanguage = 'zh-CN'
 
-/** 语言偏好 localStorage key */
+/** 语言偏好 localStorage key（目标项目单一持久语言来源） */
 const STORAGE_KEY_LANGUAGE = 'apex-admin:lang'
+/**
+ * 旧系统（Umi）语言偏好 key：同源一次迁移。老用户此前保存的语言偏好
+ * 读取后写入新 key 并删除旧 key，避免双来源残留（T00.8：umi_locale 一次迁移）。
+ */
+const LEGACY_STORAGE_KEY_LANGUAGE = 'umi_locale'
 
 /** 基础命名空间，所有页面共享 */
 export const BASE_NAMESPACES = ['common', 'menu'] as const
 
-/** en-US 命名空间懒加载表 */
-const enUsLoaders: Record<string, () => Promise<{ default: Record<string, string> }>> = {
+/** dayjs locale 映射：语言切换时同步（仅影响展示措辞，不改时间值/时区） */
+const DAYJS_LOCALES: Record<AppLanguage, string> = {
+  'zh-CN': 'zh-cn',
+  'zh-TW': 'zh-tw',
+  'en-US': 'en',
+  'ja-JP': 'ja',
+  'ko-KR': 'ko',
+}
+
+/** 单语言命名空间懒加载表 */
+type NamespaceLoaders = Record<string, () => Promise<{ default: Record<string, string> }>>
+
+/** en-US 命名空间懒加载表（含 T00 共享命名空间与已交付页面命名空间） */
+const enUsLoaders: NamespaceLoaders = {
   common: () => import('@/i18n/locales/en-US/common'),
   menu: () => import('@/i18n/locales/en-US/menu'),
   auth: () => import('@/i18n/locales/en-US/auth'),
@@ -36,16 +64,80 @@ const enUsLoaders: Record<string, () => Promise<{ default: Record<string, string
   map: () => import('@/i18n/locales/en-US/map'),
 }
 
-/** zh-* 一律映射 zh-CN；其余未支持语言回退 zh-CN */
+/**
+ * zh-TW/ja-JP/ko-KR 基座命名空间（T00.8：common/menu/auth/error/map 全量交付）。
+ * 页面私有命名空间（profile/system/orderRecord/dashboard 等）由对应页面任务
+ * 交付自己的四语言分片；此处查不到的命名空间返回空资源，i18next 自动回退简中
+ * （key 即中文文案，回退语义天然成立），已登记 docs/migration/i18n-missing.md。
+ * 三个语言目录结构一致，逐语言声明字面量导入（Vite 静态分析要求）。
+ */
+const zhTwLoaders: NamespaceLoaders = {
+  common: () => import('@/i18n/locales/zh-TW/common'),
+  menu: () => import('@/i18n/locales/zh-TW/menu'),
+  auth: () => import('@/i18n/locales/zh-TW/auth'),
+  error: () => import('@/i18n/locales/zh-TW/error'),
+  map: () => import('@/i18n/locales/zh-TW/map'),
+}
+const jaJpLoaders: NamespaceLoaders = {
+  common: () => import('@/i18n/locales/ja-JP/common'),
+  menu: () => import('@/i18n/locales/ja-JP/menu'),
+  auth: () => import('@/i18n/locales/ja-JP/auth'),
+  error: () => import('@/i18n/locales/ja-JP/error'),
+  map: () => import('@/i18n/locales/ja-JP/map'),
+}
+const koKrLoaders: NamespaceLoaders = {
+  common: () => import('@/i18n/locales/ko-KR/common'),
+  menu: () => import('@/i18n/locales/ko-KR/menu'),
+  auth: () => import('@/i18n/locales/ko-KR/auth'),
+  error: () => import('@/i18n/locales/ko-KR/error'),
+  map: () => import('@/i18n/locales/ko-KR/map'),
+}
+
+/** 各语言懒加载表：zh-CN 无资源（key 即文案）；其余语言按表加载 */
+const languageLoaders: Partial<Record<AppLanguage, NamespaceLoaders>> = {
+  'en-US': enUsLoaders,
+  'zh-TW': zhTwLoaders,
+  'ja-JP': jaJpLoaders,
+  'ko-KR': koKrLoaders,
+}
+
+/**
+ * 任意输入归一化为受支持语言：
+ * - en* → en-US；ja* → ja-JP；ko* → ko-KR
+ * - 繁中变体（zh-tw/zh-hk/zh-mo/zh-hant*）精确保留为 zh-TW，不再并入简中
+ * - zh-cn/zh/zh-hans 及一切未知值回退简中
+ * 持久化恢复（settings rehydrate）与切换入口统一经此收敛，
+ * 避免残留的旧值/非法值直接 changeLanguage 导致 useSuspense 挂起。
+ */
 export function normalizeLanguage(raw: string | null | undefined): AppLanguage {
-  if (raw?.toLowerCase().startsWith('en')) return 'en-US'
+  if (!raw) return DEFAULT_LANGUAGE
+  const lower = raw.toLowerCase()
+  if (lower.startsWith('en')) return 'en-US'
+  if (lower === 'zh-tw' || lower === 'zh-hk' || lower === 'zh-mo' || lower.startsWith('zh-hant')) {
+    return 'zh-TW'
+  }
+  if (lower.startsWith('ja')) return 'ja-JP'
+  if (lower.startsWith('ko')) return 'ko-KR'
   return 'zh-CN'
 }
 
-/** 读取持久化语言偏好（无偏好或不可读时回退默认语言）；供 i18n 初始化与 settings 切片共用 */
+/**
+ * 读取持久化语言偏好（无偏好或不可读时回退默认语言）；
+ * 旧 umi_locale key 存在时执行一次迁移（写入新 key、删除旧 key）。
+ * 供 i18n 初始化与 settings 切片共用，是持久语言偏好唯一读取入口。
+ */
 export function readStoredLanguage(): AppLanguage {
   try {
-    return normalizeLanguage(localStorage.getItem(STORAGE_KEY_LANGUAGE))
+    const stored = localStorage.getItem(STORAGE_KEY_LANGUAGE)
+    if (stored) return normalizeLanguage(stored)
+    const legacy = localStorage.getItem(LEGACY_STORAGE_KEY_LANGUAGE)
+    if (legacy) {
+      const migrated = normalizeLanguage(legacy)
+      localStorage.setItem(STORAGE_KEY_LANGUAGE, migrated)
+      localStorage.removeItem(LEGACY_STORAGE_KEY_LANGUAGE)
+      return migrated
+    }
+    return DEFAULT_LANGUAGE
   } catch {
     return DEFAULT_LANGUAGE
   }
@@ -59,7 +151,12 @@ function persistLanguage(language: AppLanguage): void {
   }
 }
 
-/** 命名空间懒加载后端：zh-CN 直接返回空资源（key 即文案） */
+/**
+ * 命名空间懒加载后端：
+ * - zh-CN 直接返回空资源（key 即文案）
+ * - 其余语言按表加载；表中无此命名空间（页面私有分片未交付）同样返回空资源，
+ *   让 i18next 走 fallbackLng 回退简中，而不是报错中断资源装载
+ */
 const lazyBackend: BackendModule = {
   type: 'backend',
   init() {},
@@ -68,9 +165,9 @@ const lazyBackend: BackendModule = {
       callback(null, {})
       return
     }
-    const loader = enUsLoaders[namespace]
+    const loader = languageLoaders[language as AppLanguage]?.[namespace]
     if (!loader) {
-      callback(new Error(`未知命名空间：${namespace}`), null)
+      callback(null, {})
       return
     }
     loader()
@@ -94,7 +191,7 @@ if (!i18next.isInitialized) {
     react: { useSuspense: true },
     partialBundledLanguages: true,
   })
-  dayjs.locale(initialLanguage === 'zh-CN' ? 'zh-cn' : 'en')
+  dayjs.locale(DAYJS_LOCALES[initialLanguage])
   document.documentElement.lang = initialLanguage
   // 请求层 Accept-Language 与初始语言对齐（旧代码已证实行为；I07 真实复核登记）
   setRequestLanguage(initialLanguage)
@@ -115,7 +212,8 @@ export async function preloadNamespaces(language: AppLanguage, namespaces: reado
 
 /**
  * 切换语言：先加载基础与额外命名空间并集，再统一 changeLanguage，
- * 同时切换 dayjs locale 与 document lang，避免缓存页签出现半中文半英文。
+ * 同时切换 dayjs locale 与 document lang，避免缓存页签出现半翻译状态。
+ * 预加载失败时抛错且不改变任何语言状态——调用方据此保留原语言。
  */
 export async function changeAppLanguage(
   language: AppLanguage,
@@ -124,7 +222,7 @@ export async function changeAppLanguage(
   await preloadNamespaces(language, [...BASE_NAMESPACES, ...extraNamespaces])
   await i18next.changeLanguage(language)
   persistLanguage(language)
-  dayjs.locale(language === 'zh-CN' ? 'zh-cn' : 'en')
+  dayjs.locale(DAYJS_LOCALES[language])
   document.documentElement.lang = language
   // 后续请求（含上传）携带切换后的语言
   setRequestLanguage(language)
