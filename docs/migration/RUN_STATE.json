@@ -1,7 +1,7 @@
 {
   "版本说明": "调度系统迁移串行调度状态。由定时任务每小时触发一次，每次最多推进一个任务；写入必须整体原子替换。",
-  "最近更新时间": "2026-09-17T10:55:00.000Z",
-  "当前运行标识": "run-20260917-183059-10593（本轮已结束，锁已释放）",
+  "最近更新时间": "2026-09-17T11:55:00.000Z",
+  "当前运行标识": "run-20260917-193052-10903（本轮已结束，锁已释放）",
   "锁": "docs/migration/.lock（mkdir 原子目录锁，内含 lock.json）",
   "工作目录": "C:\\code\\apex-admin-web",
   "分支": "apple-rxx",
@@ -12,7 +12,7 @@
       "任务": "T00",
       "批次": "B0",
       "前置": [],
-      "状态": "进行中"
+      "状态": "受阻待G03（T00.1–T00.9 里程碑全部完成，整体勾选待真实登录联验）"
     },
     {
       "序": 2,
@@ -450,22 +450,23 @@
   ],
   "当前任务": {
     "任务ID": "T00",
-    "状态": "进行中",
-    "当前里程碑": "T00.9 冻结交接（下一轮起点）",
+    "状态": "受阻待外部条件（G03 测试账号凭据）；里程碑 T00.1–T00.9 全部完成，TASKS.md 不勾选",
+    "当前里程碑": "无（T00.9 冻结交接已于本轮完成）",
     "本轮已完成内容": [
-      "T00.8 五语言类型与归一化：SUPPORTED_LANGUAGES 扩为 zh-CN/zh-TW/en-US/ja-JP/ko-KR；normalizeLanguage 精确归一化（繁中变体 zh-tw/zh-hk/zh-mo/zh-hant* 保留 zh-TW 不误并入简中；ja*/ko*/en* 精确；未知回退 zh-CN）",
-      "T00.8 四语言懒加载基座：i18n.ts 语言×命名空间懒加载表，新增 zh-TW/ja-JP/ko-KR 三目录五分片（common 81 键、menu 60 键、auth 8 键、error 7 键、map 6 键，key 集合与 en-US 一致）；查无 loader 返回空资源经 fallbackLng 自然回退简中；旧系统既有真译（重試/再試行/재시도、權限管理/権限管理/권한 관리等 12 组）全部沿用",
-      "T00.8 语言偏好单一真相源与 umi_locale 一次迁移：readStoredLanguage 唯一读取入口（新 key 缺失时读旧 umi_locale → 写新 key、删旧 key）；settings 持久化补 migrate 以独立语言 key 为恢复真相源——浏览器首轮验证暴露「持久化镜像把语言拉回旧值覆盖迁移结果」缺陷，修复后复验通过",
-      "T00.8 antd/dayjs/html lang 同步与失败回滚：App.tsx ANTD_LOCALES 五语言映射；changeAppLanguage 预加载失败抛错不改状态，App catch 回滚到实际语言（失败保留原语言机制）；Header 语言菜单扩五项（各语言自书）；dayjs locale 与 document.documentElement.lang 随切换同步",
-      "T00.8 台账：i18n-map.md 填充基座映射结论与 umi_locale 迁移；i18n-missing.md 移除已补齐登记（StateBlock 7/T00.6 11/T00.7 8/map 6 键），保留页面私有分片回退；terminology.md 填充已定术语表",
-      "T00.8 验证：四项检查通过（213 文件 lint 0 警告、typecheck、structure 211 文件、build）；真实浏览器全链路实证——五语言切换各轮 html lang/持久化/菜单文案正确、繁中日韩不误映射、ja-JP 下页面私有分片回退简中不炸、en-US 刷新恢复、umi_locale 迁移落位、fr-FR 非法残留归一化不挂起（T00.7 发现的 useSuspense 挂起边界收敛）、日文登录页资源、退出后语言偏好保留；验证数据已清理"
+      "T00.9 公共导出清点：逐文件核对 T00 全部公共模块实际导出（i18n/request/权限/路由访问/表格纯函数/hooks/传输/时间/统计/命令/选项/地图 12 组）与 contracts.md 一致；修正 commandConfirm.ts 扩展名记录笔误",
+      "T00.9 过渡期 mock 退出运行路径复核成立：order.mock/dashboard.mock → service → features hooks → 页面组件 → React.lazy，而 order-record 与 dashboard 路由均 pending:true，projections.tsx 渲染 MigrationPending 占位不触发 lazy（projections.tsx:216）——运行不可达；文件本体按 TASKS.md 归 P03/P34 移除，不越权删除",
+      "T00.9 contracts.md 冻结：第 7 节 i18n 契约由粗粒度更新为 T00.8 落地实况（归一化/单一真相源/切换时序/第三方 locale）；变更日志补 T00.8 行与全表冻结行；新增第 9 节冻结登记（冻结范围/变更规则/放行状态——明确不构成 B1 放行）",
+      "T00.9 各页 namespace/文件归属终版冻结：i18n-map.md 新增 45 入口表（任务/目标入口/命名空间/前端文件域）；规则=路由 path 核心段 camelCase，三处业务命名例外（P06 carrierType、P35 taskReport、P36 faultAlarm）注明理由；P03/P31/P32/P34 等沿用现有目录不造平行实现；H01–H03 复用 common",
+      "T00.9 真实纵向样板确认：路由→守卫→页签→表格组装→请求层→五语言各环节分别实证登记；「真实接口数据」一环（登录成功+带令牌只读）保持 G03 登记，端到端联验随 B2a（P03/P05），与 B2 门禁定义一致",
+      "T00.9 T00 退出检查 A/I 证据汇总：A03–A13、A16/A17/A20/A22/A23 与 I01/I04–I07 公共部分证据与缺口归属逐条登记于 tasks/T00.md",
+      "T00.9 验证：四项检查复跑通过（213 文件 lint 0 警告、typecheck、211 源文件结构检查、build）——冻结时点最终证据；本轮无代码改动、无真实后端请求"
     ],
     "未完成步骤": [
-      "T00.9 冻结交接：contracts.md 冻结、真实纵向样板确认、公共导出清点、各页 namespace/文件归属终版（含本轮新增三语言目录与懒加载表登记规则）、过渡期 mock 页面退出运行路径复核",
-      "跨里程碑待办不变：G03 登录成功路径联验（B1 放行前必须）；useVisiblePolling/传输通道/地图动画类随首个消费页联验；antd 控件 locale 弹窗按钮文案随首个消费者页面（P03 等）联验；切换失败保留原语言的真实网络失败场景随页面任务联调覆盖；getMapInfo 响应 schema 联调逐字段核实"
+      "G03 补验（T00 勾选与 B1 放行的唯一前置）：用户提供联调测试账号后，完成真实登录成功路径、MD5/Bearer 最终确认、带令牌授权只读、root/administrator 真实身份与 1001000 行为联验，更新 G03 与本状态",
+      "补验通过后：勾选 TASKS.md T00 → 下一轮领取 P01（队列不得在 T00 未勾选时跳向 P01）"
     ],
-    "下一步": "T00.9 冻结交接：核对 contracts.md 与实际公共导出一致、登记各页 namespace/文件归属终版、复核过渡期 mock 页面不可达，完成 T00 退出检查（A03–A13、A16/A17/A20/A22/A23 公共部分与 I01/I04–I07 基础能力证据）",
-    "阻塞原因": "部分受阻（不阻塞 T00.9 机制开发）：真实登录成功路径、带令牌授权只读联验、root/administrator 真实身份验证需测试账号凭据（外部条件，不猜口令）；已登记 G03，B1 放行（P01）前必须补验。getMapInfo 带令牌联验随 P07；地图动画类随 P07 真实浏览器（IAB rAF 抑制）；useVisiblePolling 随首个实时页；传输通道随 P08/P09/P25；antd 控件 locale 随首个消费者页面"
+    "下一步": "等待外部条件（测试账号凭据）。下一轮先检查 G03 是否解除：已解除→执行补验→勾选 T00→本轮结束；未解除→核对无新进展条件后结束本轮，不重复无意义修改",
+    "阻塞原因": "受阻 G03（外部条件）：真实登录成功路径、MD5/Bearer 最终确认、带令牌只读联验、root/administrator 真实身份验证需测试账号凭据，前端无法自备、不猜口令。解除条件：用户提供联调测试账号（用户名/密码）。机制开发已无未完成项，队列按规则停在 T00 不跳项"
   },
   "验证结果": [
     {
@@ -607,7 +608,17 @@
       "命令": "antd 控件 locale 弹窗按钮 / 切换失败真实网络场景",
       "结果": "待联验：映射表全覆盖（typecheck 强制）+ zh-CN「登 录」空格特征实证；随首个消费者页面（P03 等）覆盖",
       "日期": "2026-09-17"
+    },
+    {
+      "命令": "pnpm lint / typecheck / check:structure / build（T00.9）",
+      "结果": "全部通过（213 文件 lint 0 警告 0 错误；211 源文件结构检查；tsc+vite build 成功）——冻结时点最终证据",
+      "日期": "2026-09-17"
+    },
+    {
+      "命令": "mock 退出运行路径复核 + 公共导出清点 vs contracts.md（T00.9）",
+      "结果": "order.mock/dashboard.mock 运行不可达（pending 页不触发 lazy，引用链实测）；公共导出与契约一致（修正 commandConfirm.ts 笔误）",
+      "日期": "2026-09-17"
     }
   ],
-  "证据位置": "docs/migration/tasks/T00.md（T00.8 交付物与验证证据表）、docs/migration/i18n-map.md（基座映射结论 + umi_locale 迁移）、docs/migration/i18n-missing.md（已补齐项移除后登记）、docs/migration/terminology.md（已定术语表）、src/i18n/locales/{zh-TW,ja-JP,ko-KR}/（15 个基座资源文件）"
+  "证据位置": "docs/migration/tasks/T00.md（T00.9 公共导出清点/mock 复核/纵向样板确认/A–I 退出检查汇总；T00.1–T00.8 历轮交付与证据）、docs/migration/contracts.md（第 1–7 节契约 + 第 9 节冻结登记）、docs/migration/i18n-map.md（各页命名空间/文件归属终版 T00.9 冻结表 + 基座映射 + umi_locale 迁移）、docs/migration/i18n-missing.md、docs/migration/terminology.md"
 }

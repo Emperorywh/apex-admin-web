@@ -105,12 +105,16 @@
 | 首页落点 | 登录后优先 `/dashboard`（P34 合并首页）；无权限进首个有权限且可用业务页；无可用页明确反馈 | 已确认（D29） |
 | 暂缓页 | 统一「本期暂未迁移」说明组件，保留合法上下文与原权限 | 已确认（D07） |
 
-## 7. i18n / 时区契约
+## 7. i18n / 时区契约（owner：T00，T00.8 已落地、T00.9 冻结）
 
 | 项 | 契约 | 状态 |
 | --- | --- | --- |
-| 语言 | 五语言 `zh-CN/en-US/zh-TW/ja-JP/ko-KR`；中文 key 即文案；命名空间懒加载 | 已确认（D34） |
-| 语言存储 | 当前持久化设置为唯一来源；同源 `umi_locale` 一次迁移 | 已确认（18.4） |
+| 语言 | 五语言 `SUPPORTED_LANGUAGES = ['zh-CN','zh-TW','en-US','ja-JP','ko-KR']`（`src/i18n/i18n.ts`）；中文 key 即文案（keySeparator/nsSeparator=false）；命名空间按「语言 × 命名空间」懒加载，查无 loader 返回空资源经 fallbackLng 回退简中 | 已落地并经真实浏览器五语言全链路实证（T00.8） |
+| 归一化 | `normalizeLanguage(raw)`：en*→en-US、ja*→ja-JP、ko*→ko-KR；繁中变体（zh-tw/zh-hk/zh-mo/zh-hant*）精确保留 zh-TW 不并入简中；zh-cn/zh/zh-hans/未知回退 zh-CN。全部语言读取路径（存储/迁移/回滚）统一经此收敛 | 已落地（繁/日/韩不误映射经注入值实证，T00.8） |
+| 语言偏好 | 单一真相源 localStorage `apex-admin:lang`，唯一读取入口 `readStoredLanguage()`；同源旧 key `umi_locale` 一次迁移（写新删旧不留双源）；settings 持久化恢复以独立语言 key 为准（持久化镜像不反向覆盖）；退出登录保留语言偏好 | 已落地并实证（含 fr-FR 非法残留归一化不挂起，T00.8） |
+| 切换 | 统一走 `changeAppLanguage(lang)`：预加载 base+已开页签命名空间 → i18next/antd ConfigProvider/dayjs/`document.documentElement.lang`/请求层 `Accept-Language`（含上传通道）同帧切换；预加载失败抛错不改状态，App catch 回滚到实际语言（失败保留原语言） | 已落地（真实网络失败场景随页面任务联调） |
+| 第三方 locale | antd `ANTD_LOCALES` 五语言映射（App.tsx，typecheck 强制全key）；ApexTableReact 五语言 locale 包（第 3 节）；dayjs 五 locale 静态注册；控件弹窗按钮文案随首个消费者页面联验 | 已落地；控件文案联验随 P03 等 |
+| 页面命名空间 | 各页归属终版见 `i18n-map.md`「各页命名空间/文件归属终版（T00.9 冻结）」；页面在路由 meta.i18nNamespaces 声明，分片四语言随页面任务交付 | 已冻结（T00.9） |
 | 时区 | 部署时区优先，缺省 Asia/Shanghai，环境配置提供；`DEPLOY_TIMEZONE` 常量唯一定义点 `src/constants/datetime.ts`，页面不得各自硬编码；dayjs utc/timezone 插件单点装配于 `src/utils/datetime/deployDayjs.ts`；解析/展示纯函数 `parseBackendDateTime`/`formatInDeployTimezone`/`displayDateTime`（`src/utils/datetime/datetimeDisplay.ts`）：墙钟字符串按部署时区、带偏移换算、纯日期=部署时区零点、无法识别返回 null 不猜 | 已落地（D23/T00.7）；带偏移时间真实样本联调随报表页 |
 
 ## 8. 契约变更日志
@@ -125,3 +129,11 @@
 | 2026-09-17 | 表格公共资源落地 | T00.5 交付：五语言 ApexLocale 包（`src/i18n/locales/apexTable/` + `resolveApexLocale`/`useApexLocale`）、主题映射（globals.css `:root .apex-table`，亮暗成对）、分页换算 `toBackendPage`、行 ID `stringFieldRowId`、列偏好约定 `createTableColumnPreferences`/`useColumnPreferences`、统一状态块 `StateBlock`（noPermission/gap/offline）；公开 API 核验（虚拟化/展开/编辑/双 ref）经类型探针全量组装验证后删除探针 | T00（本轮 run） | P03/P05 起全部表格页按 contracts.md 第 3 节约定组装：`useApexLocale()` 供 locale、`toBackendPage` 供 request 分页、`stringFieldRowId` 供 getRowId、`useColumnPreferences` 供列偏好、StateBlock 供失败/无权限/缺口区域；zh-TW/ja/ko 的 StateBlock 文案回退简中已登记 i18n-missing.md，T00.8 补齐 |
 | 2026-09-17 | 共享业务能力落地（T00.7） | ① 时间/时区：`deployDayjs`（utc/timezone 单点装配）+ `datetimeDisplay`（parseBackendDateTime/formatInDeployTimezone/displayDateTime，缺失/不可解析→'—' 不猜）；② 统计空值/单位：`src/utils/stats/metricFormat.ts`（0 与缺失严格区分、safeRatio 除零→null、formatPercent/formatWithUnit/secondsToHours，公式归页面 owner）；③ 控制确认/未知/批量反馈：`src/utils/command/`（CommandOutcome 三态、confirmCommand 列对象+影响+提交≠完成附注、summarizeBatchOutcomes/summarizeWholeBatch/formatBatchSummaryText，缺项计入未知、整批不编造逐项）；④ 选项失效：`src/utils/options/optionFallback.ts` + `src/hooks/useStaticOptions.ts`（scope 取消/防乱序/失败清空）；⑤ 只读地图：`src/services/map/`（getMapInfo/getSimpleMaps）+ `src/components/ReadOnlyMap/`（11 文件，能力见 5.1 节）；⑥ 依赖：react 19.2.8→19.3.0、@types/react 19.3.0、konva@^9.3.20、react-konva@^19.3.0、vite optimizeDeps 预声明 react-konva | T00（本轮 run） | 消费者：实时页/详情页轮询不变；P07 起地图页消费 ReadOnlyMap+useMapGraph+map 命名空间；选项页自 P03 起消费 useStaticOptions；写操作页消费 confirmCommand/批量归纳；报表页消费 metricFormat 与 datetimeDisplay；common 新增 8 键、新增共享 map 命名空间（消费页面 meta.i18nNamespaces 声明） |
 | 2026-09-17 | 页签/草稿/轮询/传输契约落地 | T00.6 交付：`tabsSlice` 增加 dirty 标记（LRU 豁免脏页签）、`useTabDirtyGuard`（页面草稿登记）、`useTabActionGuard`（关闭/刷新/批量关闭/退出登录统一确认，三档传输提示策略）、`beforeunload` 脏页签离开提示、`useVisiblePolling` + `polling.constants`（可见串行轮询/退避集中配置）、`transferManager` + `useTransfers` + `TransferWatcher`（独立传输生命周期/关页提示/孤儿完成消息/会话结束清理）、`openStandaloneWindow`（独立窗口工具）；`RequestScopeValue` 增加 `scopeKey` 字段 | T00（本轮 run） | 实时页面（P34/P05/P39/P40）轮询一律消费 `useVisiblePolling`，禁止私设定时器；文件传输页面（P08/P09/P25/P26/P30 等）一律经 `beginTransfer` 登记并把句柄 signal 传给请求层；全部写草稿页面自 P03 起消费 `useTabDirtyGuard`；消费者注意：`RequestScopeValue` 新增 scopeKey（现有 usePageActive/usePageRequest 消费不受影响） |
+| 2026-09-17 | 五语言基座落地 | T00.8 交付：`SUPPORTED_LANGUAGES` 扩五语言、`normalizeLanguage` 精确归一化（zh-TW/ja-JP/ko-KR 不误映射）、语言×命名空间懒加载表（zh-TW/ja-JP/ko-KR 基座五分片 common/menu/auth/error/map 全量，key 集合与 en-US 一致）、`readStoredLanguage` 单一读取入口 + umi_locale 一次迁移（写新删旧）、settings 持久化 migrate 以独立语言 key 为单一真相源（修复镜像覆盖迁移）、`ANTD_LOCALES` 五语言映射 + 切换失败回滚、dayjs 五 locale、html lang 同步、Header 语言菜单五项 | T00（本轮 run） | 页面任务不得绕过 `changeAppLanguage`/`normalizeLanguage` 直调 i18next.changeLanguage；页面私有分片放 `src/i18n/locales/<语言>/<命名空间>.ts` 并在懒加载表登记（命名空间归属见 i18n-map.md T00.9 冻结表）；请求层语言头已含上传通道，页面不得单独读 umi_locale |
+| 2026-09-17 | 全表冻结 | T00.9 冻结交接：contracts.md 各节与实际公共导出核对一致（清点见 tasks/T00.md T00.9 节）；第 7 节 i18n 契约更新为落地实况；各页 namespace/文件归属终版冻结于 i18n-map.md；过渡期 mock 退出运行路径复核成立（pending 页不触发 lazy，order.mock/dashboard.mock 不可达，文件本体归 P03/P34 移除）。此后契约变更须在变更日志登记 owner 与全部消费者影响 | T00（本轮 run） | B1（P01）与 B2 样板（P03/P05/P38/P39）所需机制已就绪；真实登录成功路径/带令牌只读联验受阻 G03（测试凭据），B1 放行前必须补验，不以未验机制宣称放行 |
+
+## 9. 冻结登记（T00.9）
+
+1. **冻结范围**：第 1–7 节契约为 B1/B2 页面任务的消费基线；实现文件位置与导出以 tasks/T00.md「文件归属」节为准，两者经 T00.9 核对一致。
+2. **变更规则**：冻结后新增/变更契约（含公共导出签名变化）由 owner 在变更日志登记，评估并记录全部消费者；页面任务发现契约缺陷报统筹，由原 owner 或指定接任者修复，不在页面内私有变通。
+3. **放行状态**：B1/B2 所需机制（登录/会话/权限/路由守卫/表格公共资源/页签/轮询/传输/地图/五语言）实现与机制级验证齐备；**真实登录成功路径、带令牌授权只读联验受 G03 外部阻塞（需测试账号凭据），B1 放行前必须补验**——放行判定以补验证据为准，本登记不构成放行。

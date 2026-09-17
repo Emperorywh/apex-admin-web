@@ -1,6 +1,6 @@
 # 旧 key → 新命名空间映射表（i18n-map）
 
-> T00.1 建格式；T00.8 填充公共/菜单/认证/错误映射并建立四语言基座；各页面任务在 `tasks/<ID>.md` 提供本页分片，统筹者合并。
+> T00.1 建格式；T00.8 填充公共/菜单/认证/错误映射并建立四语言基座；T00.9 冻结各页命名空间/文件归属终版；各页面任务在 `tasks/<ID>.md` 提供本页分片，统筹者合并。
 > 旧资源：`C:\code\dd\src\locales\<lang>.json`（顶层 key 数 zh-CN/en-US 2092、zh-TW/ja-JP/ko-KR 1478，2026-09-17 实测与规格 18.1 一致）。
 > 目标规范：中文 key 即文案（`keySeparator/nsSeparator: false`），按业务命名空间懒加载；五语言目录 `src/i18n/locales/<语言>/<命名空间>.ts`。
 
@@ -18,6 +18,61 @@
 | map | T00（共享地图能力） | T00.8 全量交付 |
 | apexTable（非 i18next ns） | T00.5 | T00.5 全量交付（locale 包） |
 | 页面私有（profile/system/orderRecord/dashboard 等） | 对应页面任务 | 未交付，懒加载表查无返回空资源自动回退简中（i18n-missing.md 登记） |
+
+## 各页命名空间/文件归属终版（T00.9 冻结）
+
+命名规则：页面私有命名空间 = 目标路由 path 核心段 camelCase；懒加载分片放 `src/i18n/locales/{zh-CN,en-US,zh-TW,ja-JP,ko-KR}/<命名空间>.ts`（zh-CN 目录仅当 key≠value 时才需要文件），并在 `src/i18n/i18n.ts` 对应语言的懒加载表登记。业务域目录（features/services/types）与命名空间同名 camelCase；标注「沿用」者使用现有目录，不制造平行实现。三处例外以业务命名并注明理由。
+
+| 任务 | 目标入口 | 命名空间 | 前端文件域（features/services/types） |
+| --- | --- | --- | --- |
+| P01 登录 | /auth/login | auth（T00 基座） | 沿用 features/auth + services/auth |
+| P02 软件授权 | /authorize-ingress | authorizeIngress | authorizeIngress |
+| P03 任务管理 | /order-record | orderRecord（已声明） | 沿用 features/order-record + services/order-record + types/order-record |
+| P04 车辆分组 | vehicle-group | vehicleGroup | vehicleGroup |
+| P05 车辆列表 | vehicle-display | vehicleList | vehicleList |
+| P06 载具类型 | vehicle-type | **carrierType**（路径段 vehicle-type 会与车辆业务混淆，按真实载具业务命名） | carrierType |
+| P07 节点映射 | node-mapping | nodeMapping | nodeMapping |
+| P08 告警码管理 | alarm-code | alarmCode | alarmCode |
+| P09 地图列表 | map-list | mapList | mapList |
+| P10 地图关联 | cross-maps | crossMaps | crossMaps |
+| P11 多地图点边组合 | point-edge-combination | pointEdgeCombination | pointEdgeCombination |
+| P12 地图推送记录 | map-push-records | mapPushRecord | mapPushRecord |
+| P13 调度中心 | /dispatch-hub | dispatchHub | dispatchHub |
+| P14 电梯 | elevator | elevator | elevator |
+| P15 自动门 | auto-door | autoDoor | autoDoor |
+| P16 充电桩 | charge-pile | chargePile | chargePile |
+| P17 交通灯 | traffic-lights | trafficLight | trafficLight |
+| P18 风淋门 | air-shower-door | airShowerDoor | airShowerDoor |
+| P19 三方交管 | tri-traffic | triTraffic | triTraffic |
+| P20 任务工艺 | mission-create | missionCreate | missionCreate |
+| P21 工艺管理 | mission-flow | missionFlow | missionFlow |
+| P22 避障模板 | obstacle-avoidance | obstacleAvoidance | obstacleAvoidance |
+| P23 车辆动作 | agv-action | agvAction | agvAction |
+| P24 动作分组 | agv-action-group | agvActionGroup | agvActionGroup |
+| P25 版本管理 | version-control | versionControl | versionControl |
+| P26 系统日志 | system-log | systemLog | systemLog |
+| P27 系统设置 | system-setting | systemSetting | systemSetting |
+| P28 操作日志 | operation-log | operationLog | operationLog |
+| P29 软件信息 | software-information | softwareInformation | softwareInformation |
+| P30 数据库备份 | database-backup | databaseBackup | databaseBackup |
+| P31 用户管理 | user-management | userManagement | 沿用 pages/system/user + services/system/user |
+| P32 角色管理 | role-management | roleManagement | 沿用 pages/system/role + services/system/role |
+| P33 任务统计 | order-statistics | orderStatistics | orderStatistics |
+| P34 合并首页/实时看板 | /dashboard（+旧 dashboard-realtime 重定向） | dashboard（已声明） | 沿用 pages/dashboard + features/dashboard + services/dashboard + types/dashboard |
+| P35 任务统计报表 | dashboard-task | **taskReport**（避免与 P34 dashboard 命名空间混淆，按业务命名） | taskReport |
+| P36 故障告警 | dashboard-fault | **faultAlarm**（同上） | faultAlarm |
+| P37 车辆状态统计 | vehicle-status | vehicleStatus | vehicleStatus |
+| P38 任务详情 | /order-info | orderInfo | orderInfo |
+| P39 车辆详情 | /vehicle-info | vehicleInfo | vehicleInfo |
+| P40 服务器资源 | /server-resource（别名 server-resource-monitor 同实现） | serverResource | serverResource |
+| P41 无权限页 | /no-permission | 复用 common/error（现 pages/un-access/UnAccess，P41 整合） | 无独立域（整合入现有守卫反馈页） |
+| P42 兜底错误页 | /404、/500 | error（T00 基座） | 沿用 pages/error |
+| P43 模板个人中心清理 | /profile | profile（已声明） | 沿用 features/profile |
+| H01 调度监控暂缓 | over-look | 复用 common（暂缓说明统一组件） | 无业务文件（D07） |
+| H02 地图编辑暂缓 | map-nest-modify | 同上 | 同上 |
+| H03 录制回放暂缓 | record-playback | 同上 | 同上 |
+
+> 消费方式：页面在路由 `meta.i18nNamespaces` 声明本页命名空间（+按需 `'map'`/`'error'`）；基座 common/menu 随外壳全局加载。分片文件四语言（zh-TW/ja-JP/ko-KR/en-US）随页面任务交付后，从 `i18n-missing.md` 移除对应回退登记。
 
 ## 基座命名空间映射结论（T00.8）
 
