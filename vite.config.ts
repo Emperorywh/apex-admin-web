@@ -19,6 +19,12 @@ const DEV_PROXY_TARGET = process.env.APEX_DEV_PROXY_TARGET ?? 'http://10.11.2.67
  */
 export default defineConfig({
   plugins: [react()],
+  // 预声明按需优化依赖（T00.7）：konva/react-konva 体积大且目前无页面入口引用，
+  // 不预声明会在首个消费者触发"动态发现优化 → 整页二次 reload"，
+  // 且浏览器的 immutable 缓存可能拿到旧产物造成双 React 实例（Invalid hook call）。
+  optimizeDeps: {
+    include: ['react-konva'],
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),

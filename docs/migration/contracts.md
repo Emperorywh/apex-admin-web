@@ -34,7 +34,6 @@
 | 路由守卫 | 定义树 meta.perm 挂码；认证+权限守卫覆盖全部非 public 入口（含布局外独立页 order-info/vehicle-info/server-resource-monitor/authorize-ingress/no-permission，不因 layout:false 公开）；目录 index 与受保护根 index 按会话动态解析落点（目录索引不指向无权限/未迁移页）；迁移过渡页（meta.migrationPending）渲染统一占位、不加载页面代码（无请求）、不作落点候选；页面任务完成后由统筹移除标记 | 已落地并经 17 项真实浏览器场景实证（T00.4） |
 | 登录落点 | activated=false → `/authorize-ingress`（D29）；首页（/dashboard，P34 合并后同码 dashboard-realtime:view）可用优先；否则菜单顺序首个「有权限且已完成迁移」业务页；全部不可用 → `/no-permission`；登录回跳仅接受站内、存在且可用的目标（resolveSafeRedirectPath） | 已落地并实证（T00.4） |
 | 权限拒绝 | 阻止操作 + 提示重新登录；不伪造刷新 | 已确认（规格 5.9）；页面接入随各页任务 |
-| 权限拒绝 | 阻止操作 + 提示重新登录；不伪造刷新 | 已确认（规格 5.9）；页面接入随各页任务 |
 
 ## 3. 表格契约（owner：T00，T00.5 已落地）
 
@@ -68,22 +67,34 @@
 | 实体页签 | tab.key = pathname + 规范化 search（参数名稳定排序）：实体详情以 `?id=<实体ID>` 等定位参数打开时，不同实体自动获得独立页签、独立 Activity 缓存实例与独立请求 scope，互不串缓存；同参数复用同一页签。默认工作区页签形态要求实体路由位于受保护根内（P38/P39/P40 接入时由统筹应用 definitions.tsx 差异） | 机制已落地并经浏览器验证（同路由不同 id → 两独立页签）；参数形状待 P38/P39 按旧调用点核对 |
 | 独立窗口 | `openStandaloneWindow(path, params?, options?)`（`src/utils/window/standaloneWindow.ts`）：仅接受站内绝对路径；按「路由+排序参数」命名窗口（同实体复用窗口、异实体独立）；居中 1280×800 popup；打开成功后切断 opener。布局外路由（order-info/vehicle-info/server-resource-monitor）即独立窗口形态，受同一认证+权限守卫，会话/语言/主题来自持久化；多窗口退出同步复用 authBridge（T00.3） | 已落地并经浏览器验证（独立窗口加载 /order-info?id=88，守卫通过，T00.6） |
 
-## 5. 共享只读选项契约（owner：T00）
+## 5. 共享只读选项与地图能力契约（owner：T00；T00.7 已核对登记）
 
-跨页只读选项由 T00 登记唯一 operation（地图/节点、车辆、分组、载具、动作、工艺模板、驱动、电梯、角色、品牌）；查选项不等管理页完成，复用底层服务。逐项登记：
+跨页只读选项由 T00 登记唯一 operation；查选项不等管理页完成，复用底层服务，页面不得各自复制请求。加载行为统一消费 `useStaticOptions`（`src/hooks/useStaticOptions.ts`：scope 取消、防乱序、失败清空 + error）；失效值经 `matchOptionById`/`missingOptionLabel`（`src/utils/options/optionFallback.ts`）保留原值并禁用保存，禁止静默选第一项。operation 逐项核对自 OpenAPI（2026-09-17）：
 
-| 选项 | operation（待逐项核对 OpenAPI 后填） | 消费者 | 状态 |
-| --- | --- | --- | --- |
-| 地图/节点 | 待登记 | P07/P09/P10/P11/P19/P20 等 | 待 T00.7 |
-| 车辆 | 待登记（`vehicle/getSimpleVehicles` 候选） | P04 等 | 待 T00.7 |
-| 分组 | 待登记 | P04/P20 等 | 待 T00.7 |
-| 载具 | 待登记 | 待定 | 待 T00.7 |
-| 动作 | 待登记（`agvAction/getAGVActions` 候选） | P24/P20 | 待 T00.7 |
-| 工艺模板 | 待登记 | P03/P21 | 待 T00.7 |
-| 驱动 | 待登记（device/*/get*Drivers 候选） | P14–P18 | 待 T00.7 |
-| 电梯 | 待登记 | P10 | 待 T00.7 |
-| 角色 | 待登记（`auth/role/getRoles` 候选） | P31 | 待 T00.7 |
-| 品牌 | 待登记（systemLogos 候选） | P01/P27 | 待 T00.7 |
+| 选项 | operation（GET /fms/v1 相对路径，method 已核对） | 参数 | 消费者 | 状态 |
+| --- | --- | --- | --- | --- |
+| 地图图形（节点/路径） | `GET /dispatcher/map/getMapInfo` | `mapId`(必填) | P07/P10/P11/P19/P20 等；服务已落地 `src/services/map/map.service.ts` | operation 已核对；带令牌联验随 P07（响应 schema 未在文档定义，按旧可达实现解析，联调后登记差异） |
+| 地图下拉选项 | `GET /dispatcher/map/getSimpleMaps` | 无（全量） | P07/P09/P10/P11；服务已落地 `fetchSimpleMaps` | operation 已核对；联验随首个消费页 |
+| 地图站点/站点(非节点) | `GET /dispatcher/map/getStations`；`GET /dispatcher/map/getSites` | `mapId`(必填)、`type`(可选) | P10 | operation 已核对，服务随 P10 |
+| 车辆 | `GET /dispatcher/vehicle/getSimpleVehicles` | `mapId`(可选) | P04 等 | operation 已核对，服务随 P04 |
+| 分组 | `GET /dispatcher/vehicleGroup/getVehicleGroups` | 无（全量） | P04/P20 等 | operation 已核对，服务随 P04 |
+| 载具 | `POST /dispatcher/carrier/pageCarriers` | 分页查询 | P06 载具类型页；其他关联载具的页面任务 | operation 已核对，服务随 P06 |
+| 动作 | `GET /action/agvAction/getAGVActions` | 无（全量） | P24/P20 | operation 已核对，服务随 P24 |
+| 工艺模板 | `GET /dispatcher/orderTemplate/getOrderTemplates` | 无（全量） | P03/P21 | operation 已核对，服务随 P03 |
+| 驱动（电梯/充电桩/自动门/风淋门/交通灯） | `GET /device/elevator/getElevatorDrivers`；`GET /device/chargePile/getChargePileDrivers`；`GET /device/autoDoor/getAutoDoorDrivers`；`GET /device/airShowerDoor/getAirShowerDoorDrivers`；`GET /device/trafficLight/getDrivers` | 无（全量） | P14–P18 | operation 已核对，服务随各设备页 |
+| 电梯 | `GET /device/elevator/getElevators` | 无（全量） | P10 | operation 已核对，服务随 P10 |
+| 角色 | `GET /auth/role/getRoles` | `userId`(可选) | P31/P32 | operation 已核对，服务随 P31 |
+| 品牌 Logo | `GET /systemLogos`（listMeta）；二进制 `GET /systemLogos/{placementKey}/file` | — | P01/P27 | operation 已核对（T00.3 已实证 systemLogos 无令牌返回 code=200）；服务随 P01/P27 |
+
+### 5.1 只读地图共享组件（T00.7 已落地）
+
+| 项 | 契约 | 状态 |
+| --- | --- | --- |
+| 组件 | `src/components/ReadOnlyMap/ReadOnlyMap.tsx`（默认导出供 React.lazy 按需加载，konva 随组件进异步 chunk）；能力=只读渲染/平移缩放/节点与路径选点/定位高亮/回填回调；不引入地图编辑、监控、回放、车辆图层（H01/H02 范围） | 已落地（T00.7） |
+| 数据供给 | `mapId`（内部 `fetchMapGraph`：加载/失败/空态闭环，失败渲染 StateBlock offline + 显式重试）或 `graph` 外部直供（跳过请求） | 已落地；getMapInfo 真实联验随 P07（G03 凭据） |
+| 选中与回填 | `onChange(MapSelectedItem[])` 携带完整节点/路径 DTO；`initialSelectedIds` 回显（失效 ID 静默忽略，上层以原值标注不可用）；`ref` 暴露 fitView/zoom/clearSelection/setSelectedIds/focusNode/focusEdge/reload | 机制已实证（浏览器：回显回调携带完整 DTO、点击命中回填）；fitView/闪烁动画随 P07 真实浏览器联验 |
+| 依赖 | `react@19.3.0`（minor 升级，满足 react-konva peer）+ `react-konva@19.3.0` + `konva@^9.3.20`（与旧系统实装版本一致；react-konva peer 支持 ^9；konva@10 未经本轮等价验证故不采用）；`vite.config.ts` optimizeDeps.include 预声明 react-konva（避免动态发现优化导致的二次 reload 与陈旧产物双 React 实例） | 已安装并锁定（T00.7）；组件在本轮浏览器机制验证中真实渲染（三层 canvas + 选中环像素级确认） |
+| 命名空间 | 地图组件文案走共享 `map` 命名空间（en-US 分片已交付；zh-TW/ja/ko 回退简中已登记）；消费页面需在路由 meta.i18nNamespaces 声明 `'map'` | 已落地（en-US 6 键） |
 
 ## 6. 实体导航契约（owner：T00，页面任务接入）
 
@@ -100,7 +111,7 @@
 | --- | --- | --- |
 | 语言 | 五语言 `zh-CN/en-US/zh-TW/ja-JP/ko-KR`；中文 key 即文案；命名空间懒加载 | 已确认（D34） |
 | 语言存储 | 当前持久化设置为唯一来源；同源 `umi_locale` 一次迁移 | 已确认（18.4） |
-| 时区 | 部署时区优先，缺省 Asia/Shanghai，环境配置提供；`DEPLOY_TIMEZONE` 常量已落地（`VITE_DEPLOY_TIMEZONE` 注入，唯一定义点 `src/constants/datetime.ts`），页面不得各自硬编码 | 已落地（D23）；展示工具 T00.7 接入 |
+| 时区 | 部署时区优先，缺省 Asia/Shanghai，环境配置提供；`DEPLOY_TIMEZONE` 常量唯一定义点 `src/constants/datetime.ts`，页面不得各自硬编码；dayjs utc/timezone 插件单点装配于 `src/utils/datetime/deployDayjs.ts`；解析/展示纯函数 `parseBackendDateTime`/`formatInDeployTimezone`/`displayDateTime`（`src/utils/datetime/datetimeDisplay.ts`）：墙钟字符串按部署时区、带偏移换算、纯日期=部署时区零点、无法识别返回 null 不猜 | 已落地（D23/T00.7）；带偏移时间真实样本联调随报表页 |
 
 ## 8. 契约变更日志
 
@@ -112,4 +123,5 @@
 | 2026-09-17 | 权限与路由 | T00.4 落地：权限码常量（PERM/PERM_BUTTON/ROOT_ONLY_CODES，码值与旧系统逐一核实对齐）、权限纯函数与路由访问核心（超管短路/祖先填充/落点解析/回跳校验）、定义树 meta.perm 挂码 + migrationPending/public 标记、认证+权限守卫覆盖独立页、目录与首页动态落点、迁移过渡占位（MigrationPending，pending 页不加载页面代码）、DockMenu 权限剪枝、affix 播种按权限过滤、usePermission 按钮码 hook、LoginForm 落点接入；连带修复 T00.3 缺陷：store migrate 无条件重置（持久化恢复失效）与 authBridge 监听键名缺 persist: 前缀（多窗口退出同步失效） | T00（本轮 run） | 全部路由 meta 增加 perm 字段（页面任务按钮权限经 usePermission 消费 PERM_BUTTON）；页面任务完成后由统筹移除本页 migrationPending 标记（definitions.tsx 单点）；菜单消费者必须传访问上下文（buildMenuRoutes 签名变更，DockMenu 已适配） |
 | 2026-09-17 | 表格接入形态 | 用户决策：**禁止对 apex-table-react 二次封装**（撤销 T00.5 首轮薄适配组件方案，相关代码已全部撤回）；页面直接使用 ApexTableReact 公开 API（组件/locale/官方列偏好适配器/插槽/ref）；公共设施仅限五语言 locale 包（包内仅内置 zhCN）、主题 `--apex-table-*`→`--app-*` 变量映射、pageIndex→pageNo 换算与行 ID 纯函数、不包裹表格的独立状态块；规格 6.1 与 TASKS DoD#4/T00.5/§2.2 已同步修订 | 用户（本轮 run） | 全部表格页面任务直接 import apex-table-react 并自行组装 props；公共资源的具体文件位置与形状在 T00.5 交付时登记 |
 | 2026-09-17 | 表格公共资源落地 | T00.5 交付：五语言 ApexLocale 包（`src/i18n/locales/apexTable/` + `resolveApexLocale`/`useApexLocale`）、主题映射（globals.css `:root .apex-table`，亮暗成对）、分页换算 `toBackendPage`、行 ID `stringFieldRowId`、列偏好约定 `createTableColumnPreferences`/`useColumnPreferences`、统一状态块 `StateBlock`（noPermission/gap/offline）；公开 API 核验（虚拟化/展开/编辑/双 ref）经类型探针全量组装验证后删除探针 | T00（本轮 run） | P03/P05 起全部表格页按 contracts.md 第 3 节约定组装：`useApexLocale()` 供 locale、`toBackendPage` 供 request 分页、`stringFieldRowId` 供 getRowId、`useColumnPreferences` 供列偏好、StateBlock 供失败/无权限/缺口区域；zh-TW/ja/ko 的 StateBlock 文案回退简中已登记 i18n-missing.md，T00.8 补齐 |
+| 2026-09-17 | 共享业务能力落地（T00.7） | ① 时间/时区：`deployDayjs`（utc/timezone 单点装配）+ `datetimeDisplay`（parseBackendDateTime/formatInDeployTimezone/displayDateTime，缺失/不可解析→'—' 不猜）；② 统计空值/单位：`src/utils/stats/metricFormat.ts`（0 与缺失严格区分、safeRatio 除零→null、formatPercent/formatWithUnit/secondsToHours，公式归页面 owner）；③ 控制确认/未知/批量反馈：`src/utils/command/`（CommandOutcome 三态、confirmCommand 列对象+影响+提交≠完成附注、summarizeBatchOutcomes/summarizeWholeBatch/formatBatchSummaryText，缺项计入未知、整批不编造逐项）；④ 选项失效：`src/utils/options/optionFallback.ts` + `src/hooks/useStaticOptions.ts`（scope 取消/防乱序/失败清空）；⑤ 只读地图：`src/services/map/`（getMapInfo/getSimpleMaps）+ `src/components/ReadOnlyMap/`（11 文件，能力见 5.1 节）；⑥ 依赖：react 19.2.8→19.3.0、@types/react 19.3.0、konva@^9.3.20、react-konva@^19.3.0、vite optimizeDeps 预声明 react-konva | T00（本轮 run） | 消费者：实时页/详情页轮询不变；P07 起地图页消费 ReadOnlyMap+useMapGraph+map 命名空间；选项页自 P03 起消费 useStaticOptions；写操作页消费 confirmCommand/批量归纳；报表页消费 metricFormat 与 datetimeDisplay；common 新增 8 键、新增共享 map 命名空间（消费页面 meta.i18nNamespaces 声明） |
 | 2026-09-17 | 页签/草稿/轮询/传输契约落地 | T00.6 交付：`tabsSlice` 增加 dirty 标记（LRU 豁免脏页签）、`useTabDirtyGuard`（页面草稿登记）、`useTabActionGuard`（关闭/刷新/批量关闭/退出登录统一确认，三档传输提示策略）、`beforeunload` 脏页签离开提示、`useVisiblePolling` + `polling.constants`（可见串行轮询/退避集中配置）、`transferManager` + `useTransfers` + `TransferWatcher`（独立传输生命周期/关页提示/孤儿完成消息/会话结束清理）、`openStandaloneWindow`（独立窗口工具）；`RequestScopeValue` 增加 `scopeKey` 字段 | T00（本轮 run） | 实时页面（P34/P05/P39/P40）轮询一律消费 `useVisiblePolling`，禁止私设定时器；文件传输页面（P08/P09/P25/P26/P30 等）一律经 `beginTransfer` 登记并把句柄 signal 传给请求层；全部写草稿页面自 P03 起消费 `useTabDirtyGuard`；消费者注意：`RequestScopeValue` 新增 scopeKey（现有 usePageActive/usePageRequest 消费不受影响） |

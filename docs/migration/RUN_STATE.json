@@ -1,7 +1,7 @@
 {
   "版本说明": "调度系统迁移串行调度状态。由定时任务每小时触发一次，每次最多推进一个任务；写入必须整体原子替换。",
-  "最近更新时间": "2026-09-17T08:35:00.000Z",
-  "当前运行标识": "run-20260917-154343-9436（本轮已结束，锁已释放）",
+  "最近更新时间": "2026-09-17T09:35:00.000Z",
+  "当前运行标识": "run-20260917-164052-9742（本轮已结束，锁已释放）",
   "锁": "docs/migration/.lock（mkdir 原子目录锁，内含 lock.json）",
   "工作目录": "C:\\code\\apex-admin-web",
   "分支": "apple-rxx",
@@ -451,23 +451,24 @@
   "当前任务": {
     "任务ID": "T00",
     "状态": "进行中",
-    "当前里程碑": "T00.7 共享业务能力（下一轮起点）",
+    "当前里程碑": "T00.8 五语言基座（下一轮起点）",
     "本轮已完成内容": [
-      "T00.6 脏状态保护：TabEntry 增加 dirty/dirtyLabel + tabDirtyMarked reducer；useTabDirtyGuard hook（页面草稿登记、卸载自动清除）；LRU 淘汰跳过脏页签（宁可超限不丢草稿）；顺带清理 tabsSlice 重复 TabsState 接口死代码",
-      "T00.6 统一动作确认：useTabActionGuard（关闭/刷新/关闭其他/左侧/右侧/全部、退出登录全部经统一确认，批量动作按真实移除范围计算）；传输提示三档策略（none/continue-after-close/terminate）；Header 登出复用同一 hook",
-      "T00.6 beforeunload：BasicLayout 存在脏页签时挂浏览器离开提示，无脏不挂；对照实验验证（置脏刷新被拦、清脏正常重载）",
-      "T00.6 可见串行轮询：useVisiblePolling（激活+可见才刷新、完成后约 5 秒串行、重新可见即查、失败 ×2 退避至 60s、取消静默、后台保快照）+ polling.constants 集中配置（5s/×2/60s）",
-      "T00.6 独立传输生命周期：transferManager 模块单例（独立 AbortController、真实进度、processing 阶段、aborted=仅本机终止语义）+ useTransfers 订阅 + TransferWatcher（孤儿传输终态一次性消息、会话结束终止并清空传输记录；不新增全局任务中心）",
-      "T00.6 实体页签与独立窗口：tab key 含规范化 search 的实体隔离机制实证；openStandaloneWindow 工具（站内校验、实体窗口命名、opener 切断）+ 布局外路由独立窗口形态守卫实证",
-      "T00.6 验证：lint（176 文件 0 警告）/typecheck/check:structure（174 文件）/build 四项全部通过；真实浏览器 9 组机制场景实证（实体页签隔离/脏关闭确认/脏+传输确认/关页传输继续/孤儿完成提示/beforeunload 对照/LRU 豁免双重复测/独立窗口守卫/登出清理链路）"
+      "T00.7 时间/时区工具：deployDayjs（utc/timezone 单点装配，消费 DEPLOY_TIMEZONE）+ datetimeDisplay（墙钟字符串按部署时区、带偏移换算、纯日期零点、不可解析返回 null 不猜，缺失展示统一 —）",
+      "T00.7 统计空值/单位工具：metricFormat（0 与缺失严格区分、safeRatio 除零→null 不产 Infinity/虚假 0%、formatPercent/formatWithUnit/secondsToHours；具体公式归页面 owner）",
+      "T00.7 控制确认/未知/批量反馈契约：CommandOutcome 三态（accepted/completed/unknown，提交≠完成）+ confirmCommand（列对象与影响、危险按钮、固定附注）+ summarizeBatchOutcomes/summarizeWholeBatch/formatBatchSummaryText（只归纳真实逐项、缺项计入未知、整批不编造逐项成功）",
+      "T00.7 共享选项契约：OpenAPI 逐项核对并登记 contracts.md 第 5 节（地图/站点/车辆/分组/载具/动作/工艺模板/驱动×5/电梯/角色/品牌，method+path+参数）；useStaticOptions（scope 取消/防乱序/失败清空/取消静默）+ optionFallback（失效保留原值、不静默选第一项、保存前批量失效检测）",
+      "T00.7 只读地图共享能力：services/map（getMapInfo+getSimpleMaps，结构异常抛错不以空画布冒充成功）+ components/ReadOnlyMap 组件族 11 文件（三层渲染/节点与路径选点/定位高亮/回填回调/ref API；失败态 StateBlock offline 内闭环；不引入编辑/监控/回放）",
+      "T00.7 依赖：react 19.2.8→19.3.0（minor）、react-konva@19.3.0、konva@^9.3.20（与旧系统实装一致；10.5 未完成等价验证不采用）、@types/react 19.3.0；vite optimizeDeps 预声明 react-konva（预打包陈旧产物曾致双 React 实例 Invalid hook call，预声明后消除）",
+      "T00.7 i18n：共享 map 命名空间（en-US 6 键 + 懒加载表注册）+ common 追加 8 键（命令/批量/选项失效文案）；zh-TW/ja/ko 回退登记 i18n-missing.md；i18n-map.md 登记命名空间归属",
+      "T00.7 验证：四项检查通过（198 文件 lint 0 警告、typecheck、structure 196 文件、build）；浏览器机制实证——26 项纯函数断言全过；地图三层 canvas 像素级渲染确认；回显/选点命中→onChange 完整 DTO 回填端到端；hitFunc 命中区像素确认；IAB 环境 rAF 抑制导致动画类（fitView/闪烁/缩放）登记随 P07 真实浏览器联验"
     ],
     "未完成步骤": [
-      "T00.7 共享业务能力：时间/时区展示工具（消费 DEPLOY_TIMEZONE）；地图只读/缩放平移/选点高亮回填；共享只读选项 operation 逐项核对登记（contracts.md 第 5 节）；控制确认/未知/批量反馈契约；统计空值/单位基础工具",
-      "T00.8 五语言基座（含补齐 StateBlock/表格公共文案/T00.6 页签传输文案的 zh-TW/ja/ko 译文）",
-      "T00.9 冻结交接"
+      "T00.8 五语言基座：五语言类型/normalizeLanguage 扩展（zh-TW/ja-JP/ko-KR 精确保留不误映射）/懒加载器与 locale 映射；补齐 StateBlock/页签传输/命令与地图文案繁中日韩译文（i18n-missing.md 逐键登记）；同源 umi_locale 一次迁移；antd/Apex/dayjs/Intl/html lang 同步；持久化语言恢复路径统一经 normalizeLanguage（本轮发现 settings 恢复直接 changeLanguage 未过 normalize，不支持语言会致 useSuspense 挂起——T00.8 收敛单点）",
+      "T00.9 冻结交接：contracts.md 冻结、真实纵向样板、公共导出清点、各页 namespace/文件归属终版、过渡期 mock 页面退出运行路径复核",
+      "跨里程碑待办不变：G03 登录成功路径联验（B1 放行前必须）；useVisiblePolling/传输通道/地图动画类随首个消费页联验；getMapInfo 响应 schema 按 OpenAPI 未定义（通配媒体类型），联调时逐字段核实登记差异"
     ],
-    "下一步": "T00.7 共享业务能力：先做时间/时区展示工具（DEPLOY_TIMEZONE 唯一定义点 src/constants/datetime.ts）与共享只读选项契约登记（逐项核对 OpenAPI），再落地地图只读/选点组件",
-    "阻塞原因": "部分受阻（不阻塞 T00.7 机制开发）：真实登录成功路径、带令牌授权只读联验、root/administrator 真实身份验证需测试账号凭据（外部条件，不猜口令）；已登记 G03，B1 放行（P01）前必须补验。useVisiblePolling 运行时联验随首个实时页（P34/P05/P39/P40）；传输真实文件通道随 P08/P09/P25 等页面任务"
+    "下一步": "T00.8 五语言基座：先扩展 normalizeLanguage 与懒加载表（zh-TW/ja-JP/ko-KR 精确支持），再迁公共/菜单/认证/错误资源四语言，补齐 i18n-missing.md 登记的回退键，并收敛持久化语言恢复路径",
+    "阻塞原因": "部分受阻（不阻塞 T00.8/T00.9 机制开发）：真实登录成功路径、带令牌授权只读联验、root/administrator 真实身份验证需测试账号凭据（外部条件，不猜口令）；已登记 G03，B1 放行（P01）前必须补验。getMapInfo 带令牌联验随 P07；地图动画类随 P07 真实浏览器（IAB rAF 抑制）；useVisiblePolling 随首个实时页；传输通道随 P08/P09/P25"
   },
   "验证结果": [
     {
@@ -569,7 +570,27 @@
       "命令": "useVisiblePolling 运行时联验（T00.6）",
       "结果": "待首个实时页消费者（P34/P05/P39/P40）；机制交付轮无实时页面可挂载，不冒充现场验收",
       "日期": "2026-09-17"
+    },
+    {
+      "命令": "pnpm lint / typecheck / check:structure / build（T00.7）",
+      "结果": "全部通过（198 文件 lint 0 警告 0 错误；196 源文件结构检查；tsc+vite build 成功）",
+      "日期": "2026-09-17"
+    },
+    {
+      "命令": "纯函数机制断言 26 项（时间/统计/选项失效/命令契约/地图挂载转换，真实模块动态加载）",
+      "结果": "全部通过；无法识别时间返回 null 不猜、除零→null、0 与缺失区分、失效保留原值、批量缺项计入未知",
+      "日期": "2026-09-17"
+    },
+    {
+      "命令": "只读地图渲染/回显/选点回填（React 19.3.0 + react-konva 19.3.0 + konva 9.3.20 真实实例化）",
+      "结果": "三层 canvas 像素级确认（正向灰/反向红/三色节点/选中青环）；initialSelectedIds 回显 onChange 完整 DTO；pointer 命中→回填端到端；hitFunc 命中区像素确认；map 命名空间加载正常。验证残留与探针文件已清除",
+      "日期": "2026-09-17"
+    },
+    {
+      "命令": "地图 fitView/闪烁/滚轮缩放动画；getMapInfo 带令牌联验",
+      "结果": "受阻：前者 IAB 验证环境 rAF 被抑制（实测 requestAnimationFrame 不执行），随 P07 真实浏览器联验；后者需登录凭据（G03）",
+      "日期": "2026-09-17"
     }
   ],
-  "证据位置": "docs/migration/tasks/T00.md（T00.6 交付物与验证证据表）、docs/migration/contracts.md（第 4 节页签/草稿/轮询/传输契约 + 第 6 节 + 变更日志）、docs/migration/i18n-missing.md（T00.6 文案回退登记）"
+  "证据位置": "docs/migration/tasks/T00.md（T00.7 交付物与验证证据表）、docs/migration/contracts.md（第 5/5.1/7 节 + 变更日志）、docs/migration/i18n-missing.md（T00.7 回退登记）、docs/migration/i18n-map.md（命名空间归属）"
 }

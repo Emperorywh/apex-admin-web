@@ -92,4 +92,16 @@ export default {
   '"{{name}}" 传输完成': '"{{name}}" transfer completed',
   '"{{name}}" 传输失败：{{reason}}': '"{{name}}" transfer failed: {{reason}}',
   '"{{name}}" 传输已终止：{{reason}}': '"{{name}}" transfer aborted: {{reason}}',
+  /* 控制命令统一确认与批量反馈（T00.7：列明对象与影响 / 提交≠完成 / 逐项真实归纳） */
+  '确定': 'OK',
+  '本次操作影响以下对象：': 'This operation affects the following targets:',
+  '等 {{count}} 个对象': '{{count}} targets in total',
+  '命令提交后不代表操作已完成，请以实际状态核实结果':
+    'Submitting a command does not mean the action has completed. Verify the result with the actual status.',
+  '成功 {{count}} 项': '{{count}} succeeded',
+  '成功 {{succeeded}} 项，失败 {{failed}} 项，结果未知 {{unknown}} 项':
+    '{{succeeded}} succeeded, {{failed}} failed, {{unknown}} of unknown result',
+  /* 关联选项失效呈现（T00.7：保留原值 + 不可用说明，不静默替换） */
+  '（原值缺失）': '(original value missing)',
+  '{{id}}（已不在当前选项中）': '{{id}} (no longer in the current options)',
 } as const

@@ -4,6 +4,15 @@
 > 旧资源：`C:\code\dd\src\locales\<lang>.json`（顶层 key 数 zh-CN/en-US 2092、zh-TW/ja-JP/ko-KR 1478，2026-09-17 实测与规格 18.1 一致）。
 > 目标规范：中文 key 即文案（`keySeparator/nsSeparator: false`），按业务命名空间懒加载；五语言目录 `src/i18n/locales/<语言>/<命名空间>.ts`。
 
+## 命名空间归属（T00.7 登记）
+
+| 命名空间 | 归属 | 说明 |
+| --- | --- | --- |
+| common / menu / auth / error | T00 统筹 | 基础共享分片 |
+| map | T00（共享地图能力） | ReadOnlyMap 组件内建文案；消费页面在路由 meta.i18nNamespaces 声明 `'map'` |
+| apexTable（非 i18next ns） | T00.5 | ApexTableReact 五语言 locale 包，不经 i18next 懒加载 |
+| 页面私有（orderRecord/dashboard/system/profile 等） | 对应页面任务 | 页面任务在自己的 tasks/<ID>.md 提供旧 key 映射分片 |
+
 ## 映射格式
 
 | 旧 key（含嵌套路径） | 语言范围 | 新命名空间 | 新 key / 处理 | 迁移任务 | 状态 |

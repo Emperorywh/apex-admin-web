@@ -32,6 +32,8 @@ const enUsLoaders: Record<string, () => Promise<{ default: Record<string, string
   orderRecord: () => import('@/i18n/locales/en-US/orderRecord'),
   dashboard: () => import('@/i18n/locales/en-US/dashboard'),
   error: () => import('@/i18n/locales/en-US/error'),
+  // 共享地图能力文案（T00.7 ReadOnlyMap；消费页面在 meta.i18nNamespaces 声明 'map'）
+  map: () => import('@/i18n/locales/en-US/map'),
 }
 
 /** zh-* 一律映射 zh-CN；其余未支持语言回退 zh-CN */

@@ -24,5 +24,7 @@
 | zh-TW | common | （T00.6 页签动作确认/传输状态 11 键：关闭当前页签、确认继续{{action}}？、继续、确认刷新当前页签？、刷新页签、以下页签存在未保存的修改…、这些页签仍有正在进行的传输…、进行中的传输将被本机终止…、登录已结束…、"{{name}}" 传输完成/失败/已终止） | TabsBar/Header/TransferWatcher（公共页签与传输） | 回退简中 | T00.6 | 2026-09-17 |
 | ja-JP | common | （同上：StateBlock 7 条 + T00.6 页签/传输 11 键） | StateBlock、TabsBar/Header/TransferWatcher | 回退简中 | T00.8 | 2026-09-17 |
 | ko-KR | common | （同上：StateBlock 7 条 + T00.6 页签/传输 11 键） | StateBlock、TabsBar/Header/TransferWatcher | 回退简中 | T00.8 | 2026-09-17 |
+| zh-TW/ja-JP/ko-KR | common | T00.7 命令确认与批量反馈 8 键（确定、本次操作影响以下对象：、等 {{count}} 个对象、命令提交后不代表操作已完成…、成功 {{count}} 项、成功 {{succeeded}} 项…、（原值缺失）、{{id}}（已不在当前选项中）） | confirmCommand/metricFormat 同族公共文案 | 回退简中 | T00.7 | 2026-09-17 |
+| zh-TW/ja-JP/ko-KR | map | 请传入地图ID、地图加载中...、地图数据为空、搜索节点或路径...、节点、路径（共 6 键） | ReadOnlyMap（共享只读地图组件） | 回退简中 | T00.7 | 2026-09-17 |
 
 > 说明：ApexTableReact 表格控件文案（locale 包）不属于本登记——五语言已随 T00.5 完整交付（`src/i18n/locales/apexTable/`），无缺失。
