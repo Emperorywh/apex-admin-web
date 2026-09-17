@@ -2,6 +2,8 @@
  * 页签栏：嵌入顶部工具条的浏览器式页签条。
  * - dnd-kit 排序（含键盘替代操作）；固定页签不可拖动、不可关闭
  * - 右键菜单：刷新当前 / 关闭其他 / 关闭左侧 / 关闭右侧 / 关闭全部（永不影响 affix）
+ * - 关闭/刷新前统一脏检查（useTabActionGuard）：列出未保存修改与进行中的传输，
+ *   确认后才执行；批量关闭按真实移除范围检查（T00.6，规格 8.1）
  * - 溢出横向滚动（箭头仅溢出时显示），激活页签自动滚入可视区
  */
 
@@ -27,6 +29,7 @@ import {
 } from '@dnd-kit/sortable'
 import { useAppDispatch } from '@/hooks/useAppDispatch'
 import { useAppSelector } from '@/hooks/useAppSelector'
+import { useTabActionGuard } from '@/hooks/useTabActionGuard'
 import { findRouteMeta } from '@/router/projections'
 import {
   allTabsClosed,
@@ -60,6 +63,10 @@ export function TabsBar() {
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   )
 
+  /* 统一动作确认（T00.6）：关闭/刷新销毁页面草稿与在途请求，必须先经脏检查；
+     关闭类动作同时提示「传输将继续」；确认通过后才派发 reducer */
+  const guardTabAction = useTabActionGuard()
+
   const updateArrows = useCallback(() => {
     const el = scrollRef.current
     if (!el) return
@@ -91,11 +98,40 @@ export function TabsBar() {
     [navigate],
   )
 
+  /** 计算批量关闭动作真正会被移除的页签 key（与 reducer 的保留语义严格对应） */
+  const removedKeysOf = useCallback(
+    (kind: 'others' | 'left' | 'right' | 'all', anchorKey: string): string[] => {
+      const anchorIndex = tabs.findIndex((tab) => tab.key === anchorKey)
+      const removable = (tab: TabEntry) => !tab.affix && tab.closable
+      switch (kind) {
+        case 'others':
+          return tabs.filter((tab) => tab.key !== anchorKey && removable(tab)).map((tab) => tab.key)
+        case 'left':
+          return anchorIndex < 0
+            ? []
+            : tabs.slice(0, anchorIndex).filter(removable).map((tab) => tab.key)
+        case 'right':
+          return anchorIndex < 0
+            ? []
+            : tabs.slice(anchorIndex + 1).filter(removable).map((tab) => tab.key)
+        case 'all':
+          return tabs.filter(removable).map((tab) => tab.key)
+      }
+    },
+    [tabs],
+  )
+
+  /** 单页签关闭（X 按钮）：经统一确认后关闭 */
   const close = useCallback(
     (key: string) => {
-      dispatch(tabClosed(key))
+      guardTabAction({
+        actionLabel: t('关闭页签'),
+        affectedKeys: [key],
+        transferPolicy: 'continue-after-close',
+        action: () => dispatch(tabClosed(key)),
+      })
     },
-    [dispatch],
+    [dispatch, guardTabAction, t],
   )
 
   const buildContextMenu = useCallback(
@@ -110,15 +146,50 @@ export function TabsBar() {
         { key: 'all', label: t('关闭全部页签') },
       ],
       onClick: ({ key }) => {
-        if (key === 'refresh') dispatch(tabRefreshed(tab.key))
-        else if (key === 'close') dispatch(tabClosed(tab.key))
-        else if (key === 'others') dispatch(otherTabsClosed(tab.key))
-        else if (key === 'left') dispatch(leftTabsClosed(tab.key))
-        else if (key === 'right') dispatch(rightTabsClosed(tab.key))
-        else if (key === 'all') dispatch(allTabsClosed())
+        /* 刷新与关闭分别确认：刷新只影响本页签草稿（传输不受影响）；
+           关闭类按真实移除范围检查脏页签，并提示在途传输将继续 */
+        if (key === 'refresh') {
+          guardTabAction({
+            title: t('确认刷新当前页签？'),
+            actionLabel: t('刷新页签'),
+            affectedKeys: [tab.key],
+            transferPolicy: 'none',
+            action: () => dispatch(tabRefreshed(tab.key)),
+          })
+        } else if (key === 'close') {
+          close(tab.key)
+        } else if (key === 'others') {
+          guardTabAction({
+            actionLabel: t('关闭其他页签'),
+            affectedKeys: removedKeysOf('others', tab.key),
+            transferPolicy: 'continue-after-close',
+            action: () => dispatch(otherTabsClosed(tab.key)),
+          })
+        } else if (key === 'left') {
+          guardTabAction({
+            actionLabel: t('关闭左侧页签'),
+            affectedKeys: removedKeysOf('left', tab.key),
+            transferPolicy: 'continue-after-close',
+            action: () => dispatch(leftTabsClosed(tab.key)),
+          })
+        } else if (key === 'right') {
+          guardTabAction({
+            actionLabel: t('关闭右侧页签'),
+            affectedKeys: removedKeysOf('right', tab.key),
+            transferPolicy: 'continue-after-close',
+            action: () => dispatch(rightTabsClosed(tab.key)),
+          })
+        } else if (key === 'all') {
+          guardTabAction({
+            actionLabel: t('关闭全部页签'),
+            affectedKeys: removedKeysOf('all', tab.key),
+            transferPolicy: 'continue-after-close',
+            action: () => dispatch(allTabsClosed()),
+          })
+        }
       },
     }),
-    [dispatch, t],
+    [close, dispatch, guardTabAction, removedKeysOf, t],
   )
 
   const onDragEnd = useCallback(

@@ -6,6 +6,8 @@
 import { createContext, useContext } from 'react'
 
 export interface RequestScopeValue {
+  /** scope 唯一标识：页签 key 或 current:<routeId>:<locationKey>（T00.6 脏状态登记用） */
+  scopeKey: string
   signal: AbortSignal
   revision: number
   isActive: boolean

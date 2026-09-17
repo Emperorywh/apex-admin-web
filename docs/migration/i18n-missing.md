@@ -21,7 +21,8 @@
 | zh-TW | common | 加载失败 | StateBlock（公共状态块） | 回退简中 | T00.5 | 2026-09-17 |
 | zh-TW | common | 无法获取数据，请检查网络或服务状态后重试 | StateBlock（公共状态块） | 回退简中 | T00.5 | 2026-09-17 |
 | zh-TW | common | 重新加载 | StateBlock（公共状态块） | 回退简中 | T00.5 | 2026-09-17 |
-| ja-JP | common | （同上 7 条 StateBlock 文案） | StateBlock（公共状态块） | 回退简中 | T00.5 | 2026-09-17 |
-| ko-KR | common | （同上 7 条 StateBlock 文案） | StateBlock（公共状态块） | 回退简中 | T00.5 | 2026-09-17 |
+| zh-TW | common | （T00.6 页签动作确认/传输状态 11 键：关闭当前页签、确认继续{{action}}？、继续、确认刷新当前页签？、刷新页签、以下页签存在未保存的修改…、这些页签仍有正在进行的传输…、进行中的传输将被本机终止…、登录已结束…、"{{name}}" 传输完成/失败/已终止） | TabsBar/Header/TransferWatcher（公共页签与传输） | 回退简中 | T00.6 | 2026-09-17 |
+| ja-JP | common | （同上：StateBlock 7 条 + T00.6 页签/传输 11 键） | StateBlock、TabsBar/Header/TransferWatcher | 回退简中 | T00.8 | 2026-09-17 |
+| ko-KR | common | （同上：StateBlock 7 条 + T00.6 页签/传输 11 键） | StateBlock、TabsBar/Header/TransferWatcher | 回退简中 | T00.8 | 2026-09-17 |
 
 > 说明：ApexTableReact 表格控件文案（locale 包）不属于本登记——五语言已随 T00.5 完整交付（`src/i18n/locales/apexTable/`），无缺失。

@@ -52,14 +52,21 @@
 | 选择 | 当前页选择；翻页/筛选/失权清理（包内建当前页语义，跨页保留由业务决定——本项目按 DoD 5 不跨页保留） | 已确认（规格 6.2；页面任务消费） |
 | 排序 | 仅真实支持的能力（G09）：不发虚构 sort | 已确认（G09） |
 
-## 4. 页签/草稿/轮询/传输契约（owner：T00，T00.6 落地）
+## 4. 页签/草稿/轮询/传输契约（owner：T00，T00.6 已落地）
 
 | 项 | 契约 | 状态 |
 | --- | --- | --- |
-| 草稿 | 切页保留内存草稿；脏页签不被 LRU 淘汰；关闭/刷新/批量关闭统一检查 | 已确认（D12） |
-| 实时轮询 | 页签激活且文档可见时约 5 秒串行；恢复即查；失败有上限退避；隐藏保留快照 | 已确认（D14） |
-| 传输 | 独立传输生命周期，不依赖页面 effect；关页提示；仅真实可取消才提供取消 | 已确认（D26） |
-| 实体页签 | 详情按实体 ID 隔离页签缓存与请求 | 已确认（D08） |
+| 草稿登记 | 页面经 `useTabDirtyGuard(isDirty, label?)`（`src/hooks/useTabDirtyGuard.ts`）把「是否存在未保存修改」同步到所属页签（`tabsSlice.tabDirtyMarked`）；草稿数据本身留在页面组件内存，标记只是元数据；组件卸载（关页/淘汰/刷新重建）自动清标记 | 已落地（T00.6）；页面任务自 P03 起消费 |
+| LRU 豁免 | `tabsSlice.tabSynced` 的 LRU 淘汰跳过 dirty 页签：草稿不静默丢弃，宁可临时超出 `PAGE_CACHE_MAX_ENTRIES=10`；登出/会话失效整体重置 | 已落地并经浏览器程序化验证（T00.6） |
+| 统一动作确认 | 关闭/刷新/关闭其他/左侧/右侧/全部、退出登录一律经 `useTabActionGuard`（`src/hooks/useTabActionGuard.tsx`）：列出受影响脏页签（路由标题+脏对象说明），确认后才派发 reducer；无任何旁路。传输提示三策略：`none`（刷新不影响传输）/`continue-after-close`（关页传输继续+完成消息提示）/`terminate`（登出本机终止，不保证服务端已停止） | 已落地并经真实浏览器验证（脏行/脏+传输/仅传输三形态，T00.6） |
+| 浏览器离开提示 | BasicLayout：存在脏页签时挂 `beforeunload`（preventDefault + returnValue），无脏页签不挂监听；浏览器终止等非正常退出不承诺恢复草稿 | 已落地并经对照实验验证（脏→刷新被拦、无脏→正常重载） |
+| 实时轮询 | `useVisiblePolling({refresh, enabled?})`（`src/hooks/useVisiblePolling.ts`）为实时页面唯一刷新调度入口：页签激活+文档可见才刷新；串行（完成后约 5 秒发起下一次，间隔自完成时刻起算）；重新可见/激活立即刷新；失败按倍率退避至上限；成功复位；主动取消（scope 信号中止）静默停止不算失败；后台保留快照。间隔与退避集中定义于 `src/constants/polling.constants.ts`（5s / ×2 / 60s），页面不得私设定时器；refresh 必须是只读查询并把收到的 signal 传给请求层 | 已落地；运行时行为随首个实时页（P34/P05/P39/P40）联验 |
+| 传输生命周期 | `src/services/transfer/transferManager.ts` 模块级单例：AbortController 由管理器持有，不挂页面 scope——切页（Activity 隐藏/effect 清理）、关页、LRU 淘汰不误杀传输；普通查询取消（RequestScopeProvider）与传输互不影响。页面 `beginTransfer({tabKey, kind, name})` 取句柄：`signal` 传给请求层、`setProgress(loaded,total)` 回报真实进度（total 未知=null 不确定进度）、`markProcessing()`（字节 100% 后服务端处理中）、`succeed()/fail(reason)` 依业务结果判定；仅真实可取消的传输暴露 cancel | 已落地并经浏览器验证（关页后传输继续、完成后提示）；真实文件通道随页面任务（P08/P09/P25 等）接入 |
+| 取消语义 | 本地 cancel/abort 仅代表客户端终止：阶段标 `aborted`，文案注明「仅本机终止，服务端处理不保证已撤销」（结果待确认，规格 10.4）；禁止把 Abort 当服务端回滚 | 已落地（T00.6） |
+| 传输状态追踪 | `useTransfers(tabKey?)` 订阅任务列表（页面进度 UI 用）；`findActiveTransfersIn(tabKeys)` 供关闭确认一次性查询；承载页签已关闭的孤儿传输终态由 `TransferWatcher`（BasicLayout 内）以一次性 antd message 提示结果——**本期不新增用户可见全局任务中心**；终态记录保留 15 秒后自动清理 | 已落地并经浏览器验证（孤儿完成 toast，T00.6） |
+| 会话结束清理 | 登出/会话失效/多窗口同步退出（isAuthenticated=false）：TransferWatcher 终止全部进行中传输并清空全部记录（含终态残留）；登出确认框提示未保存修改与传输终止影响 | 已落地并经浏览器验证（T00.6） |
+| 实体页签 | tab.key = pathname + 规范化 search（参数名稳定排序）：实体详情以 `?id=<实体ID>` 等定位参数打开时，不同实体自动获得独立页签、独立 Activity 缓存实例与独立请求 scope，互不串缓存；同参数复用同一页签。默认工作区页签形态要求实体路由位于受保护根内（P38/P39/P40 接入时由统筹应用 definitions.tsx 差异） | 机制已落地并经浏览器验证（同路由不同 id → 两独立页签）；参数形状待 P38/P39 按旧调用点核对 |
+| 独立窗口 | `openStandaloneWindow(path, params?, options?)`（`src/utils/window/standaloneWindow.ts`）：仅接受站内绝对路径；按「路由+排序参数」命名窗口（同实体复用窗口、异实体独立）；居中 1280×800 popup；打开成功后切断 opener。布局外路由（order-info/vehicle-info/server-resource-monitor）即独立窗口形态，受同一认证+权限守卫，会话/语言/主题来自持久化；多窗口退出同步复用 authBridge（T00.3） | 已落地并经浏览器验证（独立窗口加载 /order-info?id=88，守卫通过，T00.6） |
 
 ## 5. 共享只读选项契约（owner：T00）
 
@@ -82,8 +89,8 @@
 
 | 项 | 契约 | 状态 |
 | --- | --- | --- |
-| 任务详情 | `/order-info?...`（参数在 P03 旧调用点核对后定）；工作区页签默认 + 独立窗口/全屏 | 待 P38 定参数 |
-| 车辆详情 | `/vehicle-info?...`（参数在 P05 旧调用点核对后定） | 待 P39 定参数 |
+| 任务详情 | `/order-info?...`（参数在 P03 旧调用点核对后定）；工作区页签默认 + 独立窗口/全屏；独立窗口经 `openStandaloneWindow`（contracts 第 4 节）；实体隔离靠页签 key 含实体参数 | 待 P38 定参数 |
+| 车辆详情 | `/vehicle-info?...`（参数在 P05 旧调用点核对后定）；同上 | 待 P39 定参数 |
 | 首页落点 | 登录后优先 `/dashboard`（P34 合并首页）；无权限进首个有权限且可用业务页；无可用页明确反馈 | 已确认（D29） |
 | 暂缓页 | 统一「本期暂未迁移」说明组件，保留合法上下文与原权限 | 已确认（D07） |
 
@@ -105,3 +112,4 @@
 | 2026-09-17 | 权限与路由 | T00.4 落地：权限码常量（PERM/PERM_BUTTON/ROOT_ONLY_CODES，码值与旧系统逐一核实对齐）、权限纯函数与路由访问核心（超管短路/祖先填充/落点解析/回跳校验）、定义树 meta.perm 挂码 + migrationPending/public 标记、认证+权限守卫覆盖独立页、目录与首页动态落点、迁移过渡占位（MigrationPending，pending 页不加载页面代码）、DockMenu 权限剪枝、affix 播种按权限过滤、usePermission 按钮码 hook、LoginForm 落点接入；连带修复 T00.3 缺陷：store migrate 无条件重置（持久化恢复失效）与 authBridge 监听键名缺 persist: 前缀（多窗口退出同步失效） | T00（本轮 run） | 全部路由 meta 增加 perm 字段（页面任务按钮权限经 usePermission 消费 PERM_BUTTON）；页面任务完成后由统筹移除本页 migrationPending 标记（definitions.tsx 单点）；菜单消费者必须传访问上下文（buildMenuRoutes 签名变更，DockMenu 已适配） |
 | 2026-09-17 | 表格接入形态 | 用户决策：**禁止对 apex-table-react 二次封装**（撤销 T00.5 首轮薄适配组件方案，相关代码已全部撤回）；页面直接使用 ApexTableReact 公开 API（组件/locale/官方列偏好适配器/插槽/ref）；公共设施仅限五语言 locale 包（包内仅内置 zhCN）、主题 `--apex-table-*`→`--app-*` 变量映射、pageIndex→pageNo 换算与行 ID 纯函数、不包裹表格的独立状态块；规格 6.1 与 TASKS DoD#4/T00.5/§2.2 已同步修订 | 用户（本轮 run） | 全部表格页面任务直接 import apex-table-react 并自行组装 props；公共资源的具体文件位置与形状在 T00.5 交付时登记 |
 | 2026-09-17 | 表格公共资源落地 | T00.5 交付：五语言 ApexLocale 包（`src/i18n/locales/apexTable/` + `resolveApexLocale`/`useApexLocale`）、主题映射（globals.css `:root .apex-table`，亮暗成对）、分页换算 `toBackendPage`、行 ID `stringFieldRowId`、列偏好约定 `createTableColumnPreferences`/`useColumnPreferences`、统一状态块 `StateBlock`（noPermission/gap/offline）；公开 API 核验（虚拟化/展开/编辑/双 ref）经类型探针全量组装验证后删除探针 | T00（本轮 run） | P03/P05 起全部表格页按 contracts.md 第 3 节约定组装：`useApexLocale()` 供 locale、`toBackendPage` 供 request 分页、`stringFieldRowId` 供 getRowId、`useColumnPreferences` 供列偏好、StateBlock 供失败/无权限/缺口区域；zh-TW/ja/ko 的 StateBlock 文案回退简中已登记 i18n-missing.md，T00.8 补齐 |
+| 2026-09-17 | 页签/草稿/轮询/传输契约落地 | T00.6 交付：`tabsSlice` 增加 dirty 标记（LRU 豁免脏页签）、`useTabDirtyGuard`（页面草稿登记）、`useTabActionGuard`（关闭/刷新/批量关闭/退出登录统一确认，三档传输提示策略）、`beforeunload` 脏页签离开提示、`useVisiblePolling` + `polling.constants`（可见串行轮询/退避集中配置）、`transferManager` + `useTransfers` + `TransferWatcher`（独立传输生命周期/关页提示/孤儿完成消息/会话结束清理）、`openStandaloneWindow`（独立窗口工具）；`RequestScopeValue` 增加 `scopeKey` 字段 | T00（本轮 run） | 实时页面（P34/P05/P39/P40）轮询一律消费 `useVisiblePolling`，禁止私设定时器；文件传输页面（P08/P09/P25/P26/P30 等）一律经 `beginTransfer` 登记并把句柄 signal 传给请求层；全部写草稿页面自 P03 起消费 `useTabDirtyGuard`；消费者注意：`RequestScopeValue` 新增 scopeKey（现有 usePageActive/usePageRequest 消费不受影响） |

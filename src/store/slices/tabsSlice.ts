@@ -4,6 +4,7 @@
  * 约定：
  * - tab.key 为规范化地址，同一 key 只有一个缓存实例
  * - cached=false 表示页签仍在但 Activity 实例被 LRU 淘汰，再激活时重新挂载
+ * - dirty 标记存在未保存修改：脏页签不被 LRU 淘汰，关闭/刷新前由 UI 层统一确认（T00.6）
  * - revision 递增用于「刷新当前页签」：外层以新 React key 重建并取消旧 scope 请求
  * - affix 常驻页签由布局层挂载时从路由定义播种（cached=false，首次访问才挂载实例），
  *   刷新浏览器与会话重置后自动恢复，无需持久化
@@ -37,6 +38,14 @@ export interface TabEntry {
   revision: number
   /** LRU 激活序号，越大越新 */
   activatedSeq: number
+  /**
+   * 页签是否存在未保存修改（T00.6 草稿保护，规格 8.1）。
+   * 脏页签不被 LRU 淘汰；关闭/刷新/批量关闭前由 UI 层统一确认。
+   * 草稿数据本身仍留在页面组件内存中，本标记只是跨页签的元数据。
+   */
+  dirty: boolean
+  /** 脏状态说明（如「创建表单」），用于关闭确认对话框列出受影响对象 */
+  dirtyLabel?: string
 }
 
 export interface TabSyncPayload {
@@ -61,13 +70,6 @@ export interface AffixTabSeedInput {
   key: string
   routeId: string
   pathname: string
-}
-
-interface TabsState {
-  tabs: TabEntry[]
-  activeTabKey: string | null
-  /** 全局递增的激活序号 */
-  seq: number
 }
 
 const initialState: TabsState = {
@@ -100,6 +102,8 @@ const tabsSlice = createSlice({
           location: { pathname: seed.pathname, search: '', hash: '', key: 'seed' },
           revision: 0,
           activatedSeq: 0,
+          // 常驻页签播种时必然没有草稿（会话重置后内存已清空）
+          dirty: false,
         })
       }
     },
@@ -125,19 +129,35 @@ const tabsSlice = createSlice({
           location: action.payload.location,
           revision: 0,
           activatedSeq: state.seq,
+          // 新开页签必然没有草稿（无修改即非脏）
+          dirty: false,
         })
       }
       state.activeTabKey = tabKey
 
-      // LRU：仅统计非 affix 缓存实例，当前激活页永不被淘汰
+      // LRU：仅统计非 affix 缓存实例，当前激活页永不被淘汰。
+      // 脏页签（有未保存修改）一律豁免：草稿不能被静默丢弃（规格 8.1），
+      // 宁可临时超出缓存上限，也不淘汰用户正在编辑的页签。
       if (cacheable) {
         const cachedNonAffix = state.tabs
-          .filter((tab) => tab.cached && !tab.affix && tab.key !== tabKey)
+          .filter((tab) => tab.cached && !tab.affix && !tab.dirty && tab.key !== tabKey)
           .sort((a, b) => a.activatedSeq - b.activatedSeq)
         for (const victim of cachedNonAffix.slice(0, Math.max(0, cachedNonAffix.length - (PAGE_CACHE_MAX_ENTRIES - 1)))) {
           victim.cached = false
         }
       }
+    },
+    /**
+     * 页签脏状态登记（T00.6）：页面草稿状态变化时由 useTabDirtyGuard 派发。
+     * 未命中页签时静默忽略——无页签实例的页面（noCache/独立窗口）没有页签可标记，
+     * 其草稿随导航整体销毁，无需跨组件登记。
+     */
+    tabDirtyMarked(state, action: PayloadAction<{ key: string; dirty: boolean; label?: string }>) {
+      const tab = state.tabs.find((item) => item.key === action.payload.key)
+      if (!tab) return
+      tab.dirty = action.payload.dirty
+      // 保存完成后清除说明，避免残留上一次的脏对象描述
+      tab.dirtyLabel = action.payload.dirty ? action.payload.label : undefined
     },
     /** 关闭单个页签；若关闭的是当前页，优先激活右侧、其次左侧 */
     tabClosed(state, action: PayloadAction<string>) {
@@ -203,6 +223,7 @@ const tabsSlice = createSlice({
 export const {
   affixTabsSeeded,
   tabSynced,
+  tabDirtyMarked,
   tabClosed,
   otherTabsClosed,
   leftTabsClosed,

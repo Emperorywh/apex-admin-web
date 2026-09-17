@@ -6,7 +6,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { useTranslation } from 'react-i18next'
-import { App, Dropdown, Popover, type MenuProps } from 'antd'
+import { Dropdown, Popover, type MenuProps } from 'antd'
 import dayjs from 'dayjs'
 import { Languages, LogOut, Monitor, Moon, Sun, UserRoundCog, Wifi } from 'lucide-react'
 import { ROUTE_PATHS } from '@/router/definitions'
@@ -15,6 +15,7 @@ import { getRequestHealth, subscribeRequestHealth, type RequestHealth } from '@/
 import { useAppDispatch } from '@/hooks/useAppDispatch'
 import { useAppSelector } from '@/hooks/useAppSelector'
 import { useAuth } from '@/hooks/useAuth'
+import { useTabActionGuard } from '@/hooks/useTabActionGuard'
 import { sessionExpired } from '@/store/slices/authSlice'
 import { localeChanged, themeChanged, type AppTheme } from '@/store/slices/settingsSlice'
 import type { AppLanguage } from '@/i18n/i18n'
@@ -173,7 +174,8 @@ function AvatarMenu() {
   const roles = useAppSelector((state) => state.auth.roles)
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
-  const { modal } = App.useApp()
+  const guardTabAction = useTabActionGuard()
+  const tabs = useAppSelector((state) => state.tabs.tabs)
 
   const items: MenuProps['items'] = [
     {
@@ -196,14 +198,19 @@ function AvatarMenu() {
     if (key === 'profile') {
       navigate(ROUTE_PATHS.profile)
     } else if (key === 'logout') {
-      modal.confirm({
+      /* 退出登录也走统一确认（T00.6）：退出销毁全部页签草稿并本机终止传输，
+         有脏页签或在途传输时列出影响；确认后执行既有登出流程 */
+      guardTabAction({
         title: t('确认退出登录？'),
-        content: t('退出后需要重新输入账号密码。'),
-        okText: t('退出'),
-        cancelText: t('取消'),
-        onOk: async () => {
-          await logout()
-          dispatch(sessionExpired())
+        actionLabel: t('退出登录'),
+        affectedKeys: tabs.map((tab) => tab.key),
+        transferPolicy: 'terminate',
+        extraContent: <p>{t('退出后需要重新输入账号密码。')}</p>,
+        action: () => {
+          void (async () => {
+            await logout()
+            dispatch(sessionExpired())
+          })()
         },
       })
     }

@@ -44,8 +44,8 @@ export function RequestScopeProvider({ scopeKey, revision, isActive, children }:
   }, [controller])
 
   const value = useMemo<RequestScopeValue>(
-    () => ({ signal: controller.signal, revision, isActive }),
-    [controller, revision, isActive],
+    () => ({ scopeKey, signal: controller.signal, revision, isActive }),
+    [scopeKey, controller, revision, isActive],
   )
 
   return (

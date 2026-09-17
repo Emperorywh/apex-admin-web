@@ -4,6 +4,8 @@
  * - 在受保护根路由只挂载一次；不渲染 <Outlet/>，业务页全部经 PageCacheHost 输出
  * - 根据 Data Router location/matches 同步页签
  * - 页签状态变化后的激活跳转、会话失效跳转与 document.title 均在此收敛
+ * - 存在脏页签时启用浏览器离开提示（刷新/关闭，规格 8.1）；
+ *   TransferWatcher 提供孤儿传输完成提示与会话结束的传输清理（T00.6）
  */
 
 import { useEffect, useMemo, useRef } from 'react'
@@ -23,6 +25,7 @@ import { normalizeSearchString } from '@/utils/url'
 import { DockMenu } from '@/layouts/BasicLayout/components/DockMenu/DockMenu'
 import { Header } from '@/layouts/BasicLayout/components/Header/Header'
 import { PageCacheHost } from '@/layouts/BasicLayout/components/PageCacheHost/PageCacheHost'
+import { TransferWatcher } from '@/layouts/BasicLayout/components/TransferWatcher/TransferWatcher'
 import styles from '@/layouts/BasicLayout/BasicLayout.module.css'
 
 interface ActiveLeaf {
@@ -120,6 +123,21 @@ export function BasicLayout() {
     }
   }, [isAuthenticated, navigate, location.pathname, location.search])
 
+  /* 浏览器离开提示（规格 8.1）：任一页签存在未保存修改时，刷新/关闭前由浏览器
+     弹出原生确认。只提示、不拦截具体按钮——浏览器终止等非正常退出本就不承诺
+     恢复草稿；无脏页签时彻底移除监听，避免影响正常导航。 */
+  const hasDirtyTabs = useMemo(() => tabsState.tabs.some((tab) => tab.dirty), [tabsState.tabs])
+  useEffect(() => {
+    if (!hasDirtyTabs) return
+    const handler = (event: BeforeUnloadEvent) => {
+      // 现代浏览器忽略自定义文案，仅展示统一离开确认
+      event.preventDefault()
+      event.returnValue = ''
+    }
+    window.addEventListener('beforeunload', handler)
+    return () => window.removeEventListener('beforeunload', handler)
+  }, [hasDirtyTabs])
+
   /* document.title 跟随当前激活页签 */
   const activeTitle = activeTab ? findRouteMeta(activeTab.routeId)?.title : leaf?.meta.title
   useEffect(() => {
@@ -131,6 +149,8 @@ export function BasicLayout() {
   return (
     <div className={styles.shell}>
       <GlobalProgress />
+      {/* 传输观察者：不渲染 UI，只做孤儿传输提示与会话结束清理 */}
+      <TransferWatcher />
       <Header />
       <main className={styles.workspace}>
         <PageCacheHost

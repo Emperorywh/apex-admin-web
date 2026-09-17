@@ -1,7 +1,7 @@
 {
   "版本说明": "调度系统迁移串行调度状态。由定时任务每小时触发一次，每次最多推进一个任务；写入必须整体原子替换。",
-  "最近更新时间": "2026-09-17T07:39:44.375Z",
-  "当前运行标识": "run-20260917-151640-9160（本轮已结束，锁已释放）",
+  "最近更新时间": "2026-09-17T08:35:00.000Z",
+  "当前运行标识": "run-20260917-154343-9436（本轮已结束，锁已释放）",
   "锁": "docs/migration/.lock（mkdir 原子目录锁，内含 lock.json）",
   "工作目录": "C:\\code\\apex-admin-web",
   "分支": "apple-rxx",
@@ -451,24 +451,23 @@
   "当前任务": {
     "任务ID": "T00",
     "状态": "进行中",
-    "当前里程碑": "T00.6 页签与传输（下一轮起点）",
+    "当前里程碑": "T00.7 共享业务能力（下一轮起点）",
     "本轮已完成内容": [
-      "T00.5 五语言 ApexLocale 包：en-US/zh-TW/ja-JP/ko-KR 完整文案（58 key + 6 格式化函数，ApexLocale 类型强制全量）；resolveApexLocale 纯函数（zh-CN 复用包内 zhCN 不复制第二份，未知语言回退简中）+ useApexLocale hook（随 i18next 语言联动）",
-      "T00.5 主题变量映射：globals.css :root .apex-table 把 --apex-table-* 全量接到 --app-* 令牌（亮暗随 data-theme 同帧切换；暗色 pinned-shadow 深色投影）；特异性高于包默认防懒加载反超；弹层 dialog 自带 .apex-table class 映射同步生效",
-      "T00.5 分页换算纯函数 toBackendPage（零基 pageIndex→一基 pageNo，非法入参抛错）与行 ID 工厂 stringFieldRowId（空值/不安全整数抛错，G10 精度纪律）",
-      "T00.5 列偏好官方适配器接入约定：createTableColumnPreferences（namespace/tenantId/schemaVersion 统一，身份四段隔离）+ useColumnPreferences hook（会话 userId、卸载 flush+dispose、StrictMode 安全）；页面接线四步写入 JSDoc",
-      "T00.5 统一状态块 StateBlock（noPermission/gap/offline 三语义，不包裹表格，offline 仅显式重试）；en-US 文案交付，zh-TW/ja/ko 简中回退登记 i18n-missing.md",
-      "T00.5 公开 API 核验（虚拟化/展开/编辑/双 ref/适配器 load）：类型探针以页面组装方式全量通过 typecheck 后删除；捕获并修复语言包缺 resetLayout/clearSelection、ref 与 tableRef 双 prop 误用两处认知偏差",
-      "T00.5 验证：lint（167 文件 0 警告）/typecheck/check:structure（165 文件）/build 四项全部通过"
+      "T00.6 脏状态保护：TabEntry 增加 dirty/dirtyLabel + tabDirtyMarked reducer；useTabDirtyGuard hook（页面草稿登记、卸载自动清除）；LRU 淘汰跳过脏页签（宁可超限不丢草稿）；顺带清理 tabsSlice 重复 TabsState 接口死代码",
+      "T00.6 统一动作确认：useTabActionGuard（关闭/刷新/关闭其他/左侧/右侧/全部、退出登录全部经统一确认，批量动作按真实移除范围计算）；传输提示三档策略（none/continue-after-close/terminate）；Header 登出复用同一 hook",
+      "T00.6 beforeunload：BasicLayout 存在脏页签时挂浏览器离开提示，无脏不挂；对照实验验证（置脏刷新被拦、清脏正常重载）",
+      "T00.6 可见串行轮询：useVisiblePolling（激活+可见才刷新、完成后约 5 秒串行、重新可见即查、失败 ×2 退避至 60s、取消静默、后台保快照）+ polling.constants 集中配置（5s/×2/60s）",
+      "T00.6 独立传输生命周期：transferManager 模块单例（独立 AbortController、真实进度、processing 阶段、aborted=仅本机终止语义）+ useTransfers 订阅 + TransferWatcher（孤儿传输终态一次性消息、会话结束终止并清空传输记录；不新增全局任务中心）",
+      "T00.6 实体页签与独立窗口：tab key 含规范化 search 的实体隔离机制实证；openStandaloneWindow 工具（站内校验、实体窗口命名、opener 切断）+ 布局外路由独立窗口形态守卫实证",
+      "T00.6 验证：lint（176 文件 0 警告）/typecheck/check:structure（174 文件）/build 四项全部通过；真实浏览器 9 组机制场景实证（实体页签隔离/脏关闭确认/脏+传输确认/关页传输继续/孤儿完成提示/beforeunload 对照/LRU 豁免双重复测/独立窗口守卫/登出清理链路）"
     ],
     "未完成步骤": [
-      "T00.6 页签与传输：脏状态/关闭刷新/LRU 保护；约 5 秒可见串行轮询和上限退避；普通查询与传输分离；传输关闭提示/状态追踪；实体页签和独立窗口",
-      "T00.7 共享业务能力（时间/时区展示工具消费 DEPLOY_TIMEZONE；地图只读/选点；选项契约登记）",
-      "T00.8 五语言基座（含补齐 StateBlock/表格公共文案 zh-TW/ja/ko 译文）",
+      "T00.7 共享业务能力：时间/时区展示工具（消费 DEPLOY_TIMEZONE）；地图只读/缩放平移/选点高亮回填；共享只读选项 operation 逐项核对登记（contracts.md 第 5 节）；控制确认/未知/批量反馈契约；统计空值/单位基础工具",
+      "T00.8 五语言基座（含补齐 StateBlock/表格公共文案/T00.6 页签传输文案的 zh-TW/ja/ko 译文）",
       "T00.9 冻结交接"
     ],
-    "下一步": "T00.6 页签与传输：Activity 脏页签保护（LRU 不淘汰脏页）、关闭/刷新/批量关闭统一检查、约 5 秒可见串行轮询与上限退避、传输独立生命周期（不依赖页面 effect、关页提示）、实体页签按 ID 隔离",
-    "阻塞原因": "部分受阻（不阻塞 T00.6 机制开发）：真实登录成功路径、带令牌授权只读联验、root/administrator 真实身份验证需测试账号凭据（外部条件，不猜口令）；已登记 G03，B1 放行（P01）前必须补验。表格主题/分页/列偏好的真实渲染联验随 P03/P05 既有入口（B2a 页面任务）"
+    "下一步": "T00.7 共享业务能力：先做时间/时区展示工具（DEPLOY_TIMEZONE 唯一定义点 src/constants/datetime.ts）与共享只读选项契约登记（逐项核对 OpenAPI），再落地地图只读/选点组件",
+    "阻塞原因": "部分受阻（不阻塞 T00.7 机制开发）：真实登录成功路径、带令牌授权只读联验、root/administrator 真实身份验证需测试账号凭据（外部条件，不猜口令）；已登记 G03，B1 放行（P01）前必须补验。useVisiblePolling 运行时联验随首个实时页（P34/P05/P39/P40）；传输真实文件通道随 P08/P09/P25 等页面任务"
   },
   "验证结果": [
     {
@@ -555,7 +554,22 @@
       "命令": "真实只读列表 Apex request 联验（T00.5）",
       "结果": "受阻：需登录凭据（G03）且按放行证据要求落在 P03/P05 既有入口；机制交付完成，联验随 B2a",
       "日期": "2026-09-17"
+    },
+    {
+      "命令": "pnpm lint / typecheck / check:structure / build（T00.6）",
+      "结果": "全部通过（176 文件 lint 0 警告 0 错误；174 源文件结构检查；tsc+vite build 成功）",
+      "日期": "2026-09-17"
+    },
+    {
+      "命令": "真实浏览器 9 组机制场景（T00.6：实体页签隔离/脏关闭确认/脏+传输确认/关页传输继续+孤儿提示/beforeunload 对照/LRU 豁免双重复测/独立窗口守卫/登出清理）",
+      "结果": "全部通过；以真实模块/reducer/管理器 API 派发验证（无 mock 无测试代码入库）；root 注入会话经登出链路清除，浏览器页签已关闭",
+      "日期": "2026-09-17"
+    },
+    {
+      "命令": "useVisiblePolling 运行时联验（T00.6）",
+      "结果": "待首个实时页消费者（P34/P05/P39/P40）；机制交付轮无实时页面可挂载，不冒充现场验收",
+      "日期": "2026-09-17"
     }
   ],
-  "证据位置": "docs/migration/tasks/T00.md（T00.5 交付物与验证证据表）、docs/migration/contracts.md（第 3 节表格契约落地 + 变更日志）、docs/migration/i18n-missing.md（状态块文案回退登记）"
+  "证据位置": "docs/migration/tasks/T00.md（T00.6 交付物与验证证据表）、docs/migration/contracts.md（第 4 节页签/草稿/轮询/传输契约 + 第 6 节 + 变更日志）、docs/migration/i18n-missing.md（T00.6 文案回退登记）"
 }

@@ -76,4 +76,20 @@ export default {
   '无法获取数据，请检查网络或服务状态后重试':
     'Data could not be retrieved. Check the network or service status and retry.',
   '重新加载': 'Reload',
+  /* 页签动作统一确认与传输状态（T00.6：脏页签保护 / 关闭与刷新检查 / 传输提示） */
+  '关闭当前页签': 'Close this tab',
+  '确认继续{{action}}？': 'Continue with {{action}}?',
+  '继续': 'Continue',
+  '确认刷新当前页签？': 'Refresh this tab?',
+  '刷新页签': 'Refresh tab',
+  '以下页签存在未保存的修改，继续操作后将丢失：':
+    'The following tabs have unsaved changes that will be lost if you continue:',
+  '这些页签仍有正在进行的传输：关闭后传输会继续，完成后将以消息提示结果。':
+    'These tabs still have transfers in progress: transfers continue after closing, and a message will report the result.',
+  '进行中的传输将被本机终止，不保证服务端已停止处理。':
+    'Transfers in progress will be terminated locally. The server may still be processing them.',
+  '登录已结束，传输已在本机终止': 'Session ended; transfers were terminated locally',
+  '"{{name}}" 传输完成': '"{{name}}" transfer completed',
+  '"{{name}}" 传输失败：{{reason}}': '"{{name}}" transfer failed: {{reason}}',
+  '"{{name}}" 传输已终止：{{reason}}': '"{{name}}" transfer aborted: {{reason}}',
 } as const
