@@ -40,7 +40,7 @@
 
 | 项 | 契约 | 状态 |
 | --- | --- | --- |
-| 组件 | 官方 npm `apex-table-react@0.1.0`（T00.2 已安装并提交锁文件；类型探针验证 React 19/TS 6 兼容）；无 antd Table/自绘 table | 已安装（A07）；运行时适配 T00.5 |
+| 组件 | 官方 npm `apex-table-react@0.1.0`（T00.2 已安装并提交锁文件；类型探针验证 React 19/TS 6 兼容）；无 antd Table/自绘 table；**页面直接使用包公开 API，禁止二次封装**（用户决策 2026-09-17，规格 6.1 修订） | 已安装（A07）；公共资源与约定 T00.5 |
 | request 模式 | 零基 pageIndex → 后端 pageNo；返回 `data/rowCount` | 已确认（规格 6.2） |
 | data 模式 | 仅真实完整小集合与草稿行 | 已确认（规格 6.2） |
 | 行 ID | 稳定业务标识；嵌套行区分作用域 | 已确认 |
@@ -99,3 +99,4 @@
 | 2026-09-17 | 请求基础路径/代理/时区/表格组件 | `DEFAULT_API_BASE_URL` `/api/v1`→`/fms/v1`；dev 代理默认目标 `10.11.2.67:8888`、`/fms` 不改写；新增 `DEPLOY_TIMEZONE`（`VITE_DEPLOY_TIMEZONE`）；安装 `apex-table-react@0.1.0` | T00（T00.2 run） | 现有模板 service 的相对请求路径随之指向 `/fms/v1`；模板旧协议（envelope/错误形状）仍待 T00.3 重写，期间模板页面联调不可用属预期 |
 | 2026-09-17 | 请求协议/认证/会话 | T00.3 落地：Result 解包（code=200）、业务码常量（1000000/1001000/1000010）、ApiError 带 businessCode、文件通道透传、Bearer + Accept-Language 头、移除 refresh/me/logout(旧路径) 假定、会话持久化（auth schema v1→v2）、authBridge 令牌同步与多窗口退出、profile 虚构接口删除；`DEFAULT_PAGE_SIZE` 保留为通用默认；安装 spark-md5@3.0.2 | T00（本轮 run） | `api` 调用方语义变化：返回值为 Result.data（非原始 body）、code≠200 抛 `ApiRequestError`；auth 会话消费方（Header/Profile/useLogin/guard）已同步适配；删除 `userPatched`/`loadSession`/`MeResponseDto`/`API_ERROR_CODES` 等模板导出；`EntityStatus`/`PageQuery`/`PageResult` 保留为模板遗留类型（已标注不得在新代码引用，随 P03/P31/P32/P34 替换后删除） |
 | 2026-09-17 | 权限与路由 | T00.4 落地：权限码常量（PERM/PERM_BUTTON/ROOT_ONLY_CODES，码值与旧系统逐一核实对齐）、权限纯函数与路由访问核心（超管短路/祖先填充/落点解析/回跳校验）、定义树 meta.perm 挂码 + migrationPending/public 标记、认证+权限守卫覆盖独立页、目录与首页动态落点、迁移过渡占位（MigrationPending，pending 页不加载页面代码）、DockMenu 权限剪枝、affix 播种按权限过滤、usePermission 按钮码 hook、LoginForm 落点接入；连带修复 T00.3 缺陷：store migrate 无条件重置（持久化恢复失效）与 authBridge 监听键名缺 persist: 前缀（多窗口退出同步失效） | T00（本轮 run） | 全部路由 meta 增加 perm 字段（页面任务按钮权限经 usePermission 消费 PERM_BUTTON）；页面任务完成后由统筹移除本页 migrationPending 标记（definitions.tsx 单点）；菜单消费者必须传访问上下文（buildMenuRoutes 签名变更，DockMenu 已适配） |
+| 2026-09-17 | 表格接入形态 | 用户决策：**禁止对 apex-table-react 二次封装**（撤销 T00.5 首轮薄适配组件方案，相关代码已全部撤回）；页面直接使用 ApexTableReact 公开 API（组件/locale/官方列偏好适配器/插槽/ref）；公共设施仅限五语言 locale 包（包内仅内置 zhCN）、主题 `--apex-table-*`→`--app-*` 变量映射、pageIndex→pageNo 换算与行 ID 纯函数、不包裹表格的独立状态块；规格 6.1 与 TASKS DoD#4/T00.5/§2.2 已同步修订 | 用户（本轮 run） | 全部表格页面任务直接 import apex-table-react 并自行组装 props；公共资源的具体文件位置与形状在 T00.5 交付时登记 |
