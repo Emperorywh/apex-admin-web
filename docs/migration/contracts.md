@@ -36,17 +36,21 @@
 | 权限拒绝 | 阻止操作 + 提示重新登录；不伪造刷新 | 已确认（规格 5.9）；页面接入随各页任务 |
 | 权限拒绝 | 阻止操作 + 提示重新登录；不伪造刷新 | 已确认（规格 5.9）；页面接入随各页任务 |
 
-## 3. 表格契约（owner：T00，T00.5 落地）
+## 3. 表格契约（owner：T00，T00.5 已落地）
 
 | 项 | 契约 | 状态 |
 | --- | --- | --- |
-| 组件 | 官方 npm `apex-table-react@0.1.0`（T00.2 已安装并提交锁文件；类型探针验证 React 19/TS 6 兼容）；无 antd Table/自绘 table；**页面直接使用包公开 API，禁止二次封装**（用户决策 2026-09-17，规格 6.1 修订） | 已安装（A07）；公共资源与约定 T00.5 |
-| request 模式 | 零基 pageIndex → 后端 pageNo；返回 `data/rowCount` | 已确认（规格 6.2） |
-| data 模式 | 仅真实完整小集合与草稿行 | 已确认（规格 6.2） |
-| 行 ID | 稳定业务标识；嵌套行区分作用域 | 已确认 |
-| 选择 | 当前页选择；翻页/筛选/失权清理 | 已确认 |
-| 列偏好 | 按服务实例/用户/tableId/版本隔离，可重置 | 已确认 |
-| 排序 | 仅真实支持的能力 | 已确认（G09） |
+| 组件 | 官方 npm `apex-table-react@0.1.0`（T00.2 已安装并提交锁文件）；无 antd Table/自绘 table；**页面直接使用包公开 API，禁止二次封装**（用户决策 2026-09-17，规格 6.1 修订） | 已安装（A07）；公共资源与约定 T00.5 落地 |
+| 五语言 locale 包 | 包内置仅 zhCN；en-US/zh-TW/ja-JP/ko-KR 完整 ApexLocale 交付于 `src/i18n/locales/apexTable/`（简中不复制第二份，直接引用包内 zhCN）；`resolveApexLocale(lang)` 纯函数（前缀匹配、未知语言回退简中）+ `useApexLocale()` hook（随 i18next 语言联动重渲染）；ApexLocale 类型强制全 key 覆盖（探针曾捕获缺 key，类型即护栏） | 已落地（T00.5）；实际渲染效果随 P03/P05 首个真实表格联验 |
+| 主题变量映射 | globals.css `:root .apex-table` 把 `--apex-table-*` 全量接到 `--app-*` 令牌（bg/表头/文本/强调/hover/选中/边框/圆角/字体/字号/内边距，亮暗随 data-theme 同帧切换；暗色另有 pinned-shadow 深色投影）；特异性高于包默认值，防懒加载包 CSS 反超；单表微调走组件 style prop，不改映射 | 已落地（T00.5）；亮暗视觉待 P03/P05 联验 |
+| request 模式 | 零基 pageIndex → 后端 pageNo：`toBackendPage(pageIndex, pageSize)`（`src/utils/table/tablePaging.ts`，非法入参抛错）；返回 `{data, rowCount}`；未知总数不填 0（DoD 5）；组件内建取消（request 回调 signal）/错误重试/防乱序 | 换算函数已落地（T00.5）；真实接口分页联验随 P03/P05 |
+| data 模式 | 仅真实完整小集合与草稿行（规格 6.2）；`editable`/`onDataChange` 仅 data 模式可用（包类型约束） | 已确认（T00.5 核验） |
+| 行 ID | `stringFieldRowId(field)`（`src/utils/table/rowId.ts`）：字段空值抛错、不安全整数（int64 精度丢失，G10）抛错提示改 DTO；禁止位置性 ID | 已落地（T00.5） |
+| 列偏好 | 官方适配器 `apex-table-react/adapters/local-column-preferences` 接入约定：`createTableColumnPreferences({tableId, userId})`（`src/utils/table/columnPreferences.ts`，namespace='apex-admin'、tenantId='default'、schemaVersion 默认 '1'，列结构变更须提升）+ `useColumnPreferences(tableId)` hook（会话取 userId、卸载 flush+dispose）；存储 key 四段隔离满足 DoD 5；页面接线四步见文件头 JSDoc | 已落地（T00.5）；localStorage 持久化行为待联验 |
+| 公开 API 核验 | 虚拟化 `virtualization: 'auto'\|boolean\|{overscan}`（分页 >200 行自动开启）；行展开 `expandable`（expandedRowRender/受控 keys/兼容虚拟滚动）；单元格编辑 `meta.apex.editor`（10 种 antd 控件）+ `editorConfig`；双 ref：`ref`=ApexTableRef（focus/scrollToRow/reload）、`tableRef`=ApexTableInstance（TanStack 实例方法）；弹层默认渲染在表格 DOM 内（主题变量继承安全），可用 getPopupContainer 重定向 | 已核验（T00.5，类型探针全量组装通过后删除） |
+| 统一状态块 | `src/components/StateBlock/StateBlock.tsx`：`noPermission`（无权限）/`gap`（缺口禁用+原因）/`offline`（失败清区+显式重试）三语义，与「真实空数据」区分；独立组件不包裹表格；文案走 common 命名空间（zh/en 已交付，zh-TW/ja/ko 回退简中已登记 i18n-missing.md） | 已落地（T00.5） |
+| 选择 | 当前页选择；翻页/筛选/失权清理（包内建当前页语义，跨页保留由业务决定——本项目按 DoD 5 不跨页保留） | 已确认（规格 6.2；页面任务消费） |
+| 排序 | 仅真实支持的能力（G09）：不发虚构 sort | 已确认（G09） |
 
 ## 4. 页签/草稿/轮询/传输契约（owner：T00，T00.6 落地）
 
@@ -100,3 +104,4 @@
 | 2026-09-17 | 请求协议/认证/会话 | T00.3 落地：Result 解包（code=200）、业务码常量（1000000/1001000/1000010）、ApiError 带 businessCode、文件通道透传、Bearer + Accept-Language 头、移除 refresh/me/logout(旧路径) 假定、会话持久化（auth schema v1→v2）、authBridge 令牌同步与多窗口退出、profile 虚构接口删除；`DEFAULT_PAGE_SIZE` 保留为通用默认；安装 spark-md5@3.0.2 | T00（本轮 run） | `api` 调用方语义变化：返回值为 Result.data（非原始 body）、code≠200 抛 `ApiRequestError`；auth 会话消费方（Header/Profile/useLogin/guard）已同步适配；删除 `userPatched`/`loadSession`/`MeResponseDto`/`API_ERROR_CODES` 等模板导出；`EntityStatus`/`PageQuery`/`PageResult` 保留为模板遗留类型（已标注不得在新代码引用，随 P03/P31/P32/P34 替换后删除） |
 | 2026-09-17 | 权限与路由 | T00.4 落地：权限码常量（PERM/PERM_BUTTON/ROOT_ONLY_CODES，码值与旧系统逐一核实对齐）、权限纯函数与路由访问核心（超管短路/祖先填充/落点解析/回跳校验）、定义树 meta.perm 挂码 + migrationPending/public 标记、认证+权限守卫覆盖独立页、目录与首页动态落点、迁移过渡占位（MigrationPending，pending 页不加载页面代码）、DockMenu 权限剪枝、affix 播种按权限过滤、usePermission 按钮码 hook、LoginForm 落点接入；连带修复 T00.3 缺陷：store migrate 无条件重置（持久化恢复失效）与 authBridge 监听键名缺 persist: 前缀（多窗口退出同步失效） | T00（本轮 run） | 全部路由 meta 增加 perm 字段（页面任务按钮权限经 usePermission 消费 PERM_BUTTON）；页面任务完成后由统筹移除本页 migrationPending 标记（definitions.tsx 单点）；菜单消费者必须传访问上下文（buildMenuRoutes 签名变更，DockMenu 已适配） |
 | 2026-09-17 | 表格接入形态 | 用户决策：**禁止对 apex-table-react 二次封装**（撤销 T00.5 首轮薄适配组件方案，相关代码已全部撤回）；页面直接使用 ApexTableReact 公开 API（组件/locale/官方列偏好适配器/插槽/ref）；公共设施仅限五语言 locale 包（包内仅内置 zhCN）、主题 `--apex-table-*`→`--app-*` 变量映射、pageIndex→pageNo 换算与行 ID 纯函数、不包裹表格的独立状态块；规格 6.1 与 TASKS DoD#4/T00.5/§2.2 已同步修订 | 用户（本轮 run） | 全部表格页面任务直接 import apex-table-react 并自行组装 props；公共资源的具体文件位置与形状在 T00.5 交付时登记 |
+| 2026-09-17 | 表格公共资源落地 | T00.5 交付：五语言 ApexLocale 包（`src/i18n/locales/apexTable/` + `resolveApexLocale`/`useApexLocale`）、主题映射（globals.css `:root .apex-table`，亮暗成对）、分页换算 `toBackendPage`、行 ID `stringFieldRowId`、列偏好约定 `createTableColumnPreferences`/`useColumnPreferences`、统一状态块 `StateBlock`（noPermission/gap/offline）；公开 API 核验（虚拟化/展开/编辑/双 ref）经类型探针全量组装验证后删除探针 | T00（本轮 run） | P03/P05 起全部表格页按 contracts.md 第 3 节约定组装：`useApexLocale()` 供 locale、`toBackendPage` 供 request 分页、`stringFieldRowId` 供 getRowId、`useColumnPreferences` 供列偏好、StateBlock 供失败/无权限/缺口区域；zh-TW/ja/ko 的 StateBlock 文案回退简中已登记 i18n-missing.md，T00.8 补齐 |

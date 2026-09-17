@@ -65,4 +65,15 @@ export default {
   /* 迁移过渡占位（T00.4：未迁移页面统一呈现，不进入业务代码） */
   '该功能正在迁移中，迁移完成后开放使用':
     'This feature is being migrated and will be available once the migration completes.',
+  /* 统一状态块（T00.5 StateBlock：无权限/缺口/离线三类状态，区别于真实空数据） */
+  '暂无访问权限': 'No access permission',
+  '当前账号没有查看此内容的权限，请联系管理员开通':
+    'Your account does not have permission to view this content. Contact an administrator.',
+  '该功能暂不可用': 'This feature is currently unavailable',
+  '所需接口能力尚未就绪，相关操作已禁用':
+    'The required API capability is not ready yet. Related actions are disabled.',
+  '加载失败': 'Failed to load',
+  '无法获取数据，请检查网络或服务状态后重试':
+    'Data could not be retrieved. Check the network or service status and retry.',
+  '重新加载': 'Reload',
 } as const

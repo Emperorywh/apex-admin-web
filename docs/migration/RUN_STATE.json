@@ -1,7 +1,7 @@
 {
   "版本说明": "调度系统迁移串行调度状态。由定时任务每小时触发一次，每次最多推进一个任务；写入必须整体原子替换。",
-  "最近更新时间": "2026-09-17T07:12:34.429+08:00",
-  "当前运行标识": "run-20260917-143541-8893（本轮已结束，锁已释放）",
+  "最近更新时间": "2026-09-17T07:39:44.375Z",
+  "当前运行标识": "run-20260917-151640-9160（本轮已结束，锁已释放）",
   "锁": "docs/migration/.lock（mkdir 原子目录锁，内含 lock.json）",
   "工作目录": "C:\\code\\apex-admin-web",
   "分支": "apple-rxx",
@@ -451,29 +451,24 @@
   "当前任务": {
     "任务ID": "T00",
     "状态": "进行中",
-    "当前里程碑": "T00.5 Apex 与状态（下一轮起点；方案已按用户决策修订为直接使用包公开 API）",
+    "当前里程碑": "T00.6 页签与传输（下一轮起点）",
     "本轮已完成内容": [
-      "T00.1 基线及分工（前轮）：OpenAPI 核验、45 旧叶子映射、台账初始化、G01–G16 登记",
-      "T00.2 依赖与环境（前轮）：apex-table-react 安装、dev 代理指向 10.11.2.67:8888、部署时区、check:structure 落地",
-      "T00.3 请求与认证（前轮）：请求层重写、真实登录/登出、会话持久化、多窗口退出、真实接口实证",
-      "T00.4 权限与路由：权限码契约（PERM/PERM_BUTTON/ROOT_ONLY_CODES，与旧系统码值逐一核实对齐，含 mission-flow/mission-template 历史交叉注释）；权限纯函数与路由访问核心（超管短路、祖先填充、菜单码扁平化）",
-      "T00.4 路由守卫：定义树 meta.perm 全量挂码；认证+权限守卫覆盖独立页（order-info/vehicle-info/server-resource-monitor/authorize-ingress/no-permission 不再因 layout:false 公开）；目录 index 与首页动态落点；别名 redirect 先验权限",
-      "T00.4 迁移过渡机制：全部未完成页面任务的业务叶子标 migrationPending，渲染统一 MigrationPending 占位、不加载页面代码（order-record/dashboard 的 mock 页面组件退出运行路径）；DockMenu 权限剪枝、affix 播种按权限过滤；usePermission 按钮码 hook；LoginForm 落点/回跳校验接入",
-      "T00.4 连带修复 T00.3 缺陷：store migrate 无条件重置（持久化恢复失效，按版本分流修复）；authBridge 监听键名缺 persist: 前缀（多窗口退出同步失效）；落点候选排除公开/辅助页（root 落点循环跳登录，T00.4 联调发现即修复）",
-      "T00.4 验证：lint/typecheck/check:structure/build 四项通过；17 项真实浏览器场景实证（守卫/权限/落点/迁移占位/持久化恢复），测试数据已清理",
-      "用户决策修订（本轮）：禁止对 apex-table-react 做二次封装；首轮薄适配组件代码（src/components/ApexTable/）已按用户要求全部撤回，未合入任何提交",
-      "规格 6.1 修订：页面直接使用包公开 API（ApexTableReact/locale/官方列偏好适配器/插槽/ref）；公共设施仅限五语言 locale 包、主题变量映射、分页换算/行 ID 纯函数、不包裹表格的独立状态块",
-      "TASKS.md 同步修订：通用 DoD 第 4 条、T00.5 里程碑与放行证据、§2.2 共享文件表（共享表格→表格公共资源）；contracts.md 表格契约与变更日志、tasks/T00.md 下一轮入口同步更新"
+      "T00.5 五语言 ApexLocale 包：en-US/zh-TW/ja-JP/ko-KR 完整文案（58 key + 6 格式化函数，ApexLocale 类型强制全量）；resolveApexLocale 纯函数（zh-CN 复用包内 zhCN 不复制第二份，未知语言回退简中）+ useApexLocale hook（随 i18next 语言联动）",
+      "T00.5 主题变量映射：globals.css :root .apex-table 把 --apex-table-* 全量接到 --app-* 令牌（亮暗随 data-theme 同帧切换；暗色 pinned-shadow 深色投影）；特异性高于包默认防懒加载反超；弹层 dialog 自带 .apex-table class 映射同步生效",
+      "T00.5 分页换算纯函数 toBackendPage（零基 pageIndex→一基 pageNo，非法入参抛错）与行 ID 工厂 stringFieldRowId（空值/不安全整数抛错，G10 精度纪律）",
+      "T00.5 列偏好官方适配器接入约定：createTableColumnPreferences（namespace/tenantId/schemaVersion 统一，身份四段隔离）+ useColumnPreferences hook（会话 userId、卸载 flush+dispose、StrictMode 安全）；页面接线四步写入 JSDoc",
+      "T00.5 统一状态块 StateBlock（noPermission/gap/offline 三语义，不包裹表格，offline 仅显式重试）；en-US 文案交付，zh-TW/ja/ko 简中回退登记 i18n-missing.md",
+      "T00.5 公开 API 核验（虚拟化/展开/编辑/双 ref/适配器 load）：类型探针以页面组装方式全量通过 typecheck 后删除；捕获并修复语言包缺 resetLayout/clearSelection、ref 与 tableRef 双 prop 误用两处认知偏差",
+      "T00.5 验证：lint（167 文件 0 警告）/typecheck/check:structure（165 文件）/build 四项全部通过"
     ],
     "未完成步骤": [
-      "T00.5 Apex 与状态（不做组件二次封装）：五语言 locale 包（包内仅内置 zhCN）、主题 --apex-table-*→--app-* 变量映射、pageIndex→pageNo 换算与行 ID 纯函数、列偏好官方适配器接入约定、统一无权限/暂缓/缺口/离线/空态状态块；核验公开虚拟化/编辑/展开；真实只读列表验证落在 P03/P05 既有入口",
-      "T00.6 页签与传输",
+      "T00.6 页签与传输：脏状态/关闭刷新/LRU 保护；约 5 秒可见串行轮询和上限退避；普通查询与传输分离；传输关闭提示/状态追踪；实体页签和独立窗口",
       "T00.7 共享业务能力（时间/时区展示工具消费 DEPLOY_TIMEZONE；地图只读/选点；选项契约登记）",
-      "T00.8 五语言基座",
+      "T00.8 五语言基座（含补齐 StateBlock/表格公共文案 zh-TW/ja/ko 译文）",
       "T00.9 冻结交接"
     ],
-    "下一步": "T00.5 Apex 与状态：不做二次封装，页面直接使用 apex-table-react 公开 API；T00 交付五语言 locale 包、主题 CSS 变量映射、分页换算/行 ID 纯函数、统一状态块（不包裹表格），真实只读验证复用 P03/P05 既有入口，不新增演示页与假数据",
-    "阻塞原因": "部分受阻（不阻塞 T00.5 机制开发）：真实登录成功路径、带令牌授权只读联验、root/administrator 真实身份验证需测试账号凭据（外部条件，不猜口令）；已登记 G03，B1 放行（P01）前必须补验"
+    "下一步": "T00.6 页签与传输：Activity 脏页签保护（LRU 不淘汰脏页）、关闭/刷新/批量关闭统一检查、约 5 秒可见串行轮询与上限退避、传输独立生命周期（不依赖页面 effect、关页提示）、实体页签按 ID 隔离",
+    "阻塞原因": "部分受阻（不阻塞 T00.6 机制开发）：真实登录成功路径、带令牌授权只读联验、root/administrator 真实身份验证需测试账号凭据（外部条件，不猜口令）；已登记 G03，B1 放行（P01）前必须补验。表格主题/分页/列偏好的真实渲染联验随 P03/P05 既有入口（B2a 页面任务）"
   },
   "验证结果": [
     {
@@ -545,7 +540,22 @@
       "命令": "真实登录-权限端到端（真实账号菜单树/root 身份/1001000 行为）",
       "结果": "受阻：需测试账号凭据（G03；B1 放行前补验）",
       "日期": "2026-09-17"
+    },
+    {
+      "命令": "pnpm lint / typecheck / check:structure / build（T00.5）",
+      "结果": "全部通过（167 文件 lint 0 警告 0 错误；165 源文件结构检查；tsc+vite build 成功）",
+      "日期": "2026-09-17"
+    },
+    {
+      "命令": "类型探针：页面对接方式全量组装（request/分页换算/行 ID/locale/虚拟化/展开/列设置/双 ref/列偏好 load）",
+      "结果": "通过后删除；探针捕获语言包缺 key 与 ref 双 prop 误用并已修正——公开 API 兼容性实证",
+      "日期": "2026-09-17"
+    },
+    {
+      "命令": "真实只读列表 Apex request 联验（T00.5）",
+      "结果": "受阻：需登录凭据（G03）且按放行证据要求落在 P03/P05 既有入口；机制交付完成，联验随 B2a",
+      "日期": "2026-09-17"
     }
   ],
-  "证据位置": "docs/migration/tasks/T00.md（T00.4 交付物与 17 场景证据表）、docs/migration/contracts.md（第 2 节权限契约 + 变更日志）、docs/migration/baseline.md（特殊权限点）、docs/migration/gaps.md"
+  "证据位置": "docs/migration/tasks/T00.md（T00.5 交付物与验证证据表）、docs/migration/contracts.md（第 3 节表格契约落地 + 变更日志）、docs/migration/i18n-missing.md（状态块文案回退登记）"
 }
