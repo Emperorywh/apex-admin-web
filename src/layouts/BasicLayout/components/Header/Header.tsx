@@ -169,6 +169,8 @@ function ClockText() {
 function AvatarMenu() {
   const { t } = useTranslation('common')
   const { user } = useAuth()
+  // 角色编码在会话级别（登录返回 roles），不在用户实体上
+  const roles = useAppSelector((state) => state.auth.roles)
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const { modal } = App.useApp()
@@ -179,7 +181,7 @@ function AvatarMenu() {
       label: (
         <span className={styles.avatarHeader}>
           <strong>{user?.displayName ?? '—'}</strong>
-          <span>{user?.roleNames.join(' / ') ?? t('未分配角色')}</span>
+          <span>{roles.length > 0 ? roles.join(' / ') : t('未分配角色')}</span>
         </span>
       ),
       disabled: true,

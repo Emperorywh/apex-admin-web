@@ -1,5 +1,5 @@
 /**
- * 请求基础设施常量：超时、稳定错误码、协议默认值。
+ * 请求基础设施常量：超时、调度协议业务码、前端本地错误码。
  */
 
 /**
@@ -15,31 +15,39 @@ export const DEFAULT_API_BASE_URL = '/fms/v1'
 /** 常规请求超时（毫秒） */
 export const REQUEST_TIMEOUT_MS = 15_000
 
-/** 刷新令牌请求超时（毫秒） */
-export const REFRESH_TIMEOUT_MS = 10_000
-
-/** 刷新令牌单飞锁的过期时间（毫秒），防止异常时永久锁死 */
-export const REFRESH_LOCK_TTL_MS = 10_000
-
-/** 协议稳定错误码（RFC 9457 problem+json body.code），<MODULE>.<REASON> 点分格式 */
-export const API_ERROR_CODES = {
-  /** 401 认证失效统一码 */
-  UNAUTHENTICATED: 'AUTH.UNAUTHENTICATED',
-  /** 422 校验失败 */
-  VALIDATION_FAILED: 'VALIDATION.FAILED',
+/**
+ * 调度协议业务码（Result.code）。
+ *
+ * 证据来源（2026-09-17 真实联调环境实测 + 旧项目代码；联调地址见 vite.config.ts 代理配置）：
+ * - code=200：正常（GET /fms/v1/systemLogos 返回 {code:200,...} 实证）；
+ * - code=1000000：会话失效/未登录（旧项目 httpShared BIZ_CODE.TOKEN_EXPIRED；
+ *   真实环境无凭据访问 GET /fms/v1/auth/user/pageUsers 返回该码，已复核）；
+ * - code=1000010：用户名或密码错误（真实环境错误凭据登录实测）；
+ * - code=1001000：未授权（旧项目 httpShared BIZ_CODE.UNAUTHORIZED 代码证据，
+ *   真实环境尚未复现，最终映射登记缺口 G03，授权页跳转由 P02 接入）。
+ */
+export const RESULT_CODES = {
+  /** 业务成功；不依赖 message === 'success' 字符串 */
+  SUCCESS: 200,
+  /** 会话失效（未登录/token 过期）：清会话并跳登录，单飞收敛 */
+  SESSION_EXPIRED: 1_000_000,
+  /** 未授权：跳软件授权页（旧代码证据，待真实复核；跳转逻辑归 P02） */
+  UNAUTHORIZED: 1_001_000,
+  /** 用户名或密码错误 */
+  LOGIN_FAILED: 1_000_010,
 } as const
 
-/** 前端本地生成的稳定错误码（后端不会返回） */
+/** 未显式指定 pageSize 时的默认页大小（前后端通用默认值） */
+export const DEFAULT_PAGE_SIZE = 20
+
+/** 前端本地生成的稳定错误码（后端不会返回），CLIENT.* 点分格式 */
 export const CLIENT_ERROR_CODES = {
   /** 网络不可达 / 请求被拦截 */
   NETWORK_ERROR: 'CLIENT.NETWORK_ERROR',
   /** 主动取消（切换页签、刷新页签等） */
   CANCELLED: 'CLIENT.CANCELLED',
-  /** 响应体不是合法 JSON */
+  /** 响应体不符合调度协议 Result 形状 */
   MALFORMED_RESPONSE: 'CLIENT.MALFORMED_RESPONSE',
-  /** 未知后端错误（无 code 字段） */
+  /** 未知后端错误（无法归类） */
   UNKNOWN: 'CLIENT.UNKNOWN',
 } as const
-
-/** 分页默认页大小；与后端协议一致 */
-export const DEFAULT_PAGE_SIZE = 20

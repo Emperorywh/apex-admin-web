@@ -51,4 +51,15 @@ export default {
   '操作': 'Actions',
   '操作失败，请稍后重试': 'Something went wrong. Please retry later.',
   '加载失败，点击重试': 'Failed to load. Click to retry.',
+  /* 请求层错误文案（services/request 统一收敛的 ApiError 标题） */
+  '登录已过期，请重新登录': 'Your session has expired. Please sign in again.',
+  '请求已取消': 'Request cancelled',
+  '网络不可达，请检查连接或后端服务':
+    'Network unreachable. Check your connection or the backend service.',
+  'API 目标返回了 HTML 而非 JSON，请检查代理与后端服务':
+    'The API target returned HTML instead of JSON. Check the proxy and the backend service.',
+  '响应不符合调度协议（缺少 Result 包装）':
+    'Response does not follow the dispatch protocol (missing Result envelope).',
+  '请求失败（HTTP {{status}}）': 'Request failed (HTTP {{status}})',
+  '业务处理失败（code={{code}}）': 'Operation failed (code {{code}})',
 } as const

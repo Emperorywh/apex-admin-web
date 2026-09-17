@@ -6,16 +6,16 @@
 
 | 编号 | 发现 / 证据 | 影响页面 | 状态 | 本期处理 | 决定 / 验证日期 |
 | --- | --- | --- | --- | --- | --- |
-| G01 | 旧 `GET /fms/v1/auth/authorize/detail` 未出现在 OpenAPI | 会话恢复与权限更新（T00、P01；P31/P32/P43 不得调用） | 待确认 | 登录返回数据持久化；权限拒绝后提示重新登录；不调用未文档化接口 | — |
-| G02 | 文档没有模板 `/auth/refresh`、`/users/me` 协议（模板 auth.service 现存调用） | 模板认证基础设施（T00、P43） | 待确认 | 移除假定与调用，真实过期后重新登录 | — |
-| G03 | 文档无 securitySchemes；`LoginParam.password` 未说明 MD5，旧登录使用 MD5 + Bearer | 登录及全局认证头（T00、P01/P02/P29） | 待确认 | 联调确认后集中适配；不存密码，不重试猜口令协议 | — |
-| G04 | 多个 GET 参数以对象 DTO 声明（如 `OrderRecordPageParamOrderRecord`） | 全部列表筛选分页 | 待确认 | 逐 endpoint 验证 query 序列化，记录差异，不统一猜扁平/对象 | — |
+| G01 | 旧 `GET /fms/v1/auth/authorize/detail` 未出现在 OpenAPI | 会话恢复与权限更新（T00、P01；P31/P32/P43 不得调用） | 已确认缺失 | 登录返回数据持久化；权限拒绝后提示重新登录；不调用未文档化接口。T00.3 已移除模板 `/users/me` 会话恢复路径（profile.service 已删除） | 2026-09-17（OpenAPI 复核 + 模板调用点清理） |
+| G02 | 文档没有模板 `/auth/refresh`、`/users/me` 协议（模板 auth.service 现存调用） | 模板认证基础设施（T00、P43） | 已确认缺失 | T00.3 已删除：请求层刷新重放/`_retriedAfterRefresh` 全部移除，`loadSession`/`getMyProfile`/`updateMyProfile` 删除；会话过期（业务码 1000000）直接清会话重新登录 | 2026-09-17 |
+| G03 | 文档无 securitySchemes；`LoginParam.password` 未说明 MD5，旧登录使用 MD5 + Bearer | 登录及全局认证头（T00、P01/P02/P29） | 待确认 | T00.3 已按旧代码证据集中适配：密码 MD5（spark-md5，auth.service 单点）、`Authorization: Bearer <token>`（请求层单点）、`Accept-Language` 头（真实环境已证实生效：同一错误凭据请求 en-US 下返回英文 message）。**待真实凭据联调确认**：MD5 摘要是否为后端期待形态、Bearer 前缀是否必需、业务码 1001000 真实行为。错误凭据探针（MD5 形态与明文形态均返回 1000010）无法区分密码形态 | 2026-09-17（部分证据）；完整确认待登录凭据 |
+| G04 | 多个 GET 参数以对象 DTO 声明（如 `OrderRecordPageParamOrderRecord`） | 全部列表筛选分页 | 待确认 | 逐 endpoint 验证 query 序列化，记录差异，不统一猜扁平/对象。T00.3 已定义 `BackendPageQuery`（pageNo/pageSize）与 `BackendPageResult`（records/current/size/total/pages）为常见形状基准；分页响应真实形状尚未抽样核实 | — |
 | G05 | `uploadSystemVersion` 等上传在文档表现为 `application/json` 内 binary 字段 | P08/P09/P25/P27（P23 若有可达上传同样核实） | 待确认 | 核实 multipart/字段名/媒体类型后适配；不假定所有上传同一种方式 | — |
 | G06 | 旧电梯内呼 `/fms/v1/device/elevator/innerCall` 未出现在 OpenAPI，且控制弹窗可达 | P14 | 待确认 | 保留有权限入口并标记接口暂不可用；不用外呼接口猜测替代 | — |
 | G07 | 旧地图拉取 `downloadMapInfo` 未出现在 OpenAPI，MapList/PullModal 引用它 | P09 | 待确认 | 可达入口保留禁用说明；`downloadMap`/`vehicleDownloadMap` 不自动认定语义相同 | — |
 | G08 | 旧 API 清单含 `upLoadMap/updateMapResource`、旧版本分页/更新重启等未声明路径 | P09、P25 | 待确认 | 先核对当前可达性，再逐条确认新版接口替代，逐项登记而非整批照搬 | — |
 | G09 | 多数分页 DTO 未声明排序参数 | 全部表格页 | 待确认 | 不支持的列禁用排序或仅在完整本地集合明确实现；不发虚构 sort | — |
-| G10 | int64 ID 与计数字段，实际规模未验证 | 行标识、关联选择、精确计数（全部相关页） | 待确认 | 联调核实精度；禁止损失精度后转字符串掩盖问题 | — |
+| G10 | int64 ID 与计数字段，实际规模未验证 | 行标识、关联选择、精确计数（全部相关页） | 待确认 | 联调核实精度；禁止损失精度后转字符串掩盖问题。T00.3：登录返回的 `UserSummary.id`（int64）在 DTO 层保持 JSON number、实体层以字符串无损承载，联调时需抽样核对真实 id 规模 | — |
 | G11 | 普通文件接口未必有进度、取消、断点续传契约 | P03/P08/P09/P23/P25/P26/P27/P30 | 待确认 | 仅真实或不确定进度；取消不等于服务端回滚 | — |
 | G12 | 模板个人资料、菜单、角色/用户 REST DTO 与调度 DTO 不同 | P31/P32/P43（P27 不虚构设置 CRUD） | 待确认 | 以调度 API 为准；无对应能力的入口注明缺口，不留假数据 | — |
 | G13 | 缺少已核实的事务、版本号和幂等键支持 | 全部写操作页 | 待确认 | 预读冲突检查、结果未知态、禁止自动重放；不承诺强一致事务 | — |

@@ -5,15 +5,13 @@
 export default {
   '账户信息': 'Account',
   '编辑资料': 'Edit profile',
-  '显示名': 'Display name',
-  '请输入显示名': 'Please enter a display name',
-  '显示名长度需在 1-32 个字符之间': 'Display name must be 1-32 characters',
-  '邮箱': 'Email',
-  '邮箱（选填）': 'Email (optional)',
-  '邮箱格式不正确': 'Invalid email address',
-  '邮箱过长': 'Email is too long',
   '用户名': 'Username',
+  '状态': 'Status',
+  '启用': 'Enabled',
+  '停用': 'Disabled',
+  '等级': 'Level',
   '角色': 'Roles',
-  '个人资料已保存': 'Profile saved',
-  '保存失败，请稍后重试': 'Failed to save. Please retry later.',
+  '资料编辑暂不可用': 'Profile editing unavailable',
+  '调度系统暂未提供资料修改接口，当前以登录账号 {{username}} 的信息为准。':
+    'The dispatch system does not provide a profile-update API yet. The signed-in account {{username}} is shown as-is.',
 } as const

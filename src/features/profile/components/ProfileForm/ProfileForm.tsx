@@ -1,27 +1,13 @@
 /**
- * 个人资料表单：显示名 + 邮箱，保存后局部更新当前会话用户。
+ * 个人资料编辑区：调度后端未提供资料修改接口，明确呈现不可用。
+ *
+ * 模板时代的 /users/me 读写接口不存在于调度契约（G01/G02 已确认缺失），
+ * 此处不再发起任何请求；保留占位说明供 P43 统一收口（缺口 G12）。
  */
 
-import { useEffect } from 'react'
-import { App, Button, Form, Input } from 'antd'
+import { Alert } from 'antd'
 import { useTranslation } from 'react-i18next'
-import { useAppDispatch } from '@/hooks/useAppDispatch'
-import { apiErrorMessage } from '@/services/request/request'
-import { updateMyProfile } from '@/services/profile/profile.service'
-import { userPatched } from '@/store/slices/authSlice'
 import type { AuthUser } from '@/types/auth/auth.types'
-
-/** 显示名长度边界（Unicode 字符数） */
-const DISPLAY_NAME_MIN_LENGTH = 1
-const DISPLAY_NAME_MAX_LENGTH = 32
-
-/** 邮箱长度上限 */
-const EMAIL_MAX_LENGTH = 254
-
-interface ProfileFormValues {
-  displayName: string
-  email: string | null
-}
 
 interface ProfileFormProps {
   user: AuthUser
@@ -29,56 +15,15 @@ interface ProfileFormProps {
 
 export function ProfileForm({ user }: ProfileFormProps) {
   const { t } = useTranslation('profile')
-  const { t: tCommon } = useTranslation('common')
-  const dispatch = useAppDispatch()
-  const { message } = App.useApp()
-  const [form] = Form.useForm<ProfileFormValues>()
-
-  useEffect(() => {
-    form.setFieldsValue({ displayName: user.displayName, email: user.email })
-  }, [form, user.displayName, user.email])
-
-  const handleFinish = async (values: ProfileFormValues) => {
-    try {
-      await updateMyProfile({ displayName: values.displayName, email: values.email || null })
-      dispatch(
-        userPatched({
-          displayName: values.displayName,
-          email: values.email || null,
-          initials: values.displayName.trim().slice(0, 2).toUpperCase(),
-        }),
-      )
-      void message.success(t('个人资料已保存'))
-    } catch (error) {
-      void message.error(apiErrorMessage(error) || t('保存失败，请稍后重试'))
-    }
-  }
 
   return (
-    <Form<ProfileFormValues> form={form} layout="vertical" onFinish={handleFinish}>
-      <Form.Item
-        name="displayName"
-        label={t('显示名')}
-        rules={[
-          { required: true, message: t('请输入显示名') },
-          { min: DISPLAY_NAME_MIN_LENGTH, max: DISPLAY_NAME_MAX_LENGTH, message: t('显示名长度需在 1-32 个字符之间') },
-        ]}
-      >
-        <Input placeholder={t('显示名')} />
-      </Form.Item>
-      <Form.Item
-        name="email"
-        label={t('邮箱')}
-        rules={[
-          { type: 'email', message: t('邮箱格式不正确') },
-          { max: EMAIL_MAX_LENGTH, message: t('邮箱过长') },
-        ]}
-      >
-        <Input placeholder={t('邮箱（选填）')} />
-      </Form.Item>
-      <Button type="primary" htmlType="submit">
-        {tCommon('保存')}
-      </Button>
-    </Form>
+    <Alert
+      type="info"
+      showIcon
+      message={t('资料编辑暂不可用')}
+      description={t('调度系统暂未提供资料修改接口，当前以登录账号 {{username}} 的信息为准。', {
+        username: user.username,
+      })}
+    />
   )
 }

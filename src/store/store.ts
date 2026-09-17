@@ -4,7 +4,7 @@
 
 import { configureStore } from '@reduxjs/toolkit'
 import { persistReducer, persistStore } from 'redux-persist'
-import authReducer from '@/store/slices/authSlice'
+import authReducer, { initialAuthState } from '@/store/slices/authSlice'
 import settingsReducer from '@/store/slices/settingsSlice'
 import tabsReducer from '@/store/slices/tabsSlice'
 
@@ -14,8 +14,9 @@ const PERSIST_KEYS = {
   SETTINGS: 'apex-admin:settings',
 } as const
 
-/** 持久化 schema 版本；结构不兼容变更时递增并补 migration */
-const PERSIST_SCHEMA_VERSION = 1
+/** 持久化 schema 版本；结构不兼容变更时递增并补 migration（auth/settings 各自独立） */
+const AUTH_SCHEMA_VERSION = 2
+const SETTINGS_SCHEMA_VERSION = 1
 
 /**
  * redux-persist 的 localStorage 适配器。
@@ -29,13 +30,22 @@ const localStorageAdapter = {
   removeItem: (key: string): Promise<void> => Promise.resolve(localStorage.removeItem(key)),
 }
 
-/** 字段级白名单：auth 只持久化 user（令牌只在内存） */
+/**
+ * auth 持久化：会话整体（token/激活/用户/角色/权限）持久化，
+ * 刷新页面或重启浏览器可恢复前端会话上下文；不存密码（规格 5.2）。
+ * v2：模板直通登录时代的旧会话（仅 user 字段、伪造管理员）全部废弃，
+ * 迁移为未登录初始态，强制以真实登录重建会话。
+ */
 const persistedAuth = persistReducer(
   {
     key: PERSIST_KEYS.AUTH,
     storage: localStorageAdapter,
-    version: PERSIST_SCHEMA_VERSION,
-    whitelist: ['user'],
+    version: AUTH_SCHEMA_VERSION,
+    whitelist: ['token', 'activated', 'user', 'roles', 'permissions', 'permissionsTree'],
+    // 迁移保留 _persist 元数据（版本号由 redux-persist 迁移后统一推进），
+    // 业务字段全部重置为未登录初始态
+    migrate: (state) =>
+      Promise.resolve({ ...initialAuthState, _persist: state?._persist ?? { version: AUTH_SCHEMA_VERSION, rehydrated: false } }),
   },
   authReducer,
 )
@@ -45,7 +55,7 @@ const persistedSettings = persistReducer(
   {
     key: PERSIST_KEYS.SETTINGS,
     storage: localStorageAdapter,
-    version: PERSIST_SCHEMA_VERSION,
+    version: SETTINGS_SCHEMA_VERSION,
     whitelist: ['locale', 'theme'],
   },
   settingsReducer,

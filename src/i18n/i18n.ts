@@ -10,6 +10,7 @@ import i18next, { type BackendModule, type CallbackError } from 'i18next'
 import dayjs from 'dayjs'
 import { initReactI18next } from 'react-i18next'
 import 'dayjs/locale/zh-cn'
+import { setRequestLanguage } from '@/services/request/request'
 
 export const SUPPORTED_LANGUAGES = ['zh-CN', 'en-US'] as const
 export type AppLanguage = (typeof SUPPORTED_LANGUAGES)[number]
@@ -93,6 +94,8 @@ if (!i18next.isInitialized) {
   })
   dayjs.locale(initialLanguage === 'zh-CN' ? 'zh-cn' : 'en')
   document.documentElement.lang = initialLanguage
+  // 请求层 Accept-Language 与初始语言对齐（旧代码已证实行为；I07 真实复核登记）
+  setRequestLanguage(initialLanguage)
 }
 
 /** 预加载指定语言的命名空间集合（zh-CN 无需加载；backendConnector.load 自带缓存与去重） */
@@ -121,6 +124,8 @@ export async function changeAppLanguage(
   persistLanguage(language)
   dayjs.locale(language === 'zh-CN' ? 'zh-cn' : 'en')
   document.documentElement.lang = language
+  // 后续请求（含上传）携带切换后的语言
+  setRequestLanguage(language)
 }
 
 export default i18next

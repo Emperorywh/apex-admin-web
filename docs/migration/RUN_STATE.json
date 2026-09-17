@@ -1,11 +1,11 @@
 {
   "版本说明": "调度系统迁移串行调度状态。由定时任务每小时触发一次，每次最多推进一个任务；写入必须整体原子替换。",
-  "最近更新时间": "2026-09-17T13:05:00+08:00",
-  "当前运行标识": "run-20260917-123037-7641（本轮已结束，锁已释放）",
+  "最近更新时间": "2026-09-17T14:55:00+08:00",
+  "当前运行标识": "run-20260917-140500-13667（本轮已结束，锁已释放）",
   "锁": "docs/migration/.lock（mkdir 原子目录锁，内含 lock.json）",
   "工作目录": "C:\\code\\apex-admin-web",
   "分支": "apple-rxx",
-  "基线提交": "0fd6dd9（本轮起点；产出提交见 git log）",
+  "基线提交": "8b6ed2f（T00.3 起点；产出提交见 git log）",
   "执行队列": [
     { "序": 1, "任务": "T00", "批次": "B0", "前置": [], "状态": "进行中" },
     { "序": 2, "任务": "P01", "批次": "B1", "前置": ["T00"], "状态": "未开始" },
@@ -59,35 +59,40 @@
   "当前任务": {
     "任务ID": "T00",
     "状态": "进行中",
-    "当前里程碑": "T00.3 请求与认证（下一轮起点）",
+    "当前里程碑": "T00.4 权限与路由（下一轮起点）",
     "本轮已完成内容": [
-      "T00.1 基线及分工（上一轮）：OpenAPI 核验、45 旧叶子映射、台账初始化、G01–G16 登记",
-      "T00.2 依赖与环境：npm latest 重核（antd 6.6.4）；安装 apex-table-react@0.1.0 并提交锁文件，类型探针验证 React 19/TS 6 兼容",
-      "dev 代理默认目标改为 http://10.11.2.67:8888，/fms 前缀原样转发不改写；DEFAULT_API_BASE_URL 改为 /fms/v1",
-      "部署时区落地：VITE_DEPLOY_TIMEZONE 登记 + src/constants/datetime.ts（缺省 Asia/Shanghai，全站唯一定义点）",
-      "修复 check:structure：scripts/check-structure.mjs 落地并违规注入自测（6 类样本全部拦截，期间修复同目录相对导入误报与跨 feature 漏报两处缺陷）",
-      "README/CLAUDE.md 失效依据修正（G16）：确认视觉指南文件不存在（勘误 T00.1 误记），改为以现有布局/token 为基线",
-      "全量验证通过：lint / typecheck / check:structure / build"
+      "T00.1 基线及分工（前轮）：OpenAPI 核验、45 旧叶子映射、台账初始化、G01–G16 登记",
+      "T00.2 依赖与环境（前轮）：apex-table-react 安装、dev 代理指向 10.11.2.67:8888、部署时区、check:structure 落地",
+      "T00.3 请求与认证：请求层重写——Result 解包（code=200 判定）、业务码常量（1000000/1001000/1000010）、ApiError 带 businessCode、取消静默、健康反馈、文件通道透传、移除刷新重放",
+      "T00.3 真实登录/登出：POST /auth/authorize/login（密码 MD5 单点）与 /auth/authorize/logout；删除直通登录、/users/me（loadSession/profile.service）与旧 /auth/logout",
+      "T00.3 会话持久化：auth 状态扩展（token/activated/user/roles/permissions/permissionsTree）全量持久化（schema v1→v2，模板旧会话强制失效）；authBridge 令牌同步 + 多窗口退出同步；Accept-Language 头随 i18n 同步",
+      "T00.3 真实接口实证：错误凭据登录返回 1000010、无令牌 pageUsers 返回 1000000、systemLogos code=200（时间格式 yyyy-MM-dd HH:mm:ss）、logout 端点存在、经 Vite 代理链路可用、Accept-Language 生效（英文 message）",
+      "T00.3 profile 域诚实化：Profile 展示真实会话字段，资料编辑改为明确不可用（G12，P43 收口）；en-US 分片同步",
+      "T00.3 全量验证通过：lint / typecheck / check:structure / build"
     ],
     "未完成步骤": [
-      "T00.3 请求与认证：Result/ApiError、code=200 解包、分页/时间/精度、取消收敛、移除假登录与虚构接口、真实登录最小路径（G01/G02/G03）",
-      "T00.4 权限与路由",
-      "T00.5 Apex 与状态（apex-table-react 已装，运行时适配在此落地）",
+      "T00.4 权限与路由：消费 permissionsTree（菜单树 AuthPermission：code/name/type/parentCode/path/icon/sort/childPermissions）与 permissions（按钮码）；后端菜单树投影到 definitions.tsx meta；祖先语义与 root/administrator 规则集中管理；入口守卫、合法回跳与可用落点（D29：activated=false → 授权页）；历史拼写/别名/详情参数",
+      "T00.5 Apex 与状态（apex-table-react 运行时适配）",
       "T00.6 页签与传输",
       "T00.7 共享业务能力（时间/时区展示工具消费 DEPLOY_TIMEZONE）",
       "T00.8 五语言基座",
       "T00.9 冻结交接"
     ],
-    "下一步": "T00.3：重写 src/services/request 为调度协议（code/message/data/timestamp 解包、业务 code=200 判定、ApiError 归一化、取消不报错、写不重放）；移除 auth.service 假登录/虚构 /users/me 与 /auth/logout；真实登录最小路径需联调环境可达与凭据，若外部条件不具备则记录受阻范围并继续不受阻部分",
-    "阻塞原因": null
+    "下一步": "T00.4 权限与路由：基于登录返回的 permissionsTree/permissions 设计路由权限投影与按钮码机制；核对旧项目 access.ts 的权限判定语义与 root/administrator 特殊规则；落实登录后落点（有权限已实现首页优先）、无权限页 P41 联动与直访守卫；过渡未迁移页不得有 mock 请求",
+    "阻塞原因": "部分受阻（不阻塞 T00.4 机制开发）：真实登录成功路径、MD5/Bearer 最终确认、带令牌授权只读联验需测试账号凭据（外部条件，不猜口令）；解除条件：用户提供联调测试账号；已登记 G03，B1 放行（P01）前必须补验"
   },
   "验证结果": [
     { "命令": "SHA-256(default_OpenAPI.json)", "结果": "A82E...49C7C 与规格一致", "日期": "2026-09-17" },
-    { "命令": "pnpm lint", "结果": "通过（152 文件 0 警告 0 错误，T00.2）", "日期": "2026-09-17" },
-    { "命令": "pnpm typecheck", "结果": "通过（含临时 apex 类型探针，验证后删除）", "日期": "2026-09-17" },
-    { "命令": "pnpm check:structure", "结果": "通过（150 源文件；6 类违规注入样本全部正确拦截）", "日期": "2026-09-17" },
-    { "命令": "pnpm build", "结果": "通过（tsc -b + vite build）", "日期": "2026-09-17" },
-    { "命令": "pnpm add apex-table-react@latest", "结果": "安装 0.1.0，锁文件通过供应链策略校验", "日期": "2026-09-17" }
+    { "命令": "pnpm lint", "结果": "通过（151 文件 0 警告 0 错误，T00.3）", "日期": "2026-09-17" },
+    { "命令": "pnpm typecheck", "结果": "通过（T00.3）", "日期": "2026-09-17" },
+    { "命令": "pnpm check:structure", "结果": "通过（149 源文件，T00.3）", "日期": "2026-09-17" },
+    { "命令": "pnpm build", "结果": "通过（tsc -b + vite build，T00.3）", "日期": "2026-09-17" },
+    { "命令": "POST /fms/v1/auth/authorize/login（错误凭据）", "结果": "HTTP 200 + code=1000010（用户名或密码错误）——端点/包装/业务码实证", "日期": "2026-09-17" },
+    { "命令": "GET /fms/v1/auth/user/pageUsers（无令牌）", "结果": "HTTP 200 + code=1000000（用户未登录）——会话失效业务码实证", "日期": "2026-09-17" },
+    { "命令": "GET /fms/v1/systemLogos（无令牌）", "结果": "HTTP 200 + code=200，响应内时间为 yyyy-MM-dd HH:mm:ss 字符串", "日期": "2026-09-17" },
+    { "命令": "POST /fms/v1/auth/authorize/logout（无令牌）", "结果": "HTTP 200 + code=200——登出端点真实存在", "日期": "2026-09-17" },
+    { "命令": "经 Vite 代理登录 + Accept-Language: en-US", "结果": "代理链路可用；后端按语言头返回英文 message（I07 证据）", "日期": "2026-09-17" },
+    { "命令": "真实登录成功路径/MD5/Bearer 最终确认/带令牌只读", "结果": "受阻：需测试账号凭据（登记 G03；B1 放行前补验）", "日期": "2026-09-17" }
   ],
-  "证据位置": "docs/migration/tasks/T00.md、docs/migration/baseline.md、docs/migration/gaps.md、docs/migration/contracts.md"
+  "证据位置": "docs/migration/tasks/T00.md（T00.3 联调证据表）、docs/migration/baseline.md、docs/migration/gaps.md、docs/migration/contracts.md"
 }
