@@ -68,9 +68,9 @@
 | P41 无权限页 | /no-permission | **access-denied**（已交付；P41 按任务卡独立分片，覆盖冻结时「复用 common/error」的盘点） | 沿用 pages/un-access |
 | P42 兜底错误页 | /404、/500 | **error**（已交付；沿用 T00 基座分片并入基座常载 BASE_NAMESPACES；旧 404 页 key「抱歉，您访问的页面不存在/首页」迁入，en 旧真译沿用，移除无消费模板 key） | 沿用 pages/error |
 | P43 模板个人中心清理 | /profile | profile（已声明） | 沿用 features/profile |
-| H01 调度监控暂缓 | over-look | 复用 common（暂缓说明统一组件） | 无业务文件（D07） |
-| H02 地图编辑暂缓 | map-nest-modify | 同上 | 同上 |
-| H03 录制回放暂缓 | record-playback | 同上 | 同上 |
+| H01 调度监控暂缓 | over-look | 复用 common+menu（暂缓说明统一组件；已交付，标题走 menu 旧真译，无新增 key） | 无业务文件（D07） |
+| H02 地图编辑暂缓 | map-nest-modify | 复用 common+menu（暂缓说明统一组件） | 无业务文件（D07） |
+| H03 录制回放暂缓 | record-playback | 复用 common+menu（暂缓说明统一组件） | 无业务文件（D07） |
 
 > 消费方式：页面在路由 `meta.i18nNamespaces` 声明本页命名空间（+按需 `'map'`/`'error'`）；基座 common/menu 随外壳全局加载。分片文件四语言（zh-TW/ja-JP/ko-KR/en-US）随页面任务交付后，从 `i18n-missing.md` 移除对应回退登记。
 

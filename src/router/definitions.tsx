@@ -100,6 +100,8 @@ function indexRedirectMeta(title: string): AppRouteDefinition['meta'] {
  * 业务叶子 meta（挂权限码）。
  * pending 为 true 时追加迁移过渡标记：统一占位呈现、不作登录落点候选；
  * 对应页面迁移任务完成后由统筹移除该标记（本文件唯一改动点）。
+ * deferred 为 true 时追加本期暂缓标记（D07/H01–H03）：页面加载统一
+ * 「本期暂未迁移」说明、菜单/直访按原权限可达，但不作登录落点候选。
  */
 function businessMeta(
   title: string,
@@ -109,12 +111,14 @@ function businessMeta(
     i18nNamespaces?: RouteMeta['i18nNamespaces']
     affixTab?: boolean
     pending?: boolean
+    migrationDeferred?: boolean
   },
 ): RouteMeta {
   return {
     title,
     perm,
     migrationPending: options?.pending === true || undefined,
+    ...(options?.migrationDeferred === true ? { migrationDeferred: true } : {}),
     ...(options?.icon !== undefined ? { icon: options.icon } : {}),
     ...(options?.i18nNamespaces !== undefined
       ? { i18nNamespaces: options.i18nNamespaces }
@@ -190,7 +194,9 @@ export const appRouteDefinitions = defineAppRoutes([
         loadPage: () => import('@/pages/overlook/Overlook/Overlook'),
         meta: businessMeta('调度监控', PERM.OVERVIEW_VIEW, {
           icon: LayoutGrid,
-          pending: true,
+          // H01 交付：本期暂缓入口（D07），页面加载统一「本期暂未迁移」说明；
+          // 权限保持旧 .umirc.ts 的 overview:view，不迁业务、不作登录落点
+          migrationDeferred: true,
         }),
       },
       {

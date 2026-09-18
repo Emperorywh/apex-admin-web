@@ -1,7 +1,7 @@
 {
   "版本说明": "调度系统迁移串行调度状态。由定时任务每小时触发一次，每次最多推进一个任务；写入必须整体原子替换。",
-  "最近更新时间": "2026-09-18T05:35:00Z",
-  "当前运行标识": "run-20260918-h-p42(P42 交付轮,锁随本轮结束释放)",
+  "最近更新时间": "2026-09-18T05:40:00Z",
+  "当前运行标识": "run-20260918-h-h01(H01 交付轮,锁随本轮结束释放)",
   "锁": "docs/migration/.lock（mkdir 原子目录锁，内含 lock.json）",
   "工作目录": "C:\\code\\apex-admin-web",
   "分支": "apple-rxx",
@@ -57,7 +57,7 @@
       "前置": [
         "T00"
       ],
-      "状态": "待领取(下一轮队首)"
+      "状态": "已完成(2026-09-18 勾选:migrationDeferred 标记+统一暂缓说明页+玻璃面板,真实联验通过)"
     },
     {
       "序": 7,
@@ -66,7 +66,7 @@
       "前置": [
         "T00"
       ],
-      "状态": "未开始"
+      "状态": "待领取(下一轮队首)"
     },
     {
       "序": 8,
@@ -449,21 +449,21 @@
     }
   ],
   "当前任务": {
-    "任务ID": "H01 调度监控暂缓说明(下一轮领取;本轮 P42 已完成勾选)",
-    "状态": "P42 已完成勾选;H01 未开始",
-    "当前里程碑": "P42 兜底错误页闭环(双挂载 404/登录态恢复/500 与两级错误边界核对/五语言基座常载/两主题实证)",
+    "任务ID": "H02 地图编辑暂缓说明(下一轮领取;本轮 H01 已完成勾选)",
+    "状态": "H01 已完成勾选;H02 未开始",
+    "当前里程碑": "H01 调度监控暂缓说明闭环(migrationDeferred 落点语义/页面级 MigrationPending/玻璃面板可读性修复)",
     "本轮已完成内容": [
-      "NotFound 等价迁移:旧 key「抱歉,您访问的页面不存在」副标题+登录态恢复分支(已登录「首页」→resolveLandingPath 落点 replace;未登录「去登录」无回跳参数);旧固定跳 /over-look 不复刻(H01 暂缓页)",
-      "公开 /404 与受保护根内 * 兜底双挂载统一;玻璃反馈面板(P41 同因同解,两主题衬底)",
-      "/500(ServerError)核对收口:重新加载+登录态恢复;RouterErrorBoundary 玻璃面板+登录态恢复;PageErrorBoundary ns 修复",
-      "缺陷修复:错误边界 i18next.t 走 defaultNS=common 而 key 在 error 分片,非中文语言回退中文 key(I05/I06)——ns 显式化+BASE_NAMESPACES 加 error 基座常载",
-      "四语言 error 分片:补旧 key 3 键(en 旧真译沿用,繁日韩 B1 基线);移除无消费模板 key「页面不存在或已被移动/返回工作台」",
-      "删除 route.constants.ts(FALLBACK_PATH 三消费者全改落点,全仓库无残留引用)",
-      "真实联验:未登录守卫回跳/公开 404 去登录/历史 replace 无残留/root 登录落点+布局内 404 首页落点防循环/已登录 /500/五语言 html lang 逐语言/两主题+布局内截图 1366x768",
-      "pnpm check(228 文件 lint 0 警告 0 错误/typecheck/结构检查 226 源文件)+pnpm build 通过;测试会话已登出、主题已复位、页签已关、dev server 已停"
+      "Overlook.tsx 整页重写:清除模板残留(console.log/硬编码 h1),复用 MigrationPending 统一暂缓说明;无业务请求/无 WebSocket/无地图操作/无模拟停靠充电",
+      "新增 migrationDeferred 路由元标记(router.types/definitions.businessMeta 透传):本期暂缓页正常加载渲染、原权限可达,与 pending 过渡占位语义区分",
+      "routeAccess.isLeafAvailable 排除 deferred 页:不抢占登录落点、回跳不放行——root 登录落点保持 /no-permission(P41 已验行为不变),实证 redirect=/over-look 被拒",
+      "权限核对:旧 .umirc.ts overview:view 与新挂码一致未改;菜单/直访一致",
+      "查询上下文保留:?target&tab 直访参数不清洗不跳转",
+      "MigrationPending 玻璃面板修复(深色灰字叠壁纸不可读,P41 同因同解,既有令牌);发现并修复 --app-space-7 不存在致 padding 失效缺陷(几何断言 hintInside=true)",
+      "真实联验:守卫回跳/落点不抢占/页签与 Dock 菜单入口/零业务请求/五语言文案+html lang/两主题截图/会话清理后守卫回登录页",
+      "pnpm check(228 文件 lint 0 警告 0 错误)+build 通过;主题/语言复位、页签已关、dev server 已停"
     ],
     "未完成步骤": [],
-    "下一步": "下一轮(定时触发)领取 H01 调度监控暂缓说明:路径 /over-look,旧来源 Overlook,目标 src/pages/overlook/Overlook/Overlook.tsx;对有权限用户保留菜单/直访,显示统一「本期暂未迁移」(复用 T00 统一暂缓组件 MigrationPending);不加载旧监控/全局 WebSocket/地图操作/模拟停靠充电等业务;保留合法目标标识/查询上下文;原相关五语言资源有映射去向。注意 over-look 为 affix 页(固定页签),现渲染 MigrationPending 占位——H01 交付统一暂缓说明呈现与原权限核对",
+    "下一步": "下一轮(定时触发)领取 H02 地图编辑暂缓说明:路径 /map-through/map-nest-modify,旧来源 MapThrough/MapNestModify,目标 src/pages/map-through/MapNestModify/MapNestModify.tsx;复用本轮 migrationDeferred 标记+页面级 MigrationPending 模式;验收=不加载完整编辑器/编辑副作用,不得影响 P07 选点和 P09 地图 CRUD/版本/导入导出/发布推送,相关资源明确归属(A01/A02/A05/A17/A20/A22,I02/I06);注意核对旧 .umirc.ts 该路由 access 码与菜单/关联入口",
     "阻塞原因": "无"
   },
   "验证结果": [
@@ -691,7 +691,17 @@
       "命令": "P42 真实浏览器联验(dev 代理 192.168.0.158:8888,1366x768)",
       "结果": "通过:未登录直访未知 URL 守卫回跳带 redirect;公开 /404 渲染旧文案+去登录(replace 无参数,历史无残留);未登录 /500 守卫拦截;root 登录落点 /no-permission+布局内未知 URL 404「首 页」按钮点击落点防循环;已登录 /404 登录态分支+/500 重新加载+首页;五语言全页文案+html lang 逐语言;亮色公开/深色公开/深色布局内截图两主题可读;错误边界运行时呈现无自然触发场景,以资源齐备静态核对+代码审查登记",
       "日期": "2026-09-18"
+    },
+    {
+      "命令": "pnpm check + pnpm build(H01 交付后)",
+      "结果": "全部通过(228 文件 lint 0 警告 0 错误;226 源文件结构检查;tsc+vite build 成功)",
+      "日期": "2026-09-18"
+    },
+    {
+      "命令": "H01 真实浏览器联验(dev 代理 192.168.0.158:8888,1366x768)",
+      "结果": "通过:未登录直访守卫回跳带 redirect;root 登录落点 /no-permission 且 redirect=/over-look 回跳被拒(migrationDeferred 不抢占落点);已登录直访渲染统一暂缓说明+页签/Dock 菜单入口;?target&tab 查询上下文保留;页内 /fms 请求 0 条、WebSocket 0 条;五语言标题+说明+html lang 逐语言;两主题玻璃面板截图(hintInside=true);会话清理后守卫回登录页",
+      "日期": "2026-09-18"
     }
   ],
-  "证据位置": "docs/migration/tasks/T00.md(T00 历轮交付与证据)、docs/migration/tasks/P01.md、docs/migration/tasks/P02.md、docs/migration/tasks/P41.md、docs/migration/tasks/P42.md(P42 交付/联验/限制登记)、docs/migration/contracts.md(第 1–7 节契约 + 第 9 节冻结登记 + 变更日志)、docs/migration/i18n-map.md(P42 行与 error 分片旧 key 映射已更新)、docs/migration/operations.md(P41/P42 行已登记)、docs/migration/i18n-missing.md、docs/migration/terminology.md"
+  "证据位置": "docs/migration/tasks/T00.md(T00 历轮交付与证据)、docs/migration/tasks/P01.md、docs/migration/tasks/P02.md、docs/migration/tasks/P41.md、docs/migration/tasks/P42.md(P42 交付/联验/限制登记)、docs/migration/tasks/H01.md(H01 交付/联验/公共文件改动记录)、docs/migration/contracts.md(第 1–7 节契约 + 第 9 节冻结登记 + 变更日志)、docs/migration/i18n-map.md(P42 行与 error 分片旧 key 映射已更新)、docs/migration/operations.md(P41/P42 行已登记)、docs/migration/i18n-missing.md、docs/migration/terminology.md"
 }

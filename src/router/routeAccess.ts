@@ -80,6 +80,9 @@ export function hasMenuAccess(ctx: AccessContext, perm?: PermCode): boolean {
  * 业务叶子当前是否可用：已实现（非迁移过渡占位）且有权访问。
  * 迁移过渡中的页面（meta.migrationPending）不作为落点候选（规格 3.1 / T00.4 退出检查），
  * 权限放行只代表「将来可用」，不代表现在可进入真实业务。
+ * 本期暂缓页（meta.migrationDeferred，H01–H03）同样排除：说明入口虽已交付且
+ * 按原权限可达，但它不是「已迁移完成的业务页」（规格 5.6），不得抢占登录落点，
+ * 登录回跳也不放行——否则「无可用业务页」反馈会被一个说明页静默替代。
  */
 export function isLeafAvailable(
   definition: AppRouteDefinition,
@@ -87,6 +90,7 @@ export function isLeafAvailable(
 ): boolean {
   if (!definition.loadPage) return false
   if (definition.meta.migrationPending === true) return false
+  if (definition.meta.migrationDeferred === true) return false
   return hasMenuAccess(ctx, definition.meta.perm)
 }
 

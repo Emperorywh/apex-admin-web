@@ -14,6 +14,7 @@
 | P42 | NotFound/404 反馈+恢复路径 | `pages/error/NotFound`（公开 /404 与受保护根内 `*` 兜底共用） | — | — | 公开或登录 | 已合并；验证已通过 | tasks/P42.md（联验 2026-09-18） |
 | P42 | （旧）首页按钮 → /over-look | 「首页」+ resolveLandingPath 落点导航（replace）；未登录「去登录」 | — | — | 登录或未登录分支 | 已合并；验证已通过 | tasks/P42.md |
 | P42 | ServerError /500 + 两级错误边界 | `pages/error/ServerError` + `RouterErrorBoundary` + `PageErrorBoundary`（error 分片基座常载） | — | — | 登录（/500 守卫） | 已合并；错误边界运行时呈现待自然场景复核（资源齐备静态核对通过） | tasks/P42.md |
+| H01 | Overlook/调度监控入口 | `pages/overlook/Overlook` 渲染统一暂缓说明（MigrationPending 玻璃面板）；`migrationDeferred` 标记不作落点/回跳候选 | — | — | overview:view（菜单/直访一致） | 已合并；验证已通过（零业务请求/零 WebSocket/查询上下文保留） | tasks/H01.md（联验 2026-09-18） |
 
 ## 汇总状态口径
 
