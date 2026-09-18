@@ -20,7 +20,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 | `pnpm check` | 以上全部，提交前必须通过 |
 
 - 本仓库无测试框架；验证靠 `pnpm check` + 手动预览（`pnpm preview`）。
-- 调度系统后端经 dev 同源代理转发：默认 `http://10.11.2.67:8888`（可用环境变量 `APEX_DEV_PROXY_TARGET` 覆盖）；前端统一请求 `/fms/v1/...` 相对路径，代理对 `/fms` 前缀原样转发不改写，生产由同源反向代理转发。
+- 调度系统后端经 dev 同源代理转发：代理目标以项目根 `.env.local` 的 `APEX_DEV_LEGACY_TARGET` 为唯一配置源（该文件不入库，变更后重启 dev 生效），未配置时默认 `http://10.11.2.67:8888`；前端统一请求 `/fms/v1/...` 相对路径，代理对 `/fms` 前缀原样转发不改写，生产由同源反向代理转发。
 - Pre-commit（Husky）：先 `tsc -b --noEmit` 再 lint-staged（对暂存文件跑 oxlint）；只检查不格式化，禁止 `--fix`。
 - 不引入 ESLint/Prettier/Tailwind/Less。
 
