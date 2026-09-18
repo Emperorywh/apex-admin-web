@@ -1,0 +1,53 @@
+/*
+ * 统计条布局：一行七个等宽指标 + 右侧刷新；
+ * 玻璃面板风格与全局 token 对齐（深浅主题自动适配，不硬编码颜色）。
+ */
+
+.wrap {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--app-panel-bg, rgba(255, 255, 255, 0.55));
+  border: 1px solid var(--app-border-color, rgba(0, 0, 0, 0.08));
+  margin-bottom: 12px;
+}
+
+.item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+}
+
+.title {
+  font-size: 12px;
+  color: var(--app-text-secondary, rgba(0, 0, 0, 0.55));
+  white-space: nowrap;
+}
+
+.value {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--app-primary, #1677ff);
+  font-variant-numeric: tabular-nums;
+}
+
+.refresh {
+  align-self: center;
+  flex: none;
+}
+
+/* 窄视口允许换行，指标保持可达（DoD 13：1366×768 及以上，工具栏可换行） */
+@media (max-width: 1500px) {
+  .wrap {
+    flex-wrap: wrap;
+  }
+
+  .item {
+    flex: 1 1 120px;
+  }
+}

@@ -17,6 +17,7 @@
 import axios, {
   AxiosError,
   type AxiosRequestConfig,
+  type AxiosResponse,
   type InternalAxiosRequestConfig,
 } from 'axios'
 import i18next from 'i18next'
@@ -31,6 +32,22 @@ import {
 import type { ApiError, ResultDto } from '@/services/request/request.types'
 import { sessionExpired } from '@/store/slices/authSlice'
 import { uiFeedback } from '@/services/feedback/uiFeedback'
+
+/**
+ * axios 配置扩展：文件下载通道的原始响应声明（P03 导出接入，全项目文件通道通用）。
+ *
+ * 背景：统一响应拦截器对非 JSON（文件/流）响应只返回 response.data（Blob 本体），
+ * 调用方拿不到响应头——而导出类接口的文件名依赖 content-disposition（规格 10.6，
+ * 后端可能按 RFC 5987 返回带字符集的文件名）。调用方把 apexRawResponse 置 true 时，
+ * 拦截器改为透传完整 AxiosResponse，由调用方读取 headers 并处理 Blob；
+ * 该标记是 axios 请求配置字段（非 HTTP 头），不会发送到服务器。
+ */
+declare module 'axios' {
+  export interface AxiosRequestConfig {
+    /** 文件下载通道：需要完整响应（含响应头）时置 true */
+    apexRawResponse?: boolean
+  }
+}
 
 /**
  * 请求层文案统一经 i18next 单例翻译（key 即中文文案）。
@@ -207,8 +224,13 @@ http.interceptors.response.use(
       })
     }
     if (!contentType.includes('json')) {
-      // 文件/流通道：Blob、二进制等原样透传，绝不套 Result 解包（规格 4.2 文件行）
+      // 文件/流通道：Blob、二进制等原样透传，绝不套 Result 解包（规格 4.2 文件行）；
+      // 声明 apexRawResponse 的下载请求透传完整响应，供调用方读取
+      // content-disposition 等响应头（JSON 错误仍走上方 unwrapResult 统一收敛）
       recordHealth(true)
+      if (response.config.apexRawResponse === true) {
+        return response as AxiosResponse
+      }
       return response.data
     }
     return unwrapResult(response.data as unknown)
@@ -364,6 +386,45 @@ export const api = {
   delete<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
     return http.delete(url, config) as unknown as Promise<T>
   },
+  /**
+   * 文件下载通道（GET + Blob + 完整响应）：导出/下载类接口专用。
+   * - 返回完整 AxiosResponse<Blob>：调用方从 headers 读 content-disposition 文件名，
+   *   从 data 取 Blob；文件名解析统一用下方 resolveDownloadFilename；
+   * - 后端以 JSON 返回错误时（content-type: json）仍走统一 Result 解包，
+   *   业务码非 200 照常抛 ApiRequestError——绝不把错误 JSON 保存为伪文件（DoD 9）；
+   * - signal 经 config 透传，取消语义与普通请求一致（主动取消静默）。
+   */
+  async downloadGet(
+    url: string,
+    params?: Record<string, unknown>,
+    config?: AxiosRequestConfig,
+  ): Promise<AxiosResponse<Blob>> {
+    return http.get(url, {
+      ...config,
+      params,
+      responseType: 'blob',
+      apexRawResponse: true,
+    }) as unknown as Promise<AxiosResponse<Blob>>
+  },
+}
+
+/**
+ * 解析下载响应头中的文件名：优先 RFC 5987（filename*=charset''value，支持中文文件名），
+ * 其次普通 filename="value"；取不到返回 null，由调用方决定回退名（规格 10.6）。
+ */
+export function resolveDownloadFilename(disposition: unknown): string | null {
+  if (typeof disposition !== 'string' || disposition.length === 0) return null
+  const starMatch = disposition.match(/filename\*=[^']*''([^;]+)/i)
+  if (starMatch) {
+    try {
+      return decodeURIComponent(starMatch[1].trim())
+    } catch {
+      // RFC 5987 编码异常时按原值返回，不因文件名解析失败丢弃整个下载
+      return starMatch[1].trim()
+    }
+  }
+  const match = disposition.match(/filename="?([^";]+)"?/i)
+  return match ? match[1].trim() : null
 }
 
 export default http

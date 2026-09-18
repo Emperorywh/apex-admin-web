@@ -18,6 +18,13 @@
 | H02 | MapNestModify/地图编辑入口 | `pages/map-through/MapNestModify` 渲染统一暂缓说明（复用 MigrationPending）；`migrationDeferred` 标记，旧 Konva 编辑器不迁移（P09/P07 资源归属不受影响） | — | — | map-edit:view（菜单/直访一致） | 已合并；验证已通过（零业务请求/查询上下文保留/五语言/两主题） | tasks/H02.md（联验 2026-09-18） |
 | H03 | RecordPlayback/录制回放入口 | `pages/record-playback/RecordPlayback` 渲染统一暂缓说明（复用 MigrationPending）；`migrationDeferred` 标记，旧 Konva 回放/导入导出/时间轴/轮询整体不迁移（P03/P34 资源归属不受影响） | — | — | record-playback:view（菜单/直访一致） | 已合并；验证已通过（零业务请求/查询上下文保留/五语言/两主题） | tasks/H03.md（联验 2026-09-18） |
 
+| P03 | OrderRecord/状态统计 | `features/order-record/components/OrderStatisticsBar` + useVisiblePolling（约 5s 可见串行） | GET /fms/v1/dispatcher/orderRecord/orderRecordStateStatistic | orderRecordStateStatistic | order-record:view | 前端完成；带令牌联验受阻（后端凭据失效） | tasks/P03.md（2026-09-18） |
+| P03 | OrderRecord/列表分页筛选+导出 | `pages/order-record/OrderRecord`（Apex request 模式）+ OrderSearchForm + api.downloadGet/transferManager | GET /fms/v1/dispatcher/orderRecord/pageOrderRecords；GET …/exportOrderRecords | pageOrderRecords / exportOrderRecords | order-record:view | 前端完成；G04 平铺形态已实证，带令牌联验受阻 | tasks/P03.md |
+| P03 | RecordTable/取消+移队列+跳过+继续 | confirmCommand 确认 + OrderCancelModal（取消原因必填） | POST /fms/v1/dispatcher/orderTask/orderTaskOperate | orderTaskOperate | order-record:operate | 前端完成；写操作待专用环境；data 语义待联调 | tasks/P03.md |
+| P03 | MockDispatchModal/模拟分配（真实仿真，标注仿真） | MockDispatchModal（防重复提交） | POST /fms/v1/dispatcher/orderTask/mockDispatch | mockDispatch | order-record:check | 前端完成；待专用环境验收 | tasks/P03.md |
+| P03 | CreateOrderModal/创建任务 | CreateOrderModal（互斥约束/按行站点选项/草稿保留） | POST /fms/v1/dispatcher/orderRecord/createOrderRecord | createOrderRecord | order-record:create | 前端完成；待专用环境验收 | tasks/P03.md |
+| P03 | OrderInfoModal/详情快速预览（mission 分页+动作子表） | OrderInfoModal + MissionActionsTable（Apex） | POST /fms/v1/dispatcher/orderRecord/getOrderRecordDetail | getOrderRecordDetail | order-record:view | 前端完成；带令牌联验受阻；P38 往返待联验 | tasks/P03.md |
+
 ## 汇总状态口径
 
 - 页面任务记录中的「操作映射」表是权威明细；本表只汇总已合并到工作分支的实现。

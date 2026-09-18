@@ -17,7 +17,7 @@
 | common / menu / auth / error | T00 统筹 | T00.8 全量交付 |
 | map | T00（共享地图能力） | T00.8 全量交付 |
 | apexTable（非 i18next ns） | T00.5 | T00.5 全量交付（locale 包） |
-| 页面私有（profile/system/orderRecord/dashboard 等） | 对应页面任务 | 未交付，懒加载表查无返回空资源自动回退简中（i18n-missing.md 登记） |
+| 页面私有（profile/system/orderRecord/dashboard 等） | 对应页面任务 | orderRecord 已随 P03 交付四语言（zh-CN 无需分片）；其余未交付，懒加载表查无返回空资源自动回退简中（i18n-missing.md 登记） |
 
 ## 各页命名空间/文件归属终版（T00.9 冻结）
 
@@ -27,7 +27,7 @@
 | --- | --- | --- | --- |
 | P01 登录 | /auth/login | auth（T00 基座） | 沿用 features/auth + services/auth |
 | P02 软件授权 | /authorize-ingress | **license-activation**（P02 已按任务卡业务命名修正：激活业务组件与语言分片供 P29 复用，按路由段命名不适合跨页语义；三处例外规则同理） | license-activation |
-| P03 任务管理 | /order-record | orderRecord（已声明） | 沿用 features/order-record + services/order-record + types/order-record |
+| P03 任务管理 | /order-record | orderRecord（已声明，四语言已交付） | features/order-record/components + services/order-record（模板遗留 types/order-record 已删除，DTO 在 service.types） |
 | P04 车辆分组 | vehicle-group | vehicleGroup | vehicleGroup |
 | P05 车辆列表 | vehicle-display | vehicleList | vehicleList |
 | P06 载具类型 | vehicle-type | **carrierType**（路径段 vehicle-type 会与车辆业务混淆，按真实载具业务命名） | carrierType |

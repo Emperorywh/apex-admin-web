@@ -94,3 +94,17 @@ export interface SimpleMapDto {
   /** 地图名称 */
   mapName?: string
 }
+
+/**
+ * 简单站点信息（GET /dispatcher/map/getSites，OpenAPI SimpleStation schema）。
+ * 指定地图下的站点选项（P03 创建任务按地图选站点；P10 地图关联消费同源）。
+ * 站点 id 为后端字符串标识（非 int64），原样承载。
+ */
+export interface SimpleSiteDto {
+  /** 站点唯一 id */
+  id?: string
+  /** 站点名称 */
+  name?: string
+  /** 站点所在地图 id */
+  mapId?: string
+}

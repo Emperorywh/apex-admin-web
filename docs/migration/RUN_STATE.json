@@ -1,7 +1,7 @@
 {
   "版本说明": "调度系统迁移串行调度状态。由定时任务每小时触发一次，每次最多推进一个任务；写入必须整体原子替换。",
-  "最近更新时间": "2026-09-18T07:55:00Z",
-  "当前运行标识": "run-20260918-h03(H03 交付轮,锁随本轮结束释放)",
+  "最近更新时间": "2026-09-18T09:30:00Z",
+  "当前运行标识": "run-20260918-p03(P03 交付轮,锁随本轮结束释放)",
   "锁": "docs/migration/.lock（mkdir 原子目录锁，内含 lock.json）",
   "工作目录": "C:\\code\\apex-admin-web",
   "分支": "apple-rxx",
@@ -84,7 +84,7 @@
       "前置": [
         "P01"
       ],
-      "状态": "待领取(下一轮队首)"
+      "状态": "进行中（2026-09-18：前端交付完成，工程门禁全绿；带令牌联验受阻——两后端测试凭据失效，保持当前任务不勾选）"
     },
     {
       "序": 10,
@@ -449,21 +449,26 @@
     }
   ],
   "当前任务": {
-    "任务ID": "P03 任务统计(下一轮领取;本轮 H03 已完成勾选,H01-H03 暂缓入口全部收口)",
-    "状态": "H03 已完成勾选;P03 未开始",
-    "当前里程碑": "H03 录制回放暂缓说明闭环(B1 批次 H01-H03 全部交付)",
+    "任务ID": "P03 任务管理（表格样板）",
+    "状态": "前端完成；带令牌联验受阻（外部阻塞：凭据失效）——不勾选 TASKS.md",
+    "当前里程碑": "P03 整页重写已合并至工作分支（未提交时点见 git log），真实联验部分通过",
     "本轮已完成内容": [
-      "RecordPlayback.tsx 整页重写:清除 PagePlaceholder 模板占位,复用 MigrationPending 统一暂缓说明;无业务请求、无 Konva/回放代码、无录制文件导入导出/时间轴/回放轮询/全局进度",
-      "路由标记 pending→migrationDeferred(复用 H01 语义与 routeAccess 既有排除,零公共逻辑改动):不抢占登录落点、回跳不放行,root 落点保持 /no-permission",
-      "权限核对:旧 .umirc.ts access=PERM.RECORD_PLAYBACK_VIEW(record-playback:view)与新 permission.constants.ts 同值常量一致未改",
-      "查询上下文保留:?mapId=42&record=abc 直访参数不清洗不跳转",
-      "资源归属隔离:P03 任务统计/P34 实时看板/P33-P37 报表类不受影响,本轮未触碰任何共享统计/回放组件与 service",
-      "真实联验:守卫回跳(含查询参数)/落点不抢占/Dock 数据统计子菜单入口+导航/零 /fms 请求/五语言文案+html lang/两主题玻璃面板截图/back-forward 无风暴/会话清理后守卫回登录页",
-      "pnpm check(228 文件 lint 0 警告 0 错误)+build 通过;语言/主题已复位、页签已关、dev server 已停"
+      "order-record 服务层重写：7 个真实接口（列表/统计/导出/创建/详情/操作/模拟分配）+ 真实 DTO（OrderRecord/OrderMission/ActionOrder/PageOrderRecord 等 schema 全量核对）+ GET 平铺 query + AbortSignal",
+      "OrderRecord 整页重写：Apex request 模式（服务端分页/稳定行 ID=orderKey/列偏好官方适配器/G09 全列禁排序）+ 统计条 useVisiblePolling 5s 可见串行 + 搜索表单（仅收集有值字段）+ 操作列权限门控（order-record:create/check/operate 与旧实现一致）",
+      "四个弹窗+动作子表：创建（互斥约束/按行站点选项 AbortController 防乱序/草稿保留+useTabDirtyGuard）、取消（原因必填）、模拟分配（真实仿真标注 D25）、详情（单请求喂两区域+mission Apex 分页+动作 data 模式子表）；任务命令经 confirmCommand；结果状态码（DispatcherStatusCode 114 项枚举，12 项映射+原值兜底）",
+      "请求层文件下载通道：api.downloadGet+resolveDownloadFilename（RFC 5987）+apexRawResponse 标记；导出经 transferManager（切页继续/关页提示/不确定进度）",
+      "共享选项服务 P03 代建（owner 交接 P04/P10/P24）：vehicle/vehicle-group/action/order-template 新建+map.fetchMapSites；零 mock 删除：order.mock.ts/useOrderList/types/order-record 全删且引用清零",
+      "五语言 orderRecord 分片四语言交付（en 旧真译沿用+补译；繁日韩 B1 基线补译+「车辆」旧真译迁入；React Intl 插值转 i18next）+懒加载表登记；路由 pending 标记移除",
+      "工程门禁全绿：lint 245 文件 0/0、typecheck、structure 243 源文件、build 通过",
+      "运行时验证：未登录守卫回跳带 redirect；注入会话挂载冒烟（假令牌已清除）——页面完整挂载、8 类业务请求全部正常发出（pageOrderRecords?pageNo=1&pageSize=10 G04 平铺形态实证）、1000000 会话失效收敛跳登录实证"
     ],
-    "未完成步骤": [],
-    "下一步": "下一轮(定时触发)领取 P03 任务统计(B2a 首个页面任务,B2 样板门禁):路径 /analyze-visual/order-statistics,旧来源 AnalyzeVisual/OrderStatistics,目标 src/pages/analyze-visual/OrderStatistics/OrderStatistics.tsx;需按 OpenAPI 核实统计接口契约(注意 G04 GET 对象序列化/G09 排序/G10 精度/G15 空值缺口)、Apex 表格、五语言分片;首个真实业务表格页,联验需带令牌真实接口验证",
-    "阻塞原因": "无"
+    "未完成步骤": [
+      "带令牌真实联验：列表/统计真实数据渲染、分页、筛选、详情 mission 分页、G04 后端接受语义、orderTaskOperate data 语义、导出落地、五语言两主题页面级复验",
+      "写操作（创建/取消/移队列/跳过/继续/模拟分配）专用环境/现场验收（规格既定）",
+      "P38 交付后 P03→/order-info 详情往返联验"
+    ],
+    "下一步": "下一轮先以 .env.local 凭据（root/root33）重试登录：成功→补全带令牌联验后勾选 TASKS.md P03；失败→维持「前端完成、联验受阻」并报告（不启动下一项）。阻塞解除条件：提供有效测试账号或后端恢复既有凭据",
+    "阻塞原因": "外部阻塞：192.168.0.158:8888 与 10.11.2.67:8888 两后端对已知测试凭据（root/root33 大小写 MD5+明文、test/test001 大小写 MD5）均返回 code=1000010 用户名或密码错误（2026-09-18 当日早间 P01 联验凭据仍有效，推断后端侧变更）。已尝试措施：MD5 大小写/明文/双账号/双后端矩阵全部 1000010；停止口令猜测（G03 纪律）"
   },
   "验证结果": [
     {
@@ -720,7 +725,17 @@
       "命令": "H03 真实浏览器联验(dev 代理 192.168.0.158:8888,1366x768)",
       "结果": "通过:未登录直访守卫回跳带 redirect(含查询参数);root 登录落点 /no-permission 且 redirect=/analyze-visual/record-playback?mapId=42&record=abc 回跳被拒(migrationDeferred 不抢占落点);已登录直访渲染统一暂缓说明+页签/Dock 数据统计子菜单入口;查询上下文保留;页内 /fms 请求 0 条;五语言标题+说明+html lang 逐语言(en Record & Playback/繁 錄影回放/日 録画再生/韩 녹화 재생);两主题玻璃面板截图;back/forward 无重定向风暴;会话清理后守卫回登录页",
       "日期": "2026-09-18"
+    },
+    {
+      "命令": "pnpm check + pnpm build（P03 交付后）",
+      "结果": "全部通过（245 文件 lint 0 警告 0 错误；243 源文件结构检查；tsc+vite build 成功）",
+      "日期": "2026-09-18"
+    },
+    {
+      "命令": "P03 运行时联验（dev 代理 192.168.0.158:8888，1366x768）",
+      "结果": "部分通过：未登录直访守卫回跳 /login?redirect=%2Forder-record；注入会话挂载冒烟（假令牌，验证后清除）——页面完整挂载无崩溃，orderRecordStateStatistic/pageOrderRecords(?pageNo=1&pageSize=10 平铺，G04 前端形态实证)/getSimpleVehicles/getVehicleGroups/getSimpleMaps/getAGVActions/getAGVActionGroups 全部真实发出，1000000 会话失效单飞收敛跳登录实证；带令牌成功路径受阻（凭据失效矩阵详见当前任务.阻塞原因）",
+      "日期": "2026-09-18"
     }
   ],
-  "证据位置": "docs/migration/tasks/T00.md(T00 历轮交付与证据)、docs/migration/tasks/P01.md、docs/migration/tasks/P02.md、docs/migration/tasks/P41.md、docs/migration/tasks/P42.md(P42 交付/联验/限制登记)、docs/migration/tasks/H01.md(H01 交付/联验/公共文件改动记录)、docs/migration/tasks/H02.md(H02 交付/联验/资源归属隔离登记)、docs/migration/tasks/H03.md(H03 交付/联验/资源归属隔离登记)、docs/migration/contracts.md(第 1–7 节契约 + 第 9 节冻结登记 + 变更日志)、docs/migration/i18n-map.md(H02 行已更新,error 分片旧 key 映射已更新)、docs/migration/operations.md(P41/P42/H01/H02 行已登记)、docs/migration/i18n-missing.md、docs/migration/terminology.md"
+  "证据位置": "docs/migration/tasks/T00.md(T00 历轮交付与证据)、docs/migration/tasks/P01.md、docs/migration/tasks/P02.md、docs/migration/tasks/P41.md、docs/migration/tasks/P42.md(P42 交付/联验/限制登记)、docs/migration/tasks/H01.md(H01 交付/联验/公共文件改动记录)、docs/migration/tasks/H02.md(H02 交付/联验/资源归属隔离登记)、docs/migration/tasks/H03.md(H03 交付/联验/资源归属隔离登记)、docs/migration/contracts.md(第 1–7 节契约 + 第 9 节冻结登记 + 变更日志)、docs/migration/i18n-map.md(H02 行已更新,error 分片旧 key 映射已更新)、docs/migration/operations.md(P41/P42/H01/H02 行已登记)、docs/migration/i18n-missing.md、docs/migration/terminology.md、docs/migration/tasks/P03.md（P03 交付/联验/受阻登记）"
 }

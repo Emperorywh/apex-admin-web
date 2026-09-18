@@ -13,7 +13,12 @@
 
 import { api } from '@/services/request/request'
 import type { RequestOptions } from '@/services/request/request.types'
-import type { MapGraph, MapJsonDto, SimpleMapDto } from '@/services/map/map.service.types'
+import type {
+  MapGraph,
+  MapJsonDto,
+  SimpleMapDto,
+  SimpleSiteDto,
+} from '@/services/map/map.service.types'
 
 /** getMapInfo 响应 data 的声明形状（文档未定义，按旧可达实现登记） */
 interface MapInfoDataDto {
@@ -60,4 +65,28 @@ export async function fetchSimpleMaps(options?: RequestOptions): Promise<SimpleM
     throw new Error('地图选项响应结构异常（期望数组）')
   }
   return list.filter((item) => typeof item?.mapId === 'string' && item.mapId !== '')
+}
+
+/**
+ * 拉取指定地图下的站点列表（GET /dispatcher/map/getSites，P03 代建、P10 后续消费）。
+ *
+ * - mapId 必填：站点集合按地图隔离，缺参请求无业务语义，直接抛出定位调用方；
+ * - 过滤掉缺 id 的条目：无标识站点无法作为选项值回显（同 fetchSimpleMaps 纪律）；
+ * - 消费方（创建任务的子任务行）按行独立加载并防乱序，本服务只做单次查询。
+ */
+export async function fetchMapSites(
+  mapId: string,
+  options?: RequestOptions,
+): Promise<SimpleSiteDto[]> {
+  if (!mapId) {
+    throw new Error('fetchMapSites 需要有效的 mapId')
+  }
+  const list = await api.get<SimpleSiteDto[]>('/dispatcher/map/getSites', {
+    params: { mapId },
+    signal: options?.signal,
+  })
+  if (!Array.isArray(list)) {
+    throw new Error('站点选项响应结构异常（期望数组）')
+  }
+  return list.filter((item) => typeof item?.id === 'string' && item.id !== '')
 }

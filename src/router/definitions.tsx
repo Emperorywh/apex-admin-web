@@ -206,7 +206,6 @@ export const appRouteDefinitions = defineAppRoutes([
         meta: businessMeta('任务管理', PERM.ORDER_RECORD_VIEW, {
           icon: List,
           i18nNamespaces: ['orderRecord'],
-          pending: true,
         }),
       },
       {

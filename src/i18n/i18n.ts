@@ -62,6 +62,7 @@ const enUsLoaders: NamespaceLoaders = {
   auth: () => import('@/i18n/locales/en-US/auth'),
   profile: () => import('@/i18n/locales/en-US/profile'),
   system: () => import('@/i18n/locales/en-US/system'),
+  // P03 任务管理交付：en-US 分片重写（旧真译沿用+补译）
   orderRecord: () => import('@/i18n/locales/en-US/orderRecord'),
   dashboard: () => import('@/i18n/locales/en-US/dashboard'),
   error: () => import('@/i18n/locales/en-US/error'),
@@ -86,6 +87,8 @@ const zhTwLoaders: NamespaceLoaders = {
   auth: () => import('@/i18n/locales/zh-TW/auth'),
   error: () => import('@/i18n/locales/zh-TW/error'),
   map: () => import('@/i18n/locales/zh-TW/map'),
+  // P03 任务管理（order-record；页面私有命名空间）
+  orderRecord: () => import('@/i18n/locales/zh-TW/orderRecord'),
   'license-activation': () => import('@/i18n/locales/zh-TW/license-activation'),
   'access-denied': () => import('@/i18n/locales/zh-TW/access-denied'),
 }
@@ -95,6 +98,8 @@ const jaJpLoaders: NamespaceLoaders = {
   auth: () => import('@/i18n/locales/ja-JP/auth'),
   error: () => import('@/i18n/locales/ja-JP/error'),
   map: () => import('@/i18n/locales/ja-JP/map'),
+  // P03 任务管理（order-record；页面私有命名空间）
+  orderRecord: () => import('@/i18n/locales/ja-JP/orderRecord'),
   'license-activation': () => import('@/i18n/locales/ja-JP/license-activation'),
   'access-denied': () => import('@/i18n/locales/ja-JP/access-denied'),
 }
@@ -104,6 +109,8 @@ const koKrLoaders: NamespaceLoaders = {
   auth: () => import('@/i18n/locales/ko-KR/auth'),
   error: () => import('@/i18n/locales/ko-KR/error'),
   map: () => import('@/i18n/locales/ko-KR/map'),
+  // P03 任务管理（order-record；页面私有命名空间）
+  orderRecord: () => import('@/i18n/locales/ko-KR/orderRecord'),
   'license-activation': () => import('@/i18n/locales/ko-KR/license-activation'),
   'access-denied': () => import('@/i18n/locales/ko-KR/access-denied'),
 }
