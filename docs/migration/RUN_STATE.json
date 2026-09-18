@@ -1,7 +1,7 @@
 {
   "版本说明": "调度系统迁移串行调度状态。由定时任务每小时触发一次，每次最多推进一个任务；写入必须整体原子替换。",
-  "最近更新时间": "2026-09-18T01:51:39Z",
-  "当前运行标识": "user-direct-20260918-0951(用户直接指令轮,已结束,锁已释放)",
+  "最近更新时间": "2026-09-18T03:30:00Z",
+  "当前运行标识": "scheduled-20260918-hourly-p01(定时轮,已结束,锁已释放)",
   "锁": "docs/migration/.lock（mkdir 原子目录锁，内含 lock.json）",
   "工作目录": "C:\\code\\apex-admin-web",
   "分支": "apple-rxx",
@@ -21,7 +21,7 @@
       "前置": [
         "T00"
       ],
-      "状态": "待领取（下一轮队首）"
+      "状态": "已完成（2026-09-18 勾选：品牌资源/五语言切换/登录反馈交付，真实联验通过）"
     },
     {
       "序": 3,
@@ -30,7 +30,7 @@
       "前置": [
         "P01"
       ],
-      "状态": "未开始"
+      "状态": "待领取（下一轮队首）"
     },
     {
       "序": 4,
@@ -449,19 +449,20 @@
     }
   ],
   "当前任务": {
-    "任务ID": "P01（下一轮领取；本轮为用户直接指令轮，已按既定流程完成 T00 收尾并勾选）",
-    "状态": "T00 已完成勾选；P01 未开始",
-    "当前里程碑": "T00 全部关闭（G03/G17 均解决）",
+    "任务ID": "P02（下一轮领取；本轮 P01 已完成勾选）",
+    "状态": "P01 已完成勾选；P02 未开始",
+    "当前里程碑": "P01 登录页闭环（真实联验通过）",
     "本轮已完成内容": [
-      "用户直接指令：全局 URL 请求路径改为按 .env.local 配置请求（.env.local 指向 APEX_DEV_LEGACY_TARGET=http://192.168.0.158:8888）",
-      "vite.config.ts 改造：defineConfig 改函数式 + loadEnv(mode, cwd, '') 显式加载本地环境文件（config 阶段直读 process.env 在各 Vite 版本行为不一）；代理目标 = APEX_DEV_LEGACY_TARGET ?? 默认 10.11.2.67:8888（.env.local 不入库需兜底）；业务代码本就全部走 /fms/v1 同源相对路径，无硬编码 IP，客户端改动为零",
-      "CLAUDE.md 代理描述同步更新（APEX_DEV_PROXY_TARGET 约定废止，以 APEX_DEV_LEGACY_TARGET 为唯一配置源）",
-      "真实联验：pnpm dev 经代理登录返回 roles=[]（新后端特征，旧环境为 test/user/test001）+ activated:true，证明转发目标正确；带令牌 pageUsers code=200 真实用户列表",
-      "G17 解除（解除条件「用户提供已激活后端」满足）→ 按既定流程完成 T00 收尾：勾选 TASKS.md T00、gaps.md G17 置已解决、T00.md 状态更新、队列放行 P01",
-      "pnpm check（lint 0 警告 0 错误/typecheck/structure 211 文件含无硬编码主机门禁）+ pnpm build 全部通过；dev server 验证后已停止，端口已释放"
+      "品牌资源服务 brand.service.ts（GET /systemLogos/{placementKey}/file 文件通道透传 + isUsableImageBlob 校验，P01/P27 共用）",
+      "登录页品牌背景层（loginBackground → objectURL → 全屏 cover；失败/无图回退默认壁纸不阻塞登录；卸载 revoke）",
+      "登录页五语言切换 LoginLanguageSwitch（I01 登录前可切五语言；仅 dispatch localeChanged，App.tsx 统一 changeAppLanguage）",
+      "LoginForm 登录成功 message.success（A03 真实结果反馈）",
+      "auth 命名空间四语言补「登录成功」（en-US 沿用旧真译；旧繁/日/韩本为简中回退，T00.8 基线即定稿）",
+      "真实联验（经 dev 代理 192.168.0.158:8888）：错误凭据 code=1000010 真实提示、正确凭据登录成功+落点、外站回跳拒绝、无可用业务页→no-permission、刷新会话恢复、直访迁移占位守卫、品牌 404 回退不阻塞、五语言切换+刷新恢复（en/zh-TW/ko 实测）、1366×768 截图",
+      "pnpm check（215 文件 lint 0 警告 0 错误/typecheck/结构检查 213 源文件）+ pnpm build 全部通过；测试注入会话与浏览器标签已清除，dev server 已停止"
     ],
     "未完成步骤": [],
-    "下一步": "下一轮（定时触发）正常领取 P01 登录页：入口 /login、旧来源 Login、目标 src/pages/auth/Login/Login.tsx、模块 auth-login；注意新联调后端（192.168.0.158:8888）root 无角色且权限码集不同（含 device:auto-door:* 等），登录页联验以该环境为准",
+    "下一步": "下一轮（定时触发）领取 P02 软件授权：入口 /authorize-ingress、旧来源 AuthorizeIngress、目标 src/pages/authorize-ingress/AuthorizeIngress/AuthorizeIngress.tsx、模块 license-activation；接口 auth/license/getHardwareInfo（GET 已核实可用）+ softwareActivation；需提供可复用激活业务组件供 P29 使用；激活副作用仅在专用环境验证",
     "阻塞原因": "无"
   },
   "验证结果": [
@@ -644,7 +645,17 @@
       "命令": "经 pnpm dev 代理（localhost:5173/fms）登录 + 带令牌 pageUsers（G17 解除复核）",
       "结果": "登录 code=200 + activated:true + roles=[]（新后端 192.168.0.158:8888 特征，旧环境为 test/user/test001，证明代理转发目标正确）；带令牌 pageUsers code=200 真实用户列表——放行证据「授权只读可用」取得，G17 解决、T00 勾选；验证后 dev server 已停止",
       "日期": "2026-09-18"
+    },
+    {
+      "命令": "P01 真实联验（经 dev 代理 192.168.0.158:8888，凭据来源 .env.local）",
+      "结果": "通过：错误凭据 code=1000010 真实提示；正确凭据登录成功+落点规则+「登录成功」反馈；外站回跳拒绝；无可用业务页→no-permission；刷新会话恢复；直访迁移占位零业务请求；品牌 404 回退默认壁纸不阻塞；五语言切换+刷新恢复（en/zh-TW/ko 实测，ja 同链路 T00.8 已验）；1366×768 截图确认视觉",
+      "日期": "2026-09-18"
+    },
+    {
+      "命令": "pnpm check + pnpm build（P01 交付后）",
+      "结果": "全部通过（215 文件 lint 0 警告 0 错误；213 源文件结构检查；tsc+vite build 成功）",
+      "日期": "2026-09-18"
     }
   ],
-  "证据位置": "docs/migration/tasks/T00.md（T00.9 公共导出清点/mock 复核/纵向样板确认/A–I 退出检查汇总；T00.1–T00.8 历轮交付与证据）、docs/migration/contracts.md（第 1–7 节契约 + 第 9 节冻结登记）、docs/migration/i18n-map.md（各页命名空间/文件归属终版 T00.9 冻结表 + 基座映射 + umi_locale 迁移）、docs/migration/i18n-missing.md、docs/migration/terminology.md"
+  "证据位置": "docs/migration/tasks/T00.md（T00 历轮交付与证据）、docs/migration/tasks/P01.md（P01 交付/联验/限制登记）、docs/migration/contracts.md（第 1–7 节契约 + 第 9 节冻结登记）、docs/migration/i18n-map.md（各页命名空间/文件归属终版 T00.9 冻结表 + 基座映射 + umi_locale 迁移）、docs/migration/i18n-missing.md、docs/migration/terminology.md"
 }

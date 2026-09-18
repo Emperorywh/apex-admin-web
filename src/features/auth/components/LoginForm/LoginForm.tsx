@@ -32,6 +32,8 @@ export function LoginForm() {
   const handleFinish = async (values: LoginFormValues) => {
     try {
       await submit(values)
+      // 真实成功反馈（A03）：凭据正确按真实结果提示，不提前冒充成功
+      void message.success(t('登录成功'))
       // sessionReady 已落库：直接读 store 最新会话（组件闭包中的旧快照不可靠）
       const auth = store.getState().auth
       // 深链接回跳校验：仅放行站内且有权限、已完成迁移的目标，否则落登录落点

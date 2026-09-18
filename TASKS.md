@@ -149,7 +149,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P01 登录
 
-- [ ] **P01 登录**
+- [x] **P01 登录**
 - **批次 / 前置**：B1 / T00。
 - **入口**：`/login`；**旧来源**：`Login`；**目标**：`src/pages/auth/Login/Login.tsx`。
 - **私有模块 / 语言分片**：`auth-login`；**接口依据**：auth/authorize/login、systemLogos。

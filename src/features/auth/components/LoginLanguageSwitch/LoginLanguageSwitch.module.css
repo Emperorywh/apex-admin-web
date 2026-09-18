@@ -1,0 +1,29 @@
+/* 登录页语言切换：右上角悬浮，玻璃底保证亮暗主题与品牌背景图上均可读 */
+
+.wrap {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 10;
+}
+
+.btn {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--app-glass-line);
+  border-radius: var(--app-radius-control);
+  background: var(--app-pop-bg);
+  backdrop-filter: var(--app-glass-filter);
+  -webkit-backdrop-filter: var(--app-glass-filter);
+  color: var(--app-text-2);
+  cursor: pointer;
+  transition: background var(--app-dur-fast) var(--app-ease-standard);
+}
+
+.btn:hover {
+  background: var(--app-hover-bg);
+  color: var(--app-text-1);
+}
