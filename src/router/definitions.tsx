@@ -240,12 +240,16 @@ export const appRouteDefinitions = defineAppRoutes([
             }),
           },
           {
-            // 载具类型：旧路由未写 access（P06 核对后端菜单树后再定权限呈现，
-            // 不凭空创造权限码，规格 5.12）；过渡语义 = 登录即可达
+            // 载具类型（P06 交付解除 pending）：后端权限树真实下发 carrier:view
+            // （MENU，旧 permission 数据 id=23，无 path；旧前端路由未写 access、
+            // 由 MENU_TREE 兜底映射本路径）——路由挂后端已有码 PERM.CARRIER_VIEW，
+            // 不公开访问也不凭空造码（contracts.md 第 3 节核对结论）
             id: 'vehicle-deploy-vehicle-type',
             path: 'vehicle-type',
             loadPage: () => import('@/pages/vehicle-deploy/VehicleType/VehicleType'),
-            meta: businessMeta('载具类型', undefined, { pending: true }),
+            meta: businessMeta('载具类型', PERM.CARRIER_VIEW, {
+              i18nNamespaces: ['carrierType'],
+            }),
           },
           {
             id: 'vehicle-deploy-node-mapping',

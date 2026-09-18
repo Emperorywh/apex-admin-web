@@ -1,0 +1,48 @@
+/*
+ * 载具类型页布局（P06）：工具行（双筛选输入+查询/重置，左；新增按钮，右）
+ * + 全宽表格（与 P04/P05 样板同构）；颜色全部引用全局 token，不硬编码。
+ */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+  min-width: 0;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* 筛选输入组：两个条件框 + 查询/重置按钮（旧实现同形态）；窄视口随工具行换行 */
+.filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* 筛选输入框：旧实现默认宽度；固定基准宽避免伸缩抖动 */
+.filterInput {
+  width: 200px;
+}
+
+.tableWrap {
+  flex: 1;
+  min-height: 0;
+}
+
+/* 长文本省略：列内统一 ellipsis + Tooltip 由单元格自行包裹 */
+.ellipsis {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+}

@@ -40,6 +40,10 @@
 | P04 | GroupModal/新增分组（名称+Transfer 选车） | `features/vehicle-group/components/GroupFormModal`（草稿保留+useTabDirtyGuard；Transfer 复用共享选项 getSimpleVehicles；失效关联合成条目保留原标识+「已不可用」标注） | POST /fms/v1/dispatcher/vehicleGroup/addVehicleGroup；GET …/vehicle/getSimpleVehicles | addVehicleGroup / getSimpleVehicles | vehicle-group:add（无权限隐藏） | 已验证（真实新增成功+后端落库一致；Transfer 56 项真实加载；草稿保留闭环） | tasks/P04.md |
 | P04 | GroupModal/编辑分组 | GroupFormModal 编辑模式（按行重填，simpleAGVs key 回填/缺失回退 agvKeys） | POST /fms/v1/dispatcher/vehicleGroup/updateVehicleGroup | updateVehicleGroup | vehicle-group:update（无权限隐藏） | 前端已验证（XHR 请求体正确+code=200+自动刷新）；**后端缺陷 P04-G1：groupName 不落库**（仅 updateTime 更新；vehicleKeys 生效），登记 gaps.md 待后端修复复验 | tasks/P04.md |
 | P04 | 删除分组 | confirmCommand（danger，对象+影响+提交≠完成附注）→ deleteVehicleGroup → 刷新 | POST /fms/v1/dispatcher/vehicleGroup/deleteVehicleGroup | deleteVehicleGroup | vehicle-group:delete（无权限隐藏） | 已验证（取消路径保留；确认路径真实删除+列表清空+后端 total=0 自清理） | tasks/P04.md |
+| P06 | VehicleType/列表分页+名称编码双筛选 | `pages/vehicle-deploy/VehicleType`（Apex request 模式+列设置面板 carrier-type:main；G09 不开放排序；无轮询无刷新按钮） | POST /fms/v1/dispatcher/carrier/pageCarriers（body 平铺） | pageCarriers | carrier:view（守卫；后端权限树真实 MENU 码，P06 核对登记） | 已验证（带令牌：历史数据渲染/筛选命中与空态/守卫回跳带 redirect 且登录落点闭环） | tasks/P06.md（2026-09-19） |
+| P06 | CarrierModal/新增载具类型（名称+编码+尺寸） | `features/carrier-type/components/CarrierFormModal`（草稿保留+useTabDirtyGuard+失败留稿；名称/编码 64 字上限；长度/宽度 InputNumber min=1，mm 协议原样） | POST /fms/v1/dispatcher/carrier/createCarrier | createCarrier | carrier:add（无权限隐藏） | 已验证（请求体 XHR 抓包平铺正确+真实落库一致；必填四条齐出；低于 min 的 0 被表单拦截） | tasks/P06.md |
+| P06 | CarrierModal/编辑载具类型 | CarrierFormModal 编辑模式（按行重填四字段；编辑目标清除复位干净基线） | POST /fms/v1/dispatcher/carrier/updateCarrier（id 定位+全量字段） | updateCarrier | carrier:update（无权限隐藏） | 已验证（请求体正确；名称与尺寸真实落库，列表回读一致——carrier 无 G18 类缺陷） | tasks/P06.md |
+| P06 | 删除载具类型 | confirmCommand（danger，对象+影响+提交≠完成附注）→ deleteCarrier → 刷新 | POST /fms/v1/dispatcher/carrier/deleteCarrier | deleteCarrier | carrier:delete（无权限隐藏） | 已验证（取消路径行保留；确认路径真实删除+后端自清理恢复 1 条历史数据） | tasks/P06.md |
 
 ## 汇总状态口径
 

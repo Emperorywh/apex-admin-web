@@ -32,6 +32,13 @@ export const PERM = {
   VEHICLE_GROUP_VIEW: 'vehicle-group:view',
   /** 车辆列表 */
   VEHICLE_LIST_VIEW: 'vehicle-list:view',
+  /**
+   * 载具类型（P06 核对登记）：后端权限树真实下发 carrier:view（MENU，
+   * 旧系统 permission 数据 id=23；旧前端路由未写 access、由 MENU_TREE 兜底
+   * 映射 /vehicle-deploy/vehicle-type）。本处仅登记后端已有码，非凭空创造；
+   * 路由挂此码后未登录守卫 + 无码用户拦截，不公开访问。
+   */
+  CARRIER_VIEW: 'carrier:view',
   /** 节点映射 */
   NODE_MAPPING_VIEW: 'node-mapping:view',
   /** 告警码管理 */
