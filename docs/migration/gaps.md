@@ -8,7 +8,7 @@
 | --- | --- | --- | --- | --- | --- |
 | G01 | 旧 `GET /fms/v1/auth/authorize/detail` 未出现在 OpenAPI | 会话恢复与权限更新（T00、P01；P31/P32/P43 不得调用） | 已确认缺失 | 登录返回数据持久化；权限拒绝后提示重新登录；不调用未文档化接口。T00.3 已移除模板 `/users/me` 会话恢复路径（profile.service 已删除） | 2026-09-17（OpenAPI 复核 + 模板调用点清理） |
 | G02 | 文档没有模板 `/auth/refresh`、`/users/me` 协议（模板 auth.service 现存调用） | 模板认证基础设施（T00、P43） | 已确认缺失 | T00.3 已删除：请求层刷新重放/`_retriedAfterRefresh` 全部移除，`loadSession`/`getMyProfile`/`updateMyProfile` 删除；会话过期（业务码 1000000）直接清会话重新登录 | 2026-09-17 |
-| G03 | 文档无 securitySchemes；`LoginParam.password` 未说明 MD5，旧登录使用 MD5 + Bearer | 登录及全局认证头（T00、P01/P02/P29） | 待确认 | T00.3 已按旧代码证据集中适配：密码 MD5（spark-md5，auth.service 单点）、`Authorization: Bearer <token>`（请求层单点）、`Accept-Language` 头（真实环境已证实生效：同一错误凭据请求 en-US 下返回英文 message）。**待真实凭据联调确认**：MD5 摘要是否为后端期待形态、Bearer 前缀是否必需、业务码 1001000 真实行为。错误凭据探针（MD5 形态与明文形态均返回 1000010）无法区分密码形态 | 2026-09-17（部分证据）；完整确认待登录凭据 |
+| G03 | 文档无 securitySchemes；`LoginParam.password` 未说明 MD5，旧登录使用 MD5 + Bearer | 登录及全局认证头（T00、P01/P02/P29） | 已验证可用 | 2026-09-18 真实凭据联验关闭：① MD5 确认为必需形态——MD5(root) 登录 `code=200` 返回完整 UserAuth，明文密码同账号返回 `1000010`；② Bearer 确认被识别——带令牌业务接口返回 `1001000`（进入激活检查），无令牌返回 `1000000`（未登录），令牌前缀形态正确；③ `1001000` 真实语义=`系统没有被激活`（软件授权状态，与登录态/权限无关），跳软件授权入口方向确认（UI 跳转归 P02）；④ 登录返回 UserAuth 六字段与前端 DTO 完全一致（token/activated/user/roles/permissions/permissionsTree，permissionsTree 树形带 childPermissions）；⑤ root 真实身份：id=2、level=2、state=ENABLED、roles=[test,user,test001]、155 个权限码。`request.constants.ts` 注释已同步实证结论 | 2026-09-18（真实登录成功/MD5-明文对照/Bearer-无令牌对照） |
 | G04 | 多个 GET 参数以对象 DTO 声明（如 `OrderRecordPageParamOrderRecord`） | 全部列表筛选分页 | 待确认 | 逐 endpoint 验证 query 序列化，记录差异，不统一猜扁平/对象。T00.3 已定义 `BackendPageQuery`（pageNo/pageSize）与 `BackendPageResult`（records/current/size/total/pages）为常见形状基准；分页响应真实形状尚未抽样核实 | — |
 | G05 | `uploadSystemVersion` 等上传在文档表现为 `application/json` 内 binary 字段 | P08/P09/P25/P27（P23 若有可达上传同样核实） | 待确认 | 核实 multipart/字段名/媒体类型后适配；不假定所有上传同一种方式 | — |
 | G06 | 旧电梯内呼 `/fms/v1/device/elevator/innerCall` 未出现在 OpenAPI，且控制弹窗可达 | P14 | 待确认 | 保留有权限入口并标记接口暂不可用；不用外呼接口猜测替代 | — |
@@ -29,4 +29,4 @@
 
 | 编号 | 发现 / 证据 | 影响页面 | 状态 | 处理 | 决定 / 验证日期 |
 | --- | --- | --- | --- | --- | --- |
-| （暂无） | | | | | |
+| G17 | 联调服务器（10.11.2.67:8888）软件未激活：2026-09-18 真实登录返回 `activated:false`，root 带有效令牌访问业务接口（pageUsers 实测）返回 `1001000 系统没有被激活`，公开接口（systemLogos、getHardwareInfo 无令牌）不受影响 | T00 放行证据残留项（带令牌业务只读）、B2 样板门禁真实只读联验、P02 激活流程、全部 B2+ 页面的真实接口联验 | 待确认（外部条件） | 软件激活（softwareActivation）属副作用操作，按规格不自动执行，须用户在专用环境或现场完成；激活后前端无需改动（1001000 语义与跳转方向已确认）。解除条件：用户激活联调环境或提供已激活后端。T00 因此保持不勾选（放行证据「授权只读可用」未取得），队列停在 T00 | 2026-09-18（登记） |

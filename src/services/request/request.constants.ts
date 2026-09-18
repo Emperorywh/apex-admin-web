@@ -23,15 +23,18 @@ export const REQUEST_TIMEOUT_MS = 15_000
  * - code=1000000：会话失效/未登录（旧项目 httpShared BIZ_CODE.TOKEN_EXPIRED；
  *   真实环境无凭据访问 GET /fms/v1/auth/user/pageUsers 返回该码，已复核）；
  * - code=1000010：用户名或密码错误（真实环境错误凭据登录实测）；
- * - code=1001000：未授权（旧项目 httpShared BIZ_CODE.UNAUTHORIZED 代码证据，
- *   真实环境尚未复现，最终映射登记缺口 G03，授权页跳转由 P02 接入）。
+ * - code=1001000：系统未被激活（2026-09-18 真实环境实证：license 未激活
+ *   （登录返回 activated=false）时，带有效令牌访问业务接口返回
+ *   {code:1001000, message:"系统没有被激活"}；同一接口无令牌返回 1000000，
+ *   证明该码与登录态无关、属软件授权状态）；
+ *   处理方向确认为跳软件授权入口（授权页跳转由 P02 接入，缺口 G03 已关闭）。
  */
 export const RESULT_CODES = {
   /** 业务成功；不依赖 message === 'success' 字符串 */
   SUCCESS: 200,
   /** 会话失效（未登录/token 过期）：清会话并跳登录，单飞收敛 */
   SESSION_EXPIRED: 1_000_000,
-  /** 未授权：跳软件授权页（旧代码证据，待真实复核；跳转逻辑归 P02） */
+  /** 系统未被激活：跳软件授权入口（真实环境实证；跳转逻辑归 P02） */
   UNAUTHORIZED: 1_001_000,
   /** 用户名或密码错误 */
   LOGIN_FAILED: 1_000_010,
