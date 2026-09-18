@@ -229,7 +229,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P09 地图列表
 
-- [ ] **P09 地图列表**
+- [x] **P09 地图列表**
 - **批次 / 前置**：B3 / B2 样板门禁。
 - **入口**：`/map-through/map-list`；**旧来源**：`MapThrough/MapList`；**目标**：`src/pages/map-through/MapList/MapList.tsx`。
 - **私有模块 / 语言分片**：`map-list`；**接口依据**：dispatcher/map、mapVersion。

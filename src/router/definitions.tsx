@@ -288,10 +288,14 @@ export const appRouteDefinitions = defineAppRoutes([
             meta: indexRedirectMeta('地图管理'),
           },
           {
+            // 地图列表（P09 交付解除 pending）：菜单码 map-list:view 挂路由守卫
+            // （后端权限树/旧权限数据按既有码判权，不公开访问不凭空造码）
             id: 'map-through-map-list',
             path: 'map-list',
             loadPage: () => import('@/pages/map-through/MapList/MapList'),
-            meta: businessMeta('地图列表', PERM.MAP_LIST_VIEW, { pending: true }),
+            meta: businessMeta('地图列表', PERM.MAP_LIST_VIEW, {
+              i18nNamespaces: ['mapList'],
+            }),
           },
           {
             // H02 暂缓入口：菜单与直访保留给有权限用户，进入统一暂缓/迁移说明
