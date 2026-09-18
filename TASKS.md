@@ -591,7 +591,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### H02 地图编辑暂缓说明
 
-- [ ] **H02 地图编辑入口**
+- [x] **H02 地图编辑入口**
 - **批次/依赖**：B1 / T00。
 - **路径**：`/map-through/map-nest-modify`；旧来源 `MapThrough/MapNestModify`；目标 `src/pages/map-through/MapNestModify/MapNestModify.tsx`。
 - **交付**：菜单、地图列表等关联入口进入统一说明，保留合法地图上下文，按原权限控制。

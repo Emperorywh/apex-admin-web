@@ -278,7 +278,7 @@ export const appRouteDefinitions = defineAppRoutes([
             id: 'map-through-map-nest-modify',
             path: 'map-nest-modify',
             loadPage: () => import('@/pages/map-through/MapNestModify/MapNestModify'),
-            meta: businessMeta('地图编辑', PERM.MAP_EDIT_VIEW, { pending: true }),
+            meta: businessMeta('地图编辑', PERM.MAP_EDIT_VIEW, { migrationDeferred: true }),
           },
           {
             id: 'map-through-cross-maps',
