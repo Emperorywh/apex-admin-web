@@ -601,9 +601,9 @@ export default function OrderRecord() {
           pagination={{ pageSizeOptions: [10, 20, 50, 100, 200] }}
           // 开启官方列设置面板：列显隐/调序/宽度/固定必须有你不可少的用户入口，
           // 否则下方列偏好持久化管线（state 切片 + save）没有任何触发来源（DoD 5）。
-          // 序号列必须显式关闭：包内开启列设置会默认带出序号列，旧页无序号列，等价迁移不允许列结构漂移
+          // 序号列按用户决策默认放出：开启列设置时包内把齿轮入口放进序号列表头，
+          // 行内显示序号；若显式关闭序号列，齿轮会退化为表头上方独立工具条行（2026-09-18 已按此调整）
           columnSettingsEnabled
-          showRowNumber={false}
           // 高度跟随 tableWrap 弹性剩余空间：视口高度硬编码会在矮窗口把分页器顶出工作区
           height="100%"
           state={{
