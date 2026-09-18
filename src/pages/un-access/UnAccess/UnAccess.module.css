@@ -1,0 +1,36 @@
+/*
+ * 无权限页容器：布局外独立全屏页，画布透明（全局壁纸透出，不另设底色），
+ * 内容在视口内垂直居中（403 反馈的稳定视觉落点，1366×768 起可达）。
+ */
+.page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: var(--app-space-6);
+}
+
+/*
+ * 玻璃反馈面板：与外壳工作区窗口同材质（半透明 + 毛玻璃采样壁纸）。
+ * 全局壁纸为固定照片不随主题变化，深色主题下 antd 反白文字若直接叠在
+ * 浅色壁纸上不可读；玻璃面板在两套主题下分别提供明暗衬底，保证
+ * Result 文字/插画/按钮可读，同时保持材质体系统一（令牌单源，无第二份配色）。
+ */
+.panel {
+  padding: var(--app-space-7) var(--app-space-8);
+  border-radius: var(--app-radius-window);
+  background: var(--app-glass-window);
+  backdrop-filter: var(--app-glass-filter);
+  -webkit-backdrop-filter: var(--app-glass-filter);
+  box-shadow: var(--app-window-shadow);
+}
+
+/*
+ * 补充说明行：次级文字色 + 小字阶，与 Result 主说明形成层级；
+ * 只用全局令牌，不写第二份颜色/字号数值（视觉令牌单源约定）。
+ */
+.hint {
+  margin-top: 4px;
+  color: var(--app-text-3);
+  font-size: var(--app-fs-secondary);
+}

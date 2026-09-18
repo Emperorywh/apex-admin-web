@@ -549,7 +549,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P41 无权限页
 
-- [ ] **P41 无权限页**
+- [x] **P41 无权限页**
 - **批次 / 前置**：B1 / T00。
 - **入口**：`/no-permission`；**旧来源**：`UnAccess`；**目标**：`src/pages/un-access/UnAccess/UnAccess.tsx`。
 - **私有模块 / 语言分片**：`access-denied`；**接口依据**：无业务接口。

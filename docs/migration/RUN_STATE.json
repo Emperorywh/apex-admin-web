@@ -1,7 +1,7 @@
 {
   "版本说明": "调度系统迁移串行调度状态。由定时任务每小时触发一次，每次最多推进一个任务；写入必须整体原子替换。",
-  "最近更新时间": "2026-09-18T03:55:00Z",
-  "当前运行标识": "run-20260918-101331-13808(P02 交付轮，锁随本轮结束释放)",
+  "最近更新时间": "2026-09-18T04:05:00Z",
+  "当前运行标识": "run-20260918-110550-14305(P41 交付轮，锁随本轮结束释放)",
   "锁": "docs/migration/.lock（mkdir 原子目录锁，内含 lock.json）",
   "工作目录": "C:\\code\\apex-admin-web",
   "分支": "apple-rxx",
@@ -39,7 +39,7 @@
       "前置": [
         "T00"
       ],
-      "状态": "待领取（下一轮队首）"
+      "状态": "已完成（2026-09-18 勾选：403 反馈/防循环返回/真实登出/五语言/两主题实证）"
     },
     {
       "序": 5,
@@ -48,7 +48,7 @@
       "前置": [
         "T00"
       ],
-      "状态": "未开始"
+      "状态": "待领取（下一轮队首）"
     },
     {
       "序": 6,
@@ -449,22 +449,20 @@
     }
   ],
   "当前任务": {
-    "任务ID": "P41 无权限页（下一轮领取；本轮 P02 已完成勾选）",
-    "状态": "P02 已完成勾选；P41 未开始",
-    "当前里程碑": "P02 软件授权闭环（读链路真实联验通过；激活写副作用登记专用环境）",
+    "任务ID": "P42 兜底错误页（下一轮领取；本轮 P41 已完成勾选）",
+    "状态": "P41 已完成勾选；P42 未开始",
+    "当前里程碑": "P41 无权限页闭环（守卫/落点/防循环/真实登出/五语言/两主题实证）",
     "本轮已完成内容": [
-      "服务层 src/services/license-activation/：fetchHardwareInfo(GET /auth/license/getHardwareInfo, 无需认证实证) + activateSoftware(POST softwareActivation, 不自动重试)；P29 共用",
-      "可复用激活业务组件：features/license-activation/ 下 ActivationForm(失败保留输入/onActivated 回调/可选 onBack) + useHardwareInfo(三态/防乱序/失败可重试) + copyText(内网 http 兜底)",
-      "页面 src/pages/authorize-ingress/AuthorizeIngress/：旧深蓝科技风等价移植(CSS Modules+lucide+prefers-reduced-motion)、硬件码展示+复制、1366×768 截图",
-      "激活成功：authSlice.activationConfirmed 更新真实 activated → resolveLandingPath 按会话权限导航(不复刻旧硬编码 /over-look)",
-      "1001000 全局引导：request.ts 单飞提示+事件 → ActivationRedirectListener(App 根)SPA 跳授权页；授权页自身抑制；生产构建实证",
-      "路由：/authorize-ingress 摘除 migrationPending + 声明 license-activation 命名空间(standaloneMeta 签名扩展，其余调用兼容)",
-      "五语言：license-activation 命名空间四语言分片(en-US 沿用旧真译；繁/日/韩按 B1 基线交付真实译文)；common 四语言各增 1 键(1001000 提示)",
-      "真实联验(192.168.0.158:8888 经代理)：未登录守卫回跳、硬件码 B1E3252E8C273C40 页面与 curl 一致、复制剪贴板实证、失败分支(客户端注入网络错误,零写副作用)输入保留、落点规则(生产构建落 /no-permission 正确)、引导跳转与抑制(en/zh-TW 全页+ja/ko 标题实测)",
-      "pnpm check(225 文件 lint 0 警告 0 错误/typecheck/结构检查 223 源文件)+pnpm build 通过；调试插桩零残留；浏览器测试会话与页签已清除；.env.local 已还原"
+      "页面 src/pages/un-access/UnAccess/：旧 UnAccess 等价迁移——Result 403 + 主说明（旧 key 沿用）+ 联系管理员说明 + 玻璃反馈面板（--app-glass-window 等 4 令牌，修复深色反白文字叠固定浅壁纸不可读）",
+      "返回路径防循环：resolveLandingPath 按会话计算落点，落点=本页（无可用业务页）时不渲染返回按钮；replace 导航不堆积历史",
+      "退出登录：真实 POST /fms/v1/auth/authorize/logout（performance entries 实证）+ sessionExpired 清会话 + replace 登录页；失败不阻塞本地登出，不自动重试",
+      "user=null 防御分支呈现「去登录」（跨窗口登出同步场景，DoD 3）",
+      "五语言：access-denied 分片四语言（4 键；en 沿用旧真译 No permission to access this page / Go to Login；繁日韩 B1 基线真实译文，台湾用语存取/登入）+「退出登录」复用 common 既有术语；路由 meta 声明 i18nNamespaces",
+      "真实联验：未登录守卫回跳、root 登录落点=/no-permission 且仅退出按钮（防循环实证）、退出后再守卫+重登恢复、五语言全页+html lang 逐语言、深浅主题截图（修复后两主题可读）、1366×768、历史往返无循环",
+      "pnpm check(229 文件 lint 0 警告 0 错误/typecheck/结构检查 227 源文件)+pnpm build 通过；零调试残留；测试会话已登出、偏好残留已清、页签已关、dev server 已停"
     ],
     "未完成步骤": [],
-    "下一步": "下一轮（定时触发）领取 P41 无权限页：入口 /no-permission、旧来源 UnAccess、目标 src/pages/un-access/UnAccess/UnAccess.tsx、语言分片复用 common/error(P41 整合 pages/un-access 现有占位)、无业务接口；重点：返回不进无权限重定向循环、无权限/离线/缺口/暂缓区分、五语言完整",
+    "下一步": "下一轮（定时触发）领取 P42 兜底错误页：入口 /*（+核对 /404、/500 与路由/页面错误边界），旧来源 @/pages/NotFound，目标 src/pages/error/NotFound/NotFound.tsx，语言分片 error（T00 基座已有 error 命名空间四语言）；重点：未知 URL/加载失败/无权限分别呈现、已登录/未登录合法恢复路径、不泄漏会话信息、业务查询失败不伪装为 404",
     "阻塞原因": "无"
   },
   "验证结果": [
@@ -672,7 +670,17 @@
       "命令": "pnpm check + pnpm build（P02 交付后）",
       "结果": "全部通过（225 文件 lint 0 警告 0 错误；223 源文件结构检查；tsc+vite build 成功）；调试残留 grep 为零",
       "日期": "2026-09-18"
+    },
+    {
+      "命令": "P41 真实浏览器联验（dev 代理 192.168.0.158:8888）",
+      "结果": "通过：未登录直访守卫回跳 /login?redirect=%2Fno-permission；root 登录落点=/no-permission 且仅退出按钮（落点=本页时返回不渲染，防循环实证）；退出登录真实请求（performance entries）+auth 持久化清空；退出后再守卫+重登恢复；五语言全页文案+html lang 逐语言实测；深色反白叠浅壁纸缺陷经玻璃面板修复后两主题截图确认可读；1366×768；back/forward 无重定向风暴",
+      "日期": "2026-09-18"
+    },
+    {
+      "命令": "pnpm check + pnpm build（P41 交付后）",
+      "结果": "全部通过（229 文件 lint 0 警告 0 错误；227 源文件结构检查；tsc+vite build 成功）；调试残留 grep 为零",
+      "日期": "2026-09-18"
     }
   ],
-  "证据位置": "docs/migration/tasks/T00.md（T00 历轮交付与证据）、docs/migration/tasks/P01.md（P01 交付/联验/限制登记）、docs/migration/tasks/P02.md（P02 交付/联验/限制登记）、docs/migration/contracts.md（第 1–7 节契约 + 第 9 节冻结登记 + 变更日志）、docs/migration/i18n-map.md（各页命名空间/文件归属终版 + P02 业务命名修正 + umi_locale 迁移）、docs/migration/operations.md（P02 操作映射汇总）、docs/migration/i18n-missing.md、docs/migration/terminology.md"
+  "证据位置": "docs/migration/tasks/T00.md（T00 历轮交付与证据）、docs/migration/tasks/P01.md、docs/migration/tasks/P02.md、docs/migration/tasks/P41.md（P41 交付/联验/限制登记）、docs/migration/contracts.md（第 1–7 节契约 + 第 9 节冻结登记 + 变更日志）、docs/migration/i18n-map.md（P41 行更正为 access-denied 独立分片）、docs/migration/operations.md、docs/migration/i18n-missing.md、docs/migration/terminology.md"
 }

@@ -656,11 +656,12 @@ export const appRouteDefinitions = defineAppRoutes([
     }),
   },
   {
-    // 无权限落点：受认证守卫（未登录访问送回登录页），不公开但无菜单码
+    // 无权限落点（P41）：受认证守卫（未登录访问送回登录页），不公开但无菜单码；
+    // 声明 access-denied 分片供 I18nPageGate 预载（common 为常驻基座无需声明）
     id: 'no-permission',
     path: '/no-permission',
     loadPage: () => import('@/pages/un-access/UnAccess/UnAccess'),
-    meta: standaloneMeta('无权限'),
+    meta: standaloneMeta('无权限', { i18nNamespaces: ['access-denied'] }),
   },
   {
     // 显式 404：登录前也可达的兜底页

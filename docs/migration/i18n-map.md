@@ -65,7 +65,7 @@
 | P38 任务详情 | /order-info | orderInfo | orderInfo |
 | P39 车辆详情 | /vehicle-info | vehicleInfo | vehicleInfo |
 | P40 服务器资源 | /server-resource（别名 server-resource-monitor 同实现） | serverResource | serverResource |
-| P41 无权限页 | /no-permission | 复用 common/error（现 pages/un-access/UnAccess，P41 整合） | 无独立域（整合入现有守卫反馈页） |
+| P41 无权限页 | /no-permission | **access-denied**（已交付；P41 按任务卡独立分片，覆盖冻结时「复用 common/error」的盘点） | 沿用 pages/un-access |
 | P42 兜底错误页 | /404、/500 | error（T00 基座） | 沿用 pages/error |
 | P43 模板个人中心清理 | /profile | profile（已声明） | 沿用 features/profile |
 | H01 调度监控暂缓 | over-look | 复用 common（暂缓说明统一组件） | 无业务文件（D07） |
