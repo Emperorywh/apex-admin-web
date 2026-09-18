@@ -7,11 +7,11 @@
  * - 仅收集有值字段为查询参数（所见即所得；空值不写入参数对象）；
  * - 查询与导出共用同一 buildFilters（导出遵循后端筛选与数据范围，DoD 9）；
  * - 车辆选项走共享选项契约（useStaticOptions：scope 取消/防乱序/失败清空），
- *   失败时下拉内提供重试，不阻塞列表主查询；
+ *   失败在下拉内呈现状态文本（不设重试按钮），不阻塞列表主查询；
  * - 时间序列化 yyyy-MM-dd HH:mm:ss（与后端 date-time 口径一致，部署时区语义）。
  */
 
-import { Button, Col, DatePicker, Form, Input, Row, Select, Space, Spin } from 'antd'
+import { Button, Col, DatePicker, Form, Input, Row, Select, Space } from 'antd'
 import type { GetProps } from 'antd'
 import dayjs from 'dayjs'
 import { useCallback } from 'react'
@@ -85,6 +85,7 @@ interface OrderSearchFormProps {
 
 export function OrderSearchForm({ onSearch, onCreate, onExport }: OrderSearchFormProps) {
   const { t } = useTranslation('orderRecord')
+  const { t: tCommon } = useTranslation('common')
   const [form] = Form.useForm<OrderSearchFormValues>()
 
   // 按钮码权限：创建入口无权限隐藏（DoD 3；与旧实现 §7.1 一致）
@@ -113,14 +114,28 @@ export function OrderSearchForm({ onSearch, onCreate, onExport }: OrderSearchFor
   }, [form, onExport])
 
   return (
-    <Form form={form} layout="vertical" autoComplete="off" onFinish={handleSearch}>
+    <Form
+      form={form}
+      layout="horizontal"
+      colon={false}
+      labelCol={{ flex: '0 0 104px' }}
+      /* wrapper 弹性基准必须为 0 且禁用 min-width:auto：
+         RangePicker 等宽 min-content 控件会把 wrapper 挤到 ant-row 的下一行，
+         视觉上退回「标签在上」的竖排（antd 行容器默认允许换行） */
+      wrapperCol={{ flex: '1 1 0%', style: { minWidth: 0 } }}
+      autoComplete="off"
+      onFinish={handleSearch}
+    >
+      {/* 统一 4 列栅格（span 6×4）：五个筛选字段+三个时间范围在两行内同宽对齐，
+          1920 及以下视口均不溢出（旧 5+4+4+5+5 排布在最右字段被视口裁切）；
+          标签横排居左（视觉规范），104px 固定标签宽保证各行控件左缘对齐 */}
       <Row gutter={[12, 0]}>
-        <Col span={5}>
+        <Col span={6}>
           <Form.Item label={t('任务名称/编号')} name="query">
             <Input allowClear placeholder={t('任务名称/编号')} />
           </Form.Item>
         </Col>
-        <Col span={4}>
+        <Col span={6}>
           <Form.Item label={t('任务类型')} name="orderType">
             <Select
               allowClear
@@ -129,7 +144,7 @@ export function OrderSearchForm({ onSearch, onCreate, onExport }: OrderSearchFor
             />
           </Form.Item>
         </Col>
-        <Col span={4}>
+        <Col span={6}>
           <Form.Item label={t('任务状态')} name="orderState">
             <Select
               allowClear
@@ -138,7 +153,7 @@ export function OrderSearchForm({ onSearch, onCreate, onExport }: OrderSearchFor
             />
           </Form.Item>
         </Col>
-        <Col span={5}>
+        <Col span={6}>
           <Form.Item label={t('任务车辆')} name="vehicleKey">
             <Select
               allowClear
@@ -149,19 +164,15 @@ export function OrderSearchForm({ onSearch, onCreate, onExport }: OrderSearchFor
               fieldNames={{ label: 'name', value: 'key' }}
               options={vehicles.options ?? []}
               notFoundContent={
-                // 选项区域失败在「该下拉内部」给出真实状态与重试，不用空列表冒充成功
-                vehicles.error ? (
-                  <Spin size="small">
-                    <Button size="small" onClick={vehicles.reload}>
-                      {t('重新加载')}
-                    </Button>
-                  </Spin>
-                ) : undefined
+                // 选项失败只呈现状态文本：视觉规范——非表格区域不设重试按钮
+                vehicles.error ? tCommon('加载失败') : undefined
               }
             />
           </Form.Item>
         </Col>
-        <Col span={5}>
+      </Row>
+      <Row gutter={[12, 0]}>
+        <Col span={6}>
           <Form.Item label={t('创建时间')} name="createTime">
             <DatePicker.RangePicker
               allowEmpty={[true, true]}
@@ -172,9 +183,7 @@ export function OrderSearchForm({ onSearch, onCreate, onExport }: OrderSearchFor
             />
           </Form.Item>
         </Col>
-      </Row>
-      <Row gutter={[12, 0]}>
-        <Col span={5}>
+        <Col span={6}>
           <Form.Item label={t('执行时间')} name="executionTime">
             <DatePicker.RangePicker
               allowEmpty={[true, true]}
@@ -185,7 +194,7 @@ export function OrderSearchForm({ onSearch, onCreate, onExport }: OrderSearchFor
             />
           </Form.Item>
         </Col>
-        <Col span={5}>
+        <Col span={6}>
           <Form.Item label={t('终止时间')} name="finalTime">
             <DatePicker.RangePicker
               allowEmpty={[true, true]}
@@ -196,10 +205,12 @@ export function OrderSearchForm({ onSearch, onCreate, onExport }: OrderSearchFor
             />
           </Form.Item>
         </Col>
-        <Col flex="auto">
+        <Col span={6}>
           <Form.Item label=" ">
-            <Space>
-              <Button type="primary" htmlType="submit">
+            {/* wrap：1366 视口下标签占宽后按钮组换行而非溢出（按钮可达优先于单行） */}
+            <Space wrap size={8}>
+              {/* 仅「创建任务」保留实心主按钮：查询是筛选动作，不与页面主 CTA 争夺层级 */}
+              <Button htmlType="submit">
                 {t('查询')}
               </Button>
               <Button onClick={handleReset}>{t('清空')}</Button>

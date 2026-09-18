@@ -27,8 +27,9 @@ const DATE_ONLY_RE = /^\d{4}-\d{2}-\d{2}$/
 /** 带时区偏移或 UTC 标记的 ISO date-time（绝对时刻明确） */
 const OFFSET_DATETIME_RE = /^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}(:\d{2}(\.\d{1,3})?)?(Z|[+-]\d{2}:?\d{2})$/
 
-/** 展示层"不可解析/缺失"占位符（与统计工具口径一致） */
-export const UNPARSEABLE_DATETIME = '—'
+/** 展示层"不可解析/缺失"占位（视觉规范：单元格无数据一律留白，不用「—」；
+ *  唯一例外是统计条缺失值，见 OrderStatisticsBar） */
+export const UNPARSEABLE_DATETIME = ''
 
 /**
  * 把后端返回的时间值解析为 Dayjs（部署时区上下文）。

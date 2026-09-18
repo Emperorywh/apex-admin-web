@@ -36,11 +36,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-.refresh {
-  align-self: center;
-  flex: none;
-}
-
 /* 窄视口允许换行，指标保持可达（DoD 13：1366×768 及以上，工具栏可换行） */
 @media (max-width: 1500px) {
   .wrap {

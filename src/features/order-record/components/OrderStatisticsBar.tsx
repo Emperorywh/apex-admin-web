@@ -3,14 +3,16 @@
  *
  * 旧实现：OrderStatistics 组件 1 秒轮询统计接口 + antd Statistic 展示。
  * 新实现：数据由页面统一获取（useVisiblePolling 约 5 秒可见串行，契约集中配置），
- * 本组件只做纯展示；失败区域清空并显式重试（DoD 6），不清零冒充成功。
+ * 本组件只做纯展示；失败区域清空呈现真实失败态（DoD 6），恢复依赖可见轮询
+ * 自动重查——视觉规范：非表格区域不设重试/刷新按钮。
  *
  * 空值纪律（DoD 14 / 规格 11.2）：后端明确返回 0 显示 0；
- * 字段缺失/null 显示「—」，不补零、不算可计算指标。
+ * 字段缺失/null 显示「—」（与表格单元格留白规范不同：缺失必须与真实 0 可区分），
+ * 不补零、不算可计算指标。
  */
 
 import { useTranslation } from 'react-i18next'
-import { Button, Spin } from 'antd'
+import { Spin } from 'antd'
 import { StateBlock } from '@/components/StateBlock/StateBlock'
 import type { OrderRecordStateStatisticDto } from '@/services/order-record/order.service.types'
 import styles from './OrderStatisticsBar.module.css'
@@ -32,18 +34,16 @@ interface OrderStatisticsBarProps {
   loading: boolean
   /** 最近一次统计加载是否真正失败（取消不算） */
   error: boolean
-  /** 失败重试回调（显式用户动作，不自动重发） */
-  onRetry: () => void
 }
 
-export function OrderStatisticsBar({ statistic, loading, error, onRetry }: OrderStatisticsBarProps) {
+export function OrderStatisticsBar({ statistic, loading, error }: OrderStatisticsBarProps) {
   const { t } = useTranslation('orderRecord')
 
-  // 统计区域独立失败：清空数值区域，显式给出重试；不渲染旧数据冒充成功
+  // 统计区域独立失败：清空数值区域呈现失败态，不设重试按钮（轮询恢复）；不用旧数据冒充成功
   if (error) {
     return (
       <div className={styles.wrap}>
-        <StateBlock variant="offline" onRetry={onRetry} retryLabel="重新加载" minHeight={72} />
+        <StateBlock variant="offline" minHeight={72} />
       </div>
     )
   }
@@ -52,9 +52,10 @@ export function OrderStatisticsBar({ statistic, loading, error, onRetry }: Order
     <Spin spinning={loading && statistic === null} size="small">
       <div className={styles.wrap}>
         {STATISTIC_ITEMS.map((item) => {
-          // 仅「字段真实存在且为数值」才显示数值；缺失/null 一律「—」，0 是合法值正常显示
+          // 仅「字段真实存在且为数值」才显示数值；缺失/null 一律「—」，0 是合法值正常显示。
+          // 展示层做千分位分组（大数可读性），不改协议数值本身
           const raw = statistic?.[item.key]
-          const value = typeof raw === 'number' ? raw : '—'
+          const value = typeof raw === 'number' ? raw.toLocaleString() : '—'
           return (
             <div key={item.key} className={styles.item}>
               <span className={styles.title}>{t(item.title)}</span>
@@ -62,10 +63,6 @@ export function OrderStatisticsBar({ statistic, loading, error, onRetry }: Order
             </div>
           )
         })}
-        {/* 手动刷新入口：实时页签之外（如轮询退避中）用户可主动重查 */}
-        <Button size="small" type="text" onClick={onRetry} className={styles.refresh}>
-          {t('刷新')}
-        </Button>
       </div>
     </Spin>
   )

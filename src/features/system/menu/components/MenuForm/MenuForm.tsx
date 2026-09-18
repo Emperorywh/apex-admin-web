@@ -62,7 +62,13 @@ export function MenuForm({ open, menu, parentOptions, saving, onOk, onCancel }: 
       onCancel={onCancel}
       destroyOnHidden
     >
-      <Form<MenuFormValues> form={form} layout="vertical" initialValues={{ sort: 1, parentId: null }}>
+      <Form<MenuFormValues>
+        form={form}
+        layout="horizontal"
+        labelCol={{ span: 6 }}
+        wrapperCol={{ span: 18 }}
+        initialValues={{ sort: 1, parentId: null }}
+      >
         <Form.Item name="parentId" label={t('上级菜单')}>
           <Select
             allowClear

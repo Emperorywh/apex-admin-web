@@ -28,7 +28,7 @@ import type {
   ColumnSizingState,
   ColumnVisibilityState,
 } from 'apex-table-react'
-import { Copy, RotateCcw } from 'lucide-react'
+import { Copy } from 'lucide-react'
 import { useApexLocale } from '@/hooks/useApexLocale'
 import { useColumnPreferences } from '@/hooks/useColumnPreferences'
 import { usePermission } from '@/hooks/usePermission'
@@ -298,11 +298,11 @@ export default function OrderRecord() {
 
   /* ------------------------------------- 表格列定义 ------------------------------------- */
 
-  const columns: ApexColumnDef<OrderRecordDto>[] = useMemo(() => {
-    /** 长文本单元格：空值「—」、悬浮显示全文（原文不翻译） */
+  const columns = useMemo<ApexColumnDef<OrderRecordDto>[]>(() => {
+    /** 长文本单元格：空值留白、悬浮显示全文（原文不翻译） */
     const textCell = (maxWidth: number) => (info: { getValue: () => unknown }) => {
       const value = info.getValue()
-      const text = value === null || value === undefined || value === '' ? '—' : String(value)
+      const text = value === null || value === undefined || value === '' ? '' : String(value)
       return (
         <Tooltip title={text} placement="topLeft">
           <span className={styles.ellipsis} style={{ maxWidth: maxWidth - 16 }}>
@@ -319,6 +319,7 @@ export default function OrderRecord() {
         header: t('任务编号'),
         enableSorting: false,
         size: 150,
+        meta: { apex: { align: 'center' } },
         cell: textCell(150),
       },
       {
@@ -326,6 +327,7 @@ export default function OrderRecord() {
         header: t('任务名称'),
         enableSorting: false,
         size: 150,
+        meta: { apex: { align: 'center' } },
         cell: textCell(150),
       },
       {
@@ -333,10 +335,11 @@ export default function OrderRecord() {
         header: t('任务状态'),
         enableSorting: false,
         size: 100,
+        meta: { apex: { align: 'center' } },
         cell: (info) => {
           const value = info.getValue() as OrderState | undefined
-          // 未知状态显示原值（无色 Tag），不映射为正常（规格 11.2/18.3）
-          if (!value) return <Tag>—</Tag>
+          // 未知状态显示原值（无色 Tag），缺失留白（规格 11.2/18.3）
+          if (!value) return null
           const known = value in ORDER_STATE_LABEL
           return (
             <Tag color={known ? ORDER_STATE_TAG_COLOR[value] : undefined}>
@@ -349,11 +352,12 @@ export default function OrderRecord() {
         accessorKey: 'taskId',
         header: t('任务ID'),
         enableSorting: false,
-        size: 150,
-        // 可空（如充电类订单）：空显示「—」；有值可复制（协议原值不翻译）
+        size: 140,
+        meta: { apex: { align: 'center' } },
+        // 可空（如充电类订单）：缺失留白；有值可复制（协议原值不翻译）
         cell: (info) => {
           const value = info.getValue() as string | null
-          if (!value) return '—'
+          if (!value) return null
           return (
             <Tooltip title={`${value}（${t('点击复制')}）`} placement="topLeft">
               <span
@@ -365,7 +369,7 @@ export default function OrderRecord() {
                   })
                 }}
               >
-                <span className={styles.ellipsis} style={{ maxWidth: 126 }}>{value}</span>
+                <span className={styles.ellipsis} style={{ maxWidth: 116 }}>{value}</span>
                 <Copy size={12} className={styles.copyIcon} />
               </span>
             </Tooltip>
@@ -376,21 +380,24 @@ export default function OrderRecord() {
         accessorKey: 'appointVehicleName',
         header: t('指定车辆'),
         enableSorting: false,
-        size: 160,
-        cell: textCell(160),
+        size: 150,
+        meta: { apex: { align: 'center' } },
+        cell: textCell(150),
       },
       {
         accessorKey: 'appointVehicleGroupName',
         header: t('指定车辆组'),
         enableSorting: false,
-        size: 160,
-        cell: textCell(160),
+        size: 150,
+        meta: { apex: { align: 'center' } },
+        cell: textCell(150),
       },
       {
         accessorKey: 'executeVehicleName',
         header: t('执行车辆'),
         enableSorting: false,
         size: 170,
+        meta: { apex: { align: 'center' } },
         cell: textCell(170),
       },
       {
@@ -398,49 +405,57 @@ export default function OrderRecord() {
         header: t('优先级'),
         enableSorting: false,
         size: 80,
-        cell: (info) => info.getValue() ?? '—',
+        meta: { apex: { align: 'center' } },
+        // 旧系统为 0-999 自由数值（无既定枚举语义）：显示原值，不臆造档位文案（规格 11.2/18.3）
+        cell: (info) => info.getValue() ?? '',
       },
       {
         accessorKey: 'executeTime',
         header: t('开始执行时间'),
         enableSorting: false,
-        size: 155,
+        size: 160,
+        meta: { apex: { align: 'center' } },
         cell: timeCell,
       },
       {
         accessorKey: 'finalTime',
         header: t('结束执行时间'),
         enableSorting: false,
-        size: 155,
+        size: 160,
+        meta: { apex: { align: 'center' } },
         cell: timeCell,
       },
       {
         accessorKey: 'createTime',
         header: t('创建时间'),
         enableSorting: false,
-        size: 155,
+        size: 160,
+        meta: { apex: { align: 'center' } },
         cell: timeCell,
       },
       {
         accessorKey: 'failReason',
         header: t('失败原因'),
         enableSorting: false,
-        size: 170,
-        cell: textCell(170),
+        size: 150,
+        meta: { apex: { align: 'center' } },
+        cell: textCell(150),
       },
       {
         accessorKey: 'hangReason',
         header: t('挂起原因'),
         enableSorting: false,
-        size: 170,
-        cell: textCell(170),
+        size: 150,
+        meta: { apex: { align: 'center' } },
+        cell: textCell(150),
       },
       {
         accessorKey: 'cancelReason',
         header: t('取消原因'),
         enableSorting: false,
-        size: 170,
-        cell: textCell(170),
+        size: 150,
+        meta: { apex: { align: 'center' } },
+        cell: textCell(150),
       },
       {
         // 操作列：固定右侧不参与偏好持久化；入口受按钮码控制（无权限隐藏）
@@ -448,6 +463,7 @@ export default function OrderRecord() {
         header: t('操作'),
         enableSorting: false,
         size: 230,
+        meta: { apex: { align: 'center' } },
         cell: ({ row }) => (
           <Space size={4}>
             {/* 检测=模拟分配入口：仅队列中任务可用（旧实现同语义） */}
@@ -523,12 +539,11 @@ export default function OrderRecord() {
 
   return (
     <div className={styles.page}>
-      {/* 统计条：独立请求区域，约 5 秒可见轮询 + 手动刷新 */}
+      {/* 统计条：独立请求区域，约 5 秒可见轮询（失败自动恢复，无手动刷新/重试入口） */}
       <OrderStatisticsBar
         statistic={statistic}
         loading={statisticLoading}
         error={statisticError}
-        onRetry={() => void reloadStatistic()}
       />
 
       {/* 搜索表单：查询/清空/创建（按钮码）/导出 */}
@@ -538,10 +553,8 @@ export default function OrderRecord() {
         onExport={handleExport}
       />
 
+      {/* 工具行仅承载「筛选已启用」提示：不设手动刷新按钮，新鲜度由可见轮询保证 */}
       <div className={styles.toolbar}>
-        <Button size="small" icon={<RotateCcw size={13} />} onClick={refreshAfterMutation}>
-          {t('刷新')}
-        </Button>
         {hasFilters ? (
           <span className={styles.filterHint}>{t('筛选已启用，导出与列表使用相同条件')}</span>
         ) : null}
@@ -568,7 +581,8 @@ export default function OrderRecord() {
           getRowId={stringFieldRowId('orderKey')}
           locale={apexLocale}
           pagination={{ pageSizeOptions: [10, 20, 50, 100, 200] }}
-          height="calc(100vh - 330px)"
+          // 高度跟随 tableWrap 弹性剩余空间：视口高度硬编码会在矮窗口把分页器顶出工作区
+          height="100%"
           state={{
             columnOrder: prefSlices.columnOrder,
             columnVisibility: prefSlices.columnVisibility,

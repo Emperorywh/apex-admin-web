@@ -8,7 +8,7 @@
  */
 
 import { useEffect, useState } from 'react'
-import { Alert, App, Button, Form, Modal, Select, Spin } from 'antd'
+import { Alert, App, Form, Modal, Select } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { useStaticOptions } from '@/hooks/useStaticOptions'
 import { apiErrorMessage, isCancelledError } from '@/services/request/request'
@@ -31,6 +31,7 @@ interface MockDispatchFormValues {
 
 export function MockDispatchModal({ open, orderKey, onClose, onSucceeded }: MockDispatchModalProps) {
   const { t } = useTranslation('orderRecord')
+  const { t: tCommon } = useTranslation('common')
   const { message } = App.useApp()
   const [form] = Form.useForm<MockDispatchFormValues>()
   const [submitting, setSubmitting] = useState(false)
@@ -81,7 +82,14 @@ export function MockDispatchModal({ open, orderKey, onClose, onSucceeded }: Mock
         description={`${t('仿真操作提示')}：${orderKey}`}
         style={{ marginBottom: 16 }}
       />
-      <Form form={form} layout="vertical" autoComplete="off">
+      {/* 标签横排居左（视觉规范） */}
+      <Form
+        form={form}
+        layout="horizontal"
+        labelCol={{ span: 6 }}
+        wrapperCol={{ span: 18 }}
+        autoComplete="off"
+      >
         <Form.Item
           label={t('车辆')}
           name="vehicleKey"
@@ -95,15 +103,10 @@ export function MockDispatchModal({ open, orderKey, onClose, onSucceeded }: Mock
             loading={vehicles.loading}
             fieldNames={{ label: 'name', value: 'key' }}
             options={vehicles.options ?? []}
-            notFoundContent={
-              vehicles.error ? (
-                <Spin size="small">
-                  <Button size="small" onClick={vehicles.reload}>
-                    {t('重新加载')}
-                  </Button>
-                </Spin>
-              ) : undefined
-            }
+              notFoundContent={
+                // 选项失败只呈现状态文本：视觉规范——非表格区域不设重试按钮
+                vehicles.error ? tCommon('加载失败') : undefined
+              }
           />
         </Form.Item>
       </Form>

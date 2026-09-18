@@ -79,7 +79,14 @@ export function OrderCancelModal({ open, orderKey, orderName, onClose, onSucceed
       cancelText={t('取消')}
       destroyOnHidden
     >
-      <Form form={form} layout="vertical" autoComplete="off">
+      {/* 标签横排居左（视觉规范） */}
+      <Form
+        form={form}
+        layout="horizontal"
+        labelCol={{ span: 6 }}
+        wrapperCol={{ span: 18 }}
+        autoComplete="off"
+      >
         {/* 目标任务以名称+编号列明（DoD 8：确认对象明确），原文展示不翻译 */}
         <Form.Item label={t('任务名称')}>
           <Input value={orderName ? `${orderName}（${orderKey}）` : orderKey} disabled />

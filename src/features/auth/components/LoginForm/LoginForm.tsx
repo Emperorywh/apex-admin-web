@@ -49,7 +49,13 @@ export function LoginForm() {
   }
 
   return (
-    <Form<LoginFormValues> layout="vertical" requiredMark={false} onFinish={handleFinish}>
+    <Form<LoginFormValues>
+      layout="horizontal"
+      requiredMark={false}
+      labelCol={{ span: 6 }}
+      wrapperCol={{ span: 18 }}
+      onFinish={handleFinish}
+    >
       <Form.Item
         name="username"
         label={t('用户名')}

@@ -33,9 +33,9 @@ import type {
 import { MISSION_STATE_OPTIONS, ORDER_STATE_OPTIONS, ORDER_TYPE_OPTIONS } from './orderRecordOptions'
 import { MissionActionsTable } from './MissionActionsTable'
 
-/** 主键/枚举展示辅助：未知枚举与缺失值的统一呈现（不猜语义） */
+/** 主键/枚举展示辅助：缺失留白；未知枚举显示原值（不猜语义） */
 function describeOption(options: { value: string; label: string }[], value?: string | null): string {
-  if (!value) return '—'
+  if (!value) return ''
   const found = options.find((item) => item.value === value)
   return found ? found.label : value
 }
@@ -96,8 +96,8 @@ export function OrderInfoModal({ open, orderKey, onClose }: OrderInfoModalProps)
   /** 主体描述列表：字段全集按旧实现口径（跳过 orderMissions 数组字段） */
   const detailItems = detail
     ? [
-        { key: 'orderKey', label: t('任务编号'), children: detail.orderKey ?? '—' },
-        { key: 'orderName', label: t('任务名称'), children: detail.orderName ?? '—' },
+        { key: 'orderKey', label: t('任务编号'), children: detail.orderKey ?? '' },
+        { key: 'orderName', label: t('任务名称'), children: detail.orderName ?? '' },
         {
           key: 'orderType',
           label: t('任务类型'),
@@ -108,31 +108,31 @@ export function OrderInfoModal({ open, orderKey, onClose }: OrderInfoModalProps)
           label: t('任务状态'),
           children: describeOption(ORDER_STATE_OPTIONS, detail.orderState),
         },
-        { key: 'taskId', label: t('任务ID'), children: detail.taskId || '—' },
-        { key: 'processKey', label: t('工艺'), children: detail.processKey || '—' },
-        { key: 'priority', label: t('优先级'), children: detail.priority ?? '—' },
+        { key: 'taskId', label: t('任务ID'), children: detail.taskId || '' },
+        { key: 'processKey', label: t('工艺'), children: detail.processKey || '' },
+        { key: 'priority', label: t('优先级'), children: detail.priority ?? '' },
         {
           key: 'appointVehicle',
           label: t('指定车辆'),
-          children: detail.appointVehicleName || detail.appointVehicleKey || '—',
+          children: detail.appointVehicleName || detail.appointVehicleKey || '',
         },
         {
           key: 'appointVehicleGroup',
           label: t('指定车辆组'),
-          children: detail.appointVehicleGroupName || detail.appointVehicleGroupKey || '—',
+          children: detail.appointVehicleGroupName || detail.appointVehicleGroupKey || '',
         },
         {
           key: 'executeVehicle',
           label: t('执行车辆'),
-          children: detail.executeVehicleName || detail.executeVehicleKey || '—',
+          children: detail.executeVehicleName || detail.executeVehicleKey || '',
         },
         { key: 'executeTime', label: t('开始执行时间'), children: displayDateTime(detail.executeTime) },
         { key: 'finalTime', label: t('结束执行时间'), children: displayDateTime(detail.finalTime) },
         { key: 'createTime', label: t('创建时间'), children: displayDateTime(detail.createTime) },
-        { key: 'createUser', label: t('创建人'), children: detail.createUser || '—' },
-        { key: 'failReason', label: t('失败原因'), children: detail.failReason || '—' },
-        { key: 'hangReason', label: t('挂起原因'), children: detail.hangReason || '—' },
-        { key: 'cancelReason', label: t('取消原因'), children: detail.cancelReason || '—' },
+        { key: 'createUser', label: t('创建人'), children: detail.createUser || '' },
+        { key: 'failReason', label: t('失败原因'), children: detail.failReason || '' },
+        { key: 'hangReason', label: t('挂起原因'), children: detail.hangReason || '' },
+        { key: 'cancelReason', label: t('取消原因'), children: detail.cancelReason || '' },
       ]
     : []
 
@@ -143,7 +143,7 @@ export function OrderInfoModal({ open, orderKey, onClose }: OrderInfoModalProps)
       header: t('子任务标识'),
       enableSorting: false,
       size: 190,
-      cell: (info) => (info.getValue() as string | null) || '—',
+      cell: (info) => (info.getValue() as string | null) || '',
     },
     {
       // 动作描述为派生展示列：拼接本行 actions 的描述（旧实现同口径）
@@ -155,7 +155,7 @@ export function OrderInfoModal({ open, orderKey, onClose }: OrderInfoModalProps)
         const descriptions = (row.original.actions ?? [])
           .map((action) => action.actionDescription)
           .filter(Boolean)
-        return descriptions.length > 0 ? descriptions.join(',') : '—'
+        return descriptions.length > 0 ? descriptions.join(',') : ''
       },
     },
     {
@@ -163,14 +163,14 @@ export function OrderInfoModal({ open, orderKey, onClose }: OrderInfoModalProps)
       header: t('地图名称'),
       enableSorting: false,
       size: 120,
-      cell: (info) => (info.getValue() as string | null) || '—',
+      cell: (info) => (info.getValue() as string | null) || '',
     },
     {
       accessorKey: 'stationName',
       header: t('站点名称'),
       enableSorting: false,
       size: 120,
-      cell: (info) => (info.getValue() as string | null) || '—',
+      cell: (info) => (info.getValue() as string | null) || '',
     },
     {
       accessorKey: 'missionState',

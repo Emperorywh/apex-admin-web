@@ -56,7 +56,12 @@ export function RoleForm({ open, role, saving, onOk, onCancel }: RoleFormProps) 
       onCancel={onCancel}
       destroyOnHidden
     >
-      <Form<RoleFormValues> form={form} layout="vertical">
+      <Form<RoleFormValues>
+        form={form}
+        layout="horizontal"
+        labelCol={{ span: 6 }}
+        wrapperCol={{ span: 18 }}
+      >
         <Form.Item
           name="code"
           label={t('角色编码')}

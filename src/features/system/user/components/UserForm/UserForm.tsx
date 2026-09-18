@@ -48,7 +48,12 @@ export function UserForm({ open, user, roleOptions, saving, onOk, onCancel }: Us
       onCancel={onCancel}
       destroyOnHidden
     >
-      <Form<UserFormValues> form={form} layout="vertical">
+      <Form<UserFormValues>
+        form={form}
+        layout="horizontal"
+        labelCol={{ span: 6 }}
+        wrapperCol={{ span: 18 }}
+      >
         <Form.Item
           name="username"
           label={t('用户名')}

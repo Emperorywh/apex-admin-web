@@ -6,8 +6,8 @@
  * data 模式仅承载真实接口返回的完整小集合（规格 6.2），不是 mock。
  *
  * 展示与空值纪律：
- * - 执行结果/条件/时间可能为空：空显示占位「—」，不猜语义；
- * - 耗时仅起止齐备时计算，缺失显示「—」（除缺失补零同源纪律）；
+ * - 执行结果/条件/时间可能为空：缺失留白，不猜语义；
+ * - 耗时仅起止齐备时计算，缺失留白（缺失≠0，不补零）；
  * - 动作状态映射为本地化文案，未知枚举显示原值（规格 18.3）；
  * - 动作参数为 JSON 集合：悬浮 Popover 展示格式化原文并提供复制。
  */
@@ -25,16 +25,16 @@ import { ACTION_STATUS_OPTIONS } from './orderRecordOptions'
 
 /** 动作状态 → 展示文案（协议枚举原值提交/留存，仅展示层翻译） */
 function actionStatusText(value: OrderActionDto['actionStatus']): string {
-  if (!value) return '—'
+  if (!value) return ''
   const found = ACTION_STATUS_OPTIONS.find((item) => item.value === value)
   return found ? found.label : value
 }
 
-/** 起止齐备时计算 HH:mm:ss 耗时，缺失返回「—」（缺失≠0，不补零） */
+/** 起止齐备时计算 HH:mm:ss 耗时，缺失留白（缺失≠0，不补零） */
 function actionDuration(startTime?: string | null, finalTime?: string | null): string {
-  if (!startTime || !finalTime) return '—'
+  if (!startTime || !finalTime) return ''
   const diff = dayjs(finalTime).diff(dayjs(startTime), 'second')
-  if (!Number.isFinite(diff) || diff < 0) return '—'
+  if (!Number.isFinite(diff) || diff < 0) return ''
   const h = Math.floor(diff / 3600)
   const m = Math.floor((diff % 3600) / 60)
   const s = diff % 60
@@ -62,7 +62,7 @@ export function MissionActionsTable({ data }: MissionActionsTableProps) {
         const value = info.getValue() as string | null
         return (
           <Typography.Text copyable={!!value} ellipsis style={{ maxWidth: 100 }}>
-            {value || '—'}
+            {value || ''}
           </Typography.Text>
         )
       },
@@ -72,21 +72,21 @@ export function MissionActionsTable({ data }: MissionActionsTableProps) {
       header: t('动作类型'),
       enableSorting: false,
       size: 110,
-      cell: (info) => (info.getValue() as string | null) || '—',
+      cell: (info) => (info.getValue() as string | null) || '',
     },
     {
       accessorKey: 'actionDescription',
       header: t('动作描述'),
       enableSorting: false,
       size: 150,
-      cell: (info) => (info.getValue() as string | null) || '—',
+      cell: (info) => (info.getValue() as string | null) || '',
     },
     {
       accessorKey: 'blockingType',
       header: t('阻塞类型'),
       enableSorting: false,
       size: 90,
-      cell: (info) => (info.getValue() as string | null) || '—',
+      cell: (info) => (info.getValue() as string | null) || '',
     },
     {
       accessorKey: 'actionStatus',
@@ -102,7 +102,7 @@ export function MissionActionsTable({ data }: MissionActionsTableProps) {
       size: 170,
       cell: (info) => {
         const value = info.getValue() as string | null
-        if (!value) return '—'
+        if (!value) return ''
         return (
           <AntTooltip title={value}>
             <Typography.Text ellipsis style={{ maxWidth: 160 }}>
@@ -127,7 +127,7 @@ export function MissionActionsTable({ data }: MissionActionsTableProps) {
       cell: (info) => displayDateTime(info.getValue() as string | null),
     },
     {
-      // 耗时列：纯展示派生值（不参与排序/筛选），缺失显示「—」
+      // 耗时列：纯展示派生值（不参与排序/筛选），缺失留白
       id: 'duration',
       header: t('耗时'),
       enableSorting: false,
@@ -139,7 +139,7 @@ export function MissionActionsTable({ data }: MissionActionsTableProps) {
       header: t('条件标识'),
       enableSorting: false,
       size: 130,
-      cell: (info) => (info.getValue() as string | null) || '—',
+      cell: (info) => (info.getValue() as string | null) || '',
     },
     {
       accessorKey: 'actionParameters',
@@ -148,7 +148,7 @@ export function MissionActionsTable({ data }: MissionActionsTableProps) {
       size: 260,
       cell: (info) => {
         const value = info.getValue() as OrderActionDto['actionParameters']
-        if (!value || value.length === 0) return '—'
+        if (!value || value.length === 0) return ''
         const pretty = JSON.stringify(value, null, 2)
         return (
           <Popover

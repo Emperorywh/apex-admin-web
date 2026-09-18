@@ -9,13 +9,13 @@
  * - 草稿（A13/DoD 7）：关闭弹窗不清空输入，草稿保留在页签内存（Activity 缓存），
  *   切页不丢；提交成功才清空。dirty 状态经 useTabDirtyGuard 登记到页签
  *   （LRU 不淘汰脏页签、关闭/刷新统一确认），并提供显式「清空」入口；
- * - 选项全部走共享契约（useStaticOptions），失败在各自下拉内重试；
+ * - 选项全部走共享契约（useStaticOptions），失败在下拉内呈现状态文本（不设重试按钮）；
  * - 提交防重复（confirmLoading）；失败保留输入，写操作不自动重试；
  * - 动作提交形状按 OpenAPI ActionParam 裁剪（剥离 id/审计字段）。
  */
 
 import { useCallback, useRef, useState } from 'react'
-import { App, Button, Card, Form, Input, InputNumber, Modal, Select, Spin } from 'antd'
+import { App, Button, Card, Form, Input, InputNumber, Modal, Select } from 'antd'
 import type { FormListFieldData } from 'antd'
 import { X as CloseIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -79,6 +79,7 @@ function toActionParam(action: AGVActionDto): OrderActionParam {
 
 export function CreateOrderModal({ open, onClose, onCreated }: CreateOrderModalProps) {
   const { t } = useTranslation('orderRecord')
+  const { t: tCommon } = useTranslation('common')
   const { message } = App.useApp()
   const [form] = Form.useForm<CreateOrderFormValues>()
   const [submitting, setSubmitting] = useState(false)
@@ -206,14 +207,12 @@ export function CreateOrderModal({ open, onClose, onCreated }: CreateOrderModalP
     }
   }
 
-  /** 下拉选项区失败时的统一呈现：真实状态 + 下拉内重试（不冒充空数据） */
-  const retryNotFound = (error: boolean | undefined, reload: () => void) =>
+  /** 下拉选项区失败的统一呈现：仅状态文本，不设重试按钮（视觉规范：非表格区域不设重试） */
+  const failedNotFound = (error: boolean | undefined) =>
     error ? (
-      <Spin size="small">
-        <Button size="small" onClick={reload}>
-          {t('重新加载')}
-        </Button>
-      </Spin>
+      <span style={{ color: 'var(--app-text-secondary, rgba(0, 0, 0, 0.45))', fontSize: 12 }}>
+        {tCommon('加载失败')}
+      </span>
     ) : undefined
 
   return (
@@ -237,7 +236,15 @@ export function CreateOrderModal({ open, onClose, onCreated }: CreateOrderModalP
         </Button>,
       ]}
     >
-      <Form form={form} layout="vertical" autoComplete="off" onValuesChange={handleValuesChange}>
+      {/* 标签横排居左（视觉规范）：6/18 分栏，长标签「指定车辆分组」不换行 */}
+      <Form
+        form={form}
+        layout="horizontal"
+        labelCol={{ span: 6 }}
+        wrapperCol={{ span: 18 }}
+        autoComplete="off"
+        onValuesChange={handleValuesChange}
+      >
         <Form.Item
           label={t('任务名称')}
           name="orderName"
@@ -266,7 +273,7 @@ export function CreateOrderModal({ open, onClose, onCreated }: CreateOrderModalP
                   loading={vehicles.loading}
                   fieldNames={{ label: 'name', value: 'key' }}
                   options={vehicles.options ?? []}
-                  notFoundContent={retryNotFound(vehicles.error, vehicles.reload)}
+                  notFoundContent={failedNotFound(vehicles.error)}
                 />
               </Form.Item>
             ) : null
@@ -284,7 +291,7 @@ export function CreateOrderModal({ open, onClose, onCreated }: CreateOrderModalP
                   loading={vehicleGroups.loading}
                   fieldNames={{ label: 'agvGroupName', value: 'agvGroupKey' }}
                   options={vehicleGroups.options ?? []}
-                  notFoundContent={retryNotFound(vehicleGroups.error, vehicleGroups.reload)}
+                  notFoundContent={failedNotFound(vehicleGroups.error)}
                 />
               </Form.Item>
             ) : null
@@ -343,7 +350,7 @@ export function CreateOrderModal({ open, onClose, onCreated }: CreateOrderModalP
                       fieldNames={{ label: 'mapName', value: 'mapId' }}
                       options={simpleMaps.options ?? []}
                       onChange={() => handleMissionMapChange(field)}
-                      notFoundContent={retryNotFound(simpleMaps.error, simpleMaps.reload)}
+                      notFoundContent={failedNotFound(simpleMaps.error)}
                     />
                   </Form.Item>
 
@@ -364,10 +371,7 @@ export function CreateOrderModal({ open, onClose, onCreated }: CreateOrderModalP
                         // 展开下拉时按该行当前地图加载站点（按行独立，防跨行串选项）
                         if (isOpen) loadSiteOptions(field)
                       }}
-                      notFoundContent={retryNotFound(
-                        siteOptions[field.name]?.error === true,
-                        () => loadSiteOptions(field),
-                      )}
+                      notFoundContent={failedNotFound(siteOptions[field.name]?.error === true)}
                     />
                   </Form.Item>
 
@@ -384,7 +388,7 @@ export function CreateOrderModal({ open, onClose, onCreated }: CreateOrderModalP
                             loading={agvActions.loading}
                             fieldNames={{ label: 'actionDescription', value: 'id' }}
                             options={agvActions.options ?? []}
-                            notFoundContent={retryNotFound(agvActions.error, agvActions.reload)}
+                            notFoundContent={failedNotFound(agvActions.error)}
                           />
                         </Form.Item>
                       ) : null
@@ -402,7 +406,7 @@ export function CreateOrderModal({ open, onClose, onCreated }: CreateOrderModalP
                             loading={agvActionGroups.loading}
                             fieldNames={{ label: 'actionGroupName', value: 'id' }}
                             options={agvActionGroups.options ?? []}
-                            notFoundContent={retryNotFound(agvActionGroups.error, agvActionGroups.reload)}
+                            notFoundContent={failedNotFound(agvActionGroups.error)}
                           />
                         </Form.Item>
                       ) : null
