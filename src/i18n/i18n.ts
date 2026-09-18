@@ -74,6 +74,8 @@ const enUsLoaders: NamespaceLoaders = {
   carrierType: () => import('@/i18n/locales/en-US/carrierType'),
   // P07 节点映射（vehicle-deploy/node-mapping；页面私有命名空间，地图选点弹窗共用）
   nodeMapping: () => import('@/i18n/locales/en-US/nodeMapping'),
+  // P08 告警码管理（system-involve/alarm-code-management；页面私有命名空间）
+  vehicleAlarmCode: () => import('@/i18n/locales/en-US/vehicleAlarmCode'),
   // P39 完整车辆详情（vehicle-info；页面私有命名空间，抽屉完整详情入口共用）
   vehicleInfo: () => import('@/i18n/locales/en-US/vehicleInfo'),
   dashboard: () => import('@/i18n/locales/en-US/dashboard'),
@@ -112,6 +114,8 @@ const zhTwLoaders: NamespaceLoaders = {
   carrierType: () => import('@/i18n/locales/zh-TW/carrierType'),
   // P07 节点映射（vehicle-deploy/node-mapping；页面私有命名空间，地图选点弹窗共用）
   nodeMapping: () => import('@/i18n/locales/zh-TW/nodeMapping'),
+  // P08 告警码管理（system-involve/alarm-code-management；页面私有命名空间）
+  vehicleAlarmCode: () => import('@/i18n/locales/zh-TW/vehicleAlarmCode'),
   'license-activation': () => import('@/i18n/locales/zh-TW/license-activation'),
   'access-denied': () => import('@/i18n/locales/zh-TW/access-denied'),
 }
@@ -134,6 +138,8 @@ const jaJpLoaders: NamespaceLoaders = {
   carrierType: () => import('@/i18n/locales/ja-JP/carrierType'),
   // P07 节点映射（vehicle-deploy/node-mapping；页面私有命名空间，地图选点弹窗共用）
   nodeMapping: () => import('@/i18n/locales/ja-JP/nodeMapping'),
+  // P08 告警码管理（system-involve/alarm-code-management；页面私有命名空间）
+  vehicleAlarmCode: () => import('@/i18n/locales/ja-JP/vehicleAlarmCode'),
   'license-activation': () => import('@/i18n/locales/ja-JP/license-activation'),
   'access-denied': () => import('@/i18n/locales/ja-JP/access-denied'),
 }
@@ -156,6 +162,8 @@ const koKrLoaders: NamespaceLoaders = {
   carrierType: () => import('@/i18n/locales/ko-KR/carrierType'),
   // P07 节点映射（vehicle-deploy/node-mapping；页面私有命名空间，地图选点弹窗共用）
   nodeMapping: () => import('@/i18n/locales/ko-KR/nodeMapping'),
+  // P08 告警码管理（system-involve/alarm-code-management；页面私有命名空间）
+  vehicleAlarmCode: () => import('@/i18n/locales/ko-KR/vehicleAlarmCode'),
   'license-activation': () => import('@/i18n/locales/ko-KR/license-activation'),
   'access-denied': () => import('@/i18n/locales/ko-KR/access-denied'),
 }

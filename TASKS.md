@@ -219,7 +219,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P08 告警码管理
 
-- [ ] **P08 告警码管理**
+- [x] **P08 告警码管理**
 - **批次 / 前置**：B3 / B2 样板门禁。
 - **入口**：`/vehicle-deploy/alarm-code-management`；**旧来源**：`SystemInvolve/AlarmCodeManagement`；**目标**：`src/pages/system-involve/AlarmCodeManagement/AlarmCodeManagement.tsx`。
 - **私有模块 / 语言分片**：`vehicle-alarm-code`；**接口依据**：dispatcher/vehicleAlarmCode。

@@ -32,6 +32,7 @@
 | P05 车辆列表 | vehicle-display | vehicleList | vehicleList |
 | P06 载具类型 | vehicle-type | **carrierType**（路径段 vehicle-type 会与车辆业务混淆，按真实载具业务命名；已交付四语言分片 27 key 同构：en 旧真译沿用（Carrier Name/Carrier Length (mm)/Add Carrier Type 等），繁日韩 B1 基线补译，「载具」沿用旧译实绩词 キャリア/캐리어/載具） | features/carrier-type + pages/vehicle-deploy/VehicleType + services/vehicle/carrier |
 | P07 节点映射 | node-mapping | **nodeMapping**（按入口路径命名；已交付四语言分片 54 key 同构：en 旧真译逐条沿用（Mapping Name/AGV Count/Pick from Map/No longer on the map 等）且插值改本项目 `{{var}}` 双花括号语法，繁日韩 B1 基线补译；选点弹窗画布文案消费共享 map 命名空间，路由 meta 已声明） | features/node-mapping + pages/vehicle-deploy/NodeMapping + services/vehicle/node-mapping |
+| P08 告警码管理 | alarm-code-management | **vehicleAlarmCode**（按接口域 vehicleAlarmCode 命名；已交付四语言分片 49 key 同构：en 旧真译逐条沿用（Alarm Code/Upload File/Upload Overwrites All/AlarmCodes.xlsx 等）且插值改本项目 `{{var}}` 双花括号语法，繁日韩 B1 基线补译（告警碼/アラームコード/알람 코드 按 terminology；公共词对齐 P07 nodeMapping 分片）；菜单标题「告警码管理」T00.8 menu 分片已有真译） | features/vehicle-alarm-code + pages/system-involve/AlarmCodeManagement + services/vehicle/vehicle-alarm-code |
 | P07 节点映射 | node-mapping | nodeMapping | nodeMapping |
 | P08 告警码管理 | alarm-code | alarmCode | alarmCode |
 | P09 地图列表 | map-list | mapList | mapList |

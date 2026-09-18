@@ -263,12 +263,16 @@ export const appRouteDefinitions = defineAppRoutes([
             }),
           },
           {
+            // 告警码管理（P08 交付解除 pending）：后端权限树真实下发 vehicle-alarm-code:view
+            // （MENU，旧 permission 数据 id=27，path=/vehicle-deploy/vehicle-alarm-code；
+            // 任务卡入口沿用旧前端路由拼写 /vehicle-deploy/alarm-code-management，
+            // 新路由树以 meta.perm 挂后端已有码判权，不公开访问不凭空造码）
             id: 'vehicle-deploy-alarm-code',
             path: 'alarm-code-management',
             loadPage: () =>
               import('@/pages/system-involve/AlarmCodeManagement/AlarmCodeManagement'),
             meta: businessMeta('告警码管理', PERM.VEHICLE_ALARM_CODE_VIEW, {
-              pending: true,
+              i18nNamespaces: ['vehicleAlarmCode'],
             }),
           },
         ],

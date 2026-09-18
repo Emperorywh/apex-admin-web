@@ -406,6 +406,24 @@ export const api = {
       apexRawResponse: true,
     }) as unknown as Promise<AxiosResponse<Blob>>
   },
+  /**
+   * 文件下载通道（POST + Blob + 完整响应）：请求体型下载接口专用（P08 告警码
+   * downVehicleAlarmCodeFile 为 POST 空请求体，downloadGet 不适用）。
+   * - 语义与 downloadGet 完全一致：返回完整 AxiosResponse<Blob> 供调用方读取
+   *   content-disposition；JSON 错误仍走统一 Result 解包，不把错误 JSON 存为伪文件；
+   * - body 按旧实现原样提交（告警码下载为空对象 {}，不擅自省略请求体）。
+   */
+  async downloadPost(
+    url: string,
+    body?: unknown,
+    config?: AxiosRequestConfig,
+  ): Promise<AxiosResponse<Blob>> {
+    return http.post(url, body, {
+      ...config,
+      responseType: 'blob',
+      apexRawResponse: true,
+    }) as unknown as Promise<AxiosResponse<Blob>>
+  },
 }
 
 /**
