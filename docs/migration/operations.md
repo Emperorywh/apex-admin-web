@@ -10,6 +10,10 @@
 | P02 | AuthorizeIngress/硬件码复制 | `features/license-activation/utils/copyText` | — | — | 登录 | 已合并；验证已通过 | 剪贴板读回实证 |
 | P02 | AuthorizeIngress/激活提交 | `features/license-activation/components/ActivationForm`（P29 复用） | POST /fms/v1/auth/license/softwareActivation | softwareActivation | 登录（security None） | 已合并；读链路通过，**写副作用待专用环境** | tasks/P02.md |
 | P02 | （旧）成功跳 /over-look | activationConfirmed + resolveLandingPath 按权限导航 | — | — | 登录 | 已合并；落点机制实证 | tasks/P02.md |
+| P41 | UnAccess/403 反馈+退出登录 | `pages/un-access` + logout 服务 | POST /fms/v1/auth/authorize/logout | logout | 登录 | 已合并；验证已通过 | tasks/P41.md（联验 2026-09-18） |
+| P42 | NotFound/404 反馈+恢复路径 | `pages/error/NotFound`（公开 /404 与受保护根内 `*` 兜底共用） | — | — | 公开或登录 | 已合并；验证已通过 | tasks/P42.md（联验 2026-09-18） |
+| P42 | （旧）首页按钮 → /over-look | 「首页」+ resolveLandingPath 落点导航（replace）；未登录「去登录」 | — | — | 登录或未登录分支 | 已合并；验证已通过 | tasks/P42.md |
+| P42 | ServerError /500 + 两级错误边界 | `pages/error/ServerError` + `RouterErrorBoundary` + `PageErrorBoundary`（error 分片基座常载） | — | — | 登录（/500 守卫） | 已合并；错误边界运行时呈现待自然场景复核（资源齐备静态核对通过） | tasks/P42.md |
 
 ## 汇总状态口径
 

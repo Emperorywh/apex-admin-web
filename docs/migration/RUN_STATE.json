@@ -1,7 +1,7 @@
 {
   "版本说明": "调度系统迁移串行调度状态。由定时任务每小时触发一次，每次最多推进一个任务；写入必须整体原子替换。",
-  "最近更新时间": "2026-09-18T04:05:00Z",
-  "当前运行标识": "run-20260918-110550-14305(P41 交付轮，锁随本轮结束释放)",
+  "最近更新时间": "2026-09-18T05:35:00Z",
+  "当前运行标识": "run-20260918-h-p42(P42 交付轮,锁随本轮结束释放)",
   "锁": "docs/migration/.lock（mkdir 原子目录锁，内含 lock.json）",
   "工作目录": "C:\\code\\apex-admin-web",
   "分支": "apple-rxx",
@@ -48,7 +48,7 @@
       "前置": [
         "T00"
       ],
-      "状态": "待领取（下一轮队首）"
+      "状态": "已完成(2026-09-18 勾选:404 等价迁移+登录态恢复路径+错误边界五语言修复+玻璃面板,真实联验通过)"
     },
     {
       "序": 6,
@@ -57,7 +57,7 @@
       "前置": [
         "T00"
       ],
-      "状态": "未开始"
+      "状态": "待领取(下一轮队首)"
     },
     {
       "序": 7,
@@ -449,20 +449,21 @@
     }
   ],
   "当前任务": {
-    "任务ID": "P42 兜底错误页（下一轮领取；本轮 P41 已完成勾选）",
-    "状态": "P41 已完成勾选；P42 未开始",
-    "当前里程碑": "P41 无权限页闭环（守卫/落点/防循环/真实登出/五语言/两主题实证）",
+    "任务ID": "H01 调度监控暂缓说明(下一轮领取;本轮 P42 已完成勾选)",
+    "状态": "P42 已完成勾选;H01 未开始",
+    "当前里程碑": "P42 兜底错误页闭环(双挂载 404/登录态恢复/500 与两级错误边界核对/五语言基座常载/两主题实证)",
     "本轮已完成内容": [
-      "页面 src/pages/un-access/UnAccess/：旧 UnAccess 等价迁移——Result 403 + 主说明（旧 key 沿用）+ 联系管理员说明 + 玻璃反馈面板（--app-glass-window 等 4 令牌，修复深色反白文字叠固定浅壁纸不可读）",
-      "返回路径防循环：resolveLandingPath 按会话计算落点，落点=本页（无可用业务页）时不渲染返回按钮；replace 导航不堆积历史",
-      "退出登录：真实 POST /fms/v1/auth/authorize/logout（performance entries 实证）+ sessionExpired 清会话 + replace 登录页；失败不阻塞本地登出，不自动重试",
-      "user=null 防御分支呈现「去登录」（跨窗口登出同步场景，DoD 3）",
-      "五语言：access-denied 分片四语言（4 键；en 沿用旧真译 No permission to access this page / Go to Login；繁日韩 B1 基线真实译文，台湾用语存取/登入）+「退出登录」复用 common 既有术语；路由 meta 声明 i18nNamespaces",
-      "真实联验：未登录守卫回跳、root 登录落点=/no-permission 且仅退出按钮（防循环实证）、退出后再守卫+重登恢复、五语言全页+html lang 逐语言、深浅主题截图（修复后两主题可读）、1366×768、历史往返无循环",
-      "pnpm check(229 文件 lint 0 警告 0 错误/typecheck/结构检查 227 源文件)+pnpm build 通过；零调试残留；测试会话已登出、偏好残留已清、页签已关、dev server 已停"
+      "NotFound 等价迁移:旧 key「抱歉,您访问的页面不存在」副标题+登录态恢复分支(已登录「首页」→resolveLandingPath 落点 replace;未登录「去登录」无回跳参数);旧固定跳 /over-look 不复刻(H01 暂缓页)",
+      "公开 /404 与受保护根内 * 兜底双挂载统一;玻璃反馈面板(P41 同因同解,两主题衬底)",
+      "/500(ServerError)核对收口:重新加载+登录态恢复;RouterErrorBoundary 玻璃面板+登录态恢复;PageErrorBoundary ns 修复",
+      "缺陷修复:错误边界 i18next.t 走 defaultNS=common 而 key 在 error 分片,非中文语言回退中文 key(I05/I06)——ns 显式化+BASE_NAMESPACES 加 error 基座常载",
+      "四语言 error 分片:补旧 key 3 键(en 旧真译沿用,繁日韩 B1 基线);移除无消费模板 key「页面不存在或已被移动/返回工作台」",
+      "删除 route.constants.ts(FALLBACK_PATH 三消费者全改落点,全仓库无残留引用)",
+      "真实联验:未登录守卫回跳/公开 404 去登录/历史 replace 无残留/root 登录落点+布局内 404 首页落点防循环/已登录 /500/五语言 html lang 逐语言/两主题+布局内截图 1366x768",
+      "pnpm check(228 文件 lint 0 警告 0 错误/typecheck/结构检查 226 源文件)+pnpm build 通过;测试会话已登出、主题已复位、页签已关、dev server 已停"
     ],
     "未完成步骤": [],
-    "下一步": "下一轮（定时触发）领取 P42 兜底错误页：入口 /*（+核对 /404、/500 与路由/页面错误边界），旧来源 @/pages/NotFound，目标 src/pages/error/NotFound/NotFound.tsx，语言分片 error（T00 基座已有 error 命名空间四语言）；重点：未知 URL/加载失败/无权限分别呈现、已登录/未登录合法恢复路径、不泄漏会话信息、业务查询失败不伪装为 404",
+    "下一步": "下一轮(定时触发)领取 H01 调度监控暂缓说明:路径 /over-look,旧来源 Overlook,目标 src/pages/overlook/Overlook/Overlook.tsx;对有权限用户保留菜单/直访,显示统一「本期暂未迁移」(复用 T00 统一暂缓组件 MigrationPending);不加载旧监控/全局 WebSocket/地图操作/模拟停靠充电等业务;保留合法目标标识/查询上下文;原相关五语言资源有映射去向。注意 over-look 为 affix 页(固定页签),现渲染 MigrationPending 占位——H01 交付统一暂缓说明呈现与原权限核对",
     "阻塞原因": "无"
   },
   "验证结果": [
@@ -680,7 +681,17 @@
       "命令": "pnpm check + pnpm build（P41 交付后）",
       "结果": "全部通过（229 文件 lint 0 警告 0 错误；227 源文件结构检查；tsc+vite build 成功）；调试残留 grep 为零",
       "日期": "2026-09-18"
+    },
+    {
+      "命令": "pnpm check + pnpm build(P42 交付后)",
+      "结果": "全部通过(228 文件 lint 0 警告 0 错误;226 源文件结构检查;tsc+vite build 成功)",
+      "日期": "2026-09-18"
+    },
+    {
+      "命令": "P42 真实浏览器联验(dev 代理 192.168.0.158:8888,1366x768)",
+      "结果": "通过:未登录直访未知 URL 守卫回跳带 redirect;公开 /404 渲染旧文案+去登录(replace 无参数,历史无残留);未登录 /500 守卫拦截;root 登录落点 /no-permission+布局内未知 URL 404「首 页」按钮点击落点防循环;已登录 /404 登录态分支+/500 重新加载+首页;五语言全页文案+html lang 逐语言;亮色公开/深色公开/深色布局内截图两主题可读;错误边界运行时呈现无自然触发场景,以资源齐备静态核对+代码审查登记",
+      "日期": "2026-09-18"
     }
   ],
-  "证据位置": "docs/migration/tasks/T00.md（T00 历轮交付与证据）、docs/migration/tasks/P01.md、docs/migration/tasks/P02.md、docs/migration/tasks/P41.md（P41 交付/联验/限制登记）、docs/migration/contracts.md（第 1–7 节契约 + 第 9 节冻结登记 + 变更日志）、docs/migration/i18n-map.md（P41 行更正为 access-denied 独立分片）、docs/migration/operations.md、docs/migration/i18n-missing.md、docs/migration/terminology.md"
+  "证据位置": "docs/migration/tasks/T00.md(T00 历轮交付与证据)、docs/migration/tasks/P01.md、docs/migration/tasks/P02.md、docs/migration/tasks/P41.md、docs/migration/tasks/P42.md(P42 交付/联验/限制登记)、docs/migration/contracts.md(第 1–7 节契约 + 第 9 节冻结登记 + 变更日志)、docs/migration/i18n-map.md(P42 行与 error 分片旧 key 映射已更新)、docs/migration/operations.md(P41/P42 行已登记)、docs/migration/i18n-missing.md、docs/migration/terminology.md"
 }

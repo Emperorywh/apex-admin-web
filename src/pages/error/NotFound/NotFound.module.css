@@ -1,0 +1,27 @@
+/*
+ * 404 兜底页容器：显式 /404 为布局外独立全屏页（BlankLayout 无外壳衬底），
+ * 内容在视口内垂直居中；受保护根内 * 兜底复用同一容器（页签滚动容器内
+ * 超出部分自然滚动，视觉一致）。画布透明让全局壁纸透出，不另设底色。
+ */
+.page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  padding: var(--app-space-6);
+}
+
+/*
+ * 玻璃反馈面板：与外壳工作区窗口同材质（半透明 + 毛玻璃采样壁纸）。
+ * 全局壁纸为固定照片不随主题变化，深色主题下 antd 反白文字若直接叠在
+ * 浅色壁纸上不可读（P41 联验同因实证）；玻璃面板在两套主题下分别提供
+ * 明暗衬底，只用既有令牌（令牌单源，无第二份配色）。
+ */
+.panel {
+  padding: var(--app-space-7) var(--app-space-8);
+  border-radius: var(--app-radius-window);
+  background: var(--app-glass-window);
+  backdrop-filter: var(--app-glass-filter);
+  -webkit-backdrop-filter: var(--app-glass-filter);
+  box-shadow: var(--app-window-shadow);
+}

@@ -35,8 +35,13 @@ const STORAGE_KEY_LANGUAGE = 'apex-admin:lang'
  */
 const LEGACY_STORAGE_KEY_LANGUAGE = 'umi_locale'
 
-/** 基础命名空间，所有页面共享 */
-export const BASE_NAMESPACES = ['common', 'menu'] as const
+/**
+ * 基础命名空间，所有页面共享。
+ * error 为错误兜底（404/500/页面与路由错误边界）文案：这类呈现可随时出现在
+ * 任意路由——包括未声明页面命名空间的公开页与类组件直读 i18next 的错误边界
+ * （P42），故随基座常载，不依赖路由 meta 声明。
+ */
+export const BASE_NAMESPACES = ['common', 'menu', 'error'] as const
 
 /** dayjs locale 映射：语言切换时同步（仅影响展示措辞，不改时间值/时区） */
 const DAYJS_LOCALES: Record<AppLanguage, string> = {

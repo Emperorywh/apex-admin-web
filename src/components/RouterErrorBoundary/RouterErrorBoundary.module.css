@@ -1,0 +1,25 @@
+/*
+ * 路由级错误边界容器：errorElement 替换整棵路由树渲染，无任何布局衬底，
+ * 全屏居中呈现；画布透明让全局壁纸透出，不另设底色。
+ */
+.page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  padding: var(--app-space-6);
+}
+
+/*
+ * 玻璃反馈面板：与外壳工作区窗口同材质（半透明 + 毛玻璃采样壁纸）。
+ * 全局壁纸为固定照片不随主题变化，深色主题下 antd 反白文字直接叠在
+ * 浅色壁纸上不可读；只用既有令牌（令牌单源，无第二份配色）。
+ */
+.panel {
+  padding: var(--app-space-7) var(--app-space-8);
+  border-radius: var(--app-radius-window);
+  background: var(--app-glass-window);
+  backdrop-filter: var(--app-glass-filter);
+  -webkit-backdrop-filter: var(--app-glass-filter);
+  box-shadow: var(--app-window-shadow);
+}
