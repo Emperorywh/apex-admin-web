@@ -56,8 +56,17 @@ const authSlice = createSlice({
     sessionExpired() {
       return initialAuthState
     },
+    /**
+     * 软件激活成功（P02）：后端 softwareActivation 已返回 code=200，
+     * 本地会话的 activated 据此更新为真实状态（非伪造），登录落点解析
+     * （resolveLandingPath）随即按已激活分支计算；令牌与权限保持登录
+     * 返回值不动——后端无会话详情接口（G01），不伪造权限刷新。
+     */
+    activationConfirmed(state) {
+      state.activated = true
+    },
   },
 })
 
-export const { sessionReady, sessionExpired } = authSlice.actions
+export const { sessionReady, sessionExpired, activationConfirmed } = authSlice.actions
 export default authSlice.reducer

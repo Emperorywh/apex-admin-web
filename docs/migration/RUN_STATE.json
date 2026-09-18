@@ -1,7 +1,7 @@
 {
   "版本说明": "调度系统迁移串行调度状态。由定时任务每小时触发一次，每次最多推进一个任务；写入必须整体原子替换。",
-  "最近更新时间": "2026-09-18T03:30:00Z",
-  "当前运行标识": "scheduled-20260918-hourly-p01(定时轮,已结束,锁已释放)",
+  "最近更新时间": "2026-09-18T03:55:00Z",
+  "当前运行标识": "run-20260918-101331-13808(P02 交付轮，锁随本轮结束释放)",
   "锁": "docs/migration/.lock（mkdir 原子目录锁，内含 lock.json）",
   "工作目录": "C:\\code\\apex-admin-web",
   "分支": "apple-rxx",
@@ -30,7 +30,7 @@
       "前置": [
         "P01"
       ],
-      "状态": "待领取（下一轮队首）"
+      "状态": "已完成（2026-09-18 勾选：硬件码只读联验/激活组件五语言/1001000 引导接线实证；写副作用留专用环境验收项）"
     },
     {
       "序": 4,
@@ -39,7 +39,7 @@
       "前置": [
         "T00"
       ],
-      "状态": "未开始"
+      "状态": "待领取（下一轮队首）"
     },
     {
       "序": 5,
@@ -449,20 +449,22 @@
     }
   ],
   "当前任务": {
-    "任务ID": "P02（下一轮领取；本轮 P01 已完成勾选）",
-    "状态": "P01 已完成勾选；P02 未开始",
-    "当前里程碑": "P01 登录页闭环（真实联验通过）",
+    "任务ID": "P41 无权限页（下一轮领取；本轮 P02 已完成勾选）",
+    "状态": "P02 已完成勾选；P41 未开始",
+    "当前里程碑": "P02 软件授权闭环（读链路真实联验通过；激活写副作用登记专用环境）",
     "本轮已完成内容": [
-      "品牌资源服务 brand.service.ts（GET /systemLogos/{placementKey}/file 文件通道透传 + isUsableImageBlob 校验，P01/P27 共用）",
-      "登录页品牌背景层（loginBackground → objectURL → 全屏 cover；失败/无图回退默认壁纸不阻塞登录；卸载 revoke）",
-      "登录页五语言切换 LoginLanguageSwitch（I01 登录前可切五语言；仅 dispatch localeChanged，App.tsx 统一 changeAppLanguage）",
-      "LoginForm 登录成功 message.success（A03 真实结果反馈）",
-      "auth 命名空间四语言补「登录成功」（en-US 沿用旧真译；旧繁/日/韩本为简中回退，T00.8 基线即定稿）",
-      "真实联验（经 dev 代理 192.168.0.158:8888）：错误凭据 code=1000010 真实提示、正确凭据登录成功+落点、外站回跳拒绝、无可用业务页→no-permission、刷新会话恢复、直访迁移占位守卫、品牌 404 回退不阻塞、五语言切换+刷新恢复（en/zh-TW/ko 实测）、1366×768 截图",
-      "pnpm check（215 文件 lint 0 警告 0 错误/typecheck/结构检查 213 源文件）+ pnpm build 全部通过；测试注入会话与浏览器标签已清除，dev server 已停止"
+      "服务层 src/services/license-activation/：fetchHardwareInfo(GET /auth/license/getHardwareInfo, 无需认证实证) + activateSoftware(POST softwareActivation, 不自动重试)；P29 共用",
+      "可复用激活业务组件：features/license-activation/ 下 ActivationForm(失败保留输入/onActivated 回调/可选 onBack) + useHardwareInfo(三态/防乱序/失败可重试) + copyText(内网 http 兜底)",
+      "页面 src/pages/authorize-ingress/AuthorizeIngress/：旧深蓝科技风等价移植(CSS Modules+lucide+prefers-reduced-motion)、硬件码展示+复制、1366×768 截图",
+      "激活成功：authSlice.activationConfirmed 更新真实 activated → resolveLandingPath 按会话权限导航(不复刻旧硬编码 /over-look)",
+      "1001000 全局引导：request.ts 单飞提示+事件 → ActivationRedirectListener(App 根)SPA 跳授权页；授权页自身抑制；生产构建实证",
+      "路由：/authorize-ingress 摘除 migrationPending + 声明 license-activation 命名空间(standaloneMeta 签名扩展，其余调用兼容)",
+      "五语言：license-activation 命名空间四语言分片(en-US 沿用旧真译；繁/日/韩按 B1 基线交付真实译文)；common 四语言各增 1 键(1001000 提示)",
+      "真实联验(192.168.0.158:8888 经代理)：未登录守卫回跳、硬件码 B1E3252E8C273C40 页面与 curl 一致、复制剪贴板实证、失败分支(客户端注入网络错误,零写副作用)输入保留、落点规则(生产构建落 /no-permission 正确)、引导跳转与抑制(en/zh-TW 全页+ja/ko 标题实测)",
+      "pnpm check(225 文件 lint 0 警告 0 错误/typecheck/结构检查 223 源文件)+pnpm build 通过；调试插桩零残留；浏览器测试会话与页签已清除；.env.local 已还原"
     ],
     "未完成步骤": [],
-    "下一步": "下一轮（定时触发）领取 P02 软件授权：入口 /authorize-ingress、旧来源 AuthorizeIngress、目标 src/pages/authorize-ingress/AuthorizeIngress/AuthorizeIngress.tsx、模块 license-activation；接口 auth/license/getHardwareInfo（GET 已核实可用）+ softwareActivation；需提供可复用激活业务组件供 P29 使用；激活副作用仅在专用环境验证",
+    "下一步": "下一轮（定时触发）领取 P41 无权限页：入口 /no-permission、旧来源 UnAccess、目标 src/pages/un-access/UnAccess/UnAccess.tsx、语言分片复用 common/error(P41 整合 pages/un-access 现有占位)、无业务接口；重点：返回不进无权限重定向循环、无权限/离线/缺口/暂缓区分、五语言完整",
     "阻塞原因": "无"
   },
   "验证结果": [
@@ -655,7 +657,22 @@
       "命令": "pnpm check + pnpm build（P01 交付后）",
       "结果": "全部通过（215 文件 lint 0 警告 0 错误；213 源文件结构检查；tsc+vite build 成功）",
       "日期": "2026-09-18"
+    },
+    {
+      "命令": "GET /fms/v1/auth/license/getHardwareInfo（P02 页面消费联验）",
+      "结果": "code=200 真实硬件码 B1E3252E8C273C40（页面渲染与直连一致；无令牌可用实证）；10.11.2.67 环境交叉验证返回不同硬件码",
+      "日期": "2026-09-18"
+    },
+    {
+      "命令": "P02 真实浏览器联验（生产构建 preview + dev 代理 192.168.0.158:8888）",
+      "结果": "通过：未登录守卫回跳参数、登录落点规则、复制剪贴板读回、激活失败分支输入保留(客户端注入网络错误,零写副作用)、1001000 引导事件→SPA 跳授权页+授权页自身抑制(生产实证)、五语言(en/zh-TW 全页+ja/ko 标题+html lang)+刷新恢复；激活写副作用与 activated=false 真实落点登记专用环境(两可用后端均 activated=true 无法复现)",
+      "日期": "2026-09-18"
+    },
+    {
+      "命令": "pnpm check + pnpm build（P02 交付后）",
+      "结果": "全部通过（225 文件 lint 0 警告 0 错误；223 源文件结构检查；tsc+vite build 成功）；调试残留 grep 为零",
+      "日期": "2026-09-18"
     }
   ],
-  "证据位置": "docs/migration/tasks/T00.md（T00 历轮交付与证据）、docs/migration/tasks/P01.md（P01 交付/联验/限制登记）、docs/migration/contracts.md（第 1–7 节契约 + 第 9 节冻结登记）、docs/migration/i18n-map.md（各页命名空间/文件归属终版 T00.9 冻结表 + 基座映射 + umi_locale 迁移）、docs/migration/i18n-missing.md、docs/migration/terminology.md"
+  "证据位置": "docs/migration/tasks/T00.md（T00 历轮交付与证据）、docs/migration/tasks/P01.md（P01 交付/联验/限制登记）、docs/migration/tasks/P02.md（P02 交付/联验/限制登记）、docs/migration/contracts.md（第 1–7 节契约 + 第 9 节冻结登记 + 变更日志）、docs/migration/i18n-map.md（各页命名空间/文件归属终版 + P02 业务命名修正 + umi_locale 迁移）、docs/migration/operations.md（P02 操作映射汇总）、docs/migration/i18n-missing.md、docs/migration/terminology.md"
 }

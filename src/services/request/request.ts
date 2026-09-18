@@ -8,6 +8,8 @@
  * - 主动取消静默：不抛可展示错误、不误判离线、不计入服务健康
  * - 会话失效（业务码 1000000）单飞收敛：清令牌、一次性提示，跳转由外壳统一处理；
  *   任何请求都不因 401/过期自动重放（后端无刷新令牌契约，G01/G02）
+ * - 系统未激活（业务码 1001000）单飞收敛：一次性提示并派发引导事件，
+ *   由 ActivationRedirectListener 导航到软件授权页（P02，真实环境已实证该业务码）
  * - 认证适配点：Authorization: Bearer <token>（旧项目已证实行为）；
  *   密码 MD5 摘要在 auth.service 单点执行（两者最终确认统一登记缺口 G03）
  */
@@ -18,7 +20,9 @@ import axios, {
   type InternalAxiosRequestConfig,
 } from 'axios'
 import i18next from 'i18next'
+import { ROUTE_PATHS } from '@/router/definitions'
 import {
+  ACTIVATION_REQUIRED_EVENT,
   CLIENT_ERROR_CODES,
   DEFAULT_API_BASE_URL,
   REQUEST_TIMEOUT_MS,
@@ -116,11 +120,18 @@ let acceptLanguage: string = 'zh-CN'
  */
 let sessionExpiryHandled = false
 
+/**
+ * 未激活引导已收敛标记（P02）：并发多个请求同时收到 1001000 时只提示/引导一次，
+ * 与会话失效同款单飞收敛；新令牌（重新登录）写入时复位。
+ */
+let activationGuidanceHandled = false
+
 export function setAccessToken(token: string | null): void {
   accessToken = token
   if (token !== null) {
-    // 换取新令牌即新会话：允许下一次会话失效再次收敛提示
+    // 换取新令牌即新会话：允许下一次会话失效/未激活再次收敛提示
     sessionExpiryHandled = false
+    activationGuidanceHandled = false
   }
 }
 
@@ -238,6 +249,11 @@ function unwrapResult(payload: unknown): unknown {
       detail: result.message,
     })
   }
+  if (result.code === RESULT_CODES.UNAUTHORIZED) {
+    // 系统未被激活（1001000，真实环境实证）：单飞提示并引导至授权页；
+    // 授权页自身的请求不再引导（页面自行展示后端信息），避免循环
+    handleActivationRequired()
+  }
   return fail({
     isApiError: true,
     code: `BIZ.${result.code}`,
@@ -314,6 +330,21 @@ function handleSessionExpired(): void {
   import('@/store/store').then(({ store }) => {
     store.dispatch(sessionExpired())
   })
+}
+
+/**
+ * 未激活引导收敛（P02）：业务码 1001000 时一次性提示并派发引导事件，
+ * 由 App 根常驻的 ActivationRedirectListener 监听并 SPA 导航到授权页。
+ * 不在此直接操作路由（请求层保持非 React、不依赖具体路由实例）；
+ * 与会话失效一致采用单飞标记，新令牌写入时复位（重新登录后可再次引导）。
+ */
+function handleActivationRequired(): void {
+  // 授权页自身的请求触发 1001000 时不提示不引导：页面已在处理激活流程
+  if (window.location.pathname === ROUTE_PATHS['authorize-ingress']) return
+  if (activationGuidanceHandled) return
+  activationGuidanceHandled = true
+  uiFeedback.message.warning(tr('系统尚未激活，请先完成软件授权'))
+  window.dispatchEvent(new CustomEvent(ACTIVATION_REQUIRED_EVENT))
 }
 
 /* -------------------------------------------------------------------------- */

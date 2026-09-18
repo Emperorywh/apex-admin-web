@@ -26,7 +26,7 @@
 | 任务 | 目标入口 | 命名空间 | 前端文件域（features/services/types） |
 | --- | --- | --- | --- |
 | P01 登录 | /auth/login | auth（T00 基座） | 沿用 features/auth + services/auth |
-| P02 软件授权 | /authorize-ingress | authorizeIngress | authorizeIngress |
+| P02 软件授权 | /authorize-ingress | **license-activation**（P02 已按任务卡业务命名修正：激活业务组件与语言分片供 P29 复用，按路由段命名不适合跨页语义；三处例外规则同理） | license-activation |
 | P03 任务管理 | /order-record | orderRecord（已声明） | 沿用 features/order-record + services/order-record + types/order-record |
 | P04 车辆分组 | vehicle-group | vehicleGroup | vehicleGroup |
 | P05 车辆列表 | vehicle-display | vehicleList | vehicleList |

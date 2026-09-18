@@ -1,0 +1,31 @@
+/*
+ * 激活表单样式：与授权页深蓝科技风同源（P02 独立页形态）。
+ * 组件本身不强制底色——样式只作用于表单区与按钮，P29 在外壳浅色/深色主题
+ * 下复用时按钮跟随 antd 主题令牌，仅操作区布局保持一致。
+ */
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+/* 返回登录：幽灵按钮（半透明蓝底 + 细蓝边），占 1 份宽度 */
+.backBtn {
+  flex: 1;
+  height: 40px;
+  letter-spacing: 2px;
+}
+
+/* 激活授权：主按钮占 2 份宽度；配色交由页面级 ConfigProvider 主题 */
+.submitBtn {
+  flex: 2;
+  height: 40px;
+  font-weight: 600;
+  letter-spacing: 2px;
+}

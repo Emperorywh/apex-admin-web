@@ -104,4 +104,6 @@ export default {
   /* 关联选项失效呈现（T00.7：保留原值 + 不可用说明，不静默替换） */
   '（原值缺失）': '(original value missing)',
   '{{id}}（已不在当前选项中）': '{{id}} (no longer in the current options)',
+  /* 软件未激活引导（P02：业务码 1001000 单飞提示，授权页跳转见 ActivationRedirectListener） */
+  '系统尚未激活，请先完成软件授权': 'System is not activated. Complete software activation first.',
 } as const

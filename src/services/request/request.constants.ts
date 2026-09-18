@@ -34,7 +34,7 @@ export const RESULT_CODES = {
   SUCCESS: 200,
   /** 会话失效（未登录/token 过期）：清会话并跳登录，单飞收敛 */
   SESSION_EXPIRED: 1_000_000,
-  /** 系统未被激活：跳软件授权入口（真实环境实证；跳转逻辑归 P02） */
+  /** 系统未被激活：单飞提示并引导至软件授权页（真实环境实证；P02 已接入） */
   UNAUTHORIZED: 1_001_000,
   /** 用户名或密码错误 */
   LOGIN_FAILED: 1_000_010,
@@ -42,6 +42,13 @@ export const RESULT_CODES = {
 
 /** 未显式指定 pageSize 时的默认页大小（前后端通用默认值） */
 export const DEFAULT_PAGE_SIZE = 20
+
+/**
+ * 未激活引导事件（P02）：请求层收到业务码 1001000 且当前不在授权页时，
+ * 单飞派发一次；ActivationRedirectListener（App 根常驻）监听后 SPA 导航
+ * 到软件授权页。用 window 自定义事件承载瞬态引导，不写入持久化 redux 状态。
+ */
+export const ACTIVATION_REQUIRED_EVENT = 'apex:activation-required'
 
 /** 前端本地生成的稳定错误码（后端不会返回），CLIENT.* 点分格式 */
 export const CLIENT_ERROR_CODES = {

@@ -15,6 +15,7 @@ import koKR from 'antd/locale/ko_KR'
 import { RouterProvider } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import { FeedbackBridge } from '@/components/FeedbackBridge/FeedbackBridge'
+import { ActivationRedirectListener } from '@/features/license-activation/components/ActivationRedirectListener/ActivationRedirectListener'
 import PageLoading from '@/components/PageLoading/PageLoading'
 import { Wallpaper } from '@/components/Wallpaper/Wallpaper'
 import { useTheme } from '@/hooks/useTheme'
@@ -73,6 +74,8 @@ export default function App() {
       <AntdApp>
         <Wallpaper />
         <FeedbackBridge />
+        {/* P02 未激活引导（业务码 1001000 → 单飞提示 → SPA 导航授权页），常驻监听一次 */}
+        <ActivationRedirectListener />
         <Suspense fallback={<PageLoading />}>
           <RouterProvider router={appRouter} />
         </Suspense>

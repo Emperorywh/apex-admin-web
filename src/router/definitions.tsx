@@ -75,7 +75,7 @@ function auxiliaryMeta(title: string): AppRouteDefinition['meta'] {
 /** 布局外独立页（源配置 layout: false）的辅助路由 meta：不公开，受认证守卫 */
 function standaloneMeta(
   title: string,
-  extra?: Partial<Pick<RouteMeta, 'perm' | 'migrationPending'>>,
+  extra?: Partial<Pick<RouteMeta, 'perm' | 'migrationPending' | 'i18nNamespaces'>>,
 ): AppRouteDefinition['meta'] {
   return {
     title,
@@ -140,11 +140,12 @@ export const appRouteDefinitions = defineAppRoutes([
   },
   {
     // 软件授权：独立页但绝不公开（规格 5.6）；未登录被守卫送回登录页，
-    // activated=false 的用户由登录落点引导至此（P02 完成页内真实激活流程）
+    // activated=false 的用户由登录落点引导至此。P02 已交付页内真实激活流程
+    // （硬件码读取/复制 + 激活提交 + 成功按落点规则导航），迁移过渡标记摘除
     id: 'authorize-ingress',
     path: '/authorize-ingress',
     loadPage: () => import('@/pages/authorize-ingress/AuthorizeIngress/AuthorizeIngress'),
-    meta: standaloneMeta('软件授权', { migrationPending: true }),
+    meta: standaloneMeta('软件授权', { i18nNamespaces: ['license-activation'] }),
   },
   {
     id: 'root',

@@ -62,6 +62,8 @@ const enUsLoaders: NamespaceLoaders = {
   error: () => import('@/i18n/locales/en-US/error'),
   // 共享地图能力文案（T00.7 ReadOnlyMap；消费页面在 meta.i18nNamespaces 声明 'map'）
   map: () => import('@/i18n/locales/en-US/map'),
+  // P02 软件授权（authorize-ingress；P29 复用激活组件时同声明此命名空间）
+  'license-activation': () => import('@/i18n/locales/en-US/license-activation'),
 }
 
 /**
@@ -77,6 +79,7 @@ const zhTwLoaders: NamespaceLoaders = {
   auth: () => import('@/i18n/locales/zh-TW/auth'),
   error: () => import('@/i18n/locales/zh-TW/error'),
   map: () => import('@/i18n/locales/zh-TW/map'),
+  'license-activation': () => import('@/i18n/locales/zh-TW/license-activation'),
 }
 const jaJpLoaders: NamespaceLoaders = {
   common: () => import('@/i18n/locales/ja-JP/common'),
@@ -84,6 +87,7 @@ const jaJpLoaders: NamespaceLoaders = {
   auth: () => import('@/i18n/locales/ja-JP/auth'),
   error: () => import('@/i18n/locales/ja-JP/error'),
   map: () => import('@/i18n/locales/ja-JP/map'),
+  'license-activation': () => import('@/i18n/locales/ja-JP/license-activation'),
 }
 const koKrLoaders: NamespaceLoaders = {
   common: () => import('@/i18n/locales/ko-KR/common'),
@@ -91,6 +95,7 @@ const koKrLoaders: NamespaceLoaders = {
   auth: () => import('@/i18n/locales/ko-KR/auth'),
   error: () => import('@/i18n/locales/ko-KR/error'),
   map: () => import('@/i18n/locales/ko-KR/map'),
+  'license-activation': () => import('@/i18n/locales/ko-KR/license-activation'),
 }
 
 /** 各语言懒加载表：zh-CN 无资源（key 即文案）；其余语言按表加载 */

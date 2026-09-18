@@ -159,7 +159,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P02 软件授权
 
-- [ ] **P02 软件授权**
+- [x] **P02 软件授权**
 - **批次 / 前置**：B1 / P01。
 - **入口**：`/authorize-ingress`；**旧来源**：`AuthorizeIngress`；**目标**：`src/pages/authorize-ingress/AuthorizeIngress/AuthorizeIngress.tsx`。
 - **私有模块 / 语言分片**：`license-activation`；**接口依据**：auth/license/getHardwareInfo、softwareActivation。

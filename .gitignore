@@ -25,3 +25,6 @@ dist-ssr
 
 # 迁移串行调度跨运行执行锁（目录锁，运行期临时产物）
 docs/migration/.lock/
+
+# 迁移调度串行锁（定时任务运行态，不入库；RUN_STATE.json 登记）
+.migration_lock/
