@@ -28,7 +28,7 @@
 | P01 登录 | /auth/login | auth（T00 基座） | 沿用 features/auth + services/auth |
 | P02 软件授权 | /authorize-ingress | **license-activation**（P02 已按任务卡业务命名修正：激活业务组件与语言分片供 P29 复用，按路由段命名不适合跨页语义；三处例外规则同理） | license-activation |
 | P03 任务管理 | /order-record | orderRecord（已声明，四语言已交付） | features/order-record/components + services/order-record（模板遗留 types/order-record 已删除，DTO 在 service.types） |
-| P04 车辆分组 | vehicle-group | vehicleGroup | vehicleGroup |
+| P04 车辆分组 | vehicle-group | vehicleGroup（已交付四语言分片 33 key 同构：en 旧真译沿用+删除确认/影响说明/失效标注补译，繁日韩 B1 基线补译；Transfer 选项失败文案经 common「加载失败」共用；nsSeparator=false 下 t() 不带「ns:」前缀） | features/vehicle-group + pages/vehicle-deploy/VehicleGroup + services/vehicle/vehicle-group |
 | P05 车辆列表 | vehicle-display | vehicleList | vehicleList |
 | P06 载具类型 | vehicle-type | **carrierType**（路径段 vehicle-type 会与车辆业务混淆，按真实载具业务命名） | carrierType |
 | P07 节点映射 | node-mapping | nodeMapping | nodeMapping |

@@ -223,7 +223,10 @@ export const appRouteDefinitions = defineAppRoutes([
             id: 'vehicle-deploy-vehicle-group',
             path: 'vehicle-group',
             loadPage: () => import('@/pages/vehicle-deploy/VehicleGroup/VehicleGroup'),
-            meta: businessMeta('车辆分组', PERM.VEHICLE_GROUP_VIEW, { pending: true }),
+            // P04 交付解除 pending：真实分组管理页（vehicleGroup 为页面私有分片）
+            meta: businessMeta('车辆分组', PERM.VEHICLE_GROUP_VIEW, {
+              i18nNamespaces: ['vehicleGroup'],
+            }),
           },
           {
             // path 保持源配置原样拼写（vehicle-diplay，历史别名按 A22 保留）

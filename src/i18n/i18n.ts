@@ -68,6 +68,8 @@ const enUsLoaders: NamespaceLoaders = {
   orderInfo: () => import('@/i18n/locales/en-US/orderInfo'),
   // P05 车辆列表（vehicle-deploy/vehicle-diplay；页面私有命名空间）
   vehicleList: () => import('@/i18n/locales/en-US/vehicleList'),
+  // P04 车辆分组（vehicle-deploy/vehicle-group；页面私有命名空间）
+  vehicleGroup: () => import('@/i18n/locales/en-US/vehicleGroup'),
   // P39 完整车辆详情（vehicle-info；页面私有命名空间，抽屉完整详情入口共用）
   vehicleInfo: () => import('@/i18n/locales/en-US/vehicleInfo'),
   dashboard: () => import('@/i18n/locales/en-US/dashboard'),
@@ -100,6 +102,8 @@ const zhTwLoaders: NamespaceLoaders = {
   // P39 完整车辆详情（vehicle-info；页面私有命名空间，抽屉完整详情入口共用）
   vehicleInfo: () => import('@/i18n/locales/zh-TW/vehicleInfo'),
   vehicleList: () => import('@/i18n/locales/zh-TW/vehicleList'),
+  // P04 车辆分组（vehicle-deploy/vehicle-group；页面私有命名空间）
+  vehicleGroup: () => import('@/i18n/locales/zh-TW/vehicleGroup'),
   'license-activation': () => import('@/i18n/locales/zh-TW/license-activation'),
   'access-denied': () => import('@/i18n/locales/zh-TW/access-denied'),
 }
@@ -116,6 +120,8 @@ const jaJpLoaders: NamespaceLoaders = {
   // P39 完整车辆详情（vehicle-info；页面私有命名空间，抽屉完整详情入口共用）
   vehicleInfo: () => import('@/i18n/locales/ja-JP/vehicleInfo'),
   vehicleList: () => import('@/i18n/locales/ja-JP/vehicleList'),
+  // P04 车辆分组（vehicle-deploy/vehicle-group；页面私有命名空间）
+  vehicleGroup: () => import('@/i18n/locales/ja-JP/vehicleGroup'),
   'license-activation': () => import('@/i18n/locales/ja-JP/license-activation'),
   'access-denied': () => import('@/i18n/locales/ja-JP/access-denied'),
 }
@@ -132,6 +138,8 @@ const koKrLoaders: NamespaceLoaders = {
   // P39 完整车辆详情（vehicle-info；页面私有命名空间，抽屉完整详情入口共用）
   vehicleInfo: () => import('@/i18n/locales/ko-KR/vehicleInfo'),
   vehicleList: () => import('@/i18n/locales/ko-KR/vehicleList'),
+  // P04 车辆分组（vehicle-deploy/vehicle-group；页面私有命名空间）
+  vehicleGroup: () => import('@/i18n/locales/ko-KR/vehicleGroup'),
   'license-activation': () => import('@/i18n/locales/ko-KR/license-activation'),
   'access-denied': () => import('@/i18n/locales/ko-KR/access-denied'),
 }

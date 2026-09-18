@@ -1,7 +1,7 @@
 {
   "版本说明": "调度系统迁移串行调度状态。由定时任务每小时触发一次，每次最多推进一个任务；写入必须整体原子替换。",
-  "最近更新时间": "2026-09-18T21:52:00+08:00",
-  "当前运行标识": "run-20260918-p39-210541-20274（补验对账轮；锁随本轮结束释放）",
+  "最近更新时间": "2026-09-18T23:10:00+08:00",
+  "当前运行标识": "run-20260918-p04-220542-20870（P04 交付轮；锁随本轮结束释放）",
   "锁": "docs/migration/.lock（mkdir 原子目录锁，内含 lock.json）",
   "工作目录": "C:\\code\\apex-admin-web",
   "分支": "apple-rxx",
@@ -120,7 +120,7 @@
       "前置": [
         "B2样板门禁"
       ],
-      "状态": "未开始"
+      "状态": "已完成（2026-09-18 勾选：带令牌真实联验通过——列表/新增/删除/展开行/筛选/草稿/确认框/五语言/双主题双宽度；后端 updateVehicleGroup groupName 不落库登记 G18）"
     },
     {
       "序": 14,
@@ -449,21 +449,22 @@
     }
   ],
   "当前任务": {
-    "任务ID": "P39 完整车辆详情——已完成并勾选",
+    "任务ID": "P04 车辆分组——已完成并勾选",
     "状态": "已完成（TASKS.md 已勾选）",
-    "当前里程碑": "门禁全绿 + 带令牌真实联验通过 + 实体页签第二消费者（vehicle-info 移入受保护根）+ 可见轮询实时状态页 + 车辆域常量提升共享层 + 顺带修复 P38 i18n 前缀缺陷 + P05 抽屉完整详情往返补验通过（对账轮）",
+    "当前里程碑": "整页重写交付（Apex request+列偏好+展开行+Transfer 弹窗+confirmCommand 删除确认）+ 车辆分组服务 owner 自 P03 交接至 P04 + 路由解除 pending 进入落点候选 + vehicleGroup 四语言 33 key 同构 + 门禁全绿 + 带令牌真实联验通过",
     "本轮已完成内容": [
-      "对账说明：P39 交付由并发轮 run-20260918-p39-4d17f0fe 于 21:13 提交推送（fa925db）；本轮（run-20260918-p39-210541）持锁期间独立完成同代码全量联验，并补齐其登记的唯一待验项",
-      "P05 列表抽屉→完整详情点击链路补验通过：RO 垫片恢复列表行渲染后，行详情→抽屉→完整详情→新页签→往返列表快照保留全链路实证",
-      "联验环境根因修正：Apex 虚拟表格 0 行直接根因为 IAB ResizeObserver 回调不派发（非仅 rAF），双垫片（rAF+RO）可行；P03 列表对照实验排除代码回归——沉淀 AGENTS 第 5 节与 P39.md",
-      "额外实证：轮询间隔 5991–6011ms 串行；两 vehicleKey+列表三页签隔离；不存在车辆停轮询（9 秒零增长）；裸值双变体；P38 前缀缺陷修复回归；五语言互切双向含生产构建复验；1366/1920 双主题四组干净截图"
+      "服务层：vehicle-group.service 扩展分页/增改删四操作（G04 平铺 query 口径），P03 代建的 fetchVehicleGroups 选项函数不动（P03/P20 消费者透明，typecheck 实证）",
+      "GroupFormModal：新增/编辑双模式（草稿保留/useTabDirtyGuard/清空入口）；Transfer 复用 getSimpleVehicles 共享契约；失效关联合成条目（组内车辆 key 缺失→保留原标识+「已不可用」标注+保存原样提交，不静默替换）",
+      "VehicleGroup 整页重写：Apex request 服务端分页/稳定行 ID（agvGroupKey）/列偏好 vehicle-group:main/expandable 展开行组内车辆 Tag（组内无车不可展开）/confirmCommand 破坏性删除确认（danger，列对象+影响+提交≠完成附注）/普通 CRUD 不轮询",
+      "路由 vehicle-group 解除 pending（进入登录落点候选）；vehicleGroup 四语言分片（en 旧真译沿用+补译，繁日韩 B1 基线）+ i18n.ts 四表登记",
+      "带令牌真实联验全链路：守卫回跳带 redirect/新增成功后端落库一致/编辑请求体 XHR 抓包正确/删除取消+确认双路径/展开行/筛选命中与空态/草稿保留/确认框五要素/五语言 html lang/双主题双宽度四组截图；测试分组自清理（后端 total=0）、真实登出、dev server 停止"
     ],
     "未完成步骤": [
-      "失败清空分支（网络故障注入→StateBlock offline→退避恢复）为代码审查+公共机制复用，留 V01 或后续实时页联验顺带注入复验",
-      "P40 接入时同构迁移 /analyze-visual/server-resource-monitor 到受保护根",
-      "页签标题不带实体标识为既有 TabsBar 机制，留 V01 评估公共扩展（同 P38 登记）"
+      "G18 后端缺陷：updateVehicleGroup groupName 不落库（请求体正确+code=200 但名称不更新，vehicleKeys 生效；curl 复现排除前端因素）——待后端修复后复验编辑名称链路，不阻塞后续任务（P19/P20 仅消费分组选项）",
+      "无权限按钮隐藏形态待普通用户账号复验（root 具全部权限无法现场复现；机制与 P03/P05 同源已验证）",
+      "失效关联合成条目的现场触发验证（需真实删除已被分组的车辆）留 V01"
     ],
-    "下一步": "本轮结束。下一轮领取队列序 13 P04（前置 B2 样板门禁条件已齐备：T00/P01/P03/P05/P38/P39 全部交付勾选，真实登录与只读列表/详情联验通过）：读 TASKS.md P04 卡与相关交接记录，核对车辆分组接口契约后实施",
+    "下一步": "本轮结束。下一轮领取队列序 14 P06（载具类型，前置 B2 样板门禁已齐备）：读 TASKS.md P06 卡与旧源码 VehicleDeploy/VehicleType（CarrierModal），核对 dispatcher/carrier 契约后实施",
     "阻塞原因": "无"
   },
   "验证结果": [
@@ -781,7 +782,17 @@
       "命令": "P39 补验（run-20260918-p39-210541，对账轮）：RO/rAF 双垫片后浏览器全链路 + 生产构建语言切换复验",
       "结果": "通过：P05 抽屉「完整详情」→ /vehicle-info 页签往返（列表快照保留）；轮询 5991–6011ms 串行；两 vehicleKey+列表三页签隔离；不存在车辆反馈+停轮询（9 秒零增长）；缺参数零请求；裸值 ?KEY 与 ?KEY= 兼容；P38 前缀缺陷回归通过；五语言互切双向+html lang（preview 构建 ko→ja→zh-CN 复验一致）；1920/1366 双主题四组干净截图。曾误判「切回简中失败」经查为验证脚本 title 选择器踩非简中语言陷阱（AGENTS 第 6 节），应用无缺陷",
       "日期": "2026-09-18"
+    },
+    {
+      "命令": "pnpm lint/typecheck/check:structure/build + 调试残留 grep（P04 交付终态）",
+      "结果": "全部通过（lint 277 文件 0 警告 0 错误；275 源文件结构检查；tsc+vite build 成功；残留 0）",
+      "日期": "2026-09-18"
+    },
+    {
+      "命令": "P04 带令牌真实联验（dev 代理 192.168.0.158:8888，凭据 .env.local root/MD5，IAB rAF/RO 双垫片）",
+      "结果": "通过：API 层（登录 code=200/pageVehicleGroups 平铺 query 空集合如实/新增后落库一致/updateVehicleGroup 请求体 XHR 抓包正确+code=200/deleteVehicleGroup 真实删除后端 total=0 自清理/getSimpleVehicles 56 项 int64 key 无损）+ 浏览器（守卫回跳带 redirect/列表行渲染秒级时间/展开行组内车辆 Tag/新增编辑弹窗 Transfer 选项与草稿保留/删除确认框五要素含 danger 红键与提交≠完成附注/筛选命中与空态/五语言 html lang 逐语言/双主题双宽度四组截图）；后端缺陷 G18（updateVehicleGroup groupName 不落库）已登记 gaps.md",
+      "日期": "2026-09-18"
     }
   ],
-  "证据位置": "docs/migration/tasks/T00.md(T00 历轮交付与证据)、docs/migration/tasks/P01.md、docs/migration/tasks/P02.md、docs/migration/tasks/P41.md、docs/migration/tasks/P42.md(P42 交付/联验/限制登记)、docs/migration/tasks/H01.md(H01 交付/联验/公共文件改动记录)、docs/migration/tasks/H02.md(H02 交付/联验/资源归属隔离登记)、docs/migration/tasks/H03.md(H03 交付/联验/资源归属隔离登记)、docs/migration/contracts.md(第 1–7 节契约 + 第 9 节冻结登记 + 变更日志)、docs/migration/i18n-map.md(H02 行已更新,error 分片旧 key 映射已更新)、docs/migration/operations.md(P41/P42/H01/H02 行已登记)、docs/migration/i18n-missing.md、docs/migration/terminology.md、docs/migration/tasks/P03.md（P03 交付/联验/受阻登记）；P03.md（已修订：操作映射状态/G04 已验证/带令牌联验记录/列偏好缺陷修复节）；operations.md（P03 六行已更新）；gaps.md（G04 部分验证）；contracts.md（列设置接入形态用户决策行+第 3 节列偏好行已更新）；AGENTS.md（第 2 节列偏好铁律）；docs/migration/tasks/P05.md（P05 交付/控制样板/联验/环境教训登记）；operations.md（P05 七行已登记）；contracts.md（变更日志 P05 行）；docs/migration/tasks/P38.md（P38 交付/形态契约/联验/i18n 教训）；operations.md（P38 三行+P03 详情行更新）；contracts.md（第 4 节实体页签与独立窗口行更新+第 6 节任务详情行落地+变更日志 P38 行）；i18n-map.md（P38 行更新）；AGENTS.md（第 6 节 i18n 接线纪律，原第 6 节顺延为第 7 节）；docs/migration/tasks/P39.md（P39 交付/形态契约/联验/i18n 双缺陷修复登记）；operations.md（P39 两行）；contracts.md（第 4 节实体页签双消费者+第 6 节车辆详情参数行+变更日志 P39 行）；i18n-map.md（P39 行更新）；.run-lock/shots-p39/（双主题双宽度截图）；P39 补验记录（tasks/P39.md「未完成/后续」①补验记录 + AGENTS 第 5 节 IAB 渲染管线冻结条目，2026-09-18 对账轮）"
+  "证据位置": "docs/migration/tasks/T00.md(T00 历轮交付与证据)、docs/migration/tasks/P01.md、docs/migration/tasks/P02.md、docs/migration/tasks/P41.md、docs/migration/tasks/P42.md(P42 交付/联验/限制登记)、docs/migration/tasks/H01.md(H01 交付/联验/公共文件改动记录)、docs/migration/tasks/H02.md(H02 交付/联验/资源归属隔离登记)、docs/migration/tasks/H03.md(H03 交付/联验/资源归属隔离登记)、docs/migration/contracts.md(第 1–7 节契约 + 第 9 节冻结登记 + 变更日志)、docs/migration/i18n-map.md(H02 行已更新,error 分片旧 key 映射已更新)、docs/migration/operations.md(P41/P42/H01/H02 行已登记)、docs/migration/i18n-missing.md、docs/migration/terminology.md、docs/migration/tasks/P03.md（P03 交付/联验/受阻登记）；P03.md（已修订：操作映射状态/G04 已验证/带令牌联验记录/列偏好缺陷修复节）；operations.md（P03 六行已更新）；gaps.md（G04 部分验证）；contracts.md（列设置接入形态用户决策行+第 3 节列偏好行已更新）；AGENTS.md（第 2 节列偏好铁律）；docs/migration/tasks/P05.md（P05 交付/控制样板/联验/环境教训登记）；operations.md（P05 七行已登记）；contracts.md（变更日志 P05 行）；docs/migration/tasks/P38.md（P38 交付/形态契约/联验/i18n 教训）；operations.md（P38 三行+P03 详情行更新）；contracts.md（第 4 节实体页签与独立窗口行更新+第 6 节任务详情行落地+变更日志 P38 行）；i18n-map.md（P38 行更新）；AGENTS.md（第 6 节 i18n 接线纪律，原第 6 节顺延为第 7 节）；docs/migration/tasks/P39.md（P39 交付/形态契约/联验/i18n 双缺陷修复登记）；operations.md（P39 两行）；contracts.md（第 4 节实体页签双消费者+第 6 节车辆详情参数行+变更日志 P39 行）；i18n-map.md（P39 行更新）；.run-lock/shots-p39/（双主题双宽度截图）；P39 补验记录（tasks/P39.md「未完成/后续」①补验记录 + AGENTS 第 5 节 IAB 渲染管线冻结条目，2026-09-18 对账轮）；docs/migration/tasks/P04.md（P04 交付/联验/G18 缺口对照）；operations.md（P04 四行）；contracts.md（第 5 节分组/车辆选项行更新+变更日志 P04 行）；gaps.md（G18 登记）；i18n-map.md（P04 行更新）"
 }
