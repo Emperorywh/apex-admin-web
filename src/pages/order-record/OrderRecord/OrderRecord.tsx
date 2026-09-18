@@ -200,6 +200,8 @@ export default function OrderRecord() {
 
   const prefs = useColumnPreferences('order-record:main')
   const [prefSlices, setPrefSlices] = useState<ColumnPrefSlices>({})
+  // 受控切片的同步镜像：连续多次 onChange 间保持最新合并值，避免闭包旧值
+  const prefSlicesRef = useRef<ColumnPrefSlices>({})
 
   useEffect(() => {
     if (!prefs || !tableInstanceRef.current) return
@@ -215,17 +217,33 @@ export default function OrderRecord() {
         columnSizing: slices.columnSizing,
         columnPinning: slices.columnPinning,
       })
+      prefSlicesRef.current = {
+        columnOrder: slices.columnOrder,
+        columnVisibility: slices.columnVisibility,
+        columnSizing: slices.columnSizing,
+        columnPinning: slices.columnPinning,
+      }
     } catch {
       // 偏好读取失败不阻塞表格：以默认布局运行
     }
   }, [prefs])
 
-  /** 列偏好持久化：四类变化统一 save（官方 300ms 防抖写 localStorage） */
+  /**
+   * 列偏好持久化：合并进受控切片（state 受控值必须跟随用户改动）后，把
+   * 「合并后的完整四切片」交给官方适配器 save（300ms 防抖写 localStorage）。
+   * 两个已实证的约束：
+   * - 只 save 不更新受控 state：表格下一帧按旧受控值渲染，用户改动被回弹；
+   * - save 传单片补丁：适配器 save 是整体替换语义（pending=cloneSlices(state)），
+   *   列设置面板一次确认连发四类回调，先发的切片会被后发的补丁覆盖丢失。
+   */
   const persistPrefs = useCallback(
     (patch: ColumnPrefSlices) => {
+      const merged = { ...prefSlicesRef.current, ...patch }
+      prefSlicesRef.current = merged
+      setPrefSlices(merged)
       if (!prefs) return
       try {
-        prefs.save(patch)
+        prefs.save(merged)
       } catch {
         // 保存失败静默：偏好是增强能力，不阻塞业务操作
       }
@@ -581,6 +599,11 @@ export default function OrderRecord() {
           getRowId={stringFieldRowId('orderKey')}
           locale={apexLocale}
           pagination={{ pageSizeOptions: [10, 20, 50, 100, 200] }}
+          // 开启官方列设置面板：列显隐/调序/宽度/固定必须有你不可少的用户入口，
+          // 否则下方列偏好持久化管线（state 切片 + save）没有任何触发来源（DoD 5）。
+          // 序号列必须显式关闭：包内开启列设置会默认带出序号列，旧页无序号列，等价迁移不允许列结构漂移
+          columnSettingsEnabled
+          showRowNumber={false}
           // 高度跟随 tableWrap 弹性剩余空间：视口高度硬编码会在矮窗口把分页器顶出工作区
           height="100%"
           state={{

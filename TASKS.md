@@ -169,7 +169,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P03 任务管理（表格样板）
 
-- [ ] **P03 任务管理（表格样板）**
+- [x] **P03 任务管理（表格样板）**
 - **批次 / 前置**：B2a / P01。
 - **入口**：`/order-record`；**旧来源**：`OrderRecord`；**目标**：`src/pages/order-record/OrderRecord/OrderRecord.tsx`。
 - **私有模块 / 语言分片**：`order-record`；**接口依据**：dispatcher/orderRecord、orderTask、orderTemplate。
