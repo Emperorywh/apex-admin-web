@@ -31,6 +31,7 @@
 | P04 车辆分组 | vehicle-group | vehicleGroup（已交付四语言分片 33 key 同构：en 旧真译沿用+删除确认/影响说明/失效标注补译，繁日韩 B1 基线补译；Transfer 选项失败文案经 common「加载失败」共用；nsSeparator=false 下 t() 不带「ns:」前缀） | features/vehicle-group + pages/vehicle-deploy/VehicleGroup + services/vehicle/vehicle-group |
 | P05 车辆列表 | vehicle-display | vehicleList | vehicleList |
 | P06 载具类型 | vehicle-type | **carrierType**（路径段 vehicle-type 会与车辆业务混淆，按真实载具业务命名；已交付四语言分片 27 key 同构：en 旧真译沿用（Carrier Name/Carrier Length (mm)/Add Carrier Type 等），繁日韩 B1 基线补译，「载具」沿用旧译实绩词 キャリア/캐리어/載具） | features/carrier-type + pages/vehicle-deploy/VehicleType + services/vehicle/carrier |
+| P07 节点映射 | node-mapping | **nodeMapping**（按入口路径命名；已交付四语言分片 54 key 同构：en 旧真译逐条沿用（Mapping Name/AGV Count/Pick from Map/No longer on the map 等）且插值改本项目 `{{var}}` 双花括号语法，繁日韩 B1 基线补译；选点弹窗画布文案消费共享 map 命名空间，路由 meta 已声明） | features/node-mapping + pages/vehicle-deploy/NodeMapping + services/vehicle/node-mapping |
 | P07 节点映射 | node-mapping | nodeMapping | nodeMapping |
 | P08 告警码管理 | alarm-code | alarmCode | alarmCode |
 | P09 地图列表 | map-list | mapList | mapList |

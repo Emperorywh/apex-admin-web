@@ -252,10 +252,15 @@ export const appRouteDefinitions = defineAppRoutes([
             }),
           },
           {
+            // 节点映射（P07 交付解除 pending）：旧 SPEC §6 权限码 node-mapping:view
+            // 后端已下发接入，路由挂后端已有码 PERM.NODE_MAPPING_VIEW；
+            // 选点弹窗画布文案随 ReadOnlyMap 消费共享 map 命名空间
             id: 'vehicle-deploy-node-mapping',
             path: 'node-mapping',
             loadPage: () => import('@/pages/vehicle-deploy/NodeMapping/NodeMapping'),
-            meta: businessMeta('节点映射', PERM.NODE_MAPPING_VIEW, { pending: true }),
+            meta: businessMeta('节点映射', PERM.NODE_MAPPING_VIEW, {
+              i18nNamespaces: ['nodeMapping', 'map'],
+            }),
           },
           {
             id: 'vehicle-deploy-alarm-code',

@@ -1,0 +1,25 @@
+/**
+ * 地图选点二级弹窗样式（P07）。
+ */
+
+/* 画布容器：内容区定高（70vh 视口相对），ReadOnlyMap 自适应父容器 */
+.mapContainer {
+  height: 62vh;
+  min-height: 360px;
+}
+
+/* footer 信息行：当前行回显（左）与实时选中（右） */
+.footerInfo {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 4px 0;
+  font-size: 13px;
+  flex-wrap: wrap;
+}
+
+/* 失效节点红色标注（旧实现同语义） */
+.invalidTag {
+  margin-left: 6px;
+  color: #cf1322;
+}

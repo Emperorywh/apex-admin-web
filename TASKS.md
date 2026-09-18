@@ -209,7 +209,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P07 节点映射
 
-- [ ] **P07 节点映射**
+- [x] **P07 节点映射**
 - **批次 / 前置**：B3 / B2 样板门禁。
 - **入口**：`/vehicle-deploy/node-mapping`；**旧来源**：`VehicleDeploy/NodeMapping`；**目标**：`src/pages/vehicle-deploy/NodeMapping/NodeMapping.tsx`。
 - **私有模块 / 语言分片**：`node-mapping`；**接口依据**：dispatcher/agvNodeMapping、map/getMapInfo。

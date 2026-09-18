@@ -1,7 +1,7 @@
 {
   "版本说明": "调度系统迁移串行调度状态。由定时任务每小时触发一次，每次最多推进一个任务；写入必须整体原子替换。",
-  "最近更新时间": "2026-09-19T00:55:00+08:00",
-  "当前运行标识": "run-20260919-p06-auto（P06 交付轮；锁随本轮结束释放）",
+  "最近更新时间": "2026-09-19T02:20:00+08:00",
+  "当前运行标识": "run-20260919-p07-auto（P07 交付轮；锁随本轮结束释放）",
   "锁": "docs/migration/.lock（mkdir 原子目录锁，内含 lock.json）",
   "工作目录": "C:\\code\\apex-admin-web",
   "分支": "apple-rxx",
@@ -138,7 +138,7 @@
       "前置": [
         "B2样板门禁"
       ],
-      "状态": "未开始"
+      "状态": "已完成（2026-09-19 勾选：带令牌真实联验通过——列表/新增/编辑整体替换/删除/建议合并/选点弹窗/草稿保留/五语言/双主题双宽度；后端强制 agvKeys 非空登记 G19 前端已适配）"
     },
     {
       "序": 16,
@@ -449,22 +449,23 @@
     }
   ],
   "当前任务": {
-    "任务ID": "P06 载具类型——已完成并勾选",
+    "任务ID": "P07 节点映射——已完成并勾选",
     "状态": "已完成（TASKS.md 已勾选）",
-    "当前里程碑": "整页重写交付（Apex request+列偏好 carrier-type:main+名称编码双筛选+CarrierFormModal 草稿保留+confirmCommand 删除确认）+ carrier 服务四 operation（POST+body 原样形态）+ 载具权限码核对收敛（后端权限树真实 MENU 码 carrier:view 登记 PERM 并挂路由，不公开访问不凭空造码）+ 路由解除 pending + carrierType 四语言 27 key 同构 + 门禁全绿 + 带令牌真实联验通过",
+    "当前里程碑": "整页重写交付（Apex request+列偏好 node-mapping:main+映射名称筛选+confirmCommand 删除确认+G09 不开放排序）+ MappingFormModal 双模式弹窗（地图组/映射行草稿模型+行三态+获取建议合并+草稿保留/顶层清空+useTabDirtyGuard；行表格 Apex data 模式+antd 受控分页器）+ MapPickerModal 选点二级弹窗（ReadOnlyMap 回显定位不闪烁+失效标注+确定禁用=无选中）+ node-mapping 服务五 operation（owner=P07）+ 契约差异 G19（后端强制 agvKeys 非空→前端必填适配）+ 路由解除 pending + nodeMapping 四语言 54 key 同构 + 门禁全绿 + 带令牌真实联验通过",
     "本轮已完成内容": [
-      "服务层：services/vehicle/carrier.service（pageCarriers/createCarrier/updateCarrier/deleteCarrier，均 POST+JSON body 与旧实现和 OpenAPI 一致；owner=P06）",
-      "CarrierFormModal：新增/编辑双模式（草稿保留/useTabDirtyGuard/失败留稿/清空入口）；名称编码 64 字上限；长度宽度 InputNumber min=1 mm 协议原样；联验实证低于 min 的 0 被表单拦截",
-      "VehicleType 整页重写：Apex request 服务端分页/稳定行 ID/列偏好 carrier-type:main/名称编码双筛选+查询重置/confirmCommand 破坏性删除确认/无轮询无刷新按钮",
-      "权限专项：旧路由未写 access 核对收敛——后端权限树真实下发 carrier:view（MENU id=23 path 空，旧前端 MENU_TREE 兜底映射本路径），PERM 登记已有码挂路由，未登录守卫+无码拦截，满足不公开访问与不凭空造码",
-      "路由 vehicle-type 解除 pending（进入登录落点候选）；carrierType 四语言分片（en 旧真译沿用，繁日韩 B1 基线，载具=キャリア/캐리어/載具）+ i18n.ts 四表登记",
-      "带令牌真实联验全链路：守卫回跳带 redirect+登录落点闭环/新增请求体抓包平铺正确+落库一致/编辑 id+全量请求体正确+名称尺寸落库（carrier 无 G18 类缺陷）/删除取消+确认双路径后端自清理/必填校验/筛选命中与空态/草稿保留/确认框五要素/五语言 html lang/双主题双宽度四组截图；测试数据自清理、真实登出、dev server 停止"
+      "服务层：services/vehicle/node-mapping.service（分页 GET+query/save/update（mappingKey+全量分组整体替换）/delete/getSuggestionsForCollectionNodes，与旧实现和 OpenAPI 清单一致；owner=P07）",
+      "MappingFormModal：新增/编辑双模式；地图组→映射行两级草稿（行三态纯函数 types.ts）；半填行淡红高亮（Apex 逐 cell 包装）+「只看未填完整」过滤+校验失败自动开过滤；「获取建议」按节点 id 合并不覆盖；节点选项按 mapId 缓存+行内失效节点并入选项保显示；选节点自动回填映射点（已填不覆盖，D3）；选项走 useStaticOptions（失败「加载失败」状态文本）",
+      "MapPickerModal：ReadOnlyMap 单选节点；initialSelectedIds 按 echoNodeId 记忆化回显定位不闪烁；确定禁用=无选中；footer 当前行/已选/坐标；失效节点以节点缓存 idSet 判定红色标注（未加载不标注）；确定回填复用下拉同语义",
+      "VehicleType 同款列表基座：Apex request 服务端分页/稳定行 ID（mappingKey，缺失退回数字 id）/列偏好 node-mapping:main/筛选查询重置/G09 不开放排序/无轮询无刷新按钮；删除 confirmCommand 破坏性确认（danger 五要素）",
+      "契约差异 G19：后端 save/update 拒绝空 agvKeys（2004030，curl 双向复证），旧实现允许为空——前端「关联AGV」加 required 校验，登记 gaps.md",
+      "路由 node-mapping 解除 pending；meta.i18nNamespaces=[nodeMapping,map]；nodeMapping 四语言分片 54 key（en 旧真译沿用+插值改 {{var}}，繁日韩 B1 基线）+ i18n.ts 四表登记",
+      "带令牌真实联验全链路：守卫回跳带 redirect+登录落点闭环/权限四码登录响应实证/新增请求体抓包平铺正确+落库一致/编辑 mappingKey+全量整体替换+改名落库一致（无 G18 类缺陷）/删除取消+确认双路径后端自清理恢复 2 条历史/筛选命中与空态/建议合并统计与半填高亮/选点弹窗点击命中与回填/草稿保留+顶层清空/五语言 html lang/双主题双宽度四组截图 .run-lock/shots-p07/；测试数据自清理、真实登出、dev server 停止"
     ],
     "未完成步骤": [
-      "无权限按钮隐藏形态待普通用户账号复验（root 具全部权限无法现场复现；机制与 P03/P04/P05 同源已验证）",
-      "IAB 环境伪象两条已登记 P06.md（Modal 关闭动画 transitionend 不派发；主题切换后已挂载组件 css-in-js 滞留，reload 重挂载正常）——真实浏览器无此问题，非应用缺陷"
+      "无权限按钮隐藏形态待普通用户账号复验（root 具全部权限无法现场复现；机制与 P03–P06 同源已验证）",
+      "IAB 环境伪象（Modal 关闭动画不派发/主题切换 css-in-js 滞留/旧帧截图）延续既往登记，非应用缺陷"
     ],
-    "下一步": "本轮结束。下一轮领取队列序 15 P07（节点映射，前置 B2 样板门禁已齐备）：读 TASKS.md P07 卡与旧源码 NodeMapping，核对 dispatcher/agvNodeMapping、map/getMapInfo 契约后实施",
+    "下一步": "本轮结束。下一轮领取队列序 16 P08（告警码管理，前置 B2 样板门禁已齐备）：读 TASKS.md P08 卡与旧源码 AlarmCodeManagement，核对 dispatcher/vehicleAlarmCode 契约（分页/增改删/文件下载/全量覆盖上传）后实施",
     "阻塞原因": "无"
   },
   "验证结果": [
@@ -794,16 +795,16 @@
       "日期": "2026-09-18"
     }
   ],
-  "证据位置": "docs/migration/tasks/T00.md(T00 历轮交付与证据)、docs/migration/tasks/P01.md、docs/migration/tasks/P02.md、docs/migration/tasks/P41.md、docs/migration/tasks/P42.md(P42 交付/联验/限制登记)、docs/migration/tasks/H01.md(H01 交付/联验/公共文件改动记录)、docs/migration/tasks/H02.md(H02 交付/联验/资源归属隔离登记)、docs/migration/tasks/H03.md(H03 交付/联验/资源归属隔离登记)、docs/migration/contracts.md(第 1–7 节契约 + 第 9 节冻结登记 + 变更日志)、docs/migration/i18n-map.md(H02 行已更新,error 分片旧 key 映射已更新)、docs/migration/operations.md(P41/P42/H01/H02 行已登记)、docs/migration/i18n-missing.md、docs/migration/terminology.md、docs/migration/tasks/P03.md（P03 交付/联验/受阻登记）；P03.md（已修订：操作映射状态/G04 已验证/带令牌联验记录/列偏好缺陷修复节）；operations.md（P03 六行已更新）；gaps.md（G04 部分验证）；contracts.md（列设置接入形态用户决策行+第 3 节列偏好行已更新）；AGENTS.md（第 2 节列偏好铁律）；docs/migration/tasks/P05.md（P05 交付/控制样板/联验/环境教训登记）；operations.md（P05 七行已登记）；contracts.md（变更日志 P05 行）；docs/migration/tasks/P38.md（P38 交付/形态契约/联验/i18n 教训）；operations.md（P38 三行+P03 详情行更新）；contracts.md（第 4 节实体页签与独立窗口行更新+第 6 节任务详情行落地+变更日志 P38 行）；i18n-map.md（P38 行更新）；AGENTS.md（第 6 节 i18n 接线纪律，原第 6 节顺延为第 7 节）；docs/migration/tasks/P39.md（P39 交付/形态契约/联验/i18n 双缺陷修复登记）；operations.md（P39 两行）；contracts.md（第 4 节实体页签双消费者+第 6 节车辆详情参数行+变更日志 P39 行）；i18n-map.md（P39 行更新）；.run-lock/shots-p39/（双主题双宽度截图）；P39 补验记录（tasks/P39.md「未完成/后续」①补验记录 + AGENTS 第 5 节 IAB 渲染管线冻结条目，2026-09-18 对账轮）；docs/migration/tasks/P04.md（P04 交付/联验/G18 缺口对照）；operations.md（P04 四行）；contracts.md（第 5 节分组/车辆选项行更新+变更日志 P04 行）；gaps.md（G18 登记）；i18n-map.md（P04 行更新）；docs/migration/tasks/P06.md（P06 交付/权限核对收敛/联验/IAB 伪象登记）；operations.md（P06 四行）；contracts.md（第 2 节载具权限码行收敛+第 5 节载具行更新+变更日志 P06 行）；i18n-map.md（P06 行更新）；.run-lock/shots-p06/（双主题双宽度截图）",
+  "证据位置": "docs/migration/tasks/T00.md(T00 历轮交付与证据)、docs/migration/tasks/P01.md、docs/migration/tasks/P02.md、docs/migration/tasks/P41.md、docs/migration/tasks/P42.md(P42 交付/联验/限制登记)、docs/migration/tasks/H01.md(H01 交付/联验/公共文件改动记录)、docs/migration/tasks/H02.md(H02 交付/联验/资源归属隔离登记)、docs/migration/tasks/H03.md(H03 交付/联验/资源归属隔离登记)、docs/migration/contracts.md(第 1–7 节契约 + 第 9 节冻结登记 + 变更日志)、docs/migration/i18n-map.md(H02 行已更新,error 分片旧 key 映射已更新)、docs/migration/operations.md(P41/P42/H01/H02 行已登记)、docs/migration/i18n-missing.md、docs/migration/terminology.md、docs/migration/tasks/P03.md（P03 交付/联验/受阻登记）；P03.md（已修订：操作映射状态/G04 已验证/带令牌联验记录/列偏好缺陷修复节）；operations.md（P03 六行已更新）；gaps.md（G04 部分验证）；contracts.md（列设置接入形态用户决策行+第 3 节列偏好行已更新）；AGENTS.md（第 2 节列偏好铁律）；docs/migration/tasks/P05.md（P05 交付/控制样板/联验/环境教训登记）；operations.md（P05 七行已登记）；contracts.md（变更日志 P05 行）；docs/migration/tasks/P38.md（P38 交付/形态契约/联验/i18n 教训）；operations.md（P38 三行+P03 详情行更新）；contracts.md（第 4 节实体页签与独立窗口行更新+第 6 节任务详情行落地+变更日志 P38 行）；i18n-map.md（P38 行更新）；AGENTS.md（第 6 节 i18n 接线纪律，原第 6 节顺延为第 7 节）；docs/migration/tasks/P39.md（P39 交付/形态契约/联验/i18n 双缺陷修复登记）；operations.md（P39 两行）；contracts.md（第 4 节实体页签双消费者+第 6 节车辆详情参数行+变更日志 P39 行）；i18n-map.md（P39 行更新）；.run-lock/shots-p39/（双主题双宽度截图）；P39 补验记录（tasks/P39.md「未完成/后续」①补验记录 + AGENTS 第 5 节 IAB 渲染管线冻结条目，2026-09-18 对账轮）；docs/migration/tasks/P04.md（P04 交付/联验/G18 缺口对照）；operations.md（P04 四行）；contracts.md（第 5 节分组/车辆选项行更新+变更日志 P04 行）；gaps.md（G18 登记）；i18n-map.md（P04 行更新）；docs/migration/tasks/P06.md（P06 交付/权限核对收敛/联验/IAB 伪象登记）；operations.md（P06 四行）；contracts.md（第 2 节载具权限码行收敛+第 5 节载具行更新+变更日志 P06 行）；i18n-map.md（P06 行更新）；.run-lock/shots-p06/（双主题双宽度截图）；docs/migration/tasks/P07.md（P07 交付/联验/G19/环境教训）；operations.md（P07 五行）；contracts.md（第 2 节权限码行补 node-mapping+第 5 节 agvNodeMapping 行与 getMapInfo/getSimpleMaps 行更新+变更日志 P07 行）；gaps.md（G19 登记）；i18n-map.md（P07 行更新）；AGENTS.md（第 5 节 RO 垫片修正+联验会话纪律两条）；.run-lock/shots-p07/（双主题双宽度截图）",
   "最近验证记录": [
     {
-      "命令": "pnpm lint/typecheck/check:structure/build + 结构检查（P06 交付终态）",
-      "结果": "全部通过（lint 284 文件 0 警告 0 错误；282 源文件结构检查；tsc+vite build 成功；chunk 大小警告为既有 apex-table-react 体积）",
+      "命令": "pnpm lint/typecheck/check:structure/build + 结构检查（P07 交付终态，联验后复跑）",
+      "结果": "全部通过（lint 293 文件 0 警告 0 错误；291 源文件结构检查；tsc+vite build 成功；chunk 大小警告为既有 apex-table-react 体积）",
       "日期": "2026-09-19"
     },
     {
-      "命令": "P06 带令牌真实联验（dev 代理 192.168.0.158:8888，凭据 .env.local root/MD5，IAB rAF/RO 双垫片）",
-      "结果": "通过：API 层（pageCarriers 200/createCarrier 请求体平铺抓包正确+落库一致/updateCarrier id+全量正确且名称尺寸落库——carrier 无 G18 类缺陷/deleteCarrier 真实删除后端自清理恢复 1 条历史数据）+ 浏览器（守卫回跳带 redirect+登录落点闭环/必填四条齐出/尺寸边界 0 拦截/筛选命中与空态/草稿保留/删除确认框五要素+取消确认双路径/五语言 html lang 逐语言/双主题双宽度四组截图 .run-lock/shots-p06/）；IAB 伪象两条登记（Modal 关闭动画不派发/主题切换 css-in-js 滞留 reload 正常）；验证后真实登出+页签关闭+dev server 停止",
+      "命令": "P07 带令牌真实联验（dev 代理 192.168.0.158:8888，凭据 .env.local root/MD5，IAB rAF+修正版 RO 双垫片）",
+      "结果": "通过：API 层（pageAGVNodeMapping 200/save 请求体平铺抓包正确+落库一致/update mappingKey+全量整体替换+改名落库一致——无 G18 类缺陷/delete 200 后端自清理/空 agvKeys 2004030 拒绝=G19 依据/权限四码登录响应实证）+ 浏览器（守卫回跳带 redirect+登录落点闭环/列表真实渲染/筛选命中与空态/新增建议合并 4 行+半填高亮+过滤+校验拦截/选点弹窗回显定位+坐标点击命中+footer 实时+D3 回填/编辑回填+改名/删除确认框五要素+取消确认双路径/草稿保留+顶层清空/五语言 html lang 逐语言/双主题双宽度四组截图 .run-lock/shots-p07/）；验证后测试数据自清理（2 条历史恢复）、真实登出（logout 请求实证）、页签关闭、dev server 停止",
       "日期": "2026-09-19"
     }
   ]

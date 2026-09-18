@@ -1,0 +1,75 @@
+/**
+ * 节点映射新增/编辑弹窗样式（P07；等价迁移旧 index.less 布局）。
+ */
+
+/* 弹窗 body 限高内部滚动：多地图组/万行组时不撑破屏幕（旧实现同手法） */
+.modalBody {
+  max-height: calc(100vh - 220px);
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+/* 地图组列表容器：组间纵向间距 */
+.groupsWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+/* 组卡片：标题与工具行同排，工具行可换行（1366 视口下不溢出） */
+.groupCard :global(.ant-card-head) {
+  min-height: 44px;
+}
+
+.groupToolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* 组头行搜索框宽度（旧实现 180px 同形） */
+.searchInput {
+  width: 180px;
+}
+
+/* 行数统计行：右对齐统计文本 + 半填计数红色 */
+.rowStats {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--app-text-secondary, rgba(0, 0, 0, 0.45));
+  padding: 2px 4px 6px;
+}
+
+.invalidCount {
+  color: #cf1322;
+}
+
+/* 半填行单元格淡红背景：Apex 无行级 className，逐 cell 包装（视觉等同旧版行高亮） */
+.partialCell {
+  background: var(--app-danger-weak-bg, #fff1f0);
+  border-radius: 2px;
+  padding: 2px 4px;
+  margin: 0 -4px;
+}
+
+/* 分页器行：右对齐（旧版表格内建分页同位） */
+.pagerRow {
+  display: flex;
+  justify-content: flex-end;
+  padding: 6px 0;
+}
+
+/* 添加映射行/添加地图虚线按钮：与上方内容留距 */
+.addRow {
+  margin-top: 4px;
+}
+
+/* 选项加载失败文本（按钮纪律：状态文本，无重试按钮） */
+.optionError {
+  color: var(--app-text-secondary, rgba(0, 0, 0, 0.45));
+  font-size: 12px;
+}
