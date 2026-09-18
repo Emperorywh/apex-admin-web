@@ -599,7 +599,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### H03 录制回放暂缓说明
 
-- [ ] **H03 录制回放入口**
+- [x] **H03 录制回放入口**
 - **批次/依赖**：B1 / T00。
 - **路径**：`/analyze-visual/record-playback`；旧来源 `RecordPlayback`；目标 `src/pages/record-playback/RecordPlayback/RecordPlayback.tsx`。
 - **交付**：原权限下保留菜单/直访与合法上下文，使用统一五语言说明。

@@ -557,13 +557,14 @@ export const appRouteDefinitions = defineAppRoutes([
             meta: businessMeta('任务统计', PERM.STATISTICS_ORDER_VIEW, { pending: true }),
           },
           {
-            // H03 暂缓入口：原权限下保留菜单/直访，进入统一暂缓/迁移说明
+            // H03 暂缓入口（D07）：本期确定不迁移，页面加载统一「本期暂未迁移」说明；
+            // 权限保持旧 .umirc.ts 的 record-playback:view，不迁业务、不作登录落点
             id: 'analyze-visual-record-playback',
             path: 'record-playback',
             loadPage: () => import('@/pages/record-playback/RecordPlayback/RecordPlayback'),
             meta: businessMeta('录制回放', PERM.RECORD_PLAYBACK_VIEW, {
               icon: CirclePlay,
-              pending: true,
+              migrationDeferred: true,
             }),
           },
           {

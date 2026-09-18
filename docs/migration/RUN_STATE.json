@@ -1,7 +1,7 @@
 {
   "版本说明": "调度系统迁移串行调度状态。由定时任务每小时触发一次，每次最多推进一个任务；写入必须整体原子替换。",
-  "最近更新时间": "2026-09-18T07:30:00Z",
-  "当前运行标识": "run-20260918-h-h02(H02 交付轮,锁随本轮结束释放)",
+  "最近更新时间": "2026-09-18T07:55:00Z",
+  "当前运行标识": "run-20260918-h03(H03 交付轮,锁随本轮结束释放)",
   "锁": "docs/migration/.lock（mkdir 原子目录锁，内含 lock.json）",
   "工作目录": "C:\\code\\apex-admin-web",
   "分支": "apple-rxx",
@@ -75,7 +75,7 @@
       "前置": [
         "T00"
       ],
-      "状态": "待领取(下一轮队首)"
+      "状态": "已完成(2026-09-18 勾选:migrationDeferred 标记+统一暂缓说明页,零业务请求零回放代码,真实联验通过)"
     },
     {
       "序": 9,
@@ -84,7 +84,7 @@
       "前置": [
         "P01"
       ],
-      "状态": "未开始"
+      "状态": "待领取(下一轮队首)"
     },
     {
       "序": 10,
@@ -449,20 +449,20 @@
     }
   ],
   "当前任务": {
-    "任务ID": "H03 录制回放暂缓说明(下一轮领取;本轮 H02 已完成勾选)",
-    "状态": "H02 已完成勾选;H03 未开始",
-    "当前里程碑": "H02 地图编辑暂缓说明闭环(migrationDeferred 标记复用/页面级 MigrationPending/资源归属隔离)",
+    "任务ID": "P03 任务统计(下一轮领取;本轮 H03 已完成勾选,H01-H03 暂缓入口全部收口)",
+    "状态": "H03 已完成勾选;P03 未开始",
+    "当前里程碑": "H03 录制回放暂缓说明闭环(B1 批次 H01-H03 全部交付)",
     "本轮已完成内容": [
-      "MapNestModify.tsx 整页重写:清除 PagePlaceholder 模板占位,复用 MigrationPending 统一暂缓说明;无业务请求、无 Konva/编辑器代码、无任何地图编辑副作用",
+      "RecordPlayback.tsx 整页重写:清除 PagePlaceholder 模板占位,复用 MigrationPending 统一暂缓说明;无业务请求、无 Konva/回放代码、无录制文件导入导出/时间轴/回放轮询/全局进度",
       "路由标记 pending→migrationDeferred(复用 H01 语义与 routeAccess 既有排除,零公共逻辑改动):不抢占登录落点、回跳不放行,root 落点保持 /no-permission",
-      "权限核对:旧 .umirc.ts access=PERM.MAP_EDIT_VIEW(map-edit:view)与新挂码一致未改;菜单/直访一致",
-      "查询上下文保留:?mapId=42&tab=edit 直访参数不清洗不跳转",
-      "资源归属隔离:P09 地图 CRUD/版本/导入导出/发布推送与 P07 选点/只读渲染不受影响,本轮未触碰任何地图共享组件/service",
-      "真实联验:守卫回跳(含查询参数)/落点不抢占/Dock 地图管理子菜单入口/零 /fms 请求/五语言文案+html lang/两主题截图/back-forward 无风暴/会话清理后守卫回登录页",
+      "权限核对:旧 .umirc.ts access=PERM.RECORD_PLAYBACK_VIEW(record-playback:view)与新 permission.constants.ts 同值常量一致未改",
+      "查询上下文保留:?mapId=42&record=abc 直访参数不清洗不跳转",
+      "资源归属隔离:P03 任务统计/P34 实时看板/P33-P37 报表类不受影响,本轮未触碰任何共享统计/回放组件与 service",
+      "真实联验:守卫回跳(含查询参数)/落点不抢占/Dock 数据统计子菜单入口+导航/零 /fms 请求/五语言文案+html lang/两主题玻璃面板截图/back-forward 无风暴/会话清理后守卫回登录页",
       "pnpm check(228 文件 lint 0 警告 0 错误)+build 通过;语言/主题已复位、页签已关、dev server 已停"
     ],
     "未完成步骤": [],
-    "下一步": "下一轮(定时触发)领取 H03 录制回放暂缓说明:路径 /analyze-visual/record-playback,旧来源 RecordPlayback,目标 src/pages/record-playback/RecordPlayback/RecordPlayback.tsx;复用 migrationDeferred 标记+页面级 MigrationPending 模式;验收=不引入录制文件导入导出/时间轴/回放轮询连接/全局进度/完整回放模块,相关语言资源保留归属,核对旧 .umirc.ts 该路由 access 码与菜单/关联入口",
+    "下一步": "下一轮(定时触发)领取 P03 任务统计(B2a 首个页面任务,B2 样板门禁):路径 /analyze-visual/order-statistics,旧来源 AnalyzeVisual/OrderStatistics,目标 src/pages/analyze-visual/OrderStatistics/OrderStatistics.tsx;需按 OpenAPI 核实统计接口契约(注意 G04 GET 对象序列化/G09 排序/G10 精度/G15 空值缺口)、Apex 表格、五语言分片;首个真实业务表格页,联验需带令牌真实接口验证",
     "阻塞原因": "无"
   },
   "验证结果": [
@@ -710,7 +710,17 @@
       "命令": "H02 真实浏览器联验(dev 代理 192.168.0.158:8888,1366x768)",
       "结果": "通过:未登录直访守卫回跳带 redirect(含查询参数);root 登录落点 /no-permission 且 redirect=/map-through/map-nest-modify 回跳被拒(migrationDeferred 不抢占落点);已登录直访渲染统一暂缓说明+页签/Dock 地图管理子菜单入口;?mapId=42&tab=edit 查询上下文保留;页内 /fms 请求 0 条;五语言标题+说明+html lang 逐语言;两主题玻璃面板截图;back/forward 无重定向风暴;会话清理后守卫回登录页",
       "日期": "2026-09-18"
+    },
+    {
+      "命令": "pnpm check + pnpm build(H03 交付后)",
+      "结果": "全部通过(228 文件 lint 0 警告 0 错误;226 源文件结构检查;tsc+vite build 成功)",
+      "日期": "2026-09-18"
+    },
+    {
+      "命令": "H03 真实浏览器联验(dev 代理 192.168.0.158:8888,1366x768)",
+      "结果": "通过:未登录直访守卫回跳带 redirect(含查询参数);root 登录落点 /no-permission 且 redirect=/analyze-visual/record-playback?mapId=42&record=abc 回跳被拒(migrationDeferred 不抢占落点);已登录直访渲染统一暂缓说明+页签/Dock 数据统计子菜单入口;查询上下文保留;页内 /fms 请求 0 条;五语言标题+说明+html lang 逐语言(en Record & Playback/繁 錄影回放/日 録画再生/韩 녹화 재생);两主题玻璃面板截图;back/forward 无重定向风暴;会话清理后守卫回登录页",
+      "日期": "2026-09-18"
     }
   ],
-  "证据位置": "docs/migration/tasks/T00.md(T00 历轮交付与证据)、docs/migration/tasks/P01.md、docs/migration/tasks/P02.md、docs/migration/tasks/P41.md、docs/migration/tasks/P42.md(P42 交付/联验/限制登记)、docs/migration/tasks/H01.md(H01 交付/联验/公共文件改动记录)、docs/migration/tasks/H02.md(H02 交付/联验/资源归属隔离登记)、docs/migration/contracts.md(第 1–7 节契约 + 第 9 节冻结登记 + 变更日志)、docs/migration/i18n-map.md(H02 行已更新,error 分片旧 key 映射已更新)、docs/migration/operations.md(P41/P42/H01/H02 行已登记)、docs/migration/i18n-missing.md、docs/migration/terminology.md"
+  "证据位置": "docs/migration/tasks/T00.md(T00 历轮交付与证据)、docs/migration/tasks/P01.md、docs/migration/tasks/P02.md、docs/migration/tasks/P41.md、docs/migration/tasks/P42.md(P42 交付/联验/限制登记)、docs/migration/tasks/H01.md(H01 交付/联验/公共文件改动记录)、docs/migration/tasks/H02.md(H02 交付/联验/资源归属隔离登记)、docs/migration/tasks/H03.md(H03 交付/联验/资源归属隔离登记)、docs/migration/contracts.md(第 1–7 节契约 + 第 9 节冻结登记 + 变更日志)、docs/migration/i18n-map.md(H02 行已更新,error 分片旧 key 映射已更新)、docs/migration/operations.md(P41/P42/H01/H02 行已登记)、docs/migration/i18n-missing.md、docs/migration/terminology.md"
 }

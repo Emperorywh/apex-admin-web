@@ -16,6 +16,7 @@
 | P42 | ServerError /500 + 两级错误边界 | `pages/error/ServerError` + `RouterErrorBoundary` + `PageErrorBoundary`（error 分片基座常载） | — | — | 登录（/500 守卫） | 已合并；错误边界运行时呈现待自然场景复核（资源齐备静态核对通过） | tasks/P42.md |
 | H01 | Overlook/调度监控入口 | `pages/overlook/Overlook` 渲染统一暂缓说明（MigrationPending 玻璃面板）；`migrationDeferred` 标记不作落点/回跳候选 | — | — | overview:view（菜单/直访一致） | 已合并；验证已通过（零业务请求/零 WebSocket/查询上下文保留） | tasks/H01.md（联验 2026-09-18） |
 | H02 | MapNestModify/地图编辑入口 | `pages/map-through/MapNestModify` 渲染统一暂缓说明（复用 MigrationPending）；`migrationDeferred` 标记，旧 Konva 编辑器不迁移（P09/P07 资源归属不受影响） | — | — | map-edit:view（菜单/直访一致） | 已合并；验证已通过（零业务请求/查询上下文保留/五语言/两主题） | tasks/H02.md（联验 2026-09-18） |
+| H03 | RecordPlayback/录制回放入口 | `pages/record-playback/RecordPlayback` 渲染统一暂缓说明（复用 MigrationPending）；`migrationDeferred` 标记，旧 Konva 回放/导入导出/时间轴/轮询整体不迁移（P03/P34 资源归属不受影响） | — | — | record-playback:view（菜单/直访一致） | 已合并；验证已通过（零业务请求/查询上下文保留/五语言/两主题） | tasks/H03.md（联验 2026-09-18） |
 
 ## 汇总状态口径
 
