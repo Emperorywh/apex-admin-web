@@ -1,0 +1,45 @@
+/*
+ * 完整任务详情页布局（P38）：紧凑工具栏 + 弹性详情区。
+ * 颜色全部引用全局 token（深浅主题自动适配，不硬编码）；
+ * 高度链路：page(100%) → body(flex:1, min-height:0) → mission 表格 flex 撑满，
+ * 横向/纵向溢出一律收敛为组件内部滚动（AGENTS 第 1 节布局纪律）。
+ */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
+}
+
+/* 工具栏：标题与任务编号同行，独立窗口按钮靠右；不挤占详情区高度 */
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-shrink: 0;
+  margin-bottom: 12px;
+}
+
+.titleGroup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+/* 页面标题：与 P03 统计条主标题同级视觉（加粗强调，任务编号为次要信息） */
+.title {
+  font-size: 15px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+/* 详情区：承载主体 Descriptions（自适应高度）+ mission 表格（flex 撑满剩余） */
+.body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}

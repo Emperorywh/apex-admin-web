@@ -64,8 +64,8 @@
 | 取消语义 | 本地 cancel/abort 仅代表客户端终止：阶段标 `aborted`，文案注明「仅本机终止，服务端处理不保证已撤销」（结果待确认，规格 10.4）；禁止把 Abort 当服务端回滚 | 已落地（T00.6） |
 | 传输状态追踪 | `useTransfers(tabKey?)` 订阅任务列表（页面进度 UI 用）；`findActiveTransfersIn(tabKeys)` 供关闭确认一次性查询；承载页签已关闭的孤儿传输终态由 `TransferWatcher`（BasicLayout 内）以一次性 antd message 提示结果——**本期不新增用户可见全局任务中心**；终态记录保留 15 秒后自动清理 | 已落地并经浏览器验证（孤儿完成 toast，T00.6） |
 | 会话结束清理 | 登出/会话失效/多窗口同步退出（isAuthenticated=false）：TransferWatcher 终止全部进行中传输并清空全部记录（含终态残留）；登出确认框提示未保存修改与传输终止影响 | 已落地并经浏览器验证（T00.6） |
-| 实体页签 | tab.key = pathname + 规范化 search（参数名稳定排序）：实体详情以 `?id=<实体ID>` 等定位参数打开时，不同实体自动获得独立页签、独立 Activity 缓存实例与独立请求 scope，互不串缓存；同参数复用同一页签。默认工作区页签形态要求实体路由位于受保护根内（P38/P39/P40 接入时由统筹应用 definitions.tsx 差异） | 机制已落地并经浏览器验证（同路由不同 id → 两独立页签）；参数形状待 P38/P39 按旧调用点核对 |
-| 独立窗口 | `openStandaloneWindow(path, params?, options?)`（`src/utils/window/standaloneWindow.ts`）：仅接受站内绝对路径；按「路由+排序参数」命名窗口（同实体复用窗口、异实体独立）；居中 1280×800 popup；打开成功后切断 opener。布局外路由（order-info/vehicle-info/server-resource-monitor）即独立窗口形态，受同一认证+权限守卫，会话/语言/主题来自持久化；多窗口退出同步复用 authBridge（T00.3） | 已落地并经浏览器验证（独立窗口加载 /order-info?id=88，守卫通过，T00.6） |
+| 实体页签 | tab.key = pathname + 规范化 search（参数名稳定排序）：实体详情以 `?orderKey=<实体ID>` 等定位参数打开时，不同实体自动获得独立页签、独立 Activity 缓存实例与独立请求 scope，互不串缓存；同参数复用同一页签。默认工作区页签形态要求实体路由位于受保护根内——P38 已落地首个消费者：order-info 移入受保护根（完整路径 /order-info 不变，hideInMenu 不进菜单/落点候选）；P39/P40 接入时同构迁移 | 已落地并经 P38 真实浏览器验证（两 orderKey 三页签并存互不串） |
+| 独立窗口 | `openStandaloneWindow(path, params?, options?)`（`src/utils/window/standaloneWindow.ts`）：仅接受站内绝对路径；按「路由+排序参数」命名窗口（同实体复用窗口、异实体独立）；居中 1280×800 popup；打开成功后切断 opener。独立窗口 = 打开同一路径（P38 起实体详情路由位于受保护根，窗口内为完整外壳形态），受同一认证+权限守卫，会话/语言/主题来自持久化；多窗口退出同步复用 authBridge（T00.3）。打开失败（弹窗拦截）返回 false，调用方给可读提示 | 已落地并经 P38 真实浏览器验证（新窗口渲染完整外壳+主体+守卫） |
 
 ## 5. 共享只读选项与地图能力契约（owner：T00；T00.7 已核对登记）
 
@@ -100,7 +100,7 @@
 
 | 项 | 契约 | 状态 |
 | --- | --- | --- |
-| 任务详情 | `/order-info?...`（参数在 P03 旧调用点核对后定）；工作区页签默认 + 独立窗口/全屏；独立窗口经 `openStandaloneWindow`（contracts 第 4 节）；实体隔离靠页签 key 含实体参数 | 待 P38 定参数 |
+| 任务详情 | `/order-info?orderKey=<任务编号>`（命名参数，裸值 `?KEY`/`?KEY=` 历史兼容；构造/解析单一真相 `features/order-detail/orderDetailNavigation.ts`）；默认工作区页签（路由在受保护根内）+「独立窗口」按钮；快速预览弹窗复用 OrderDetailPanel 详情业务组件；参数名 orderKey 已按旧调用点核对（旧源码无导航调用点，直访裸值形态） | 已验证（P38 带令牌联验 2026-09-18） |
 | 车辆详情 | `/vehicle-info?...`（参数在 P05 旧调用点核对后定）；同上 | 待 P39 定参数 |
 | 首页落点 | 登录后优先 `/dashboard`（P34 合并首页）；无权限进首个有权限且可用业务页；无可用页明确反馈 | 已确认（D29） |
 | 暂缓页 | 统一「本期暂未迁移」说明组件，保留合法上下文与原权限 | 已确认（D07） |
@@ -136,6 +136,7 @@
 | 2026-09-18 | 文件下载通道 + 共享选项服务 + orderRecord 五语言 | P03 交付：① request.ts 新增 `api.downloadGet`（GET+Blob+完整响应，`apexRawResponse` 配置标记；JSON 错误仍走统一解包）与 `resolveDownloadFilename`（RFC 5987），既有消费者行为不变；② P03 代建共享选项服务（contracts 第 5 节唯一 operation）：`services/vehicle`（fetchSimpleVehicles→P04）、`services/vehicle-group`（fetchVehicleGroups→P04）、`services/action`（fetchAGVActions/fetchAGVActionGroups→P24）、`services/order-template`（fetchOrderTemplates，owner=P03 供 P20/P21）、`services/map` 增 fetchMapSites（→P10）；全部经 useStaticOptions 消费，零复制请求；③ orderRecord 四语言分片交付（en-US 旧真译沿用+补译；zh-TW/ja-JP/ko-KR 按 B1 基线补译，「车辆」旧真译迁入）；④ 新增共享 `utils/clipboard`（P02 域内 copyText 未动，后续可收口） | P03（本轮 run） | 消费者影响：请求层扩展向后兼容（typecheck/build 全绿）；选项服务 owner 交接见第 5 节（P04/P10/P24 接手后维护）；order-record 路由 pending 标记移除，本页进入登录落点候选 |
 | 2026-09-18 | 表格列设置接入形态（用户决策） | 业务表格开启 `columnSettingsEnabled` 时**序号列默认放出**（不传 `showRowNumber={false}`）：包内把列设置齿轮入口放进序号列表头，行内显示序号；显式关闭序号列会使齿轮退化为表头上方独立工具条行（P03 实测）。序号列是辅助轨道，不进列偏好 columnOrder/columnVisibility 切片。P03 联验同轮修复两处页面接线缺陷：受控切片须随 onChange 更新（否则改动被回弹）；适配器 save 为整体替换语义，必须保存合并后的完整四切片（面板一次确认连发四类回调，单片补丁互相覆盖） | 用户 / P03（联验轮） | 消费者影响：P05 起全部带列设置的表格页照此形态接入（序号列默认放出 + `useColumnPreferences` 四步接线见 columnPreferences.ts 文件头）；第 3 节列偏好行补此交互约定 |
 | 2026-09-18 | 车辆管理服务 + 控制交互样板 | P05 交付：① `services/vehicle` 扩展 vehicle-manage 服务（pageVehicles/addVehicle/updateVehicle/deleteVehicle/vehicleOperate/allVehicleOperate/getUnRelationSimpleVehicles，owner=P05；P03 代建 getSimpleVehicles 选项服务不变）；② 控制样板（设备类页面复用）：useVisiblePolling 可见轮询 → confirmCommand 列对象与影响 → verifyVehicleFresh 执行前核验（pageVehicles+query 重查目标，missing/stale 不执行并刷新）→ 发命令；批量整批接受诚实呈现（后端无逐项契约，A15）；③ `vehicleList` 命名空间四语言分片（en 旧真译沿用+补译，繁日韩 B1 基线，「マップ/맵」真译迁入）；④ 路由 vehicle-diplay 解除 pending（历史拼写保留），进入登录落点候选 | P05（本轮 run） | 消费者影响：vehicle-manage 服务可被设备页复用（verifyVehicleFresh 样板工具在 features/vehicle-list/）；本页按钮码消费 PERM_BUTTON.VEHICLE_LIST_*（已登记）；写副作用执行与 P39 独立详情往返登记待验收 |
+| 2026-09-18 | 实体页签契约落地 + 任务详情双形态 + 详情参数契约 | P38 交付：① order-info 路由移入受保护根（完整路径 /order-info 不变；hideInMenu 不进菜单/落点候选）——实体页签机制首个消费者，默认工作区页签形态达成，P39/P40 接入时同构迁移；② 详情参数单一真相 `features/order-detail/orderDetailNavigation.ts`：命名参数 `?orderKey=` + 历史裸值 `?KEY` 及页签规范化变体 `?KEY=` 兼容解析；③ 详情业务组件 `features/order-detail/components/OrderDetailPanel`（单请求喂主体+mission 表）由完整页与快速预览弹窗共用——OrderInfoModal/MissionActionsTable 迁入 features/order-detail（跨 feature 禁止导入，弹窗外壳随迁，OrderRecord.tsx 仅改导入路径）；④ 枚举展示常量提升 `src/constants/order/orderDisplayOptions.ts`（orderRecord/orderDetail 两域共同消费，orderRecordOptions 改 re-export）；⑤ 服务层 getOrderRecordDetail 返回类型如实标注可空（任务不存在 code=200+data=null 实证）；⑥ orderInfo 命名空间四语言分片 + order-record 路由 meta 增声明该命名空间（弹窗新按钮文案） | P38（本轮 run） | 消费者影响：实体页签/独立窗口行更新（第 4、6 节）；P39/P40 照此形态迁移路由并核对各自参数；OrderInfoModal 导入路径变化仅 OrderRecord.tsx 一处（已同步）；getOrderRecordDetail 可空语义消费者为 OrderDetailPanel（已判空）；P03 详情弹窗行为经回归联验不变形；i18n 纪律沉淀：nsSeparator=false 下 t() 禁带「ns:」前缀（AGENTS 第 2 节） |
 
 ## 9. 冻结登记（T00.9）
 

@@ -28,3 +28,4 @@ docs/migration/.lock/
 
 # 迁移调度串行锁（定时任务运行态，不入库；RUN_STATE.json 登记）
 .migration_lock/
+.run-lock/

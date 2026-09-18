@@ -62,7 +62,7 @@
 | P35 任务统计报表 | dashboard-task | **taskReport**（避免与 P34 dashboard 命名空间混淆，按业务命名） | taskReport |
 | P36 故障告警 | dashboard-fault | **faultAlarm**（同上） | faultAlarm |
 | P37 车辆状态统计 | vehicle-status | vehicleStatus | vehicleStatus |
-| P38 任务详情 | /order-info | orderInfo | orderInfo |
+| P38 任务详情 | /order-info | orderInfo（已交付四语言分片 5 key；详情字段/表格文案共用 orderRecord 命名空间——弹窗与完整页同一业务组件，零重复 key；nsSeparator=false 下 t() 不带「ns:」前缀） | features/order-detail + pages/order-info |
 | P39 车辆详情 | /vehicle-info | vehicleInfo | vehicleInfo |
 | P40 服务器资源 | /server-resource（别名 server-resource-monitor 同实现） | serverResource | serverResource |
 | P41 无权限页 | /no-permission | **access-denied**（已交付；P41 按任务卡独立分片，覆盖冻结时「复用 common/error」的盘点） | 沿用 pages/un-access |

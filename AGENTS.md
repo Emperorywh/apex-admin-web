@@ -58,7 +58,13 @@
 - TASKS.md DoD 13 与 B2 样板门禁已把「真实登录 + 真实数据整页渲染验收（1920 与 1366 宽度、双主题）」列为样板页（P03/P05）勾选前的硬要求，环境受阻按缺口登记并保持不勾选。
 - PageCacheHost 会缓存已挂载页签的 React 树：**判定运行时行为前先硬刷新/重开页签**，否则你在验证旧模块而不是 HEAD 代码；同理，交付说明里的运行时结论要注明当时加载的代码形态。
 
-## 6. 文档联动
+## 6. i18n 接线纪律（2026-09-18 P38 实测沉淀）
+
+- 本项目 i18next 配置 `keySeparator=false; nsSeparator=false`（中文 key 即文案）：**`t()` 一律不带「ns:」前缀**——带了不会被解析成命名空间，整串「orderInfo:独立窗口」会被当作 key 原样显示在页面上，typecheck/build 照不到。
+- 一个组件要跨命名空间取文案（如详情组件主体文案走 orderRecord、新增按钮文案走 orderInfo）：`useTranslation(['orderRecord','orderInfo'], { nsMode: 'fallback' })` + 无前缀 key，i18next 按数组顺序回退查找；宿主路由 meta.i18nNamespaces 必须把用到的命名空间都声明齐（切换语言时才预载）。
+- 顶栏/语言菜单按钮的 title/aria-label 也是翻译文案：DOM 定位（querySelector 按 title）在非简中语言下会失效，自动化验证要用位置或结构选择器。
+
+## 7. 文档联动
 
 - 改公共文件（BasicLayout/请求层/表格用法）→ 同步在对应任务交接记录登记"影响已核"；新教训按本文格式沉淀到对应章节，不另开碎片文档。
 - 本页案例全记录（9 项缺陷 → 根因 → 修复对照表）：`docs/migration/tasks/P03.md`「视觉缺陷修复」节。

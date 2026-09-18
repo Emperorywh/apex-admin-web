@@ -90,12 +90,16 @@ export async function createOrderRecord(
   })
 }
 
-/** 任务详情：主体信息 + 子任务分页（详情弹窗主体与子任务表格共用一次请求） */
+/**
+ * 任务详情：主体信息 + 子任务分页（详情弹窗主体与子任务表格共用一次请求）。
+ * 返回可空（P38 带令牌实证 2026-09-18）：任务编号不存在时后端仍返回 code=200
+ * 但 data=null；调用方必须对 null 呈现「任务不存在」反馈，不得直接解引用。
+ */
 export async function getOrderRecordDetail(
   params: OrderRecordDetailParam,
   options?: RequestOptions,
-): Promise<OrderRecordDetailDto> {
-  return api.post<OrderRecordDetailDto>('/dispatcher/orderRecord/getOrderRecordDetail', params, {
+): Promise<OrderRecordDetailDto | null> {
+  return api.post<OrderRecordDetailDto | null>('/dispatcher/orderRecord/getOrderRecordDetail', params, {
     signal: options?.signal,
   })
 }

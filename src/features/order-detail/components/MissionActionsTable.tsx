@@ -1,9 +1,10 @@
 /**
- * 子任务动作展开子表（P03 详情弹窗内嵌，Apex data 模式）。
+ * 子任务动作展开子表（P03 详情弹窗引入，P38 迁入任务详情业务域 features/order-detail）。
  *
  * 旧实现 ExpandedActions 用 antd Table 展示 mission 内动作集合（完整小集合、
  * 无分页）；按 DoD 4 全表替换纪律改为 ApexTableReact data 模式——
  * data 模式仅承载真实接口返回的完整小集合（规格 6.2），不是 mock。
+ * 完整详情页（/order-info）与列表快速预览弹窗共用本组件。
  *
  * 展示与空值纪律：
  * - 执行结果/条件/时间可能为空：缺失留白，不猜语义；
@@ -21,7 +22,7 @@ import { useApexLocale } from '@/hooks/useApexLocale'
 import { stringFieldRowId } from '@/utils/table/rowId'
 import { displayDateTime } from '@/utils/datetime/datetimeDisplay'
 import type { OrderActionDto } from '@/services/order-record/order.service.types'
-import { ACTION_STATUS_OPTIONS } from './orderRecordOptions'
+import { ACTION_STATUS_OPTIONS } from '@/constants/order/orderDisplayOptions'
 
 /** 动作状态 → 展示文案（协议枚举原值提交/留存，仅展示层翻译） */
 function actionStatusText(value: OrderActionDto['actionStatus']): string {

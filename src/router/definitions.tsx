@@ -205,7 +205,8 @@ export const appRouteDefinitions = defineAppRoutes([
         loadPage: () => import('@/pages/order-record/OrderRecord/OrderRecord'),
         meta: businessMeta('任务管理', PERM.ORDER_RECORD_VIEW, {
           icon: List,
-          i18nNamespaces: ['orderRecord'],
+          // orderInfo：详情弹窗「完整详情」按钮文案（P38 新增，弹窗共用该分片）
+          i18nNamespaces: ['orderRecord', 'orderInfo'],
         }),
       },
       {
@@ -619,6 +620,25 @@ export const appRouteDefinitions = defineAppRoutes([
         ],
       },
       {
+        // 完整任务详情（P38）：位于受保护根内 = 默认工作区页签形态（D08/规格 7）。
+        // 完整路径保持 /order-info（joinPath('/', 'order-info')），历史地址不变；
+        // 实体定位参数 ?orderKey=... 进入页签 key（pathname+规范化 search），
+        // 不同任务自动获得独立页签与请求 scope；hideInMenu 保证详情页不进
+        // Dock 菜单、也不作为登录落点候选（isLandingCandidate 排除 hideInMenu）。
+        // 独立窗口形态由页面工具栏经 openStandaloneWindow 打开同一路径（同守卫）。
+        id: 'order-info',
+        path: 'order-info',
+        loadPage: () => import('@/pages/order-info/OrderInfo/OrderInfo'),
+        meta: {
+          title: '任务详情',
+          perm: PERM.ORDER_RECORD_VIEW,
+          hideInMenu: true,
+          // orderInfo：P38 页面私有分片（独立窗口/缺参数等新增文案）；
+          // orderRecord：详情业务组件文案（P03 已交付四语言，弹窗/页面共用）
+          i18nNamespaces: ['orderInfo', 'orderRecord'],
+        },
+      },
+      {
         id: 'error-500',
         path: '500',
         loadPage: () => import('@/pages/error/ServerError/ServerError'),
@@ -631,16 +651,6 @@ export const appRouteDefinitions = defineAppRoutes([
         meta: auxiliaryMeta('页面不存在'),
       },
     ],
-  },
-  {
-    // 独立任务详情（P38）：复用任务管理码（baseline 特殊权限点），鉴权不公开
-    id: 'order-info',
-    path: '/order-info',
-    loadPage: () => import('@/pages/order-info/OrderInfo/OrderInfo'),
-    meta: standaloneMeta('任务详情', {
-      perm: PERM.ORDER_RECORD_VIEW,
-      migrationPending: true,
-    }),
   },
   {
     // 独立车辆详情（P39）：复用车辆列表码（baseline 特殊权限点），鉴权不公开

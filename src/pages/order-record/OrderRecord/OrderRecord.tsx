@@ -61,7 +61,9 @@ import { OrderStatisticsBar } from '@/features/order-record/components/OrderStat
 import { CreateOrderModal } from '@/features/order-record/components/CreateOrderModal'
 import { OrderCancelModal } from '@/features/order-record/components/OrderCancelModal'
 import { MockDispatchModal } from '@/features/order-record/components/MockDispatchModal'
-import { OrderInfoModal } from '@/features/order-record/components/OrderInfoModal'
+// P38 起详情弹窗迁入任务详情业务域（壳+OrderDetailPanel 复用详情业务组件），
+// 页面只改导入路径，弹窗对外 props 契约不变（交接记录：P38.md 文件归属节）
+import { OrderInfoModal } from '@/features/order-detail/components/OrderInfoModal'
 import styles from './OrderRecord.module.css'
 
 /** 任务状态 → 中文文案 key（标签展示；与旧实现 orderStateUnfold 名称一致） */

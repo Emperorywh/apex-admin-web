@@ -519,7 +519,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P38 完整任务详情
 
-- [ ] **P38 完整任务详情**
+- [x] **P38 完整任务详情**
 - **批次 / 前置**：B2b / P03。
 - **入口**：`/order-info`；**旧来源**：`OrderInfo`；**目标**：`src/pages/order-info/OrderInfo/OrderInfo.tsx`。
 - **私有模块 / 语言分片**：`order-detail`；**接口依据**：orderRecord/getOrderRecordDetail 等已声明查询。

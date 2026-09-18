@@ -1,22 +1,23 @@
 /**
- * 任务详情快速预览弹窗（P03）。
+ * 任务详情业务组件（P38）：主体描述列表 + 子任务（mission）服务端分页表 + 动作展开子表。
  *
- * 旧实现：OrderInfoModal（antd Descriptions 主体 + antd Table mission 分页 +
- * ExpandedActions 动作展开）。P03 按旧可达交互保留「列表行详情=弹窗快速预览」；
- * /order-info 完整详情页归 P38（当前迁移过渡占位），两者不互相替代。
+ * 完整详情页（/order-info，工作区页签/独立窗口）与列表快速预览弹窗共用本组件
+ * （TASKS P38：快速预览复用详情业务组件），两种容器只换外壳与尺寸参数。
  *
- * 数据与契约：
- * - 单次请求喂两个区域（ getOrderRecordDetail：主体 + mission 分页），
+ * 数据与契约（沿用 P03 详情弹窗已联验形态）：
+ * - 单次请求喂两个区域（POST getOrderRecordDetail：主体 orderRecord + missionPage），
  *   避免同参重复请求；主体跟随同一响应填充，失败时两区域同源呈现真实错误；
  * - mission 表格为 Apex request 模式：服务端分页（missionPage.records/total）、
  *   行 ID=orderMissionKey、不启用排序（G09：后端未声明全量排序）；
  * - 每行展开动作子表复用 MissionActionsTable（data 模式完整小集合）；
- * - 弹窗每次打开从第一页开始（旧实现同语义），关闭清空主体数据。
+ * - orderKey 变化即重开数据（页签/弹窗各自持有实例，不跨实体复用请求结果）；
+ * - 空值留白、未知枚举显示原值、时间统一 displayDateTime（AGENTS 第 3 节）。
  */
 
 import { useCallback, useState } from 'react'
-import { Descriptions, Modal, Tag } from 'antd'
+import { Descriptions, Tag } from 'antd'
 import { useTranslation } from 'react-i18next'
+import { StateBlock } from '@/components/StateBlock/StateBlock'
 import { ApexTableReact } from 'apex-table-react'
 import type { ApexColumnDef } from 'apex-table-react'
 import { useApexLocale } from '@/hooks/useApexLocale'
@@ -27,11 +28,15 @@ import { apiErrorMessage } from '@/services/request/request'
 import { getOrderRecordDetail } from '@/services/order-record/order.service'
 import type {
   OrderMissionDto,
-  OrderRecordDetailDto,
   OrderRecordDto,
 } from '@/services/order-record/order.service.types'
-import { MISSION_STATE_OPTIONS, ORDER_STATE_OPTIONS, ORDER_TYPE_OPTIONS } from './orderRecordOptions'
+import {
+  MISSION_STATE_OPTIONS,
+  ORDER_STATE_OPTIONS,
+  ORDER_TYPE_OPTIONS,
+} from '@/constants/order/orderDisplayOptions'
 import { MissionActionsTable } from './MissionActionsTable'
+import styles from './OrderDetailPanel.module.css'
 
 /** 主键/枚举展示辅助：缺失留白；未知枚举显示原值（不猜语义） */
 function describeOption(options: { value: string; label: string }[], value?: string | null): string {
@@ -40,20 +45,33 @@ function describeOption(options: { value: string; label: string }[], value?: str
   return found ? found.label : value
 }
 
-interface OrderInfoModalProps {
-  open: boolean
+interface OrderDetailPanelProps {
   /** 目标订单 key（getOrderRecordDetail.orderTaskKey） */
   orderKey: string
-  onClose: () => void
+  /** 主体描述列表列数：完整页 3 列（旧 /order-info 形态）、弹窗 2 列（旧弹窗形态） */
+  descriptionsColumn?: 2 | 3
+  /**
+   * mission 表格高度：'fill' = 在父级 flex 列容器中弹性撑满剩余空间（完整页，
+   * 禁止 calc(100vh) 硬编码——视口高度一变即失准，AGENTS 第 1 节）；
+   * 数字 = 固定像素（弹窗形态）。
+   */
+  missionTableHeight?: number | 'fill'
 }
 
-export function OrderInfoModal({ open, orderKey, onClose }: OrderInfoModalProps) {
+export function OrderDetailPanel({
+  orderKey,
+  descriptionsColumn = 2,
+  missionTableHeight = 'fill',
+}: OrderDetailPanelProps) {
   const { t } = useTranslation('orderRecord')
   const apexLocale = useApexLocale()
 
   // 详情主体（orderRecord）：跟随 mission 表格首次 request 的同一响应填充
   const [detail, setDetail] = useState<OrderRecordDto | null>(null)
   const [detailError, setDetailError] = useState<string | null>(null)
+  // 任务不存在：后端对未知编号仍返回 code=200 且 data=null（2026-09-18 带令牌实证），
+  // 主体缺失时呈现明确反馈，与「查询失败」「真实空 mission 列表」分开（专项验收）
+  const [detailNotFound, setDetailNotFound] = useState(false)
 
   /**
    * mission 分页请求：同一响应同时喂主体 Descriptions 与表格（不重复请求）。
@@ -64,19 +82,27 @@ export function OrderInfoModal({ open, orderKey, onClose }: OrderInfoModalProps)
     async (params: { pageIndex: number; pageSize: number; signal: AbortSignal }) => {
       const { pageNo, pageSize } = toBackendPage(params.pageIndex, params.pageSize)
       try {
-        const data: OrderRecordDetailDto = await getOrderRecordDetail(
+        const data = await getOrderRecordDetail(
           { orderTaskKey: orderKey, pageNo, pageSize },
           { signal: params.signal },
         )
+        // 任务不存在（data=null，真实实证）：主体给出明确反馈，表格呈现空结果
+        if (!data || !data.orderRecord) {
+          setDetail(null)
+          setDetailError(null)
+          setDetailNotFound(true)
+          return { data: [], rowCount: 0 }
+        }
         // 主体区域同源更新：清掉上次错误，记录最新订单主体
         setDetail(data.orderRecord)
         setDetailError(null)
+        setDetailNotFound(false)
         return {
           data: data.missionPage.records ?? [],
           rowCount: data.missionPage.total ?? 0,
         }
       } catch (error) {
-        // 主动取消（弹窗关闭/页签刷新）静默，不写主体错误态
+        // 主动取消（页签刷新/弹窗关闭/实例卸载）静默，不写主体错误态
         if (apiErrorMessage(error)) {
           setDetail(null)
           setDetailError(apiErrorMessage(error))
@@ -87,13 +113,7 @@ export function OrderInfoModal({ open, orderKey, onClose }: OrderInfoModalProps)
     [orderKey],
   )
 
-  /** 关闭时清空主体，避免残留上一个任务的详情（DoD 8 草稿/数据边界） */
-  const handleAfterClose = useCallback(() => {
-    setDetail(null)
-    setDetailError(null)
-  }, [])
-
-  /** 主体描述列表：字段全集按旧实现口径（跳过 orderMissions 数组字段） */
+  /** 主体描述列表：字段全集按旧实现口径（跳过 orderMissions 数组字段），空值留白 */
   const detailItems = detail
     ? [
         { key: 'orderKey', label: t('任务编号'), children: detail.orderKey ?? '' },
@@ -178,7 +198,7 @@ export function OrderInfoModal({ open, orderKey, onClose }: OrderInfoModalProps)
       enableSorting: false,
       size: 100,
       cell: (info) => {
-        // 子任务状态：已映射枚举用本地化文案+颜色，未知值原样展示（不映射为正常）
+        // 子任务状态：已映射枚举用本地化文案，未知值原样展示（不映射为正常）
         const value = info.getValue() as string | null
         const label = describeOption(MISSION_STATE_OPTIONS, value)
         return <Tag color="processing">{label}</Tag>
@@ -201,43 +221,39 @@ export function OrderInfoModal({ open, orderKey, onClose }: OrderInfoModalProps)
   ]
 
   return (
-    <Modal
-      title={t('订单详情')}
-      open={open}
-      onCancel={onClose}
-      afterClose={handleAfterClose}
-      footer={null}
-      width={1400}
-      destroyOnHidden
-    >
+    <>
+      {/* 任务不存在：明确反馈（与查询失败、真实空 mission 列表分开呈现） */}
+      {detailNotFound ? (
+        <StateBlock variant="gap" description={t('orderInfo:任务不存在或已被删除')} />
+      ) : null}
       {/* 主体区域：失败时呈现真实错误（与表格同源），无数据时不出空表壳 */}
       {detailError ? (
-        <p style={{ color: 'var(--app-error, #ff4d4f)', margin: '8px 0' }}>
+        <p className={styles.error}>
           {t('查询订单详情出错') + detailError}
         </p>
       ) : null}
       {detail ? (
-        <Descriptions
-          size="small"
-          bordered
-          column={2}
-          items={detailItems.map((item) => ({ ...item, label: item.label }))}
-        />
+        <Descriptions size="small" bordered column={descriptionsColumn} items={detailItems} />
       ) : null}
-      <div style={{ marginTop: 16 }}>
+      <div
+        className={styles.missionTable}
+        /* 'fill' = 弹性撑满父列容器剩余空间（配合父级 flex column + min-height:0）；
+           数字 = 固定像素（弹窗形态），两种模式都把内部滚动交给 Apex viewport */
+        style={missionTableHeight === 'fill' ? { flex: 1 } : { height: missionTableHeight }}
+      >
         <ApexTableReact
           columns={missionColumns}
           request={requestMissions}
           getRowId={stringFieldRowId('orderMissionKey')}
           locale={apexLocale}
           pagination={{ pageSizeOptions: [10, 20, 50, 100] }}
-          height={360}
+          height="100%"
           expandable={{
             expandedRowRender: (record) => <MissionActionsTable data={record.actions ?? []} />,
             rowExpandable: (record) => (record.actions ?? []).length > 0,
           }}
         />
       </div>
-    </Modal>
+    </>
   )
 }
