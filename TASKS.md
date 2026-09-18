@@ -189,7 +189,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P05 车辆列表（控制样板）
 
-- [ ] **P05 车辆列表（控制样板）**
+- [x] **P05 车辆列表（控制样板）**
 - **批次 / 前置**：B2a / P01。
 - **入口**：`/vehicle-deploy/vehicle-diplay`；**旧来源**：`VehicleDeploy/VehicleDisplay`；**目标**：`src/pages/vehicle-deploy/VehicleDisplay/VehicleDisplay.tsx`。
 - **私有模块 / 语言分片**：`vehicle-list`；**接口依据**：dispatcher/vehicle。

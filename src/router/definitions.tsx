@@ -225,11 +225,13 @@ export const appRouteDefinitions = defineAppRoutes([
             meta: businessMeta('车辆分组', PERM.VEHICLE_GROUP_VIEW, { pending: true }),
           },
           {
-            // path 保持源配置原样拼写（vehicle-diplay）
+            // path 保持源配置原样拼写（vehicle-diplay，历史别名按 A22 保留）
             id: 'vehicle-deploy-vehicle-display',
             path: 'vehicle-diplay',
             loadPage: () => import('@/pages/vehicle-deploy/VehicleDisplay/VehicleDisplay'),
-            meta: businessMeta('车辆列表', PERM.VEHICLE_LIST_VIEW, { pending: true }),
+            meta: businessMeta('车辆列表', PERM.VEHICLE_LIST_VIEW, {
+              i18nNamespaces: ['vehicleList'],
+            }),
           },
           {
             // 载具类型：旧路由未写 access（P06 核对后端菜单树后再定权限呈现，

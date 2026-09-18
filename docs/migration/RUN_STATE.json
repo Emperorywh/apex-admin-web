@@ -1,7 +1,7 @@
 {
   "版本说明": "调度系统迁移串行调度状态。由定时任务每小时触发一次，每次最多推进一个任务；写入必须整体原子替换。",
-  "最近更新时间": "2026-09-18T09:03:04Z",
-  "当前运行标识": "run-20260918-p03-rownum-interactive(用户反馈修正轮,锁随本轮结束释放)",
+  "最近更新时间": "2026-09-18T10:20:00Z",
+  "当前运行标识": "run-20260918-p05(锁随本轮结束释放)",
   "锁": "docs/migration/.lock（mkdir 原子目录锁，内含 lock.json）",
   "工作目录": "C:\\code\\apex-admin-web",
   "分支": "apple-rxx",
@@ -93,7 +93,7 @@
       "前置": [
         "P01"
       ],
-      "状态": "未开始"
+      "状态": "已完成（2026-09-18 勾选：带令牌真实联验通过——列表/筛选/轮询/详情/弹窗/列偏好/五语言/双主题双宽度；写副作用执行与 P39 往返登记待验收）"
     },
     {
       "序": 11,
@@ -449,26 +449,25 @@
     }
   ],
   "当前任务": {
-    "任务ID": "P03 任务管理（表格样板）——已完成并勾选；交互反馈修正轮收尾",
+    "任务ID": "P05 车辆列表（控制样板）——已完成并勾选",
     "状态": "已完成（TASKS.md 已勾选）",
-    "当前里程碑": "带令牌真实联验全部通过；两项列偏好接线缺陷联验中发现并修复复验通过；工程门禁全绿",
+    "当前里程碑": "门禁全绿 + 带令牌真实联验全部通过 + 控制交互样板交付（confirmCommand→核验→命令三段式）",
     "本轮已完成内容": [
-      "阻塞解除：上轮凭据矩阵漏测 .env.local 实际密码 root（误测 root33）——root/MD5(root) 双后端 code=200 登录成功",
-      "API 层带令牌核验：列表平铺筛选命中 1 条/统计真实计数/详情主体+missionPage/导出单条 xlsx 4362 字节+RFC5987 文件名——G04 双 endpoint 平铺语义后端接受实证",
-      "浏览器整页联验（真实登录 52 万行数据）：落点/统计轮询递增/15 列秒级时间/空值留白/状态映射/操作门控/分页翻页/筛选回首页/详情两区域+动作子表/导出下载事件/创建弹窗选项加载（零提交）",
-      "五语言 en/zh-TW/ja-JP/ko-KR 全页文案+html lang 同步+刷新恢复；1920 与 1366 双主题四组整页截图全部通过",
-      "列偏好闭环：补齐 columnSettingsEnabled 入口（showRowNumber 显式关闭防列结构漂移），修复两项接线缺陷（受控切片未更新致改动回弹；适配器 save 整体替换语义下单片补丁互相覆盖）——复验宽度/显隐/刷新恢复/恢复默认全部通过",
-      "创建表单切页草稿保留实证；令牌过期 1000000 收敛真实发生（清会话+回登录+保留 redirect）",
-      "工程门禁复跑全绿：lint 245 文件 0/0、typecheck、structure 243、build",
-      "文档联动：P03.md 修订（操作映射/缺口/验证/缺陷修复节）、operations.md 六行状态更新、gaps.md G04 更新为部分验证、TASKS.md 勾选 P03",
-      "用户反馈修正：序号列默认放出，列设置齿轮随序号列表头呈现（撤销 showRowNumber={false}；首版齿轮单独占表头上方工具条行）；复验偏好切片仅含数据列、隐藏/恢复默认闭环正常；决策已登记 contracts.md 变更日志与第 3 节列偏好行，规则沉淀 AGENTS.md 第 2 节"
+      "服务层：services/vehicle 扩展 vehicle-manage（pageVehicles/add/update/delete/vehicleOperate/allVehicleOperate/getUnRelationSimpleVehicles，逐 operation 核对 OpenAPI）",
+      "页面整页重写：Apex request 模式（稳定行 ID/列偏好/内建取消与错误重试）+ 选择列跨页保留 + useVisiblePolling 约 5 秒可见轮询 + 排序不开放（G09）",
+      "控制样板三段式：confirmCommand（对象+影响+提交≠完成）→ verifyVehicleFresh 执行前核验（missing/stale 不执行并刷新）→ 命令；行级防连点 + 批量防重复；批量整批接受诚实文案（A15）",
+      "接入/编辑弹窗（草稿保留）+ 详情抽屉（24 项空值留白）；修复编辑→新增切换表单残留缺陷（editTarget 清除复位干净基线）",
+      "修复选择列不渲染缺陷（showSelectionColumn 显式放出；enableRowSelection 仅启用能力）",
+      "五语言 vehicleList 分片（en 旧真译沿用+补译；繁日韩 B1 基线；四语言 109 key 同构审计通过）+ 路由解除 pending（vehicle-diplay 历史拼写保留）",
+      "真实联验：API 层（登录/列表平铺 query G04/筛选命中/未关联真实空数组/key 字符串无损 G10）+ 浏览器整页（56 辆真实数据/轮询间隔实测/守卫回跳与过期收敛/详情/弹窗/确认框含全部车辆语义/跨页选择/列偏好草稿式提交闭环/五语言 html lang/1920 与 1366 双主题四组截图）",
+      "门禁复跑全绿：lint 255 文件 0/0、typecheck、structure 253、build",
+      "文档联动：P05.md 新建、operations.md P05 七行、contracts.md 变更日志、TASKS.md 勾选"
     ],
     "未完成步骤": [
-      "写操作（创建/取消/移队列/跳过/继续/模拟分配）专用环境/现场验收（规格既定；G13 拒绝码 data 语义随之关闭）",
-      "P38 交付后 P03→/order-info 详情往返联验",
-      "大文件导出规模待验收（G11，无环境登记）"
+      "写副作用执行（接入/编辑/删除/单车与批量指令真实生效）与核验 stale/missing 拦截分支的现场触发：专用环境/现场验收",
+      "P39（/vehicle-info）交付后本页独立详情往返联验"
     ],
-    "下一步": "本轮结束。下一轮领取队列序 10 P05 车辆列表（控制样板）：读 TASKS.md P05 卡与旧 VehicleDeploy/VehicleDisplay 可达实现，按 P03 样板交付控制交互基座",
+    "下一步": "本轮结束。下一轮领取队列序 11 P38 任务详情独立页（前置 P03 已完成）：读 TASKS.md P38 卡与 P03.md 详情契约交接，按旧 order-info 实现独立窗口形态与实体页签隔离",
     "阻塞原因": "无"
   },
   "验证结果": [
@@ -751,7 +750,17 @@
       "命令": "P03 序号列调整复验（真实浏览器）+ 门禁复跑",
       "结果": "通过：齿轮落位序号列表头、独立工具条消失、行内序号 1/2/…；隐藏失败原因列+确定后偏好切片不含序号辅助列；恢复默认还原 16 列；lint 245 文件 0/0、typecheck、structure 243、build 全部通过",
       "日期": "2026-09-18"
+    },
+    {
+      "命令": "pnpm check（lint/typecheck/check:structure）+ pnpm build（P05 交付终态）",
+      "结果": "全部通过（255 文件 lint 0 警告 0 错误；253 源文件结构检查；tsc+vite build 成功）",
+      "日期": "2026-09-18"
+    },
+    {
+      "命令": "P05 带令牌真实联验（dev 代理 192.168.0.158:8888，凭据 .env.local root/MD5）",
+      "结果": "通过：API 层（登录 code=200/pageVehicles 平铺 query 56 辆+筛选命中 1 与 55/getUnRelation 真实空数组/key 字符串无损）+ 浏览器整页（守卫回跳带 redirect/10 行真实渲染/轮询 5-6s 且保持筛选/详情 24 项/编辑预填与新增草稿/四类确认框含全部车辆语义/跨页选择 3 辆保留/列偏好隐藏-刷新-恢复默认闭环/五语言 html lang/双主题双宽度四组截图）；写副作用确认层验证、执行留专用环境",
+      "日期": "2026-09-18"
     }
   ],
-  "证据位置": "docs/migration/tasks/T00.md(T00 历轮交付与证据)、docs/migration/tasks/P01.md、docs/migration/tasks/P02.md、docs/migration/tasks/P41.md、docs/migration/tasks/P42.md(P42 交付/联验/限制登记)、docs/migration/tasks/H01.md(H01 交付/联验/公共文件改动记录)、docs/migration/tasks/H02.md(H02 交付/联验/资源归属隔离登记)、docs/migration/tasks/H03.md(H03 交付/联验/资源归属隔离登记)、docs/migration/contracts.md(第 1–7 节契约 + 第 9 节冻结登记 + 变更日志)、docs/migration/i18n-map.md(H02 行已更新,error 分片旧 key 映射已更新)、docs/migration/operations.md(P41/P42/H01/H02 行已登记)、docs/migration/i18n-missing.md、docs/migration/terminology.md、docs/migration/tasks/P03.md（P03 交付/联验/受阻登记）；P03.md（已修订：操作映射状态/G04 已验证/带令牌联验记录/列偏好缺陷修复节）；operations.md（P03 六行已更新）；gaps.md（G04 部分验证）；contracts.md（列设置接入形态用户决策行+第 3 节列偏好行已更新）；AGENTS.md（第 2 节列偏好铁律）"
+  "证据位置": "docs/migration/tasks/T00.md(T00 历轮交付与证据)、docs/migration/tasks/P01.md、docs/migration/tasks/P02.md、docs/migration/tasks/P41.md、docs/migration/tasks/P42.md(P42 交付/联验/限制登记)、docs/migration/tasks/H01.md(H01 交付/联验/公共文件改动记录)、docs/migration/tasks/H02.md(H02 交付/联验/资源归属隔离登记)、docs/migration/tasks/H03.md(H03 交付/联验/资源归属隔离登记)、docs/migration/contracts.md(第 1–7 节契约 + 第 9 节冻结登记 + 变更日志)、docs/migration/i18n-map.md(H02 行已更新,error 分片旧 key 映射已更新)、docs/migration/operations.md(P41/P42/H01/H02 行已登记)、docs/migration/i18n-missing.md、docs/migration/terminology.md、docs/migration/tasks/P03.md（P03 交付/联验/受阻登记）；P03.md（已修订：操作映射状态/G04 已验证/带令牌联验记录/列偏好缺陷修复节）；operations.md（P03 六行已更新）；gaps.md（G04 部分验证）；contracts.md（列设置接入形态用户决策行+第 3 节列偏好行已更新）；AGENTS.md（第 2 节列偏好铁律）；docs/migration/tasks/P05.md（P05 交付/控制样板/联验/环境教训登记）；operations.md（P05 七行已登记）；contracts.md（变更日志 P05 行）"
 }

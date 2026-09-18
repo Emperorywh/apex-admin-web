@@ -24,6 +24,13 @@
 | P03 | MockDispatchModal/模拟分配（真实仿真，标注仿真） | MockDispatchModal（防重复提交） | POST /fms/v1/dispatcher/orderTask/mockDispatch | mockDispatch | order-record:check | 前端完成；待专用环境验收 | tasks/P03.md |
 | P03 | CreateOrderModal/创建任务 | CreateOrderModal（互斥约束/按行站点选项/草稿保留） | POST /fms/v1/dispatcher/orderRecord/createOrderRecord | createOrderRecord | order-record:create | 弹窗渲染/选项/草稿已验证；提交待专用环境验收 | tasks/P03.md |
 | P03 | OrderInfoModal/详情快速预览（mission 分页+动作子表） | OrderInfoModal + MissionActionsTable（Apex） | POST /fms/v1/dispatcher/orderRecord/getOrderRecordDetail | getOrderRecordDetail | order-record:view | 已验证（带令牌主体+mission+动作子表）；P38 往返待联验 | tasks/P03.md |
+| P05 | VehicleDisplay/列表分页+名称标识搜索 | `pages/vehicle-deploy/VehicleDisplay`（Apex request 模式+列设置面板+选择列）+ useVisiblePolling（约 5s 可见串行） | GET /fms/v1/dispatcher/vehicle/pageVehicles | pageVehicles | vehicle-list:view | 已验证（带令牌真实 56 辆/分页/筛选命中；G04 平铺后端接受实证；轮询保持筛选） | tasks/P05.md（2026-09-18） |
+| P05 | VehicleDisplay/详情快速预览 | `features/vehicle-list/components/VehicleDetailDrawer`（24 项，数据取行记录零请求） | —（pageVehicles 行内数据） | — | 详情不限权（view） | 已验证（坐标三位小数/空值留白/JSON 原文）；P39 独立详情往返待联验 | tasks/P05.md |
+| P05 | VehicleModal/接入车辆（新增） | `features/vehicle-list/components/VehicleFormModal`（草稿保留+useTabDirtyGuard；未关联选项 getUnRelationSimpleVehicles） | POST /fms/v1/dispatcher/vehicle/addVehicle；GET …/getUnRelationSimpleVehicles | addVehicle / getUnRelationSimpleVehicles | vehicle-list:add | 弹窗/选项/草稿已验证（未关联真实空集合）；提交待专用环境 | tasks/P05.md |
+| P05 | VehicleModal/编辑车辆 | VehicleFormModal 编辑模式（按行重填，agvKey 禁用；已修复编辑→新增残留缺陷） | POST /fms/v1/dispatcher/vehicle/updateVehicle | updateVehicle | vehicle-list:update | 预填已验证；提交待专用环境 | tasks/P05.md |
+| P05 | Switch 调度状态翻转 | confirmCommand → verifyVehicleFresh 核验 → updateVehicle 全量翻转（旧实现同通道） | POST /fms/v1/dispatcher/vehicle/updateVehicle | updateVehicle | vehicle-list:enable（无权限 disabled） | 确认框/核验链路已验证；执行待专用环境 | tasks/P05.md |
+| P05 | 删除车辆 | confirmCommand（danger）→ deleteVehicle → 清理选择集 | POST /fms/v1/dispatcher/vehicle/deleteVehicle | deleteVehicle | vehicle-list:delete | 确认框已验证；执行待专用环境 | tasks/P05.md |
+| P05 | 单车指令（暂停/继续）+ 批量指令（一键暂停/继续/启用/禁用） | 操作/一键操作 Dropdown → confirmCommand（无勾选=全部车辆）→ 核验（单车）→ operate；整批接受诚实文案（A15） | POST /fms/v1/dispatcher/vehicle/vehicleOperate；POST …/allVehicleOperate | vehicleOperate / allVehicleOperate | vehicle-list:operate / vehicle-list:batch-operate | 确认框（含跨页对象清单/全部车辆语义）已验证；执行待专用环境 | tasks/P05.md |
 
 ## 汇总状态口径
 

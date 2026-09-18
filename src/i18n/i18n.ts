@@ -64,6 +64,8 @@ const enUsLoaders: NamespaceLoaders = {
   system: () => import('@/i18n/locales/en-US/system'),
   // P03 任务管理交付：en-US 分片重写（旧真译沿用+补译）
   orderRecord: () => import('@/i18n/locales/en-US/orderRecord'),
+  // P05 车辆列表（vehicle-deploy/vehicle-diplay；页面私有命名空间）
+  vehicleList: () => import('@/i18n/locales/en-US/vehicleList'),
   dashboard: () => import('@/i18n/locales/en-US/dashboard'),
   error: () => import('@/i18n/locales/en-US/error'),
   // 共享地图能力文案（T00.7 ReadOnlyMap；消费页面在 meta.i18nNamespaces 声明 'map'）
@@ -89,6 +91,7 @@ const zhTwLoaders: NamespaceLoaders = {
   map: () => import('@/i18n/locales/zh-TW/map'),
   // P03 任务管理（order-record；页面私有命名空间）
   orderRecord: () => import('@/i18n/locales/zh-TW/orderRecord'),
+  vehicleList: () => import('@/i18n/locales/zh-TW/vehicleList'),
   'license-activation': () => import('@/i18n/locales/zh-TW/license-activation'),
   'access-denied': () => import('@/i18n/locales/zh-TW/access-denied'),
 }
@@ -100,6 +103,7 @@ const jaJpLoaders: NamespaceLoaders = {
   map: () => import('@/i18n/locales/ja-JP/map'),
   // P03 任务管理（order-record；页面私有命名空间）
   orderRecord: () => import('@/i18n/locales/ja-JP/orderRecord'),
+  vehicleList: () => import('@/i18n/locales/ja-JP/vehicleList'),
   'license-activation': () => import('@/i18n/locales/ja-JP/license-activation'),
   'access-denied': () => import('@/i18n/locales/ja-JP/access-denied'),
 }
@@ -111,6 +115,7 @@ const koKrLoaders: NamespaceLoaders = {
   map: () => import('@/i18n/locales/ko-KR/map'),
   // P03 任务管理（order-record；页面私有命名空间）
   orderRecord: () => import('@/i18n/locales/ko-KR/orderRecord'),
+  vehicleList: () => import('@/i18n/locales/ko-KR/vehicleList'),
   'license-activation': () => import('@/i18n/locales/ko-KR/license-activation'),
   'access-denied': () => import('@/i18n/locales/ko-KR/access-denied'),
 }

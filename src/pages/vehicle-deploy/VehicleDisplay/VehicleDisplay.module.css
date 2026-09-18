@@ -1,0 +1,47 @@
+/*
+ * 车辆列表页布局（P05）：单行工具栏 + 全宽表格；
+ * 颜色全部引用全局 token（深浅主题自动适配，不硬编码）。
+ */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+  min-width: 0;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* 搜索框：旧实现 300px 同宽；窄视口下随工具行换行（flex-basis 约束） */
+.search {
+  width: 300px;
+  max-width: 100%;
+}
+
+/* 跨页已选数量提示：次要文字色，不与操作按钮争夺注意力 */
+.selectedHint {
+  font-size: 12px;
+  color: var(--app-text-secondary, rgba(0, 0, 0, 0.45));
+}
+
+.tableWrap {
+  flex: 1;
+  min-height: 0;
+}
+
+/* 长文本省略：列内统一 ellipsis + Tooltip 由单元格自行包裹 */
+.ellipsis {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+}
