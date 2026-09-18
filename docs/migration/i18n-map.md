@@ -34,10 +34,11 @@
 | P07 节点映射 | node-mapping | **nodeMapping**（按入口路径命名；已交付四语言分片 54 key 同构：en 旧真译逐条沿用（Mapping Name/AGV Count/Pick from Map/No longer on the map 等）且插值改本项目 `{{var}}` 双花括号语法，繁日韩 B1 基线补译；选点弹窗画布文案消费共享 map 命名空间，路由 meta 已声明） | features/node-mapping + pages/vehicle-deploy/NodeMapping + services/vehicle/node-mapping |
 | P08 告警码管理 | alarm-code-management | **vehicleAlarmCode**（按接口域 vehicleAlarmCode 命名；已交付四语言分片 49 key 同构：en 旧真译逐条沿用（Alarm Code/Upload File/Upload Overwrites All/AlarmCodes.xlsx 等）且插值改本项目 `{{var}}` 双花括号语法，繁日韩 B1 基线补译（告警碼/アラームコード/알람 코드 按 terminology；公共词对齐 P07 nodeMapping 分片）；菜单标题「告警码管理」T00.8 menu 分片已有真译） | features/vehicle-alarm-code + pages/system-involve/AlarmCodeManagement + services/vehicle/vehicle-alarm-code |
 | P09 地图列表 | map-list | **mapList**（已交付四语言分片 77 key 同构（逐 key 比对一致）：en 旧真译逐条沿用（Map Name/Import Dispatch Map/Pull Map/Push Map Version 等）且插值改本项目 `{{var}}` 双花括号语法，繁日韩 B1 基线补译（地圖/地図/지도 沿用旧译；传输进度行/G07 拉取禁用说明/删除确认影响按旧真译风格补译，公共词对齐 P08 vehicleAlarmCode 分片）；菜单标题「地图列表」menu 分片已有真译） | features/map-list + pages/map-through/MapList + services/map/map-admin |
+| P10 地图关联 | cross-maps | **crossMap**（按接口域 crossMap 命名；已交付四语言分片 33 key 同构（逐 key 比对一致）：en 旧真译逐条沿用（Cross-Map Name/Device ID/Add Association/At least two maps must be associated 等）且插值改本项目 `{{var}}` 双花括号语法（`地图 {index}`→`地图 {{index}}`），繁日韩 B1 基线补译（クロスマップ/교차 지도 按 terminology 与 P09 mapList 分片对齐；删除确认影响文案按旧真译风格补译）；页面自有按钮词按旧页面真译差异化保留（确定=Confirm/操作=Action，与 common 的 OK/Actions 区分）；菜单标题「地图关联」menu 分片已有真译；失效选项公共词「{{id}}（已不在当前选项中）」复用 common 已有四语言词条） | features/cross-map + pages/map-through/CrossMaps + services/cross-map |
 | P07 节点映射 | node-mapping | nodeMapping | nodeMapping |
 | P08 告警码管理 | alarm-code | alarmCode | alarmCode |
 | P09 地图列表 | map-list | mapList | mapList |
-| P10 地图关联 | cross-maps | crossMaps | crossMaps |
+| P10 地图关联 | cross-maps | crossMap | crossMap |
 | P11 多地图点边组合 | point-edge-combination | pointEdgeCombination | pointEdgeCombination |
 | P12 地图推送记录 | map-push-records | mapPushRecord | mapPushRecord |
 | P13 调度中心 | /dispatch-hub | dispatchHub | dispatchHub |

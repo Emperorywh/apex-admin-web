@@ -239,7 +239,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P10 地图关联
 
-- [ ] **P10 地图关联**
+- [x] **P10 地图关联**
 - **批次 / 前置**：B3 / B2 样板门禁。
 - **入口**：`/map-through/cross-maps`；**旧来源**：`MapThrough/CrossMaps`；**目标**：`src/pages/map-through/CrossMaps/CrossMaps.tsx`。
 - **私有模块 / 语言分片**：`cross-map`；**接口依据**：dispatcher/crossMap、地图/电梯真实选项 operation。

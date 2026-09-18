@@ -305,10 +305,15 @@ export const appRouteDefinitions = defineAppRoutes([
             meta: businessMeta('地图编辑', PERM.MAP_EDIT_VIEW, { migrationDeferred: true }),
           },
           {
+            // 跨地图关联（P10 交付解除 pending）：菜单码 cross-map:view 挂路由守卫
+            // （按钮码 cross-map:add/update/delete 在页面内控制入口显隐，
+            // 与旧 §7/§8.2 一致，后端权限树按既有码判权不凭空造码）
             id: 'map-through-cross-maps',
             path: 'cross-maps',
             loadPage: () => import('@/pages/map-through/CrossMaps/CrossMaps'),
-            meta: businessMeta('地图关联', PERM.CROSS_MAP_VIEW, { pending: true }),
+            meta: businessMeta('地图关联', PERM.CROSS_MAP_VIEW, {
+              i18nNamespaces: ['crossMap'],
+            }),
           },
           {
             id: 'map-through-point-edge-combination',

@@ -1,0 +1,38 @@
+/*
+ * 跨地图关联页布局（P10）：工具行（名称搜索框，左；新增按钮，右）+ 全宽表格
+ * （与 P04–P09 样板同构）；展开行承载关联行子表；颜色全部引用全局 token。
+ */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+  min-width: 0;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* 搜索输入组：跨地图名称模糊查询框 + 查询按钮（旧实现 Search enterButton 同形态） */
+.filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* 搜索框：旧实现 300px 同宽 */
+.searchInput {
+  width: 300px;
+}
+
+.tableWrap {
+  flex: 1;
+  min-height: 0;
+}

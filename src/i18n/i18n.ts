@@ -78,6 +78,8 @@ const enUsLoaders: NamespaceLoaders = {
   vehicleAlarmCode: () => import('@/i18n/locales/en-US/vehicleAlarmCode'),
   // P09 地图列表（map-through/map-list；页面私有命名空间）
   mapList: () => import('@/i18n/locales/en-US/mapList'),
+  // P10 跨地图关联（map-through/cross-maps；页面私有命名空间）
+  crossMap: () => import('@/i18n/locales/en-US/crossMap'),
   // P39 完整车辆详情（vehicle-info；页面私有命名空间，抽屉完整详情入口共用）
   vehicleInfo: () => import('@/i18n/locales/en-US/vehicleInfo'),
   dashboard: () => import('@/i18n/locales/en-US/dashboard'),
@@ -120,6 +122,8 @@ const zhTwLoaders: NamespaceLoaders = {
   vehicleAlarmCode: () => import('@/i18n/locales/zh-TW/vehicleAlarmCode'),
   // P09 地图列表（map-through/map-list；页面私有命名空间）
   mapList: () => import('@/i18n/locales/zh-TW/mapList'),
+  // P10 跨地图关联（map-through/cross-maps；页面私有命名空间）
+  crossMap: () => import('@/i18n/locales/zh-TW/crossMap'),
   'license-activation': () => import('@/i18n/locales/zh-TW/license-activation'),
   'access-denied': () => import('@/i18n/locales/zh-TW/access-denied'),
 }
@@ -146,6 +150,8 @@ const jaJpLoaders: NamespaceLoaders = {
   vehicleAlarmCode: () => import('@/i18n/locales/ja-JP/vehicleAlarmCode'),
   // P09 地图列表（map-through/map-list；页面私有命名空间）
   mapList: () => import('@/i18n/locales/ja-JP/mapList'),
+  // P10 跨地图关联（map-through/cross-maps；页面私有命名空间）
+  crossMap: () => import('@/i18n/locales/ja-JP/crossMap'),
   'license-activation': () => import('@/i18n/locales/ja-JP/license-activation'),
   'access-denied': () => import('@/i18n/locales/ja-JP/access-denied'),
 }
@@ -172,6 +178,8 @@ const koKrLoaders: NamespaceLoaders = {
   vehicleAlarmCode: () => import('@/i18n/locales/ko-KR/vehicleAlarmCode'),
   // P09 地图列表（map-through/map-list；页面私有命名空间）
   mapList: () => import('@/i18n/locales/ko-KR/mapList'),
+  // P10 跨地图关联（map-through/cross-maps；页面私有命名空间）
+  crossMap: () => import('@/i18n/locales/ko-KR/crossMap'),
   'license-activation': () => import('@/i18n/locales/ko-KR/license-activation'),
   'access-denied': () => import('@/i18n/locales/ko-KR/access-denied'),
 }
