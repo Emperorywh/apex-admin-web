@@ -231,7 +231,9 @@ export const appRouteDefinitions = defineAppRoutes([
             path: 'vehicle-diplay',
             loadPage: () => import('@/pages/vehicle-deploy/VehicleDisplay/VehicleDisplay'),
             meta: businessMeta('车辆列表', PERM.VEHICLE_LIST_VIEW, {
-              i18nNamespaces: ['vehicleList'],
+              // vehicleList：列表页私有分片；vehicleInfo：详情抽屉「完整详情」
+              // 按钮文案（P39 分片，跳转 /vehicle-info 往返链路共用）
+              i18nNamespaces: ['vehicleList', 'vehicleInfo'],
             }),
           },
           {
@@ -639,6 +641,23 @@ export const appRouteDefinitions = defineAppRoutes([
         },
       },
       {
+        // 完整车辆详情（P39）：同构 order-info 迁入受保护根 = 默认工作区页签形态。
+        // 完整路径保持 /vehicle-info（joinPath('/', 'vehicle-info')），历史地址不变；
+        // 实体定位参数 ?vehicleKey=... 进入页签 key，不同车辆独立页签/请求 scope；
+        // hideInMenu 不进菜单、不作为登录落点候选；独立窗口由页面工具栏
+        // openStandaloneWindow 打开同一路径（同守卫）。
+        // vehicleInfo：页面私有分片（详情标签/枚举/独立窗口/缺参数等文案）。
+        id: 'vehicle-info',
+        path: 'vehicle-info',
+        loadPage: () => import('@/pages/vehicle-info/VehicleInfo/VehicleInfo'),
+        meta: {
+          title: '车辆详情',
+          perm: PERM.VEHICLE_LIST_VIEW,
+          hideInMenu: true,
+          i18nNamespaces: ['vehicleInfo'],
+        },
+      },
+      {
         id: 'error-500',
         path: '500',
         loadPage: () => import('@/pages/error/ServerError/ServerError'),
@@ -651,16 +670,6 @@ export const appRouteDefinitions = defineAppRoutes([
         meta: auxiliaryMeta('页面不存在'),
       },
     ],
-  },
-  {
-    // 独立车辆详情（P39）：复用车辆列表码（baseline 特殊权限点），鉴权不公开
-    id: 'vehicle-info',
-    path: '/vehicle-info',
-    loadPage: () => import('@/pages/vehicle-info/VehicleInfo/VehicleInfo'),
-    meta: standaloneMeta('车辆详情', {
-      perm: PERM.VEHICLE_LIST_VIEW,
-      migrationPending: true,
-    }),
   },
   {
     // 服务器资源监控全屏页：与菜单别名同码，鉴权不公开（P40）

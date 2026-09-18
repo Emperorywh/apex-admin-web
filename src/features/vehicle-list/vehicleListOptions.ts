@@ -4,35 +4,24 @@
  * - vehicleType 1/2：旧系统 agvTypes 常量既定取值域（1=叉车、2=小车）；
  * - connectionState / dispatchState / operatingMode / estop：OpenAPI 枚举注释
  *   与旧系统 eStops 常量的既定中文文案（真译沿用）。
+ *
+ * P39 起枚举映射与 formatComponent 提升至共享常量层
+ * `@/constants/vehicle/vehicleDisplayOptions`（车辆列表/详情两 feature 域共同
+ * 消费的单一真相源），本文件保留同名 re-export——既有消费者导入路径不变。
+ * 运行模式/控制指令菜单与表单转换仍为本页（vehicle-list 域）私有。
  */
 
 import type { VehicleRecordDto } from '@/services/vehicle/vehicle-manage.service.types'
 
-/** 车辆类型文案 key：1=叉车、2=小车（既定取值域），未知值显示原值 */
-export const VEHICLE_TYPE_LABEL: Record<number, string> = {
-  1: '叉车',
-  2: '小车',
-}
-
-/** 网络状态文案 key（OpenAPI 三值枚举均有既定文案） */
-export const CONNECTION_STATE_LABEL: Record<string, string> = {
-  ONLINE: '在线',
-  OFFLINE: '离线',
-  CONNECTIONBROKEN: '连接中断',
-}
-
-/** 网络状态 → Tag 颜色：在线绿、离线红、连接中断橙（与旧实现同色系） */
-export const CONNECTION_STATE_TAG_COLOR: Record<string, string> = {
-  ONLINE: '#87D068',
-  OFFLINE: '#D50000',
-  CONNECTIONBROKEN: 'orange',
-}
-
-/** 调度状态文案 key */
-export const DISPATCH_STATE_LABEL: Record<string, string> = {
-  ENABLE: '启用',
-  DISABLE: '禁用',
-}
+// 共享枚举映射与展示格式化（单一真相在 constants，此处转出维持既有导入路径）
+export {
+  VEHICLE_TYPE_LABEL,
+  CONNECTION_STATE_LABEL,
+  CONNECTION_STATE_TAG_COLOR,
+  DISPATCH_STATE_LABEL,
+  ESTOP_LABEL,
+  formatComponent,
+} from '@/constants/vehicle/vehicleDisplayOptions'
 
 /** 运行模式文案 key（OpenAPI 五值枚举；未知值显示原值） */
 export const OPERATING_MODE_LABEL: Record<string, string> = {
@@ -41,14 +30,6 @@ export const OPERATING_MODE_LABEL: Record<string, string> = {
   MANUAL: '手动',
   SERVICE: '维护',
   TEACHIN: '示教',
-}
-
-/** 安全状态（estop）文案 key：旧系统 eStops 既定语义 */
-export const ESTOP_LABEL: Record<string, string> = {
-  AUTOACK: '避障',
-  MANUAL: '抱闸',
-  REMOTE: '急停',
-  NONE: '正常',
 }
 
 /** 单车指令菜单（旧页面实际可达仅暂停/继续，等价迁移） */
@@ -74,15 +55,6 @@ export const OPERATE_IMPACT_KEY: Record<string, string> = {
   CONTINUE: '指令影响：目标车辆将恢复执行被暂停的任务',
   ENABLED: '指令影响：目标车辆将重新纳入调度（启用）',
   DISABLED: '指令影响：目标车辆将退出调度分配（禁用）',
-}
-
-/**
- * 展示层格式化：数值分量保留三位小数（旧实现 toFixed(3) 同精度）；
- * 缺失/非有效数值留白（空值展示纪律：不用「--」占位）。
- */
-export function formatComponent(value: number | null | undefined): string {
-  if (value === null || value === undefined || !Number.isFinite(value)) return ''
-  return value.toFixed(3)
 }
 
 /** 从行记录读取编辑表单参数（agvKey 固定行 key，尺寸缺失按 0 提交由后端校验兜底） */

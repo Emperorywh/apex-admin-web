@@ -22,6 +22,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router'
 import { App, Button, Dropdown, Input, Space, Switch, Tag, Tooltip } from 'antd'
 import type { MenuProps } from 'antd'
 import { Plus } from 'lucide-react'
@@ -67,6 +68,7 @@ import {
 } from '@/features/vehicle-list/vehicleListOptions'
 import { VehicleFormModal } from '@/features/vehicle-list/components/VehicleFormModal'
 import { VehicleDetailDrawer } from '@/features/vehicle-list/components/VehicleDetailDrawer'
+import { buildVehicleInfoPath } from '@/features/vehicle-detail/vehicleDetailNavigation'
 import { PERM_BUTTON } from '@/constants/auth/permission.constants'
 import styles from './VehicleDisplay.module.css'
 
@@ -82,6 +84,8 @@ export default function VehicleDisplay() {
   const { t } = useTranslation('vehicleList')
   const { message } = App.useApp()
   const apexLocale = useApexLocale()
+  // P39：详情抽屉「完整详情」跳转 /vehicle-info 实体页签（pages 层组装跨域导航）
+  const navigate = useNavigate()
 
   // 按钮码权限（与旧实现 §7 一致）：动作触发型无权限隐藏，调度状态 Switch 用 disabled
   const { hasPerm } = usePermission()
@@ -708,12 +712,14 @@ export default function VehicleDisplay() {
         onSucceeded={handleFormSucceeded}
       />
 
-      {/* 详情抽屉：按目标挂载（快速预览；独立详情页归 P39，完成后联验完整链路） */}
+      {/* 详情抽屉：按目标挂载（快速预览）；「完整详情」由页面组装导航——
+          关抽屉并在工作区页签打开 /vehicle-info（P39 往返链路，同构 P38 弹窗） */}
       {detailTarget ? (
         <VehicleDetailDrawer
           open
           record={detailTarget}
           onClose={() => setDetailTarget(null)}
+          onOpenFullDetail={(vehicleKey) => navigate(buildVehicleInfoPath(vehicleKey))}
         />
       ) : null}
     </div>

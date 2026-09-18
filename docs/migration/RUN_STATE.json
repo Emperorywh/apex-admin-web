@@ -1,7 +1,7 @@
 {
   "版本说明": "调度系统迁移串行调度状态。由定时任务每小时触发一次，每次最多推进一个任务；写入必须整体原子替换。",
-  "最近更新时间": "2026-09-18T12:04:31.988Z",
-  "当前运行标识": "run-20260918-p38-91d11aa1(锁随本轮结束释放)",
+  "最近更新时间": "2026-09-18T21:15:00+08:00",
+  "当前运行标识": "run-20260918-p39-4d17f0fe(锁随本轮结束释放)",
   "锁": "docs/migration/.lock（mkdir 原子目录锁，内含 lock.json）",
   "工作目录": "C:\\code\\apex-admin-web",
   "分支": "apple-rxx",
@@ -111,7 +111,7 @@
       "前置": [
         "P05"
       ],
-      "状态": "未开始"
+      "状态": "已完成（2026-09-18 勾选：带令牌真实联验通过——实体页签第二消费者/独立窗口/可见轮询/五语言；P05 抽屉点击链路受 IAB rAF 冻结阻塞登记待补验）"
     },
     {
       "序": 13,
@@ -449,24 +449,28 @@
     }
   ],
   "当前任务": {
-    "任务ID": "P38 完整任务详情——已完成并勾选",
+    "任务ID": "P39 完整车辆详情——已完成并勾选",
     "状态": "已完成（TASKS.md 已勾选）",
-    "当前里程碑": "门禁全绿 + 带令牌真实联验全部通过 + 实体页签契约落地（order-info 移入受保护根）+ 详情业务组件复用（弹窗/完整页同源）",
+    "当前里程碑": "门禁全绿 + 带令牌真实联验通过 + 实体页签第二消费者（vehicle-info 移入受保护根）+ 可见轮询实时状态页 + 车辆域常量提升共享层 + 顺带修复 P38 i18n 前缀缺陷",
     "本轮已完成内容": [
-      "架构落地：order-info 移入受保护根（完整路径 /order-info 不变，hideInMenu 不进菜单/落点候选）——默认工作区页签形态+独立窗口按钮（openStandaloneWindow 同路径同守卫）",
-      "参数契约：features/order-detail/orderDetailNavigation 单一真相（命名 ?orderKey= + 旧裸值 ?KEY 与页签规范化变体 ?KEY= 兼容；旧源码核对结论：无导航调用点，直访裸值形态）",
-      "详情业务组件：features/order-detail（OrderDetailPanel 单请求喂主体+mission 表 / OrderInfoModal 壳+完整详情入口 / MissionActionsTable 自 order-record 迁入）；枚举展示常量提升 constants/order/orderDisplayOptions（orderRecordOptions 改 re-export）",
-      "协议实证：getOrderRecordDetail 返回类型如实标注可空（不存在任务 code=200+data=null 实证）→「任务不存在或已被删除」StateBlock；缺参数/无权限/会话过期分别呈现",
-      "五语言：orderInfo 命名空间四语言分片（5 key）+ 懒加载登记 + order-record meta 增声明；i18n 教训沉淀 AGENTS 第 6 节（nsSeparator=false 禁带 ns: 前缀）",
-      "真实联验：API 层（详情真实响应/不存在任务语义）+ 浏览器（守卫回跳带参数/页签隔离三页签/弹窗回归+完整详情导航/往返快照保留/独立窗口渲染/五语言 html lang/1920 与 1366 双主题四组截图/令牌过期收敛）",
-      "门禁全绿：lint 262 文件 0/0、typecheck、structure 260、build；调试残留 0",
-      "文档联动：P38.md 新建、operations.md P38 三行+P03 详情行更新、contracts.md 第 4/6 节+变更日志、i18n-map.md P38 行、TASKS.md 勾选"
+      "路由：vehicle-info 移入受保护根（完整路径不变，hideInMenu 不进菜单/落点候选）——默认工作区页签形态+独立窗口按钮",
+      "参数契约：features/vehicle-detail/vehicleDetailNavigation 单一真相（命名 ?vehicleKey= + 裸值 ?KEY 与 ?KEY= 兼容；旧源码无导航调用点直访裸值形态实证）",
+      "详情组件：VehicleDetailPanel（getVehicleState 递归展平 33 叶子字段 Descriptions + useVisiblePolling 约5秒可见轮询；失败清空远端区域退避重查，不存在态 data=null 停轮询）",
+      "服务层：services/vehicle/vehicle-state.service（fetchVehicleState 可空，GET 平铺 G04）；契约全字段含 load 子对象",
+      "常量提升：车辆域枚举映射+formatComponent 自 vehicleListOptions 提升至 constants/vehicle（P05/P39 两域单一真相，re-export 保持消费者导入不变）",
+      "P05 联动：详情抽屉 footer 新增「完整详情」入口（onOpenFullDetail 回调由宿主 VehicleDisplay 组装导航——跨 feature 禁导入）",
+      "修复两处 i18n 缺陷：P38 OrderDetailPanel t(\"orderInfo:…\") 前缀 key 显示字面量（复验通过）；P39 自查 zh-TW 分片繁体 key（改回简中 key，浏览器复验生效）",
+      "五语言：vehicleInfo 命名空间 67 key 四语言同构（en 旧真译沿用，繁日韩 B1 基线）；vehicle-display 路由 meta 补声明",
+      "真实联验：守卫回跳带参数/登录 redirect 回跳/页签隔离（两 vehicleKey 并存）/独立窗口/缺参数零请求/不存在车辆 StateBlock/裸值兼容/五语言 html lang/双主题双宽度截图",
+      "门禁全绿：lint 272 文件 0/0、typecheck、structure 270、build；调试残留 0",
+      "文档联动：P39.md 新建、operations.md P39 两行、contracts.md 第4/6节+变更日志、i18n-map.md P39 行、TASKS.md 勾选"
     ],
     "未完成步骤": [
-      "P39 交付后 /vehicle-info 同构迁移实体路由到受保护根（参数 vehicleKey 按 P05 旧调用点核对）",
-      "页签标题不带实体标识为既有 TabsBar 机制，如需扩展留 V01 评估（公共文件）"
+      "P05 列表抽屉→完整详情运行时点击链路：IAB rAF 冻结列表行不渲染（数据实况正常）无法点击；两端点已分别实证（详情页直访全链路✓、页签生成机制✓），下轮联验窗口 rAF 恢复时优先补验（P39.md「未完成/后续」①）",
+      "1366 两组截图带主题下拉旧帧伪象（rAF 冻结不合成新帧所致，内容可判正确）；1920 两组干净",
+      "P40 接入时同构迁移 /analyze-visual/server-resource-monitor 到受保护根"
     ],
-    "下一步": "本轮结束。下一轮领取队列序 12 P39 完整车辆详情（前置 P05 已完成）：读 TASKS.md P39 卡与 P05.md/P38.md 交接，参照 P38 实体页签形态迁移 /vehicle-info 到受保护根并核对参数契约",
+    "下一步": "本轮结束。下一轮领取队列序 13 P04（前置 B2 样板门禁条件已齐备：T00/P01/P03/P05/P38/P39 全部交付勾选，真实登录与只读列表/详情联验通过）：读 TASKS.md P04 卡与相关交接记录，核对车辆分组接口契约后实施",
     "阻塞原因": "无"
   },
   "验证结果": [
@@ -769,7 +773,17 @@
       "命令": "P38 带令牌真实联验（dev 代理 192.168.0.158:8888，凭据 .env.local root/MD5）",
       "结果": "通过：API 层（登录 code=200/详情真实响应 orderRecord+missionPage/不存在任务 code=200+data=null 实证）+ 浏览器（守卫回跳带参数/工作区页签外壳/主体 17 项+mission 2 条+动作子表 pick-HARD-耗时/弹窗回归+完整详情导航/两 orderKey 三页签隔离/往返快照保留含滚动位置/独立窗口完整外壳/缺参数+不存在反馈/裸值双变体兼容/五语言 html lang/双主题双宽度四组截图/令牌 TTL 过期 1000000 收敛）；验证后真实登出+页签关闭+dev server 停止",
       "日期": "2026-09-18"
+    },
+    {
+      "命令": "pnpm lint/typecheck/check:structure/build + 调试残留 grep（P39 交付终态）",
+      "结果": "全部通过（lint 272 文件 0 警告 0 错误；270 源文件结构检查；tsc+vite build 成功；残留 0）；structure 曾抓出 features 跨域导入一处，改宿主页组装导航后通过",
+      "日期": "2026-09-18"
+    },
+    {
+      "命令": "P39 带令牌真实联验（dev 代理 192.168.0.158:8888，凭据 .env.local root/MD5）",
+      "结果": "通过：API 层（登录 code=200/getVehicleState 真实车辆完整字段/不存在车辆 code=200+data=null 实证/缺 vehicleKey 后端 500 实证→页面零空参请求）+ 浏览器（守卫回跳带参数/工作区页签/33 叶子字段渲染含空值留白与枚举映射/两 vehicleKey 页签隔离/独立窗口/缺参数与不存在反馈/裸值兼容/五语言 html lang/双主题双宽度截图）；顺带复验 P38 i18n 缺陷修复通过；验证后页签关闭+dev server 停止",
+      "日期": "2026-09-18"
     }
   ],
-  "证据位置": "docs/migration/tasks/T00.md(T00 历轮交付与证据)、docs/migration/tasks/P01.md、docs/migration/tasks/P02.md、docs/migration/tasks/P41.md、docs/migration/tasks/P42.md(P42 交付/联验/限制登记)、docs/migration/tasks/H01.md(H01 交付/联验/公共文件改动记录)、docs/migration/tasks/H02.md(H02 交付/联验/资源归属隔离登记)、docs/migration/tasks/H03.md(H03 交付/联验/资源归属隔离登记)、docs/migration/contracts.md(第 1–7 节契约 + 第 9 节冻结登记 + 变更日志)、docs/migration/i18n-map.md(H02 行已更新,error 分片旧 key 映射已更新)、docs/migration/operations.md(P41/P42/H01/H02 行已登记)、docs/migration/i18n-missing.md、docs/migration/terminology.md、docs/migration/tasks/P03.md（P03 交付/联验/受阻登记）；P03.md（已修订：操作映射状态/G04 已验证/带令牌联验记录/列偏好缺陷修复节）；operations.md（P03 六行已更新）；gaps.md（G04 部分验证）；contracts.md（列设置接入形态用户决策行+第 3 节列偏好行已更新）；AGENTS.md（第 2 节列偏好铁律）；docs/migration/tasks/P05.md（P05 交付/控制样板/联验/环境教训登记）；operations.md（P05 七行已登记）；contracts.md（变更日志 P05 行）；docs/migration/tasks/P38.md（P38 交付/形态契约/联验/i18n 教训）；operations.md（P38 三行+P03 详情行更新）；contracts.md（第 4 节实体页签与独立窗口行更新+第 6 节任务详情行落地+变更日志 P38 行）；i18n-map.md（P38 行更新）；AGENTS.md（第 6 节 i18n 接线纪律，原第 6 节顺延为第 7 节）"
+  "证据位置": "docs/migration/tasks/T00.md(T00 历轮交付与证据)、docs/migration/tasks/P01.md、docs/migration/tasks/P02.md、docs/migration/tasks/P41.md、docs/migration/tasks/P42.md(P42 交付/联验/限制登记)、docs/migration/tasks/H01.md(H01 交付/联验/公共文件改动记录)、docs/migration/tasks/H02.md(H02 交付/联验/资源归属隔离登记)、docs/migration/tasks/H03.md(H03 交付/联验/资源归属隔离登记)、docs/migration/contracts.md(第 1–7 节契约 + 第 9 节冻结登记 + 变更日志)、docs/migration/i18n-map.md(H02 行已更新,error 分片旧 key 映射已更新)、docs/migration/operations.md(P41/P42/H01/H02 行已登记)、docs/migration/i18n-missing.md、docs/migration/terminology.md、docs/migration/tasks/P03.md（P03 交付/联验/受阻登记）；P03.md（已修订：操作映射状态/G04 已验证/带令牌联验记录/列偏好缺陷修复节）；operations.md（P03 六行已更新）；gaps.md（G04 部分验证）；contracts.md（列设置接入形态用户决策行+第 3 节列偏好行已更新）；AGENTS.md（第 2 节列偏好铁律）；docs/migration/tasks/P05.md（P05 交付/控制样板/联验/环境教训登记）；operations.md（P05 七行已登记）；contracts.md（变更日志 P05 行）；docs/migration/tasks/P38.md（P38 交付/形态契约/联验/i18n 教训）；operations.md（P38 三行+P03 详情行更新）；contracts.md（第 4 节实体页签与独立窗口行更新+第 6 节任务详情行落地+变更日志 P38 行）；i18n-map.md（P38 行更新）；AGENTS.md（第 6 节 i18n 接线纪律，原第 6 节顺延为第 7 节）；docs/migration/tasks/P39.md（P39 交付/形态契约/联验/i18n 双缺陷修复登记）；operations.md（P39 两行）；contracts.md（第 4 节实体页签双消费者+第 6 节车辆详情参数行+变更日志 P39 行）；i18n-map.md（P39 行更新）；.run-lock/shots-p39/（双主题双宽度截图）"
 }

@@ -63,7 +63,7 @@
 | P36 故障告警 | dashboard-fault | **faultAlarm**（同上） | faultAlarm |
 | P37 车辆状态统计 | vehicle-status | vehicleStatus | vehicleStatus |
 | P38 任务详情 | /order-info | orderInfo（已交付四语言分片 5 key；详情字段/表格文案共用 orderRecord 命名空间——弹窗与完整页同一业务组件，零重复 key；nsSeparator=false 下 t() 不带「ns:」前缀） | features/order-detail + pages/order-info |
-| P39 车辆详情 | /vehicle-info | vehicleInfo | vehicleInfo |
+| P39 车辆详情 | /vehicle-info | vehicleInfo（已交付四语言分片 67 key 同构：详情标签/枚举值文案 en 旧真译沿用、繁日韩 B1 基线补译 + P39 形态新增文案独立窗口/缺参数/不存在反馈；抽屉「完整详情」入口经 vehicleList fallback 共用此分片；nsSeparator=false 下 t() 不带「ns:」前缀，繁日韩分片 key 必须与页面简中 key 一致） | features/vehicle-detail + pages/vehicle-info |
 | P40 服务器资源 | /server-resource（别名 server-resource-monitor 同实现） | serverResource | serverResource |
 | P41 无权限页 | /no-permission | **access-denied**（已交付；P41 按任务卡独立分片，覆盖冻结时「复用 common/error」的盘点） | 沿用 pages/un-access |
 | P42 兜底错误页 | /404、/500 | **error**（已交付；沿用 T00 基座分片并入基座常载 BASE_NAMESPACES；旧 404 页 key「抱歉，您访问的页面不存在/首页」迁入，en 旧真译沿用，移除无消费模板 key） | 沿用 pages/error |

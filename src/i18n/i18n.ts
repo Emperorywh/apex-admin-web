@@ -68,6 +68,8 @@ const enUsLoaders: NamespaceLoaders = {
   orderInfo: () => import('@/i18n/locales/en-US/orderInfo'),
   // P05 车辆列表（vehicle-deploy/vehicle-diplay；页面私有命名空间）
   vehicleList: () => import('@/i18n/locales/en-US/vehicleList'),
+  // P39 完整车辆详情（vehicle-info；页面私有命名空间，抽屉完整详情入口共用）
+  vehicleInfo: () => import('@/i18n/locales/en-US/vehicleInfo'),
   dashboard: () => import('@/i18n/locales/en-US/dashboard'),
   error: () => import('@/i18n/locales/en-US/error'),
   // 共享地图能力文案（T00.7 ReadOnlyMap；消费页面在 meta.i18nNamespaces 声明 'map'）
@@ -95,6 +97,8 @@ const zhTwLoaders: NamespaceLoaders = {
   orderRecord: () => import('@/i18n/locales/zh-TW/orderRecord'),
   // P38 完整任务详情（order-info；页面私有命名空间）
   orderInfo: () => import('@/i18n/locales/zh-TW/orderInfo'),
+  // P39 完整车辆详情（vehicle-info；页面私有命名空间，抽屉完整详情入口共用）
+  vehicleInfo: () => import('@/i18n/locales/zh-TW/vehicleInfo'),
   vehicleList: () => import('@/i18n/locales/zh-TW/vehicleList'),
   'license-activation': () => import('@/i18n/locales/zh-TW/license-activation'),
   'access-denied': () => import('@/i18n/locales/zh-TW/access-denied'),
@@ -109,6 +113,8 @@ const jaJpLoaders: NamespaceLoaders = {
   orderRecord: () => import('@/i18n/locales/ja-JP/orderRecord'),
   // P38 完整任务详情（order-info；页面私有命名空间）
   orderInfo: () => import('@/i18n/locales/ja-JP/orderInfo'),
+  // P39 完整车辆详情（vehicle-info；页面私有命名空间，抽屉完整详情入口共用）
+  vehicleInfo: () => import('@/i18n/locales/ja-JP/vehicleInfo'),
   vehicleList: () => import('@/i18n/locales/ja-JP/vehicleList'),
   'license-activation': () => import('@/i18n/locales/ja-JP/license-activation'),
   'access-denied': () => import('@/i18n/locales/ja-JP/access-denied'),
@@ -123,6 +129,8 @@ const koKrLoaders: NamespaceLoaders = {
   orderRecord: () => import('@/i18n/locales/ko-KR/orderRecord'),
   // P38 完整任务详情（order-info；页面私有命名空间）
   orderInfo: () => import('@/i18n/locales/ko-KR/orderInfo'),
+  // P39 完整车辆详情（vehicle-info；页面私有命名空间，抽屉完整详情入口共用）
+  vehicleInfo: () => import('@/i18n/locales/ko-KR/vehicleInfo'),
   vehicleList: () => import('@/i18n/locales/ko-KR/vehicleList'),
   'license-activation': () => import('@/i18n/locales/ko-KR/license-activation'),
   'access-denied': () => import('@/i18n/locales/ko-KR/access-denied'),

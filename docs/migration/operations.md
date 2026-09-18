@@ -34,6 +34,8 @@
 | P38 | 直访 /order-info 按任务上下文查询（主体+mission 分页+动作展开） | `pages/order-info/OrderInfo`（工作区页签默认形态，features/order-detail/OrderDetailPanel 单请求喂两区域） | POST /fms/v1/dispatcher/orderRecord/getOrderRecordDetail | getOrderRecordDetail | order-record:view（守卫） | 已验证（带令牌主体 17 项+mission 2 条+动作子表；不存在任务 code=200+data=null 实证→「任务不存在」反馈） | tasks/P38.md（联验 2026-09-18） |
 | P38 | 详情参数（orderKey）+ 实体页签隔离 + 独立窗口 | 命名参数 `?orderKey=`（buildOrderInfoPath/parseOrderInfoSearch 单一真相，裸值 `?KEY` 与 `?KEY=` 兼容）；不同任务独立页签；「独立窗口」按钮经 openStandaloneWindow 打开同一路径 | — | — | order-record:view（新窗口同守卫） | 已验证（守卫回跳带参数/页签隔离/往返快照/独立窗口渲染） | tasks/P38.md |
 | P38 | （旧）列表弹窗「完整详情」入口（D08 新增导航便利，旧系统无） | OrderInfoModal footer「完整详情」→ 关弹窗 + navigate /order-info?orderKey=… | — | — | order-record:view | 已验证（弹窗回归+导航+新页签生成+返回快照） | tasks/P38.md |
+| P39 | 直访 /vehicle-info 按车辆标识查询实时状态（33 叶子字段递归展平三列 Descriptions，空值留白/枚举映射/时间戳秒级） | `pages/vehicle-info/VehicleInfo`（工作区页签默认形态；features/vehicle-detail/VehicleDetailPanel：getVehicleState + useVisiblePolling 约 5s 可见轮询，失败清空远端区域退避重查，不存在态停轮询） | GET /fms/v1/dispatcher/vehicle/getVehicleState | getVehicleState | vehicle-list:view（守卫） | 已验证（带令牌真实车辆完整字段渲染/不存在车辆 code=200+data=null 实证→「车辆不存在」反馈/缺参数零请求） | tasks/P39.md（联验 2026-09-18） |
+| P39 | 详情参数（vehicleKey）+ 实体页签隔离 + 独立窗口 + 五语言 | 命名参数 `?vehicleKey=`（buildVehicleInfoPath/parseVehicleInfoSearch 单一真相，裸值 `?KEY` 与 `?KEY=` 兼容）；不同车辆独立页签；「独立窗口」按钮；vehicleInfo 四语言分片 67 key 同构（en 旧真译沿用，繁日韩 B1 基线）；P05 列表抽屉新增「完整详情」入口（宿主 VehicleDisplay 组装跨域导航） | — | — | vehicle-list:view（新窗口同守卫） | 已验证（守卫回跳带参数/两 vehicleKey 页签隔离/独立窗口渲染/五语言 html lang/裸值兼容/双主题双宽度截图）；抽屉点击链路受 IAB rAF 冻结阻塞登记 P39.md | tasks/P39.md |
 
 ## 汇总状态口径
 

@@ -6,9 +6,15 @@
  * - 枚举有既定语义才映射（类型/网络/调度/运行模式/安全状态），未知值显示原值；
  * - nodeStates/edgeStates/actionStates/errors 为协议结构数据：非空时按 JSON
  *   原文展示（协议原值，不猜字段语义），空数组/缺失留白。
+ *
+ * P39 联动：footer 新增「完整详情」入口（规格 7：快速预览不替代完整详情路由，
+ * 同构 P38 任务详情弹窗）。导航动作经 onOpenFullDetail 回调由宿主页面组装
+ * （结构纪律：features 域之间禁止互相导入，/vehicle-info 地址构造属
+ * vehicle-detail 域单一真相，pages 层负责跨域组装）。
  */
 
-import { Drawer, Descriptions } from 'antd'
+import { Drawer, Descriptions, Button } from 'antd'
+import { ExternalLink } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { DescriptionsProps } from 'antd'
 import type { VehicleRecordDto } from '@/services/vehicle/vehicle-manage.service.types'
@@ -43,10 +49,20 @@ interface VehicleDetailDrawerProps {
   open: boolean
   record: VehicleRecordDto | null
   onClose: () => void
+  /** 打开完整详情（P39）：宿主组装导航（关抽屉 + 跳 /vehicle-info?vehicleKey=…） */
+  onOpenFullDetail?: (vehicleKey: string) => void
 }
 
-export function VehicleDetailDrawer({ open, record, onClose }: VehicleDetailDrawerProps) {
-  const { t } = useTranslation('vehicleList')
+export function VehicleDetailDrawer({
+  open,
+  record,
+  onClose,
+  onOpenFullDetail,
+}: VehicleDetailDrawerProps) {
+  // vehicleList：抽屉既有文案；vehicleInfo：P39「完整详情」按钮文案。
+  // nsMode='fallback' 按数组顺序跨命名空间查 key；t() 不带「ns:」前缀
+  // （nsSeparator=false，AGENTS 第 6 节纪律）
+  const { t } = useTranslation(['vehicleList', 'vehicleInfo'], { nsMode: 'fallback' })
 
   // 记录未就绪（弹窗按目标挂载时不会出现）时渲染空 items，Drawer 保持关闭态
   const items: DescriptionsProps['items'] = []
@@ -130,7 +146,27 @@ export function VehicleDetailDrawer({ open, record, onClose }: VehicleDetailDraw
   }
 
   return (
-    <Drawer title={t('车辆详情')} onClose={onClose} open={open} width={600}>
+    <Drawer
+      title={t('车辆详情')}
+      onClose={onClose}
+      open={open}
+      width={600}
+      /* 完整详情入口（P39）：导航回调由宿主组装（见组件头注释）；行 key 缺失
+         （理论不可达，列表已过滤缺 key 行）不触发 */
+      footer={
+        <Button
+          type="primary"
+          icon={<ExternalLink size={14} />}
+          onClick={() => {
+            if (!record?.key || !onOpenFullDetail) return
+            onClose()
+            onOpenFullDetail(record.key)
+          }}
+        >
+          {t('完整详情')}
+        </Button>
+      }
+    >
       <Descriptions column={1} size="small" bordered items={items} />
     </Drawer>
   )

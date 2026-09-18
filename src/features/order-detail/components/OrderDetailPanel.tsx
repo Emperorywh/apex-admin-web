@@ -63,7 +63,10 @@ export function OrderDetailPanel({
   descriptionsColumn = 2,
   missionTableHeight = 'fill',
 }: OrderDetailPanelProps) {
-  const { t } = useTranslation('orderRecord')
+  // 主体文案走 orderRecord（P03 四语言）；「任务不存在」反馈是 P38 新增文案，
+  // 落在 orderInfo 分片——nsMode='fallback' 按数组顺序跨命名空间查 key，
+  // t() 一律不带「ns:」前缀（nsSeparator=false，前缀会被当作 key 原样显示）
+  const { t } = useTranslation(['orderRecord', 'orderInfo'], { nsMode: 'fallback' })
   const apexLocale = useApexLocale()
 
   // 详情主体（orderRecord）：跟随 mission 表格首次 request 的同一响应填充
@@ -224,7 +227,7 @@ export function OrderDetailPanel({
     <>
       {/* 任务不存在：明确反馈（与查询失败、真实空 mission 列表分开呈现） */}
       {detailNotFound ? (
-        <StateBlock variant="gap" description={t('orderInfo:任务不存在或已被删除')} />
+        <StateBlock variant="gap" description={t('任务不存在或已被删除')} />
       ) : null}
       {/* 主体区域：失败时呈现真实错误（与表格同源），无数据时不出空表壳 */}
       {detailError ? (
