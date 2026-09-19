@@ -116,6 +116,8 @@ const enUsLoaders: NamespaceLoaders = {
   map: () => import('@/i18n/locales/en-US/map'),
   // P02 软件授权（authorize-ingress；P29 复用激活组件时同声明此命名空间）
   'license-activation': () => import('@/i18n/locales/en-US/license-activation'),
+  // P29 软件信息（system-involve/software-information；页面私有命名空间，激活弹窗复用 P02 组件同声明 license-activation）
+  'software-license': () => import('@/i18n/locales/en-US/software-license'),
   // P41 无权限页（un-access；布局外独立页）
   'access-denied': () => import('@/i18n/locales/en-US/access-denied'),
 }
@@ -181,6 +183,8 @@ const zhTwLoaders: NamespaceLoaders = {
   // P27 系统设置（system-involve/system-setting；页面私有命名空间）
   'system-branding': () => import('@/i18n/locales/zh-TW/system-branding'),
   'license-activation': () => import('@/i18n/locales/zh-TW/license-activation'),
+  // P29 软件信息（system-involve/software-information；页面私有命名空间，激活弹窗复用 P02 组件同声明 license-activation）
+  'software-license': () => import('@/i18n/locales/zh-TW/software-license'),
   'access-denied': () => import('@/i18n/locales/zh-TW/access-denied'),
 }
 const jaJpLoaders: NamespaceLoaders = {
@@ -237,6 +241,8 @@ const jaJpLoaders: NamespaceLoaders = {
   // P27 系统设置（system-involve/system-setting；页面私有命名空间）
   'system-branding': () => import('@/i18n/locales/ja-JP/system-branding'),
   'license-activation': () => import('@/i18n/locales/ja-JP/license-activation'),
+  // P29 软件信息（system-involve/software-information；页面私有命名空间，激活弹窗复用 P02 组件同声明 license-activation）
+  'software-license': () => import('@/i18n/locales/ja-JP/software-license'),
   'access-denied': () => import('@/i18n/locales/ja-JP/access-denied'),
 }
 const koKrLoaders: NamespaceLoaders = {
@@ -293,6 +299,8 @@ const koKrLoaders: NamespaceLoaders = {
   // P27 系统设置（system-involve/system-setting；页面私有命名空间）
   'system-branding': () => import('@/i18n/locales/ko-KR/system-branding'),
   'license-activation': () => import('@/i18n/locales/ko-KR/license-activation'),
+  // P29 软件信息（system-involve/software-information；页面私有命名空间，激活弹窗复用 P02 组件同声明 license-activation）
+  'software-license': () => import('@/i18n/locales/ko-KR/software-license'),
   'access-denied': () => import('@/i18n/locales/ko-KR/access-denied'),
 }
 

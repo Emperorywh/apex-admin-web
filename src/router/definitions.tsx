@@ -555,7 +555,10 @@ export const appRouteDefinitions = defineAppRoutes([
             path: 'software-information',
             loadPage: () =>
               import('@/pages/system-involve/SoftwareInformation/SoftwareInformation'),
-            meta: businessMeta('软件信息', PERM.SYSTEM_SOFTWARE_VIEW, { pending: true }),
+            // P29 解除暂缓：license-activation 供复用的激活弹窗组件取文案
+            meta: businessMeta('软件信息', PERM.SYSTEM_SOFTWARE_VIEW, {
+              i18nNamespaces: ['software-license', 'license-activation'],
+            }),
           },
           {
             // 数据库备份：旧路由未写 access（P30 核对原权限清单后再定，规格 5.12）

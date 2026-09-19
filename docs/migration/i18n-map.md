@@ -79,7 +79,7 @@
 | P27 系统设置 | system-involve/system-setting | **system-branding**（页面私有命名空间，命名空间名随 TASKS 台账 kebab 形态；四语言分片同构：en 旧真译逐条沿用（Image Settings/Top Navigation Bar Image/Login Background Image/Website Tab Icon/No Image/Click to Preview/Upload Image/Upload Failed 等）；「{{label}}上传成功」旧 {label} 单花括号改 {{label}} 插值（P25/P26 同款）；「仅支持 {{types}} 格式的文件」为本页新增防御校验文案（无旧译，四语言补译）；繁中旧资源与简中同形按 B1 基线补译（登入背景圖/網站 Tab 圖示，与 auth 分片「登入」对齐）；日韩 B1 基线补译：日文 画像設定/上部ナビゲーションバーの画像/ログイン背景画像/サイトタブアイコン/画像をアップロード，韩文 이미지 설정/상단 내비게이션 바 이미지/로그인 배경 이미지/사이트 탭 아이콘/이미지 업로드；「系统设置」菜单名与 menu 分片对齐（システム設定/시스템 설정）） | pages/system-involve/SystemSetting + services/system/brand |
 | P27 系统设置 | system-branding | system-branding | system-branding |
 | P28 操作日志 | operation-log | operationLog | operationLog |
-| P29 软件信息 | software-information | softwareInformation | softwareInformation |
+| P29 软件信息 | system-involve/software-information | **software-license**（页面私有命名空间；激活弹窗复用 P02 组件故路由 meta 并声明 license-activation；四语言分片同构：en 旧真译逐条沿用+插值 {{label}} 形态修正，繁日韩 B1 基线真实译文与 P02 术语对齐——啟用/有効化/활성화） | software-license |
 | P30 数据库备份 | database-backup | databaseBackup | databaseBackup |
 | P31 用户管理 | user-management | userManagement | 沿用 pages/system/user + services/system/user |
 | P32 角色管理 | role-management | roleManagement | 沿用 pages/system/role + services/system/role |

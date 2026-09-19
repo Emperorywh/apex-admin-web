@@ -429,7 +429,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P29 软件信息
 
-- [ ] **P29 软件信息**
+- [x] **P29 软件信息**
 - **批次 / 前置**：B3 / B2 样板门禁、P02。
 - **入口**：`/system-involve/software-information`；**旧来源**：`SystemInvolve/SoftwareInformation`；**目标**：`src/pages/system-involve/SoftwareInformation/SoftwareInformation.tsx`。
 - **私有模块 / 语言分片**：`software-license`；**接口依据**：auth/license/getLicense、softwareActivation。
