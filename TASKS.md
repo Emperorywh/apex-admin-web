@@ -309,7 +309,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P17 交通灯
 
-- [ ] **P17 交通灯**
+- [x] **P17 交通灯**
 - **批次 / 前置**：B3 / B2 样板门禁。
 - **入口**：`/tri-resource/tri-device/traffic-lights`；**旧来源**：`TriResource/TrafficLights`；**目标**：`src/pages/tri-device/TrafficLights/TrafficLights.tsx`。
 - **私有模块 / 语言分片**：`device-traffic-light`；**接口依据**：device/trafficLight。

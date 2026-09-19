@@ -412,7 +412,8 @@ export const appRouteDefinitions = defineAppRoutes([
                 loadPage: () => import('@/pages/tri-device/TrafficLights/TrafficLights'),
                 meta: businessMeta('交通灯', PERM.DEVICE_TRAFFIC_LIGHT_VIEW, {
                   icon: TrafficCone,
-                  pending: true,
+                  // P17 交付：deviceTrafficLight 页面私有命名空间
+                  i18nNamespaces: ['deviceTrafficLight'],
                 }),
               },
               {

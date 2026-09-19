@@ -1,7 +1,7 @@
 {
   "版本说明": "调度系统迁移串行调度状态。由定时任务每小时触发一次，每次最多推进一个任务；写入必须整体原子替换。",
-  "最近更新时间": "2026-09-19T13:50:00+08:00",
-  "当前运行标识": "run-20260919-p16-130538（P16 交付完成并勾选；本轮结束）",
+  "最近更新时间": "2026-09-19T14:55:00+08:00",
+  "当前运行标识": "run-20260919-p17-140200（P17 交付完成并勾选；本轮结束）",
   "锁": "docs/migration/.lock（mkdir 原子目录锁，内含 lock.json）",
   "工作目录": "C:\\code\\apex-admin-web",
   "分支": "apple-rxx",
@@ -228,7 +228,7 @@
       "前置": [
         "B2样板门禁"
       ],
-      "状态": "未开始（待下一轮领取）"
+      "状态": "已完成（2026-09-19 勾选：带令牌真实联验通过——列表 8 列逐列等价/增改删全字段落库无 G18 类缺陷/测试 confirmCommand（A21）+真实失败诊断 code=8000010 如实呈现/删除 danger/守卫+登录落点闭环/列偏好闭环含钉右/五语言/双主题双宽度四组截图；getTrafficLights 旧仓库无活跃消费者不落地；终态审计 total=0 零残留）"
     },
     {
       "序": 26,
@@ -237,7 +237,7 @@
       "前置": [
         "B2样板门禁"
       ],
-      "状态": "未开始"
+      "状态": "未开始（待下一轮领取）"
     },
     {
       "序": 27,
@@ -449,16 +449,16 @@
     }
   ],
   "当前任务": {
-    "任务ID": "P17 交通灯",
+    "任务ID": "P18 风淋门",
     "状态": "未开始（待下一轮领取）",
-    "当前里程碑": "整页重写（device/trafficLight 真实契约 operation）+ device-traffic-light 四语言分片",
+    "当前里程碑": "整页重写（device/airShowerDoor 真实契约 operation）+ device-air-shower 四语言分片",
     "本轮已完成内容": [],
     "未完成步骤": [
-      "开工核对：旧源码 TriResource/TrafficLights 全部弹窗与操作（注意旧来源在 TriResource/TrafficLights 而非 TriDevice）、OpenAPI trafficLight DTO 与 operation 清单、权限树码（device:traffic-light:* 预期，add/update/delete/test 需逐项核对）",
-      "服务层 trafficLight operation 与类型（pageTrafficLights/getTrafficLightDrivers/getTrafficLights/addTrafficLight/updateTrafficLight/deleteTrafficLight/testTrafficLight 等逐项核对 OpenAPI）",
-      "列表页+驱动参数+增改删+测试操作（测试按实际副作用分类，不能默认作为只读自动执行 A21；未知结果保留诊断信息不用动画假装测试通过）",
-      "device-traffic-light 四语言分片 + 路由解除 pending 挂命名空间（保留 traffic-lights 地址）",
-      "门禁四项 + 带令牌真实联验 + 文档联动 + 勾选 + 推送（测试命令副作用按契约分类留专用环境）"
+      "开工核对：旧源码 TriDevice/AirShowerDoor_back 全部弹窗与操作（注意 _back 后缀来源、只迁当前来源可达控制）、OpenAPI airShowerDoor DTO 与 operation 清单（状态/开关门/风淋/清占用逐项核对）、权限树码（device:air-shower-door:* 预期，需逐项核对）",
+      "服务层 airShowerDoor operation 与类型（pageAirShowerDoors/getAirShowerDoorDrivers/getAirShowerDoorState/addAirShowerDoor/updateAirShowerDoor/deleteAirShowerDoor/openDoor/closeDoor/startAirShower/clearAirShowerOccupy 等逐项核对 OpenAPI）",
+      "列表页+驱动参数+增改删+状态受控 Popover+控制命令（P14/P15 同构；操作按实际设备状态和权限开放；防重复提交、超时未知与状态核验可用；驱动参数错误保留输入）",
+      "device-air-shower 四语言分片 + 路由解除 pending 挂命名空间（保留 air-shower-door 地址）",
+      "门禁四项 + 带令牌真实联验 + 文档联动 + 勾选 + 推送（开关门/风淋/清占用命令副作用按契约分类留专用环境）"
     ],
     "阻塞原因": null
   },
@@ -867,18 +867,28 @@
       "命令": "P16 带令牌真实联验（dev 代理 192.168.0.158:8888，凭据 .env.local root/MD5；python API 层先行、浏览器会话独立）",
       "结果": "全部通过：权限五码（device:charge-pile:view/add/update/delete/operate）真实下发；API 层（pageChargePiles GET 平铺基线 total=0/getChargePileDrivers 1 条中力充电桩 ZHONG_LI_CHARGE_PILE/无令牌 1000000 对照/addChargePile 落库一致 deviceKey 后端生成/updateChargePile 全字段落库无 G18 类缺陷/行内嵌状态 deviceChargePileState.chargePileState.state=OFFLINE 形态实证/deleteChargePile 自清理终态审计 total=0 零残留）；浏览器（守卫回跳带 redirect+登录落点闭环/必填拦截 5 项齐出零请求/驱动下拉真实加载+选中填充真实协议模板 localPort 9999/新增提交落库渲染逐列一致含离线状态映射/编辑回显+改名提交实时更新/删除确认取消零请求+确认路径回空态/开始充电确认框五要素+取消零请求 startCharge 未发出/列偏好闭环（隐藏端口-整页 reload 持久-重挂载恢复-恢复默认-切回显示+保存切片 port=false+pinning.end=actions 核对）/钉右 data-pinned=end/五语言 html lang 逐语言/双主题双宽度四组截图 .run-lock/shots-p16/）；恢复亮色主题+真实登出+页签关闭+dev server 停止+凭据临时文件清除；startCharge/stopCharge 命令执行留专用环境",
       "日期": "2026-09-19"
-    }
-  ],
-  "证据位置": "docs/migration/tasks/T00.md(T00 历轮交付与证据)、docs/migration/tasks/P01.md、docs/migration/tasks/P02.md、docs/migration/tasks/P41.md、docs/migration/tasks/P42.md(P42 交付/联验/限制登记)、docs/migration/tasks/H01.md(H01 交付/联验/公共文件改动记录)、docs/migration/tasks/H02.md(H02 交付/联验/资源归属隔离登记)、docs/migration/tasks/H03.md(H03 交付/联验/资源归属隔离登记)、docs/migration/contracts.md(第 1–7 节契约 + 第 9 节冻结登记 + 变更日志)、docs/migration/i18n-map.md(H02 行已更新,error 分片旧 key 映射已更新)、docs/migration/operations.md(P41/P42/H01/H02 行已登记)、docs/migration/i18n-missing.md、docs/migration/terminology.md、docs/migration/tasks/P03.md（P03 交付/联验/受阻登记）；P03.md（已修订：操作映射状态/G04 已验证/带令牌联验记录/列偏好缺陷修复节）；operations.md（P03 六行已更新）；gaps.md（G04 部分验证）；contracts.md（列设置接入形态用户决策行+第 3 节列偏好行已更新）；AGENTS.md（第 2 节列偏好铁律）；docs/migration/tasks/P05.md（P05 交付/控制样板/联验/环境教训登记）；operations.md（P05 七行已登记）；contracts.md（变更日志 P05 行）；docs/migration/tasks/P38.md（P38 交付/形态契约/联验/i18n 教训）；operations.md（P38 三行+P03 详情行更新）；contracts.md（第 4 节实体页签与独立窗口行更新+第 6 节任务详情行落地+变更日志 P38 行）；i18n-map.md（P38 行更新）；AGENTS.md（第 6 节 i18n 接线纪律，原第 6 节顺延为第 7 节）；docs/migration/tasks/P39.md（P39 交付/形态契约/联验/i18n 双缺陷修复登记）；operations.md（P39 两行）；contracts.md（第 4 节实体页签双消费者+第 6 节车辆详情参数行+变更日志 P39 行）；i18n-map.md（P39 行更新）；.run-lock/shots-p39/（双主题双宽度截图）；P39 补验记录（tasks/P39.md「未完成/后续」①补验记录 + AGENTS 第 5 节 IAB 渲染管线冻结条目，2026-09-18 对账轮）；docs/migration/tasks/P04.md（P04 交付/联验/G18 缺口对照）；operations.md（P04 四行）；contracts.md（第 5 节分组/车辆选项行更新+变更日志 P04 行）；gaps.md（G18 登记）；i18n-map.md（P04 行更新）；docs/migration/tasks/P06.md（P06 交付/权限核对收敛/联验/IAB 伪象登记）；operations.md（P06 四行）；contracts.md（第 2 节载具权限码行收敛+第 5 节载具行更新+变更日志 P06 行）；i18n-map.md（P06 行更新）；.run-lock/shots-p06/（双主题双宽度截图）；docs/migration/tasks/P07.md（P07 交付/联验/G19/环境教训）；operations.md（P07 五行）；contracts.md（第 2 节权限码行补 node-mapping+第 5 节 agvNodeMapping 行与 getMapInfo/getSimpleMaps 行更新+变更日志 P07 行）；gaps.md（G19 登记）；i18n-map.md（P07 行更新）；AGENTS.md（第 5 节 RO 垫片修正+联验会话纪律两条）；.run-lock/shots-p07/（双主题双宽度截图）；docs/migration/tasks/P08.md（P08 交付/联验/G20/环境教训）；operations.md（P08 六行）；contracts.md（第 2 节权限行补告警码+第 5 节 vehicleAlarmCode 行+变更日志 P08 行）；gaps.md（G05 部分确认+G20 登记）；i18n-map.md（P08 行更新）；.run-lock/shots-p08/（双主题双宽度截图）；docs/migration/tasks/P09.md（P09 交付/联验/契约发现/并发会话事件）；operations.md（P09 八行）；contracts.md（第 2 节权限行补地图列表十码+第 5 节地图管理服务行+变更日志 P09 行）；gaps.md（G05 补 P09 实证/G07 部分收敛/G08 P09 侧结论/G21 登记）；i18n-map.md（P09 mapList 行）；AGENTS.md（第 5 节锁接管判据缺陷+curl 中文陷阱+主题三态下拉）；.run-lock/shots-p09/（双主题双宽度截图）、docs/migration/tasks/P10.md（P10 交付/联验/G22/G21 扩展/垫片时序沉淀）、docs/migration/tasks/P11.md（P11 交付/联验/G21 扩展/G23/P19 契约确认/环境教训）、docs/migration/tasks/P12.md（P12 交付/联验/命令副作用待验登记/.run-lock/shots-p12/）、docs/migration/tasks/P13.md（P13 交付/联验/重置语义变更登记/环境教训/.run-lock/shots-p13/）、docs/migration/tasks/P14.md（P14 交付/联验/G06 呈现定版/环境教训/.run-lock/shots-p14/）、docs/migration/tasks/P15.md（P15 交付/联验/IAB 垫片注入自检教训/.run-lock/shots-p15/）、docs/migration/tasks/P16.md（P16 交付/联验/端口 65536 旧边界登记/.run-lock/shots-p16/）",
-  "最近验证记录": [
+    },
     {
-      "命令": "pnpm lint/typecheck/check:structure/build + 调试残留 grep（P16 交付终态）",
-      "结果": "全部通过（lint 363 文件 0 警告 0 错误；361 源文件结构检查；tsc+vite build 成功；chunk 警告为既有 apex-table-react 体积；typecheck 曾抓出 deviceChargePileState 外层包装类型缺失一处修复后通过）",
+      "命令": "pnpm lint/typecheck/check:structure/build + 调试残留 grep（P17 交付终态）",
+      "结果": "全部通过（lint 370 文件 0 警告 0 错误；368 源文件结构检查；tsc+vite build 成功；chunk 警告为既有 apex-table-react 体积；typecheck 曾抓出 deviceConfig 通用 map 取值 unknown 两处修复后通过）",
       "日期": "2026-09-19"
     },
     {
-      "命令": "P16 带令牌真实联验（dev 代理 192.168.0.158:8888，凭据 .env.local root/MD5；python API 层先行、浏览器会话独立）",
-      "结果": "全部通过：权限五码（device:charge-pile:view/add/update/delete/operate）真实下发；API 层（pageChargePiles GET 平铺基线 total=0/getChargePileDrivers 1 条中力充电桩 ZHONG_LI_CHARGE_PILE/无令牌 1000000 对照/addChargePile 落库一致 deviceKey 后端生成/updateChargePile 全字段落库无 G18 类缺陷/行内嵌状态 deviceChargePileState.chargePileState.state=OFFLINE 形态实证/deleteChargePile 自清理终态审计 total=0 零残留）；浏览器（守卫回跳带 redirect+登录落点闭环/必填拦截 5 项齐出零请求/驱动下拉真实加载+选中填充真实协议模板 localPort 9999/新增提交落库渲染逐列一致含离线状态映射/编辑回显+改名提交实时更新/删除确认取消零请求+确认路径回空态/开始充电确认框五要素+取消零请求 startCharge 未发出/列偏好闭环（隐藏端口-整页 reload 持久-重挂载恢复-恢复默认-切回显示+保存切片 port=false+pinning.end=actions 核对）/钉右 data-pinned=end/五语言 html lang 逐语言/双主题双宽度四组截图 .run-lock/shots-p16/）；恢复亮色主题+真实登出+页签关闭+dev server 停止+凭据临时文件清除；startCharge/stopCharge 命令执行留专用环境",
+      "命令": "P17 带令牌真实联验（dev 代理 192.168.0.158:8888，凭据 .env.local root/MD5；python API 层先行、浏览器会话独立）",
+      "结果": "全部通过：权限五码（device:traffic-light:view/add/update/delete/operate）真实下发；API 层（pageTrafficLights GET 平铺基线 total=0/getDrivers 1 条 http-交通灯 HTTP_TRAFFIC_LIGHT/无令牌 1000000 对照/addTrafficLight 落库一致 deviceKey 后端生成 deviceConfig 三键原样/updateTrafficLight 全字段落库无 G18 类缺陷/testTrafficLight 真实失败诊断 code=8000010「HTTP请求异常」形态实证（对象为自建记录+回环拒绝端口，副作用限定测试后端本机）/deleteTrafficLight 自清理终态审计 total=0 零残留）；浏览器（守卫回跳带 redirect+登录落点闭环/必填拦截 4 项齐出零请求/驱动下拉真实加载+请求参数自动填充真实协议模板/新增提交落库渲染逐列一致/编辑回显 2 空格 JSON+改名翻转开关实时更新/测试确认层五要素+取消零请求+失败诊断如实呈现不用动画假装测试通过/删除确认 danger+取消零请求+确认回空态/列偏好闭环（隐藏创建时间-落盘-整页 reload 持久-恢复默认+钉右 TH[data-pinned=end]）/五语言 html lang 逐语言（交通燈=交通號誌/信号機/신호등 与 menu 对齐）/双主题双宽度四组截图 .run-lock/shots-p17/ dark-1366 实证钉右）；恢复亮色主题+真实登出+页签关闭+dev server 停止+令牌临时文件清除",
+      "日期": "2026-09-19"
+    }
+  ],
+  "证据位置": "docs/migration/tasks/T00.md(T00 历轮交付与证据)、docs/migration/tasks/P01.md、docs/migration/tasks/P02.md、docs/migration/tasks/P41.md、docs/migration/tasks/P42.md(P42 交付/联验/限制登记)、docs/migration/tasks/H01.md(H01 交付/联验/公共文件改动记录)、docs/migration/tasks/H02.md(H02 交付/联验/资源归属隔离登记)、docs/migration/tasks/H03.md(H03 交付/联验/资源归属隔离登记)、docs/migration/contracts.md(第 1–7 节契约 + 第 9 节冻结登记 + 变更日志)、docs/migration/i18n-map.md(H02 行已更新,error 分片旧 key 映射已更新)、docs/migration/operations.md(P41/P42/H01/H02 行已登记)、docs/migration/i18n-missing.md、docs/migration/terminology.md、docs/migration/tasks/P03.md（P03 交付/联验/受阻登记）；P03.md（已修订：操作映射状态/G04 已验证/带令牌联验记录/列偏好缺陷修复节）；operations.md（P03 六行已更新）；gaps.md（G04 部分验证）；contracts.md（列设置接入形态用户决策行+第 3 节列偏好行已更新）；AGENTS.md（第 2 节列偏好铁律）；docs/migration/tasks/P05.md（P05 交付/控制样板/联验/环境教训登记）；operations.md（P05 七行已登记）；contracts.md（变更日志 P05 行）；docs/migration/tasks/P38.md（P38 交付/形态契约/联验/i18n 教训）；operations.md（P38 三行+P03 详情行更新）；contracts.md（第 4 节实体页签与独立窗口行更新+第 6 节任务详情行落地+变更日志 P38 行）；i18n-map.md（P38 行更新）；AGENTS.md（第 6 节 i18n 接线纪律，原第 6 节顺延为第 7 节）；docs/migration/tasks/P39.md（P39 交付/形态契约/联验/i18n 双缺陷修复登记）；operations.md（P39 两行）；contracts.md（第 4 节实体页签双消费者+第 6 节车辆详情参数行+变更日志 P39 行）；i18n-map.md（P39 行更新）；.run-lock/shots-p39/（双主题双宽度截图）；P39 补验记录（tasks/P39.md「未完成/后续」①补验记录 + AGENTS 第 5 节 IAB 渲染管线冻结条目，2026-09-18 对账轮）；docs/migration/tasks/P04.md（P04 交付/联验/G18 缺口对照）；operations.md（P04 四行）；contracts.md（第 5 节分组/车辆选项行更新+变更日志 P04 行）；gaps.md（G18 登记）；i18n-map.md（P04 行更新）；docs/migration/tasks/P06.md（P06 交付/权限核对收敛/联验/IAB 伪象登记）；operations.md（P06 四行）；contracts.md（第 2 节载具权限码行收敛+第 5 节载具行更新+变更日志 P06 行）；i18n-map.md（P06 行更新）；.run-lock/shots-p06/（双主题双宽度截图）；docs/migration/tasks/P07.md（P07 交付/联验/G19/环境教训）；operations.md（P07 五行）；contracts.md（第 2 节权限码行补 node-mapping+第 5 节 agvNodeMapping 行与 getMapInfo/getSimpleMaps 行更新+变更日志 P07 行）；gaps.md（G19 登记）；i18n-map.md（P07 行更新）；AGENTS.md（第 5 节 RO 垫片修正+联验会话纪律两条）；.run-lock/shots-p07/（双主题双宽度截图）；docs/migration/tasks/P08.md（P08 交付/联验/G20/环境教训）；operations.md（P08 六行）；contracts.md（第 2 节权限行补告警码+第 5 节 vehicleAlarmCode 行+变更日志 P08 行）；gaps.md（G05 部分确认+G20 登记）；i18n-map.md（P08 行更新）；.run-lock/shots-p08/（双主题双宽度截图）；docs/migration/tasks/P09.md（P09 交付/联验/契约发现/并发会话事件）；operations.md（P09 八行）；contracts.md（第 2 节权限行补地图列表十码+第 5 节地图管理服务行+变更日志 P09 行）；gaps.md（G05 补 P09 实证/G07 部分收敛/G08 P09 侧结论/G21 登记）；i18n-map.md（P09 mapList 行）；AGENTS.md（第 5 节锁接管判据缺陷+curl 中文陷阱+主题三态下拉）；.run-lock/shots-p09/（双主题双宽度截图）、docs/migration/tasks/P10.md（P10 交付/联验/G22/G21 扩展/垫片时序沉淀）、docs/migration/tasks/P11.md（P11 交付/联验/G21 扩展/G23/P19 契约确认/环境教训）、docs/migration/tasks/P12.md（P12 交付/联验/命令副作用待验登记/.run-lock/shots-p12/）、docs/migration/tasks/P13.md（P13 交付/联验/重置语义变更登记/环境教训/.run-lock/shots-p13/）、docs/migration/tasks/P14.md（P14 交付/联验/G06 呈现定版/环境教训/.run-lock/shots-p14/）、docs/migration/tasks/P15.md（P15 交付/联验/IAB 垫片注入自检教训/.run-lock/shots-p15/）、docs/migration/tasks/P16.md（P16 交付/联验/端口 65536 旧边界登记/.run-lock/shots-p16/）docs/migration/tasks/P17.md（P17 交付/联验/IAB 关闭动画伪象与 goto 返回瞬间注垫片教训/.run-lock/shots-p17/）",
+  "最近验证记录": [
+    {
+      "命令": "pnpm lint/typecheck/check:structure/build + 调试残留 grep（P17 交付终态）",
+      "结果": "全部通过（lint 370 文件 0 警告 0 错误；368 源文件结构检查；tsc+vite build 成功；chunk 警告为既有 apex-table-react 体积；typecheck 曾抓出 deviceConfig 通用 map 取值 unknown 两处修复后通过）",
+      "日期": "2026-09-19"
+    },
+    {
+      "命令": "P17 带令牌真实联验（dev 代理 192.168.0.158:8888，凭据 .env.local root/MD5；python API 层先行、浏览器会话独立）",
+      "结果": "全部通过：权限五码（device:traffic-light:view/add/update/delete/operate）真实下发；API 层（pageTrafficLights GET 平铺基线 total=0/getDrivers 1 条 http-交通灯 HTTP_TRAFFIC_LIGHT/无令牌 1000000 对照/addTrafficLight 落库一致 deviceKey 后端生成 deviceConfig 三键原样/updateTrafficLight 全字段落库无 G18 类缺陷/testTrafficLight 真实失败诊断 code=8000010「HTTP请求异常」形态实证（对象为自建记录+回环拒绝端口，副作用限定测试后端本机）/deleteTrafficLight 自清理终态审计 total=0 零残留）；浏览器（守卫回跳带 redirect+登录落点闭环/必填拦截 4 项齐出零请求/驱动下拉真实加载+请求参数自动填充真实协议模板/新增提交落库渲染逐列一致/编辑回显 2 空格 JSON+改名翻转开关实时更新/测试确认层五要素+取消零请求+失败诊断如实呈现不用动画假装测试通过/删除确认 danger+取消零请求+确认回空态/列偏好闭环（隐藏创建时间-落盘-整页 reload 持久-恢复默认+钉右 TH[data-pinned=end]）/五语言 html lang 逐语言（交通燈=交通號誌/信号機/신호등 与 menu 对齐）/双主题双宽度四组截图 .run-lock/shots-p17/ dark-1366 实证钉右）；恢复亮色主题+真实登出+页签关闭+dev server 停止+令牌临时文件清除",
       "日期": "2026-09-19"
     }
   ]
