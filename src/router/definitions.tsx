@@ -434,7 +434,8 @@ export const appRouteDefinitions = defineAppRoutes([
             loadPage: () => import('@/pages/tri-traffic/TriTraffic/TriTraffic'),
             meta: businessMeta('三方交管', PERM.TRAFFIC_TRIPARTITE_VIEW, {
               icon: CircleMinus,
-              pending: true,
+              // P19 交付：tripartite-traffic 页面私有命名空间
+              i18nNamespaces: ['tripartite-traffic'],
             }),
           },
         ],

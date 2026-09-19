@@ -66,7 +66,7 @@
 | P17 交通灯 | traffic-lights | trafficLight | trafficLight |
 | P18 风淋门 | air-shower-door | airShowerDoor | airShowerDoor |
 | P18 风淋门 | air-shower-door | airShowerDoor | airShowerDoor |
-| P19 三方交管 | tri-traffic | triTraffic | triTraffic |
+| P19 三方交管 | tri-traffic | tripartite-traffic | tripartite-traffic |
 | P20 任务工艺 | mission-create | missionCreate | missionCreate |
 | P21 工艺管理 | mission-flow | missionFlow | missionFlow |
 | P22 避障模板 | obstacle-avoidance | obstacleAvoidance | obstacleAvoidance |

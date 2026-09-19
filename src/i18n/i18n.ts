@@ -124,6 +124,8 @@ const enUsLoaders: NamespaceLoaders = {
   'access-user': () => import('@/i18n/locales/en-US/access-user'),
   // P32 角色管理（access-management/role-management；页面私有命名空间，三态权限树弹窗共用）
   'access-role': () => import('@/i18n/locales/en-US/access-role'),
+  // P19 三方交管（tri-resource/tri-traffic；页面私有命名空间，增改删弹窗共用）
+  'tripartite-traffic': () => import('@/i18n/locales/en-US/tripartite-traffic'),
   // P41 无权限页（un-access；布局外独立页）
   'access-denied': () => import('@/i18n/locales/en-US/access-denied'),
 }
@@ -197,6 +199,8 @@ const zhTwLoaders: NamespaceLoaders = {
   'access-user': () => import('@/i18n/locales/zh-TW/access-user'),
   // P32 角色管理（access-management/role-management；页面私有命名空间，三态权限树弹窗共用）
   'access-role': () => import('@/i18n/locales/zh-TW/access-role'),
+  // P19 三方交管（tri-resource/tri-traffic；页面私有命名空间，增改删弹窗共用）
+  'tripartite-traffic': () => import('@/i18n/locales/zh-TW/tripartite-traffic'),
   'access-denied': () => import('@/i18n/locales/zh-TW/access-denied'),
 }
 const jaJpLoaders: NamespaceLoaders = {
@@ -261,6 +265,8 @@ const jaJpLoaders: NamespaceLoaders = {
   'access-user': () => import('@/i18n/locales/ja-JP/access-user'),
   // P32 角色管理（access-management/role-management；页面私有命名空间，三态权限树弹窗共用）
   'access-role': () => import('@/i18n/locales/ja-JP/access-role'),
+  // P19 三方交管（tri-resource/tri-traffic；页面私有命名空间，增改删弹窗共用）
+  'tripartite-traffic': () => import('@/i18n/locales/ja-JP/tripartite-traffic'),
   'access-denied': () => import('@/i18n/locales/ja-JP/access-denied'),
 }
 const koKrLoaders: NamespaceLoaders = {
@@ -325,6 +331,8 @@ const koKrLoaders: NamespaceLoaders = {
   'access-user': () => import('@/i18n/locales/ko-KR/access-user'),
   // P32 角色管理（access-management/role-management；页面私有命名空间，三态权限树弹窗共用）
   'access-role': () => import('@/i18n/locales/ko-KR/access-role'),
+  // P19 三方交管（tri-resource/tri-traffic；页面私有命名空间，增改删弹窗共用）
+  'tripartite-traffic': () => import('@/i18n/locales/ko-KR/tripartite-traffic'),
   'access-denied': () => import('@/i18n/locales/ko-KR/access-denied'),
 }
 
