@@ -538,7 +538,9 @@ export const appRouteDefinitions = defineAppRoutes([
             id: 'system-involve-system-setting',
             path: 'system-setting',
             loadPage: () => import('@/pages/system-involve/SystemSetting/SystemSetting'),
-            meta: businessMeta('系统设置', PERM.SYSTEM_SETTING_VIEW, { pending: true }),
+            meta: businessMeta('系统设置', PERM.SYSTEM_SETTING_VIEW, {
+              i18nNamespaces: ['system-branding'],
+            }),
           },
           {
             id: 'system-involve-operation-log',

@@ -409,7 +409,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P27 系统设置
 
-- [ ] **P27 系统设置**
+- [x] **P27 系统设置**
 - **批次 / 前置**：B3 / B2 样板门禁。
 - **入口**：`/system-involve/system-setting`；**旧来源**：`SystemInvolve/SystemSetting`；**目标**：`src/pages/system-involve/SystemSetting/SystemSetting.tsx`。
 - **私有模块 / 语言分片**：`system-branding`；**接口依据**：systemLogos。

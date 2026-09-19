@@ -15,6 +15,7 @@ import { getRequestHealth, subscribeRequestHealth, type RequestHealth } from '@/
 import { useAppDispatch } from '@/hooks/useAppDispatch'
 import { useAppSelector } from '@/hooks/useAppSelector'
 import { useAuth } from '@/hooks/useAuth'
+import { useBrandImage } from '@/hooks/useBrandImage'
 import { useTabActionGuard } from '@/hooks/useTabActionGuard'
 import { sessionExpired } from '@/store/slices/authSlice'
 import { localeChanged, themeChanged, type AppTheme } from '@/store/slices/settingsSlice'
@@ -25,13 +26,39 @@ import styles from '@/layouts/BasicLayout/components/Header/Header.module.css'
 /** 顶栏时钟刷新间隔（毫秒） */
 const CLOCK_TICK_INTERVAL_MS = 1_000
 
+/** favicon 的 link 元素选择器（index.html 静态声明，动态替换其 href） */
+const FAVICON_LINK_SELECTOR = 'link[rel="icon"]'
+
 export function Header() {
   const { t } = useTranslation('common')
+  // 顶栏品牌图消费真实 headerLogo（旧系统 layout logo 同源行为）；
+  // 上传成功经品牌变更通知即时重拉；无资源回退静态默认图标（装饰层兜底）
+  const headerLogoUrl = useBrandImage('headerLogo')
+  // 网站图标消费真实 favicon（旧系统 getInitialState setFavicon 同语义）：
+  // 有资源替换 link[rel=icon]，无资源保持 index.html 静态 /favicon.ico
+  const faviconUrl = useBrandImage('favicon')
+  // 品牌图加载失败（内容损坏/Blob 元数据误标 image/*）同样回退静态图标
+  const [logoFailed, setLogoFailed] = useState(false)
+  useEffect(() => {
+    setLogoFailed(false)
+  }, [headerLogoUrl])
+
+  useEffect(() => {
+    if (!faviconUrl) return
+    const link = document.querySelector<HTMLLinkElement>(FAVICON_LINK_SELECTOR)
+    if (link) link.href = faviconUrl
+  }, [faviconUrl])
 
   return (
     <header className={styles.topbar}>
       <div className={styles.brand}>
-        <img className={styles.brandIcon} src="/favicon.ico" alt="" aria-hidden="true" />
+        <img
+          className={styles.brandIcon}
+          src={headerLogoUrl && !logoFailed ? headerLogoUrl : '/favicon.ico'}
+          alt=""
+          aria-hidden="true"
+          onError={() => setLogoFailed(true)}
+        />
         <span className={styles.brandName}>{t('调度系统')}</span>
       </div>
 

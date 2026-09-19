@@ -76,7 +76,8 @@
 | P25 版本管理 | version-control | versionControl | versionControl |
 | P26 系统日志 | system-involve/system-log | **systemLog**（页面私有命名空间；四语言分片同构：en 旧真译逐条沿用（Log Name/Last Modified/Log Type/Start Time/End Time/Query/Clear/Download Log/Please select logs to download/Log download completed 等）；「下载系统日志出错」旧「文案+err.message 拼接」改 {{msg}} 插值（P25 同款）；传输行三条与「已取消下载」沿用 P08/P25 既有译法；繁日韩旧资源对本页 key 均为简中复制（非有效译文），按 B1 基线补译：繁中 日誌名稱/下載日誌/最後修改時間，日文 ログ名/ログ種別（P25「種別」同款）/最終更新日時/ログダウンロード，韩文 로그 이름/로그 유형（P25「유형」同款）/마지막 수정 시간/로그 다운로드；公共词与 P03/P08 既有分片对齐（查詢/検索/조회、清空/クリア/지우기、開始時間/開始時刻/시작 시각）；「系统日志」菜单名与 menu 分片对齐） | pages/system-involve/SystemLog + services/system/system-log |
 | P26 系统日志 | system-log | systemLog | systemLog |
-| P27 系统设置 | system-setting | systemSetting | systemSetting |
+| P27 系统设置 | system-involve/system-setting | **system-branding**（页面私有命名空间，命名空间名随 TASKS 台账 kebab 形态；四语言分片同构：en 旧真译逐条沿用（Image Settings/Top Navigation Bar Image/Login Background Image/Website Tab Icon/No Image/Click to Preview/Upload Image/Upload Failed 等）；「{{label}}上传成功」旧 {label} 单花括号改 {{label}} 插值（P25/P26 同款）；「仅支持 {{types}} 格式的文件」为本页新增防御校验文案（无旧译，四语言补译）；繁中旧资源与简中同形按 B1 基线补译（登入背景圖/網站 Tab 圖示，与 auth 分片「登入」对齐）；日韩 B1 基线补译：日文 画像設定/上部ナビゲーションバーの画像/ログイン背景画像/サイトタブアイコン/画像をアップロード，韩文 이미지 설정/상단 내비게이션 바 이미지/로그인 배경 이미지/사이트 탭 아이콘/이미지 업로드；「系统设置」菜单名与 menu 分片对齐（システム設定/시스템 설정）） | pages/system-involve/SystemSetting + services/system/brand |
+| P27 系统设置 | system-branding | system-branding | system-branding |
 | P28 操作日志 | operation-log | operationLog | operationLog |
 | P29 软件信息 | software-information | softwareInformation | softwareInformation |
 | P30 数据库备份 | database-backup | databaseBackup | databaseBackup |
