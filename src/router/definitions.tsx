@@ -464,13 +464,16 @@ export const appRouteDefinitions = defineAppRoutes([
             meta: businessMeta('工艺管理', PERM.MISSION_TEMPLATE_VIEW, { pending: true }),
           },
           {
+            // 避障模板（P22 交付解除 pending）：菜单码 obstacle-avoidance:view
+            // 挂路由守卫（按钮码 add/update/delete 在页面内控制入口显隐，
+            // 与旧 §7/§8.2 一致，后端权限树按既有码判权不凭空造码）
             id: 'mission-cluster-obstacle-avoidance',
             path: 'obstacle-avoidance',
             loadPage: () =>
               import('@/pages/obstacle-avoidance/ObstacleAvoidance/ObstacleAvoidance'),
             meta: businessMeta('避障模板', PERM.OBSTACLE_AVOIDANCE_VIEW, {
               icon: CircleMinus,
-              pending: true,
+              i18nNamespaces: ['obstacleTemplate'],
             }),
           },
           {
