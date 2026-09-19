@@ -1,0 +1,60 @@
+/*
+ * 操作日志页布局（P28）：筛选栏（首行四条件 + 次行时间范围与按钮组，旧实现
+ * Row 栅格同密度）+ 全宽表格（P03–P26 样板同构）；颜色全部引用全局 token，
+ * 不硬编码。
+ */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+  min-width: 0;
+}
+
+/*
+ * 筛选栏：标签横排居左（AGENTS 第 3 节筛选栏参数——labelCol 固定 104px 保证
+ * 各行控件左缘对齐，wrapper 弹性基准 0 且禁用 min-width:auto，防 RangePicker
+ * 这类宽 min-content 控件把 wrapper 挤到标签下一行退回竖排）
+ */
+.searchForm {
+  margin-bottom: 0;
+}
+
+/* 首行四条件（旧实现 Col span=6 同密度）；次行时间范围与按钮组各跨两列 */
+.searchGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px 24px;
+}
+
+/* 请求时间范围：占两列宽（旧实现 Col span=8 同语义，给 RangePicker 足够宽度） */
+.timeRangeItem {
+  grid-column: span 2;
+}
+
+/* 按钮组：占两列宽，底部对齐随 Form.Item 行高 */
+.searchActions {
+  grid-column: span 2;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* 时间范围选择器占满 wrapper 弹性宽度（Form.Item 内不写死像素宽） */
+.rangePicker {
+  width: 100%;
+}
+
+/* 普通文本单元格：单行省略 + 悬浮完整值（旧实现 ellipsis showTitle 同语义） */
+.ellipsisCell {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tableWrap {
+  flex: 1;
+  min-height: 0;
+}

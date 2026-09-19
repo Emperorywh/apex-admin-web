@@ -547,7 +547,7 @@ export const appRouteDefinitions = defineAppRoutes([
             path: 'operation-log',
             loadPage: () => import('@/pages/system-involve/OperationLog/OperationLog'),
             meta: businessMeta('操作日志', PERM.SYSTEM_OPERATION_LOG_VIEW, {
-              pending: true,
+              i18nNamespaces: ['operationLog'],
             }),
           },
           {

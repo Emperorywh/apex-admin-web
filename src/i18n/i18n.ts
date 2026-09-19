@@ -104,6 +104,8 @@ const enUsLoaders: NamespaceLoaders = {
   systemVersion: () => import('@/i18n/locales/en-US/systemVersion'),
   // P26 系统日志（system-involve/system-log；页面私有命名空间）
   systemLog: () => import('@/i18n/locales/en-US/systemLog'),
+  // P28 操作日志（system-involve/operation-log；页面私有命名空间）
+  operationLog: () => import('@/i18n/locales/en-US/operationLog'),
   // P27 系统设置（system-involve/system-setting；页面私有命名空间）
   'system-branding': () => import('@/i18n/locales/en-US/system-branding'),
   // P39 完整车辆详情（vehicle-info；页面私有命名空间，抽屉完整详情入口共用）
@@ -174,6 +176,8 @@ const zhTwLoaders: NamespaceLoaders = {
   systemVersion: () => import('@/i18n/locales/zh-TW/systemVersion'),
   // P26 系统日志（system-involve/system-log；页面私有命名空间）
   systemLog: () => import('@/i18n/locales/zh-TW/systemLog'),
+  // P28 操作日志（system-involve/operation-log；页面私有命名空间）
+  operationLog: () => import('@/i18n/locales/zh-TW/operationLog'),
   // P27 系统设置（system-involve/system-setting；页面私有命名空间）
   'system-branding': () => import('@/i18n/locales/zh-TW/system-branding'),
   'license-activation': () => import('@/i18n/locales/zh-TW/license-activation'),
@@ -228,6 +232,8 @@ const jaJpLoaders: NamespaceLoaders = {
   systemVersion: () => import('@/i18n/locales/ja-JP/systemVersion'),
   // P26 系统日志（system-involve/system-log；页面私有命名空间）
   systemLog: () => import('@/i18n/locales/ja-JP/systemLog'),
+  // P28 操作日志（system-involve/operation-log；页面私有命名空间）
+  operationLog: () => import('@/i18n/locales/ja-JP/operationLog'),
   // P27 系统设置（system-involve/system-setting；页面私有命名空间）
   'system-branding': () => import('@/i18n/locales/ja-JP/system-branding'),
   'license-activation': () => import('@/i18n/locales/ja-JP/license-activation'),
@@ -282,6 +288,8 @@ const koKrLoaders: NamespaceLoaders = {
   systemVersion: () => import('@/i18n/locales/ko-KR/systemVersion'),
   // P26 系统日志（system-involve/system-log；页面私有命名空间）
   systemLog: () => import('@/i18n/locales/ko-KR/systemLog'),
+  // P28 操作日志（system-involve/operation-log；页面私有命名空间）
+  operationLog: () => import('@/i18n/locales/ko-KR/operationLog'),
   // P27 系统设置（system-involve/system-setting；页面私有命名空间）
   'system-branding': () => import('@/i18n/locales/ko-KR/system-branding'),
   'license-activation': () => import('@/i18n/locales/ko-KR/license-activation'),

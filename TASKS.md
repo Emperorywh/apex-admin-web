@@ -419,7 +419,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P28 操作日志
 
-- [ ] **P28 操作日志**
+- [x] **P28 操作日志**
 - **批次 / 前置**：B3 / B2 样板门禁。
 - **入口**：`/system-involve/operation-log`；**旧来源**：`SystemInvolve/OperationLog`；**目标**：`src/pages/system-involve/OperationLog/OperationLog.tsx`。
 - **私有模块 / 语言分片**：`operation-log`；**接口依据**：common/sysLog/pageSysLogs。
