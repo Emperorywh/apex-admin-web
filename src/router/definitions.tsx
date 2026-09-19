@@ -522,7 +522,9 @@ export const appRouteDefinitions = defineAppRoutes([
             id: 'system-involve-version-control',
             path: 'version-control',
             loadPage: () => import('@/pages/system-involve/VersionControl/VersionControl'),
-            meta: businessMeta('版本管理', PERM.SYSTEM_VERSION_VIEW, { pending: true }),
+            meta: businessMeta('版本管理', PERM.SYSTEM_VERSION_VIEW, {
+              i18nNamespaces: ['systemVersion'],
+            }),
           },
           {
             id: 'system-involve-system-log',

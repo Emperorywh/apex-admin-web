@@ -1,0 +1,26 @@
+/*
+ * 版本管理页布局（P25）：工具行（右侧按钮组：重启程序/更新版本包；旧实现
+ * search 区左侧为空占位、按钮靠右）+ 全宽表格（与 P04–P23 样板同构）。
+ * 本页无筛选条件（旧版同），故工具行左侧不放搜索控件。
+ */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+  min-width: 0;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tableWrap {
+  flex: 1;
+  min-height: 0;
+}
