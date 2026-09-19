@@ -459,7 +459,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P32 角色管理（合并模板实现）
 
-- [ ] **P32 角色管理（合并模板实现）**
+- [x] **P32 角色管理（合并模板实现）**（2026-09-20 勾选：带令牌联验通过——Apex request GET 平铺分页/搜索/新增编辑三字段（必填拦截零请求+落库复核）/删除 confirmCommand 五要素自清理/**分配权限三态持久半选 SPEC D1–D12 完整等价迁移**（三态九用例+空半选提交仅父级 id=D1+重开回显两形态）/回显契约对照实验（须含祖先+空半选父节点原样返回=SPEC R3 关闭）/列偏好四步/五语言/双主题双宽度；模板 REST /roles 链整删零残留；时间列 150 截断联验修复）
 - **批次 / 前置**：B3 / B2 样板门禁。
 - **入口**：`/access-management/role-management`；**旧来源**：`AccessManagement/RoleManagement`；**目标**：`src/pages/access-management/RoleManagement/RoleManagement.tsx`。
 - **私有模块 / 语言分片**：`access-role`；**接口依据**：auth/role、auth/permission/getPermissions。

@@ -1,30 +1,13 @@
 /**
- * en-US · system 命名空间（用户 / 角色 / 菜单管理）。
+ * en-US · system 命名空间（模板遗留菜单管理；角色/用户键已随 P32/P31 整合删
+ * 除，本分片仅保留 menu 链仍消费的键——该链由 P43 收口）。
  */
 
 export default {
-  '状态筛选': 'Filter by status',
   '状态': 'Status',
   '启用': 'Active',
   '停用': 'Disabled',
   '排序': 'Sort',
-  '创建时间': 'Created at',
-  '状态已更新': 'Status updated',
-  '新建角色': 'New role',
-  '编辑角色': 'Edit role',
-  '角色编码': 'Role code',
-  '角色名称': 'Role name',
-  '请输入角色编码': 'Please enter a role code',
-  '角色编码为小写字母、数字与下划线': 'Role code: lowercase letters, digits and underscores',
-  '请输入角色名称': 'Please enter a role name',
-  '描述': 'Description',
-  '描述（选填）': 'Description (optional)',
-  '确认删除该角色？': 'Delete this role?',
-  '角色已创建': 'Role created',
-  '角色已更新': 'Role updated',
-  '角色已删除': 'Role deleted',
-  '详情': 'Detail',
-  '成员数': 'Members',
   '新建菜单': 'New menu',
   '编辑菜单': 'Edit menu',
   '上级菜单': 'Parent menu',

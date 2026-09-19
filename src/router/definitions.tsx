@@ -601,7 +601,9 @@ export const appRouteDefinitions = defineAppRoutes([
             path: 'role-management',
             loadPage: () =>
               import('@/pages/access-management/RoleManagement/RoleManagement'),
-            meta: businessMeta('角色管理', PERM.AUTH_ROLE_VIEW, { pending: true }),
+            meta: businessMeta('角色管理', PERM.AUTH_ROLE_VIEW, {
+              i18nNamespaces: ['access-role'],
+            }),
           },
         ],
       },

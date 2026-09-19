@@ -122,6 +122,8 @@ const enUsLoaders: NamespaceLoaders = {
   'database-backup': () => import('@/i18n/locales/en-US/database-backup'),
   // P31 用户管理（access-management/user-management；页面私有命名空间，分配角色弹窗共用）
   'access-user': () => import('@/i18n/locales/en-US/access-user'),
+  // P32 角色管理（access-management/role-management；页面私有命名空间，三态权限树弹窗共用）
+  'access-role': () => import('@/i18n/locales/en-US/access-role'),
   // P41 无权限页（un-access；布局外独立页）
   'access-denied': () => import('@/i18n/locales/en-US/access-denied'),
 }
@@ -193,6 +195,8 @@ const zhTwLoaders: NamespaceLoaders = {
   'database-backup': () => import('@/i18n/locales/zh-TW/database-backup'),
   // P31 用户管理（access-management/user-management；页面私有命名空间，分配角色弹窗共用）
   'access-user': () => import('@/i18n/locales/zh-TW/access-user'),
+  // P32 角色管理（access-management/role-management；页面私有命名空间，三态权限树弹窗共用）
+  'access-role': () => import('@/i18n/locales/zh-TW/access-role'),
   'access-denied': () => import('@/i18n/locales/zh-TW/access-denied'),
 }
 const jaJpLoaders: NamespaceLoaders = {
@@ -255,6 +259,8 @@ const jaJpLoaders: NamespaceLoaders = {
   'database-backup': () => import('@/i18n/locales/ja-JP/database-backup'),
   // P31 用户管理（access-management/user-management；页面私有命名空间，分配角色弹窗共用）
   'access-user': () => import('@/i18n/locales/ja-JP/access-user'),
+  // P32 角色管理（access-management/role-management；页面私有命名空间，三态权限树弹窗共用）
+  'access-role': () => import('@/i18n/locales/ja-JP/access-role'),
   'access-denied': () => import('@/i18n/locales/ja-JP/access-denied'),
 }
 const koKrLoaders: NamespaceLoaders = {
@@ -317,6 +323,8 @@ const koKrLoaders: NamespaceLoaders = {
   'database-backup': () => import('@/i18n/locales/ko-KR/database-backup'),
   // P31 用户管理（access-management/user-management；页面私有命名空间，分配角色弹窗共用）
   'access-user': () => import('@/i18n/locales/ko-KR/access-user'),
+  // P32 角色管理（access-management/role-management；页面私有命名空间，三态权限树弹窗共用）
+  'access-role': () => import('@/i18n/locales/ko-KR/access-role'),
   'access-denied': () => import('@/i18n/locales/ko-KR/access-denied'),
 }
 
