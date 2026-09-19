@@ -379,7 +379,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P24 动作分组
 
-- [ ] **P24 动作分组**
+- [x] **P24 动作分组**
 - **批次 / 前置**：B4a / B2 样板门禁、P23。
 - **入口**：`/mission-cluster/action-control/agv-action-group`；**旧来源**：`ActionControl/AGVActionGroup`；**目标**：`src/pages/action-control/AGVActionGroup/AGVActionGroup.tsx`。
 - **私有模块 / 语言分片**：`agv-action-group`；**接口依据**：action/agvActionGroup、agvAction/getAGVActions。

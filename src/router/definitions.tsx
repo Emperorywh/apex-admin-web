@@ -499,11 +499,16 @@ export const appRouteDefinitions = defineAppRoutes([
                 }),
               },
               {
+                // 动作分组（P24 交付解除 pending）：菜单码 action-group:view
+                // 挂路由守卫（按钮码 add/update/delete 在页面内控制入口显隐，
+                // 与旧 §7/§8.2 一致，后端权限树按既有码判权不凭空造码）
                 id: 'mission-cluster-action-control-agv-action-group',
                 path: 'agv-action-group',
                 loadPage: () =>
                   import('@/pages/action-control/AGVActionGroup/AGVActionGroup'),
-                meta: businessMeta('动作分组', PERM.ACTION_GROUP_VIEW, { pending: true }),
+                meta: businessMeta('动作分组', PERM.ACTION_GROUP_VIEW, {
+                  i18nNamespaces: ['agvActionGroup'],
+                }),
               },
             ],
           },
