@@ -1,7 +1,7 @@
 {
   "版本说明": "调度系统迁移串行调度状态。由定时任务每小时触发一次，每次最多推进一个任务；写入必须整体原子替换。",
-  "最近更新时间": "2026-09-20T03:15:00+08:00",
-  "当前运行标识": "run-20260920-p30-030xxx（P30 交付联验通过并勾选；P28/P29/P30 三批提交待推送——GitHub 网络出口持续阻塞）",
+  "最近更新时间": "2026-09-20T03:55:00+08:00",
+  "当前运行标识": "run-20260920-p31-030551 本轮结束（P31 用户管理交付联验通过并勾选，提交本地落库；P28/P29/P30/P31 共 5 提交待推送——GitHub 出口持续阻塞，本轮开局 3 次 schannel/openssl/代理均 SSL 握手失败）",
   "锁": "docs/migration/.lock（mkdir 原子目录锁，内含 lock.json）",
   "工作目录": "C:\\code\\apex-admin-web",
   "分支": "apple-rxx",
@@ -319,7 +319,7 @@
       "前置": [
         "B2样板门禁"
       ],
-      "状态": "未开始"
+      "状态": "已完成（2026-09-20 勾选：带令牌联验通过——Apex request GET 平铺/新增三字段 MD5 抓包/状态切换乐观/重置密码/分配角色双查（空角色环境形态）/删除五要素自清理/root 行只读收敛/列偏好四步/五语言/双主题双宽度；模板 REST /users 链整删零残留；assignRoles 勾选回归待 P32 联验环境）"
     },
     {
       "序": 36,
@@ -449,21 +449,21 @@
     }
   ],
   "当前任务": {
-    "任务ID": "P30 数据库备份",
-    "状态": "已完成并勾选（run-20260920-p30-030xxx）；P28/P29/P30 提交推送待补",
-    "当前里程碑": "无（任务收口；下一任务 P31 用户管理等待下一次定时触发）",
+    "任务ID": "P31 用户管理",
+    "状态": "已完成并勾选（run-20260920-p31-030551）；P28/P29/P30/P31 提交推送待补",
+    "当前里程碑": "无（任务收口；下一任务 P32 角色管理等待下一次定时触发）",
     "本轮已完成内容": [
-      "开局补推 P28/P29 三提交：schannel/openssl/代理三形态均 SSL 握手失败（外部阻塞持续），推送遗留",
-      "权限收敛（专项验收）：旧 .umirc.ts 漏写 access 但旧权限清单真实存在 system:database-backup:view（PERM+菜单映射 355 行）——新增 PERM 常量挂路由守卫，download 按钮码既有，不当公开页不凭空造码",
-      "服务层 services/system/database-backup（三 operation 全 GET，与旧页面 a 标签形态一致；旧 api POST 版死代码不迁移）",
-      "整页重写：库下拉（默认选第一+清空不重查=旧 effect 判空同语义）+Apex request 模式备份文件列表（全集客户端切片+列偏好 database-backup:main+默认钉右）+5 列逐列核对",
-      "下载升级：GET Blob+TransferProgressModal 真实进度+传输管理器+取消二次确认（旧 a 标签直下按 A16 升级登记）",
-      "浏览器整页联验：守卫/落点/默认选中/切库/小文件完成反馈×2/大文件走马灯真实增长+取消中止/清空零请求/列偏好四步（含 reload 持久+恢复默认）/五语言逐语言/双主题双宽度四组截图 .run-lock/shots-p30/；真实登出+dev server 停止+脚本自毁+零残留",
-      "契约实证：下载流式无 Content-Length→恒不确定进度路径（G11 降级）/PGDM 魔数/无令牌下载 7000140 直达业务逻辑=安全观察项登记 contracts",
-      "文档联动：P30.md 新建/TASKS 勾选/operations 两行/contracts 第 5 节行+变更日志/i18n-map P30 行修正/AGENTS 沉淀㉑㉒/RUN_STATE"
+      "开局补推 4 提交：schannel/openssl/代理三形态均 SSL 握手失败（外部阻塞持续），推送遗留累计 5 提交",
+      "服务层 services/access-user（七 operation 真实契约；getRoles owner=P31 建 P32 复用登记）",
+      "整页重写：Apex request GET 平铺分页+搜索 trim 回首页+5 列逐列核对旧版默认左对齐（用户名 200 悬浮/状态 100 root 只读 Tag 其余 Switch/时间弹性 displayDateTime/操作 260 默认钉右）+行 ID=id 雪花守卫+列偏好 access-user:main",
+      "写操作族：UserCreateModal（三字段校验+MD5 摘要+关闭销毁草稿等价旧版）/RoleAssignModal（双查回显+checkStrictly+点击标题切换+controller 防乱序）/状态切换行级覆盖层乐观更新（成功 reload 失败回滚）/重置密码受控 Popconfirm（P14⑩）/删除升级 confirmCommand danger（P04 同款登记）",
+      "模板遗留 REST /users 链整删零残留（pages/services/features/types system/user 四目录+en-US/system.ts 死键 23 个清理，消费者核查仅链内互引）",
+      "契约实证：addUser 形态对照（OpenAPI 两字段与旧三字段后端均受理+confirm 一致性校验+1000140 重复名+1000130 用户名格式）/updateState 按 username 定位/pageUsers 含 password 字段=安全观察项 G26/addUser 暂态 500=G20 扩展第二例/无令牌双通道 1000000",
+      "浏览器整页联验：守卫回跳带 redirect+登录落点=redirect 目标/3 行真实数据 root 行只读/搜索命中与空态/新增必填拦截零请求→提交 4 行/状态切换 body 抓包/重置密码默认密码提示/分配角色双查+空数组受理/删除五要素终态回 3 行/列偏好四步（落盘-reload+关页签菜单重开持久-恢复默认出厂态）/五语言逐语言（修复 useTranslation 命名空间名不一致缺陷后复验全绿）/双主题双宽度四组截图 .run-lock/shots-p31/；真实登出+测试用户自清理+dev server 停止+脚本自毁+零残留",
+      "门禁全绿（lint 435文件0/0+typecheck+structure 433+build exit=0），文档联动 P31.md 新建/TASKS 勾选/operations 两行/contracts 权限行+第5节行+变更日志/gaps G20扩展+G26 新登记/i18n-map P31 行/RUN_STATE"
     ],
     "未完成步骤": [
-      "git push origin apple-rxx（P28 提交 abc09b8/4e72c24 + P29 提交 c18ff1f + 本轮 P30 提交均本地；本轮推送重试 schannel/openssl/代理三形态仍 SSL 握手失败=本地网络出口持续阻塞，非仓库问题）——下一轮触发时先补推再领取新任务"
+      "git push origin apple-rxx（P28 abc09b8/4e72c24 + P29 c18ff1f + P30 89f2d29 + P31 本轮提交均本地；本轮开局 3 次推送重试 schannel 直连/openssl/代理 7890 均 SSL 握手失败=本地网络出口持续阻塞，非仓库问题）——下一轮触发时先补推再领取新任务（P32 角色管理）"
     ],
     "阻塞原因": null
   },
@@ -962,13 +962,28 @@
       "命令": "P30 带令牌真实联验（run-20260920-p30-030xxx）：python .run-lock/p30_api_verify.py（8/8+2 项契约形态如实记录，脚本验证后删除）+ 浏览器整页全场景（dev 代理 192.168.0.158:8888，IAB rAF+RO 永续 fire 垫片）",
       "结果": "全部通过：API 层（权限两码下发/getDataBases 两库/getBackupFiles fms 10×7.5GB+rcs_flow 10×276KB 五字段齐备/无令牌 1000000/下载流式无 Content-Length+PGDM 魔数+content-disposition/无令牌下载 7000140 安全观察项/缺参 500 记录/零残留）+浏览器（守卫/落点/默认选中/切库/小文件完成反馈×2/大文件走马灯 15.77→39.66MB+取消中止/清空零请求/列偏好四步含 reload 持久/五语言/四组截图）；7.63GB 完整落盘留现场；真实登出+零残留",
       "日期": "2026-09-20"
+    },
+    {
+      "命令": "pnpm lint/typecheck/check:structure/build（P31 交付终态，含 i18n 命名空间修复后复跑）",
+      "结果": "全部通过（lint 435 文件 0 警告 0 错误；433 源文件结构检查；tsc+vite build exit=0；chunk 警告为既有 apex-table-react 体积）",
+      "日期": "2026-09-20"
+    },
+    {
+      "命令": "P31 带令牌真实联验（run-20260920-p31-030551）：python .run-lock/p31_api_verify.py（21/21，脚本验证后删除）+ 浏览器整页全场景（dev 代理 192.168.0.158:8888，IAB rAF+RO 永续 fire 垫片）",
+      "结果": "全部通过：API 层（权限五码下发/pageUsers GET 平铺形态+root 行+query 筛选命中空态/addUser 两字段受理+落库复核（三字段对照+1000140+1000130 诊断变体）/updateState 禁用→启用双向落库复核/resetPassword/getRoles 全部+userId 过滤/assignRoles 空数组受理/deleteUser 自清理终态审计 total=0/无令牌双通道 1000000）+浏览器（守卫/落点/渲染/root 只读/搜索/新增/状态/重置/分配/删除五要素/列偏好四步/五语言/四组截图）；测试用户页面删除自清理；真实登出+零残留",
+      "日期": "2026-09-20"
     }
   ],
-  "证据位置": "docs/migration/tasks/T00.md(T00 历轮交付与证据)、docs/migration/tasks/P01.md、docs/migration/tasks/P02.md、docs/migration/tasks/P41.md、docs/migration/tasks/P42.md(P42 交付/联验/限制登记)、docs/migration/tasks/H01.md(H01 交付/联验/公共文件改动记录)、docs/migration/tasks/H02.md(H02 交付/联验/资源归属隔离登记)、docs/migration/tasks/H03.md(H03 交付/联验/资源归属隔离登记)、docs/migration/contracts.md(第 1–7 节契约 + 第 9 节冻结登记 + 变更日志)、docs/migration/i18n-map.md(H02 行已更新,error 分片旧 key 映射已更新)、docs/migration/operations.md(P41/P42/H01/H02 行已登记)、docs/migration/i18n-missing.md、docs/migration/terminology.md、docs/migration/tasks/P03.md（P03 交付/联验/受阻登记）；P03.md（已修订：操作映射状态/G04 已验证/带令牌联验记录/列偏好缺陷修复节）；operations.md（P03 六行已更新）；gaps.md（G04 部分验证）；contracts.md（列设置接入形态用户决策行+第 3 节列偏好行已更新）；AGENTS.md（第 2 节列偏好铁律）；docs/migration/tasks/P05.md（P05 交付/控制样板/联验/环境教训登记）；operations.md（P05 七行已登记）；contracts.md（变更日志 P05 行）；docs/migration/tasks/P38.md（P38 交付/形态契约/联验/i18n 教训）；operations.md（P38 三行+P03 详情行更新）；contracts.md（第 4 节实体页签与独立窗口行更新+第 6 节任务详情行落地+变更日志 P38 行）；i18n-map.md（P38 行更新）；AGENTS.md（第 6 节 i18n 接线纪律，原第 6 节顺延为第 7 节）；docs/migration/tasks/P39.md（P39 交付/形态契约/联验/i18n 双缺陷修复登记）；operations.md（P39 两行）；contracts.md（第 4 节实体页签双消费者+第 6 节车辆详情参数行+变更日志 P39 行）；i18n-map.md（P39 行更新）；.run-lock/shots-p39/（双主题双宽度截图）；P39 补验记录（tasks/P39.md「未完成/后续」①补验记录 + AGENTS 第 5 节 IAB 渲染管线冻结条目，2026-09-18 对账轮）；docs/migration/tasks/P04.md（P04 交付/联验/G18 缺口对照）；operations.md（P04 四行）；contracts.md（第 5 节分组/车辆选项行更新+变更日志 P04 行）；gaps.md（G18 登记）；i18n-map.md（P04 行更新）；docs/migration/tasks/P06.md（P06 交付/权限核对收敛/联验/IAB 伪象登记）；operations.md（P06 四行）；contracts.md（第 2 节载具权限码行收敛+第 5 节载具行更新+变更日志 P06 行）；i18n-map.md（P06 行更新）；.run-lock/shots-p06/（双主题双宽度截图）；docs/migration/tasks/P07.md（P07 交付/联验/G19/环境教训）；operations.md（P07 五行）；contracts.md（第 2 节权限码行补 node-mapping+第 5 节 agvNodeMapping 行与 getMapInfo/getSimpleMaps 行更新+变更日志 P07 行）；gaps.md（G19 登记）；i18n-map.md（P07 行更新）；AGENTS.md（第 5 节 RO 垫片修正+联验会话纪律两条）；.run-lock/shots-p07/（双主题双宽度截图）；docs/migration/tasks/P08.md（P08 交付/联验/G20/环境教训）；operations.md（P08 六行）；contracts.md（第 2 节权限行补告警码+第 5 节 vehicleAlarmCode 行+变更日志 P08 行）；gaps.md（G05 部分确认+G20 登记）；i18n-map.md（P08 行更新）；.run-lock/shots-p08/（双主题双宽度截图）；docs/migration/tasks/P09.md（P09 交付/联验/契约发现/并发会话事件）；operations.md（P09 八行）；contracts.md（第 2 节权限行补地图列表十码+第 5 节地图管理服务行+变更日志 P09 行）；gaps.md（G05 补 P09 实证/G07 部分收敛/G08 P09 侧结论/G21 登记）；i18n-map.md（P09 mapList 行）；AGENTS.md（第 5 节锁接管判据缺陷+curl 中文陷阱+主题三态下拉）；.run-lock/shots-p09/（双主题双宽度截图）、docs/migration/tasks/P10.md（P10 交付/联验/G22/G21 扩展/垫片时序沉淀）、docs/migration/tasks/P11.md（P11 交付/联验/G21 扩展/G23/P19 契约确认/环境教训）、docs/migration/tasks/P12.md（P12 交付/联验/命令副作用待验登记/.run-lock/shots-p12/）、docs/migration/tasks/P13.md（P13 交付/联验/重置语义变更登记/环境教训/.run-lock/shots-p13/）、docs/migration/tasks/P14.md（P14 交付/联验/G06 呈现定版/环境教训/.run-lock/shots-p14/）、docs/migration/tasks/P15.md（P15 交付/联验/IAB 垫片注入自检教训/.run-lock/shots-p15/）、docs/migration/tasks/P16.md（P16 交付/联验/端口 65536 旧边界登记/.run-lock/shots-p16/）docs/migration/tasks/P17.md（P17 交付/联验/IAB 关闭动画伪象与 goto 返回瞬间注垫片教训/.run-lock/shots-p17/、docs/migration/tasks/P18.md（P18 交付/联验/开门命令观察项/.run-lock/shots-p18/）、docs/migration/tasks/P22.md（P22 交付/联验/G24 观察项/.run-lock/shots-p22/）、docs/migration/tasks/P27.md（P27 交付/联验/公开族契约实证/注入手法沉淀/.run-lock/shots-p27/）、operations.md（P27 三行）、contracts.md（第 5 节品牌行更新+变更日志 P27 行）、i18n-map.md（P27 行 system-branding）、docs/migration/tasks/P28.md（P28 交付/联验/差异登记/.run-lock/shots-p28/）、operations.md（P28 两行）、contracts.md（第 2 节操作日志权限行+第 5 节操作日志行+变更日志 P28 行）、docs/migration/tasks/P29.md（P29 交付/联验/差异登记/空记录契约实证/.run-lock/shots-p29/）、operations.md（P29 两行）、contracts.md（第 5 节软件授权行+变更日志 P29 行）、i18n-map.md（P29 行 software-license 修正）、docs/migration/tasks/P30.md（P30 交付/联验/权限收敛/契约发现/.run-lock/shots-p30/）、operations.md（P30 两行）、contracts.md（第 5 节数据库备份行+变更日志 P30 行）、i18n-map.md（P30 行 database-backup 修正）、AGENTS.md（第 5 节㉑ antd v6 Select PointerEvent 序列+㉒ 列设置原生 dialog 确定按钮）",
+  "证据位置": "docs/migration/tasks/T00.md(T00 历轮交付与证据)、docs/migration/tasks/P01.md、docs/migration/tasks/P02.md、docs/migration/tasks/P41.md、docs/migration/tasks/P42.md(P42 交付/联验/限制登记)、docs/migration/tasks/H01.md(H01 交付/联验/公共文件改动记录)、docs/migration/tasks/H02.md(H02 交付/联验/资源归属隔离登记)、docs/migration/tasks/H03.md(H03 交付/联验/资源归属隔离登记)、docs/migration/contracts.md(第 1–7 节契约 + 第 9 节冻结登记 + 变更日志)、docs/migration/i18n-map.md(H02 行已更新,error 分片旧 key 映射已更新)、docs/migration/operations.md(P41/P42/H01/H02 行已登记)、docs/migration/i18n-missing.md、docs/migration/terminology.md、docs/migration/tasks/P03.md（P03 交付/联验/受阻登记）；P03.md（已修订：操作映射状态/G04 已验证/带令牌联验记录/列偏好缺陷修复节）；operations.md（P03 六行已更新）；gaps.md（G04 部分验证）；contracts.md（列设置接入形态用户决策行+第 3 节列偏好行已更新）；AGENTS.md（第 2 节列偏好铁律）；docs/migration/tasks/P05.md（P05 交付/控制样板/联验/环境教训登记）；operations.md（P05 七行已登记）；contracts.md（变更日志 P05 行）；docs/migration/tasks/P38.md（P38 交付/形态契约/联验/i18n 教训）；operations.md（P38 三行+P03 详情行更新）；contracts.md（第 4 节实体页签与独立窗口行更新+第 6 节任务详情行落地+变更日志 P38 行）；i18n-map.md（P38 行更新）；AGENTS.md（第 6 节 i18n 接线纪律，原第 6 节顺延为第 7 节）；docs/migration/tasks/P39.md（P39 交付/形态契约/联验/i18n 双缺陷修复登记）；operations.md（P39 两行）；contracts.md（第 4 节实体页签双消费者+第 6 节车辆详情参数行+变更日志 P39 行）；i18n-map.md（P39 行更新）；.run-lock/shots-p39/（双主题双宽度截图）；P39 补验记录（tasks/P39.md「未完成/后续」①补验记录 + AGENTS 第 5 节 IAB 渲染管线冻结条目，2026-09-18 对账轮）；docs/migration/tasks/P04.md（P04 交付/联验/G18 缺口对照）；operations.md（P04 四行）；contracts.md（第 5 节分组/车辆选项行更新+变更日志 P04 行）；gaps.md（G18 登记）；i18n-map.md（P04 行更新）；docs/migration/tasks/P06.md（P06 交付/权限核对收敛/联验/IAB 伪象登记）；operations.md（P06 四行）；contracts.md（第 2 节载具权限码行收敛+第 5 节载具行更新+变更日志 P06 行）；i18n-map.md（P06 行更新）；.run-lock/shots-p06/（双主题双宽度截图）；docs/migration/tasks/P07.md（P07 交付/联验/G19/环境教训）；operations.md（P07 五行）；contracts.md（第 2 节权限码行补 node-mapping+第 5 节 agvNodeMapping 行与 getMapInfo/getSimpleMaps 行更新+变更日志 P07 行）；gaps.md（G19 登记）；i18n-map.md（P07 行更新）；AGENTS.md（第 5 节 RO 垫片修正+联验会话纪律两条）；.run-lock/shots-p07/（双主题双宽度截图）；docs/migration/tasks/P08.md（P08 交付/联验/G20/环境教训）；operations.md（P08 六行）；contracts.md（第 2 节权限行补告警码+第 5 节 vehicleAlarmCode 行+变更日志 P08 行）；gaps.md（G05 部分确认+G20 登记）；i18n-map.md（P08 行更新）；.run-lock/shots-p08/（双主题双宽度截图）；docs/migration/tasks/P09.md（P09 交付/联验/契约发现/并发会话事件）；operations.md（P09 八行）；contracts.md（第 2 节权限行补地图列表十码+第 5 节地图管理服务行+变更日志 P09 行）；gaps.md（G05 补 P09 实证/G07 部分收敛/G08 P09 侧结论/G21 登记）；i18n-map.md（P09 mapList 行）；AGENTS.md（第 5 节锁接管判据缺陷+curl 中文陷阱+主题三态下拉）；.run-lock/shots-p09/（双主题双宽度截图）、docs/migration/tasks/P10.md（P10 交付/联验/G22/G21 扩展/垫片时序沉淀）、docs/migration/tasks/P11.md（P11 交付/联验/G21 扩展/G23/P19 契约确认/环境教训）、docs/migration/tasks/P12.md（P12 交付/联验/命令副作用待验登记/.run-lock/shots-p12/）、docs/migration/tasks/P13.md（P13 交付/联验/重置语义变更登记/环境教训/.run-lock/shots-p13/）、docs/migration/tasks/P14.md（P14 交付/联验/G06 呈现定版/环境教训/.run-lock/shots-p14/）、docs/migration/tasks/P15.md（P15 交付/联验/IAB 垫片注入自检教训/.run-lock/shots-p15/）、docs/migration/tasks/P16.md（P16 交付/联验/端口 65536 旧边界登记/.run-lock/shots-p16/）docs/migration/tasks/P17.md（P17 交付/联验/IAB 关闭动画伪象与 goto 返回瞬间注垫片教训/.run-lock/shots-p17/、docs/migration/tasks/P18.md（P18 交付/联验/开门命令观察项/.run-lock/shots-p18/）、docs/migration/tasks/P22.md（P22 交付/联验/G24 观察项/.run-lock/shots-p22/）、docs/migration/tasks/P27.md（P27 交付/联验/公开族契约实证/注入手法沉淀/.run-lock/shots-p27/）、operations.md（P27 三行）、contracts.md（第 5 节品牌行更新+变更日志 P27 行）、i18n-map.md（P27 行 system-branding）、docs/migration/tasks/P28.md（P28 交付/联验/差异登记/.run-lock/shots-p28/）、operations.md（P28 两行）、contracts.md（第 2 节操作日志权限行+第 5 节操作日志行+变更日志 P28 行）、docs/migration/tasks/P29.md（P29 交付/联验/差异登记/空记录契约实证/.run-lock/shots-p29/）、operations.md（P29 两行）、contracts.md（第 5 节软件授权行+变更日志 P29 行）、i18n-map.md（P29 行 software-license 修正）、docs/migration/tasks/P30.md（P30 交付/联验/权限收敛/契约发现/.run-lock/shots-p30/）、operations.md（P30 两行）、contracts.md（第 5 节数据库备份行+变更日志 P30 行）、i18n-map.md（P30 行 database-backup 修正）、AGENTS.md（第 5 节㉑ antd v6 Select PointerEvent 序列+㉒ 列设置原生 dialog 确定按钮）、docs/migration/tasks/P31.md（P31 交付/联验/模板链删除/契约发现/.run-lock/shots-p31/）、operations.md（P31 两行）、contracts.md（第 2 节用户管理权限行+第 5 节用户行+变更日志 P31 行）、gaps.md（G20 P31 扩展第二例+G26 安全观察项）、i18n-map.md（P31 行 access-user）",
   "最近验证记录": [
     {
-      "命令": "pnpm lint/typecheck/check:structure/build（P30 交付终态）",
-      "结果": "全部通过（lint 434 文件 0 警告 0 错误；432 源文件结构检查；tsc+vite build 成功；chunk 警告为既有 apex-table-react 体积）",
+      "命令": "pnpm lint/typecheck/check:structure/build（P31 交付终态，含 i18n 命名空间修复后复跑）",
+      "结果": "全部通过（lint 435 文件 0/0；433 源文件；build exit=0）",
+      "日期": "2026-09-20"
+    },
+    {
+      "命令": "P31 带令牌真实联验（run-20260920-p31-030551）：API 层 21/21 + 浏览器整页全场景（IAB rAF+RO 永续 fire 垫片）",
+      "结果": "全部通过：API 层（五码/GET 平铺/新增形态对照+1000140+1000130/状态双向落库/重置/双查/空数组受理/删除自清理/无令牌对照）+浏览器（守卫/落点/root 只读/搜索/新增/状态/重置/分配/删除五要素/列偏好四步/五语言修复复验/四组截图）；测试用户自清理+真实登出+零残留",
       "日期": "2026-09-20"
     },
     {
@@ -977,79 +992,14 @@
       "日期": "2026-09-20"
     },
     {
+      "命令": "pnpm lint/typecheck/check:structure/build（P30 交付终态）",
+      "结果": "全部通过（lint 434 文件 0 警告 0 错误；432 源文件结构检查；tsc+vite build 成功；chunk 警告为既有 apex-table-react 体积）",
+      "日期": "2026-09-20"
+    },
+    {
       "命令": "P29 带令牌真实联验（run-20260920-p29-010557）：python .run-lock/p29_api_verify.py（9/9）+ 浏览器整页全场景（dev 代理 192.168.0.158:8888）",
       "结果": "全部通过：API 层 9 项（权限两码/getLicense 契约/空记录形态如实记录/无令牌对照/零残留）+浏览器（守卫/落点/未知 Tag/留白修复/四卡/激活失败分支/读取失败态/五语言/四组截图）；激活成功链路留专用环境；真实登出+零残留",
       "日期": "2026-09-20"
-    },
-    {
-      "命令": "pnpm lint/typecheck/check:structure/build（P29 交付终态，含 Statistic 留白修复后复跑）",
-      "结果": "全部通过（lint 428 文件 0 警告 0 错误；426 源文件结构检查；tsc+vite build 成功）",
-      "日期": "2026-09-20"
-    },
-    {
-      "命令": "P28 带令牌真实联验（run-20260920-p28-000549）：python .run-lock/p28_api_verify.py（18/18）+ 浏览器整页全场景（dev 代理 192.168.0.158:8888）",
-      "结果": "全部通过：API 层 18 项（权限码/POST 形态/记录形态/筛选/时间边界三态/无令牌对照/越界页码/零残留）+浏览器（守卫/落点/11 列/JSON 详情三分态/筛选抓包+URL 无参数/列偏好四步/五语言/四组截图）；targetName 精确匹配语义差异登记；真实登出+零残留",
-      "日期": "2026-09-20"
-    },
-    {
-      "命令": "pnpm lint/typecheck/check:structure/build（P28 交付终态）",
-      "结果": "全部通过（lint 422 文件 0 警告 0 错误；420 源文件结构检查；tsc+vite build 成功）",
-      "日期": "2026-09-20"
-    },
-    {
-      "命令": "P27 带令牌真实联验（run-20260919-p27-230525）：python .run-lock/p27_api_verify.py（15/15）+ 浏览器整页全场景（dev 代理 192.168.0.158:8888）",
-      "结果": "全部通过：API 层 15 项（权限四码/上传字节一致/getMeta/伪图片行为/无令牌公开族对照/DELETE 自清理终态零残留）+浏览器（守卫/落点/三卡上传闭环/顶栏 logo 即时刷新/favicon 动态替换/登录页背景刷新/伪图 onError 兜底/五语言/双主题双宽度四组截图）；测试资源零残留+真实登出",
-      "日期": "2026-09-19"
-    },
-    {
-      "命令": "pnpm lint/typecheck/check:structure/build（P27 交付终态）",
-      "结果": "全部通过（lint 414 文件 0 警告 0 错误；412 源文件结构检查；tsc+vite build 成功；chunk 警告为既有 apex-table-react 体积）",
-      "日期": "2026-09-19"
-    },
-    {
-      "命令": "P26 带令牌真实联验（run-20260919-p26）：python .run-lock/p26_api_verify.py（19/19）+ 浏览器整页全场景（dev 代理 192.168.0.158:8888，IAB rAF+RO 双垫片）",
-      "结果": "全部通过：API 层 19 项（权限两码/类型集合模块名契约变更/分页 total=817 形态/无令牌三通道 1000000/筛选命中空态/越界页码/31.6MB zip PK 魔数+content-disposition/7000130 错误形态/终态零残留）+浏览器（守卫/落点/默认类型就位/多选下载真实进度→完成反馈/列偏好四步含 Enter/五语言/双主题双宽度四组截图）；请求层 Blob 错误解包修复实证；测试数据零残留+真实登出",
-      "日期": "2026-09-19"
-    },
-    {
-      "命令": "pnpm lint/typecheck/check:structure/build（P26 交付终态，含请求层修复后复跑）",
-      "结果": "全部通过（lint 409 文件 0 警告 0 错误；407 源文件结构检查；tsc+vite build 成功；chunk 警告为既有 apex-table-react 体积）",
-      "日期": "2026-09-19"
-    },
-    {
-      "命令": "P25 带令牌真实联验（run-20260919-p25）：python .run-lock/p25_api_verify.py（18/18）+ 浏览器整页全场景（dev 代理 192.168.0.158:8888，IAB rAF+RO 双垫片）",
-      "结果": "全部通过：API 层 18 项（权限六码下发/全集 10 条形态/无令牌对照/上传 multipart 通道受理+7000000 业务拒绝如实透传/94.7MB 真实包下载 PK 魔数+content-disposition/deletePendingJar 不存在 buildId 亦 200=G21 第四例/终态零残留）+浏览器（守卫/落点/重启回滚确认五要素+取消零请求/下载真实进度/上传校验+失败呈现/列偏好四步/五语言/双主题双宽度四组截图）；restartSystem/rollback 零请求留专用环境；测试数据零残留+真实登出",
-      "日期": "2026-09-19"
-    },
-    {
-      "命令": "pnpm lint/typecheck/check:structure/build + 调试残留 grep（P25 交付终态）",
-      "结果": "全部通过（lint 403 文件 0 警告 0 错误；401 源文件结构检查；tsc+vite build 成功；chunk 警告为既有 apex-table-react 体积；lint 曾抓出 fast-refresh 混出导出一处转模块内私有后复跑通过；调试残留 0）",
-      "日期": "2026-09-19"
-    },
-    {
-      "命令": "P23 带令牌补验（run-20260919-p23-recheck2）：python .run-lock/p23_api_verify.py（修正登录字段名 username 后）+ 浏览器整页全场景（dev 代理 192.168.0.158:8888，IAB rAF+修正版 RO 双垫片）",
-      "结果": "全部通过：API 层 17 项（四码下发/GET 平铺/创建落库一致/value 四形态保形/编辑无 G18 类缺陷/删除自清理终态零残留）+浏览器（守卫/落点/必填拦截零请求/新增/编辑/删除确认/列偏好四步/五语言/双主题双宽度四组截图）+P23 专项（未改动行提交原始对象 value 实证/blockingType 受控枚举 500 实证）；G25 定性修正=脚本字段名 userName→username 笔误，root 凭据从未失效；测试数据自清理+真实登出",
-      "日期": "2026-09-19"
-    },
-    {
-      "命令": "G25 复查轮 20:05（run-20260919-p23-recheck2 开局探测）：主环境 username 字段名单次登录探测 + 备用环境连通性",
-      "结果": "主环境 code=200 success（凭据有效！此前 1000010 系联验脚本 userName 字段名笔误）；备用环境 10.11.2.67 仍超时（与本案无关）——阻塞即时解除转入补验",
-      "日期": "2026-09-19"
-    },
-    {
-      "命令": "G25 复查：主环境 192.168.0.158:8888 单次登录探测 + 备用环境 10.11.2.67:8888 连通性探测（run-20260919-p23-recheck）",
-      "结果": "主环境 code=1000010 用户名或密码错误（累计 5 次失败停试防锁号）；备用环境超时不可达——G25 阻塞持续，P23 保持受阻不勾选，零代码改动",
-      "日期": "2026-09-19"
-    },
-    {
-      "命令": "pnpm lint/typecheck/check:structure/build + 调试残留 grep（P23 交付终态，含 Form.List 布局等价修正后复跑）",
-      "结果": "全部通过（lint 394 文件 0 警告 0 错误；392 源文件结构检查；tsc+vite build 成功；chunk 警告为既有 apex-table-react 体积；调试残留 0）",
-      "日期": "2026-09-19"
-    },
-    {
-      "命令": "P23 带令牌联验（192.168.0.158:8888）",
-      "结果": "受阻（G25）：登录连续 4 次 code=1000010 用户名或密码错误（小写/大写 MD5+等待重试；SparkMD5 同形态七轮历史成功；getHardwareInfo 硬件码 B1E3252E8C273C40 与 P02 记录一致=同实例存活；10.11.2.67 超时不可达）——root 密码被外部修改，已停止尝试避免锁号；联验脚本就绪待凭据解除；不以门禁全绿暗示联验已过",
-      "日期": "2026-09-19"
     }
   ],
   "阻塞原因": null

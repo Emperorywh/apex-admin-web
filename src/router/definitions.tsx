@@ -586,11 +586,15 @@ export const appRouteDefinitions = defineAppRoutes([
             meta: indexRedirectMeta('权限管理'),
           },
           {
+            // P31 解除暂缓：用户管理（真实 auth/user 族 + getRoles 角色选项；
+            // root 专属码守卫由 ROOT_ONLY_CODES 统一拦截，非超管不可见）
             id: 'access-management-user-management',
             path: 'user-management',
             loadPage: () =>
               import('@/pages/access-management/UserManagement/UserManagement'),
-            meta: businessMeta('用户管理', PERM.AUTH_USER_VIEW, { pending: true }),
+            meta: businessMeta('用户管理', PERM.AUTH_USER_VIEW, {
+              i18nNamespaces: ['access-user'],
+            }),
           },
           {
             id: 'access-management-role-management',

@@ -120,6 +120,8 @@ const enUsLoaders: NamespaceLoaders = {
   'software-license': () => import('@/i18n/locales/en-US/software-license'),
   // P30 数据库备份（system-involve/database-backup；页面私有命名空间）
   'database-backup': () => import('@/i18n/locales/en-US/database-backup'),
+  // P31 用户管理（access-management/user-management；页面私有命名空间，分配角色弹窗共用）
+  'access-user': () => import('@/i18n/locales/en-US/access-user'),
   // P41 无权限页（un-access；布局外独立页）
   'access-denied': () => import('@/i18n/locales/en-US/access-denied'),
 }
@@ -189,6 +191,8 @@ const zhTwLoaders: NamespaceLoaders = {
   'software-license': () => import('@/i18n/locales/zh-TW/software-license'),
   // P30 数据库备份（system-involve/database-backup；页面私有命名空间）
   'database-backup': () => import('@/i18n/locales/zh-TW/database-backup'),
+  // P31 用户管理（access-management/user-management；页面私有命名空间，分配角色弹窗共用）
+  'access-user': () => import('@/i18n/locales/zh-TW/access-user'),
   'access-denied': () => import('@/i18n/locales/zh-TW/access-denied'),
 }
 const jaJpLoaders: NamespaceLoaders = {
@@ -249,6 +253,8 @@ const jaJpLoaders: NamespaceLoaders = {
   'software-license': () => import('@/i18n/locales/ja-JP/software-license'),
   // P30 数据库备份（system-involve/database-backup；页面私有命名空间）
   'database-backup': () => import('@/i18n/locales/ja-JP/database-backup'),
+  // P31 用户管理（access-management/user-management；页面私有命名空间，分配角色弹窗共用）
+  'access-user': () => import('@/i18n/locales/ja-JP/access-user'),
   'access-denied': () => import('@/i18n/locales/ja-JP/access-denied'),
 }
 const koKrLoaders: NamespaceLoaders = {
@@ -309,6 +315,8 @@ const koKrLoaders: NamespaceLoaders = {
   'software-license': () => import('@/i18n/locales/ko-KR/software-license'),
   // P30 数据库备份（system-involve/database-backup；页面私有命名空间）
   'database-backup': () => import('@/i18n/locales/ko-KR/database-backup'),
+  // P31 用户管理（access-management/user-management；页面私有命名空间，分配角色弹窗共用）
+  'access-user': () => import('@/i18n/locales/ko-KR/access-user'),
   'access-denied': () => import('@/i18n/locales/ko-KR/access-denied'),
 }
 

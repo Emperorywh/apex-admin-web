@@ -449,7 +449,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P31 用户管理（合并模板实现）
 
-- [ ] **P31 用户管理（合并模板实现）**
+- [x] **P31 用户管理（合并模板实现）**（2026-09-20 勾选：带令牌联验通过——Apex request GET 平铺分页/搜索/新增（三字段 MD5 抓包+必填拦截零请求）/状态切换乐观+落库复核/重置密码/分配角色弹窗双查（空角色环境形态+空数组受理）/删除确认五要素自清理/root 行只读收敛/列偏好四步/五语言/双主题双宽度；模板 REST /users 链全删零残留；assignRoles 勾选回归待 P32 联验环境角色数据）
 - **批次 / 前置**：B3 / B2 样板门禁。
 - **入口**：`/access-management/user-management`；**旧来源**：`AccessManagement/UserManagement`；**目标**：`src/pages/access-management/UserManagement/UserManagement.tsx`。
 - **私有模块 / 语言分片**：`access-user`；**接口依据**：auth/user、auth/role/getRoles。
