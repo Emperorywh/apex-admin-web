@@ -44,6 +44,7 @@
 | P17 交通灯 | tri-resource/tri-device/traffic-lights | **deviceTrafficLight**（按设备域命名与 deviceElevator/deviceAutoDoor/deviceChargePile 同构；已交付四语言分片 41 key 同构：en 旧真译逐条沿用（Device ID/Device Name/Request URL/Request Params/Response Success Expression/Sync Wait Response/Created/Test/Traffic light test successful, connectivity normal/Traffic light added-deleted-updated successfully/Arrival Notification/Please select whether to sync wait for response 等全量），命令确认标题与影响说明（测试交通灯/测试影响…/删除影响…）按旧真译风格补译；繁日韩旧资源对本页 key 均为简中复制（非有效译文），按 B1 基线补译：繁中 交通號誌（与 menu 分片对齐）/請求位址/回應成功表達式/同步等待回應/創建時間 台湾惯用语，日文 信号機（与 menu 分片对齐）/リクエスト URL/レスポンス成功式/同期応答待ち/到着通知/作成日時，韩文 신호등（与 menu 分片对齐）/요청 URL/응답 성공 표현식/동기 응답 대기/도착 알림/생성 시간；公共词对齐 P14–P16 设备分片（設備標識/장치 ID/デバイスドライバー/清空=クリア·지우기/确定=確定·확인）；旧 en key「确认删除当前交通灯?」随 Popconfirm→confirmCommand 升级改列影响说明补译，登记本行） | features/device-traffic-light + pages/tri-device/TrafficLights + services/device-traffic-light |
 | P18 风淋门 | tri-resource/tri-device/air-shower-door | **deviceAirShower**（按设备域命名与 deviceElevator/deviceAutoDoor/deviceChargePile/deviceTrafficLight 同构；已交付四语言分片同构：en B1 基线补译（Air Shower Door/Device ID/Air Shower Status/Front Door State/Rear Door State/Fault/Open-door Type 等，与 menu 分片 Air Shower Door(s) 及 deviceElevator 的 Front Door/Rear Door 对齐），繁日韩旧资源对本页 key 均为简中复制（非有效译文），按 B1 基线补译：繁中 風淋門（与 menu 分片对齐）/IP位址/連接埠/線上·離線/開門類型·關門類型 台湾惯用语，日文 エアシャワードア（与 menu 分片对齐）/開扉·閉扉（沿用 P15 自动门）/前ドア·後ドア（沿用 P14 电梯），韩文 에어샤워 도어（与 menu 分片对齐）/문 열기·문 닫기（沿用 P15）/앞문·뒷문（沿用 P14）；公共词对齐 P14–P17 设备分片（清空=クリア·지우기/确定=確定·확인）；命令确认影响说明与受理反馈（已发送…執行結果以「狀態」查詢為準）沿用 P15 句式并携带门类型插值 {{door}}，登记本行） | features/device-air-shower + pages/tri-device/AirShowerDoor + services/device-air-shower |
 | P22 避障模板 | mission-cluster/obstacle-avoidance | **obstacleTemplate**（页面私有命名空间；已交付四语言分片同构：en 旧真译逐条沿用（Obstacle Name/Obstacle Param Name/Obstacle Param Type/Enable Obstacle Param/Enabled/Disabled/Add Obstacle( Template)/Select Template/Available/Selected/Search Template Name/Parameters/Please enter (select) obstacle…/Please select at least one template/Default/Custom {index}→按 i18next 插值改 {{index}} 与 P10 crossMap 同形态/创建-更新-删除-查询 避障数据成功出错 等全量）+ 删除确认标题与影响说明/错误 msg 插值/无法识别参数提示按旧真译风格补译；繁日韩旧资源 14 个模板名与「預設/デフォルト/기본값」「自訂{index}/カスタム{index}/사용자 정의 {index}」有真译逐条沿用，其余 key 为简中复制按 B1 基线补译：繁中 避障範本（与 menu 分片对齐）/範本/參數設定/搜尋/儲存 台湾惯用语，日文 障害物回避テンプレート（与 menu 分片对齐）/テンプレート選択/候補·選択済みテンプレート/パラメータ設定/避障パラメータ種別，韩文 장애물 회피 템플릿（与 menu 分片对齐）/템플릿 선택/파라미터 설정/장애물 회피 파라미터 유형；公共词与 P11 nodeEdgeGroup 分片对齐（照会/조회、クリア/지우기、確認/확인、移除=移除/이동），登记本行） | features/obstacle-avoidance + pages/obstacle-avoidance/ObstacleAvoidance + services/obstacle-avoidance |
+| P23 车辆动作 | mission-cluster/action-control/agv-action | **agvAction**（页面私有命名空间；已交付四语言分片同构：en 旧真译逐条沿用（Query AGV Actions/Add Action/Action Type/Description/Block Type/Parameters/Action Name/Action Value/Add Action Parameter/Please enter (select) action…/Action added-deleted-updated successfully/Error adding-editing-deleting action 等全量）+ 删除确认标题（Delete AGV Action）与影响说明/错误 msg 插值（Error … action: {{msg}}）按旧真译风格补译；繁日韩旧资源对本页 key 均为简中复制（非有效译文），按 B1 基线补译：繁中 車輛動作（与 menu 分片对齐）/動作類型/阻塞類型/新增動作參數 台湾惯用语，日文 車両アクション（与 menu 分片对齐）/アクション種別/ブロック種別/パラメータを追加，韩文 차량 액션（与 menu 分片对齐）/액션 유형/블록 유형/파라미터 추가；公共词与 P22 obstacleTemplate 分片对齐（照会/조회、クリア/지우기、確認/확인、取消=キャンセル·취소），登记本行） | features/action-control + pages/action-control/AGVAction + services/action/agv-action-manage |
 | P07 节点映射 | node-mapping | nodeMapping | nodeMapping |
 | P08 告警码管理 | alarm-code | alarmCode | alarmCode |
 | P09 地图列表 | map-list | mapList | mapList |
@@ -60,6 +61,7 @@
 | P17 交通灯 | traffic-lights | deviceTrafficLight | deviceTrafficLight |
 | P18 风淋门 | air-shower-door | deviceAirShower | deviceAirShower |
 | P22 避障模板 | obstacle-avoidance | obstacleTemplate | obstacleTemplate |
+| P23 车辆动作 | action-control/agv-action | agvAction | agvAction |
 | P17 交通灯 | traffic-lights | trafficLight | trafficLight |
 | P18 风淋门 | air-shower-door | airShowerDoor | airShowerDoor |
 | P18 风淋门 | air-shower-door | airShowerDoor | airShowerDoor |
@@ -67,6 +69,7 @@
 | P20 任务工艺 | mission-create | missionCreate | missionCreate |
 | P21 工艺管理 | mission-flow | missionFlow | missionFlow |
 | P22 避障模板 | obstacle-avoidance | obstacleAvoidance | obstacleAvoidance |
+| P23 车辆动作 | action-control/agv-action | agvAction（旧仓库无独立分片，动作文案混在全局资源） | agvAction |
 | P23 车辆动作 | agv-action | agvAction | agvAction |
 | P24 动作分组 | agv-action-group | agvActionGroup | agvActionGroup |
 | P25 版本管理 | version-control | versionControl | versionControl |

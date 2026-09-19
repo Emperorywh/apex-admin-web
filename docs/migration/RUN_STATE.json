@@ -1,7 +1,7 @@
 {
   "版本说明": "调度系统迁移串行调度状态。由定时任务每小时触发一次，每次最多推进一个任务；写入必须整体原子替换。",
-  "最近更新时间": "2026-09-19T17:20:00+08:00",
-  "当前运行标识": "run-20260919-p22（P22 交付完成并勾选；本轮结束）",
+  "最近更新时间": "2026-09-19T19:10:00+08:00",
+  "当前运行标识": "run-20260919-p23（P23 代码交付完成；带令牌联验受阻 G25 root 凭据失效；本轮结束）",
   "锁": "docs/migration/.lock（mkdir 原子目录锁，内含 lock.json）",
   "工作目录": "C:\\code\\apex-admin-web",
   "分支": "apple-rxx",
@@ -255,7 +255,7 @@
       "前置": [
         "B2样板门禁"
       ],
-      "状态": "未开始（待下一轮领取）"
+      "状态": "进行中受阻（代码+门禁+静态审计完成 2026-09-19；带令牌联验受阻 root 凭据失效 G25——凭据解除后按 P23.md 第 3 节风险点清单补验再勾选，下一轮先检查阻塞是否解除）"
     },
     {
       "序": 29,
@@ -449,14 +449,26 @@
     }
   ],
   "当前任务": {
-    "任务ID": "P23（下一轮领取时以 TASKS.md P23 行核对后定案）",
-    "状态": "未开始（待下一轮领取）",
-    "当前里程碑": "待下一轮开工核对后登记",
-    "本轮已完成内容": [],
-    "未完成步骤": [
-      "下一轮开工：读取 TASKS.md P23 行 + docs/migration/tasks/（如存在）+ OpenAPI 对应契约（action/agvAction）+ 旧源码，完成开工核对后更新本节"
+    "任务ID": "P23 车辆动作",
+    "状态": "进行中受阻（联验凭据失效 G25；代码交付完成不回退）",
+    "当前里程碑": "编码/门禁/静态审计/文档联动完成；带令牌联验待凭据解除",
+    "本轮已完成内容": [
+      "服务层：services/action/agv-action-manage.service(+types)——4 operation（page GET 平铺/add/update int64 id 整体提交/delete body {id}）；blockingType 放宽 string 承载未知枚举；P03 共享服务未动",
+      "列表页 pages/action-control/AGVAction 整页重写：Apex request+列偏好 agv-action:main+操作列钉右+行 ID=id；5 列逐列核对旧版（动作参数列=单元格 Descriptions column=1 旧同形态）；删除 confirmCommand danger（DoD8 升级）；G09 不开放排序；不轮询",
+      "弹窗 features/action-control/components/ActionFormModal：双模式+草稿保留+useTabDirtyGuard+失败留稿+显式清空；Form.List 参数行 11/11/2 全宽无标签列（自查修正布局等价缺陷）；P23 专项未知枚举/未知 value 不丢失两处实现（blockingType 并入 options+value getValueProps 仅转显示）",
+      "共享工具 utils/display/valueDisplay（toValueDisplayText 两处消费）",
+      "路由解除 pending+i18nNamespaces=[agvAction]；四语言分片+ i18n.ts 四表注册（en 旧真译沿用/繁日韩 B1 补译与 menu 对齐）",
+      "门禁四项全绿（lint 394 文件 0/0+typecheck+structure 392+build）+调试残留 0",
+      "静态审计：格式化代码路径逐列审计+布局算术（含 1 处布局等价缺陷自查修正）+待视觉验收风险点 5 项登记 P23.md 第 3 节",
+      "递归检查：importExcel/exportExcel 旧仓库零 UI 消费者不落地；getAGVActions 已由 P03 代建不重复落地",
+      "文档联动：P23.md 新建/operations 五行/contracts 第2节权限行待实证标记+第5节动作行+变更日志/i18n-map 三表/gaps G25"
     ],
-    "阻塞原因": null
+    "未完成步骤": [
+      "【阻塞于 G25】带令牌 API 层联验（脚本已就绪 .run-lock/p23_api_verify.py：权限四码/分页/增改删含非字符串 value 形态实证/删除自清理/终态审计）",
+      "【阻塞于 G25】浏览器整页联验（守卫/登录落点/列表/必填拦截/新增/编辑回显/删除确认/列偏好闭环/五语言/双主题双宽度四组截图）",
+      "凭据解除后补验通过 → 勾选 TASKS.md P23 → operations/contracts 状态改已验证 → RUN_STATE 收尾"
+    ],
+    "阻塞原因": "root 凭据失效（G25）：192.168.0.158:8888 登录连续 4 次 1000010（MD5 形态与 P14–P22 七轮成功一致；硬件码同实例；10.11.2.67 不可达）——密码在 P22 轮后被外部修改。解除条件：用户提供新凭据或恢复原凭据（.env.local APEX_TEST_USERNAME/APEX_TEST_PASSWORD）"
   },
   "验证结果": [
     {
@@ -893,19 +905,30 @@
       "命令": "P22 带令牌真实联验（dev 代理 192.168.0.158:8888，凭据 .env.local root/MD5；python API 层先行、浏览器会话独立）",
       "结果": "全部通过：权限四码（obstacle-avoidance:view/add/update/delete）真实下发；API 层（pageObstacleAvoidance GET 平铺基线 total=0（G04 口径再实证）/无令牌 1000000 对照/create 落库一致 parameters 顺序保持 enable boolean 正确 name=模板名原样/update id 定位整体替换全字段落库无 G18 类缺陷/筛选命中与未命中/delete POST+?id= 自清理终态审计 total=0 零残留）；浏览器（守卫回跳带 redirect+登录落点闭环/必填拦截两级零请求/Transfer 勾选移动+参数配置表 Apex 行内控件默认初始化+自定义类型改选+开关/提交成功列表刷新/展开行子表 3 列协议原值+两态映射/编辑回显完整含「自定义2 (forward_nav_index_2)」还原+改名实时更新/删除确认五要素+取消零请求+确认回空态+后端权威核实/列偏好闭环（隐藏-持久-恢复默认-清偏好后代码默认钉右 data-pinned=end 回归）/五语言 html lang 逐语言+en 弹窗抽查/双主题双宽度四组截图 .run-lock/shots-p22/）；恢复亮色主题+真实登出+页签关闭+dev server 停止+令牌临时文件清除+测试数据后端清理零残留",
       "日期": "2026-09-19"
+    },
+    {
+      "命令": "pnpm lint/typecheck/check:structure/build + 调试残留 grep（P23 交付终态，含 Form.List 布局等价修正后复跑）",
+      "结果": "全部通过（lint 394 文件 0 警告 0 错误；392 源文件结构检查；tsc+vite build 成功；chunk 警告为既有 apex-table-react 体积；调试残留 0）",
+      "日期": "2026-09-19"
+    },
+    {
+      "命令": "P23 带令牌联验（192.168.0.158:8888）",
+      "结果": "受阻（G25）：登录连续 4 次 code=1000010 用户名或密码错误（小写/大写 MD5+等待重试；SparkMD5 同形态七轮历史成功；getHardwareInfo 硬件码 B1E3252E8C273C40 与 P02 记录一致=同实例存活；10.11.2.67 超时不可达）——root 密码被外部修改，已停止尝试避免锁号；联验脚本就绪待凭据解除；不以门禁全绿暗示联验已过",
+      "日期": "2026-09-19"
     }
   ],
   "证据位置": "docs/migration/tasks/T00.md(T00 历轮交付与证据)、docs/migration/tasks/P01.md、docs/migration/tasks/P02.md、docs/migration/tasks/P41.md、docs/migration/tasks/P42.md(P42 交付/联验/限制登记)、docs/migration/tasks/H01.md(H01 交付/联验/公共文件改动记录)、docs/migration/tasks/H02.md(H02 交付/联验/资源归属隔离登记)、docs/migration/tasks/H03.md(H03 交付/联验/资源归属隔离登记)、docs/migration/contracts.md(第 1–7 节契约 + 第 9 节冻结登记 + 变更日志)、docs/migration/i18n-map.md(H02 行已更新,error 分片旧 key 映射已更新)、docs/migration/operations.md(P41/P42/H01/H02 行已登记)、docs/migration/i18n-missing.md、docs/migration/terminology.md、docs/migration/tasks/P03.md（P03 交付/联验/受阻登记）；P03.md（已修订：操作映射状态/G04 已验证/带令牌联验记录/列偏好缺陷修复节）；operations.md（P03 六行已更新）；gaps.md（G04 部分验证）；contracts.md（列设置接入形态用户决策行+第 3 节列偏好行已更新）；AGENTS.md（第 2 节列偏好铁律）；docs/migration/tasks/P05.md（P05 交付/控制样板/联验/环境教训登记）；operations.md（P05 七行已登记）；contracts.md（变更日志 P05 行）；docs/migration/tasks/P38.md（P38 交付/形态契约/联验/i18n 教训）；operations.md（P38 三行+P03 详情行更新）；contracts.md（第 4 节实体页签与独立窗口行更新+第 6 节任务详情行落地+变更日志 P38 行）；i18n-map.md（P38 行更新）；AGENTS.md（第 6 节 i18n 接线纪律，原第 6 节顺延为第 7 节）；docs/migration/tasks/P39.md（P39 交付/形态契约/联验/i18n 双缺陷修复登记）；operations.md（P39 两行）；contracts.md（第 4 节实体页签双消费者+第 6 节车辆详情参数行+变更日志 P39 行）；i18n-map.md（P39 行更新）；.run-lock/shots-p39/（双主题双宽度截图）；P39 补验记录（tasks/P39.md「未完成/后续」①补验记录 + AGENTS 第 5 节 IAB 渲染管线冻结条目，2026-09-18 对账轮）；docs/migration/tasks/P04.md（P04 交付/联验/G18 缺口对照）；operations.md（P04 四行）；contracts.md（第 5 节分组/车辆选项行更新+变更日志 P04 行）；gaps.md（G18 登记）；i18n-map.md（P04 行更新）；docs/migration/tasks/P06.md（P06 交付/权限核对收敛/联验/IAB 伪象登记）；operations.md（P06 四行）；contracts.md（第 2 节载具权限码行收敛+第 5 节载具行更新+变更日志 P06 行）；i18n-map.md（P06 行更新）；.run-lock/shots-p06/（双主题双宽度截图）；docs/migration/tasks/P07.md（P07 交付/联验/G19/环境教训）；operations.md（P07 五行）；contracts.md（第 2 节权限码行补 node-mapping+第 5 节 agvNodeMapping 行与 getMapInfo/getSimpleMaps 行更新+变更日志 P07 行）；gaps.md（G19 登记）；i18n-map.md（P07 行更新）；AGENTS.md（第 5 节 RO 垫片修正+联验会话纪律两条）；.run-lock/shots-p07/（双主题双宽度截图）；docs/migration/tasks/P08.md（P08 交付/联验/G20/环境教训）；operations.md（P08 六行）；contracts.md（第 2 节权限行补告警码+第 5 节 vehicleAlarmCode 行+变更日志 P08 行）；gaps.md（G05 部分确认+G20 登记）；i18n-map.md（P08 行更新）；.run-lock/shots-p08/（双主题双宽度截图）；docs/migration/tasks/P09.md（P09 交付/联验/契约发现/并发会话事件）；operations.md（P09 八行）；contracts.md（第 2 节权限行补地图列表十码+第 5 节地图管理服务行+变更日志 P09 行）；gaps.md（G05 补 P09 实证/G07 部分收敛/G08 P09 侧结论/G21 登记）；i18n-map.md（P09 mapList 行）；AGENTS.md（第 5 节锁接管判据缺陷+curl 中文陷阱+主题三态下拉）；.run-lock/shots-p09/（双主题双宽度截图）、docs/migration/tasks/P10.md（P10 交付/联验/G22/G21 扩展/垫片时序沉淀）、docs/migration/tasks/P11.md（P11 交付/联验/G21 扩展/G23/P19 契约确认/环境教训）、docs/migration/tasks/P12.md（P12 交付/联验/命令副作用待验登记/.run-lock/shots-p12/）、docs/migration/tasks/P13.md（P13 交付/联验/重置语义变更登记/环境教训/.run-lock/shots-p13/）、docs/migration/tasks/P14.md（P14 交付/联验/G06 呈现定版/环境教训/.run-lock/shots-p14/）、docs/migration/tasks/P15.md（P15 交付/联验/IAB 垫片注入自检教训/.run-lock/shots-p15/）、docs/migration/tasks/P16.md（P16 交付/联验/端口 65536 旧边界登记/.run-lock/shots-p16/）docs/migration/tasks/P17.md（P17 交付/联验/IAB 关闭动画伪象与 goto 返回瞬间注垫片教训/.run-lock/shots-p17/、docs/migration/tasks/P18.md（P18 交付/联验/开门命令观察项/.run-lock/shots-p18/）、docs/migration/tasks/P22.md（P22 交付/联验/G24 观察项/.run-lock/shots-p22/）",
   "最近验证记录": [
     {
-      "命令": "pnpm lint/typecheck/check:structure/build + 调试残留 grep（P22 交付终态，含插值修复与 defaultPinning 补齐后复跑）",
-      "结果": "全部通过（lint 386 文件 0 警告 0 错误；384 源文件结构检查；tsc+vite build 成功；chunk 警告为既有 apex-table-react 体积；调试残留 0）",
+      "命令": "pnpm lint/typecheck/check:structure/build + 调试残留 grep（P23 交付终态，含 Form.List 布局等价修正后复跑）",
+      "结果": "全部通过（lint 394 文件 0 警告 0 错误；392 源文件结构检查；tsc+vite build 成功；chunk 警告为既有 apex-table-react 体积；调试残留 0）",
       "日期": "2026-09-19"
     },
     {
-      "命令": "P22 带令牌真实联验（dev 代理 192.168.0.158:8888，凭据 .env.local root/MD5；python API 层先行、浏览器会话独立）",
-      "结果": "全部通过：权限四码（obstacle-avoidance:view/add/update/delete）真实下发；API 层（pageObstacleAvoidance GET 平铺基线 total=0（G04 口径再实证）/无令牌 1000000 对照/create 落库一致 parameters 顺序保持 enable boolean 正确 name=模板名原样/update id 定位整体替换全字段落库无 G18 类缺陷/筛选命中与未命中/delete POST+?id= 自清理终态审计 total=0 零残留）；浏览器（守卫回跳带 redirect+登录落点闭环/必填拦截两级零请求/Transfer 勾选移动+参数配置表 Apex 行内控件默认初始化+自定义类型改选+开关/提交成功列表刷新/展开行子表 3 列协议原值+两态映射/编辑回显完整含「自定义2 (forward_nav_index_2)」还原+改名实时更新/删除确认五要素+取消零请求+确认回空态+后端权威核实/列偏好闭环（隐藏-持久-恢复默认-清偏好后代码默认钉右 data-pinned=end 回归）/五语言 html lang 逐语言+en 弹窗抽查/双主题双宽度四组截图 .run-lock/shots-p22/）；恢复亮色主题+真实登出+页签关闭+dev server 停止+令牌临时文件清除+测试数据后端清理零残留",
+      "命令": "P23 带令牌联验（192.168.0.158:8888）",
+      "结果": "受阻（G25）：登录连续 4 次 code=1000010 用户名或密码错误（小写/大写 MD5+等待重试；SparkMD5 同形态七轮历史成功；getHardwareInfo 硬件码 B1E3252E8C273C40 与 P02 记录一致=同实例存活；10.11.2.67 超时不可达）——root 密码被外部修改，已停止尝试避免锁号；联验脚本就绪待凭据解除；不以门禁全绿暗示联验已过",
       "日期": "2026-09-19"
     }
-  ]
+  ],
+  "阻塞原因": null
 }

@@ -487,10 +487,15 @@ export const appRouteDefinitions = defineAppRoutes([
                 meta: indexRedirectMeta('动作管理'),
               },
               {
+                // 车辆动作（P23 交付解除 pending）：菜单码 action:vehicle:view
+                // 挂路由守卫（按钮码 add/update/delete 在页面内控制入口显隐，
+                // 与旧 §7/§8.2 一致，后端权限树按既有码判权不凭空造码）
                 id: 'mission-cluster-action-control-agv-action',
                 path: 'agv-action',
                 loadPage: () => import('@/pages/action-control/AGVAction/AGVAction'),
-                meta: businessMeta('车辆动作', PERM.ACTION_VEHICLE_VIEW, { pending: true }),
+                meta: businessMeta('车辆动作', PERM.ACTION_VEHICLE_VIEW, {
+                  i18nNamespaces: ['agvAction'],
+                }),
               },
               {
                 id: 'mission-cluster-action-control-agv-action-group',

@@ -98,6 +98,8 @@ const enUsLoaders: NamespaceLoaders = {
   deviceAirShower: () => import('@/i18n/locales/en-US/deviceAirShower'),
   // P22 避障模板（mission-cluster/obstacle-avoidance；页面私有命名空间）
   obstacleTemplate: () => import('@/i18n/locales/en-US/obstacleTemplate'),
+  // P23 车辆动作（mission-cluster/action-control/agv-action；页面私有命名空间）
+  agvAction: () => import('@/i18n/locales/en-US/agvAction'),
   // P39 完整车辆详情（vehicle-info；页面私有命名空间，抽屉完整详情入口共用）
   vehicleInfo: () => import('@/i18n/locales/en-US/vehicleInfo'),
   dashboard: () => import('@/i18n/locales/en-US/dashboard'),
@@ -160,6 +162,8 @@ const zhTwLoaders: NamespaceLoaders = {
   deviceAirShower: () => import('@/i18n/locales/zh-TW/deviceAirShower'),
   // P22 避障範本（mission-cluster/obstacle-avoidance;頁面私有命名空間）
   obstacleTemplate: () => import('@/i18n/locales/zh-TW/obstacleTemplate'),
+  // P23 车辆动作（mission-cluster/action-control/agv-action；页面私有命名空间）
+  agvAction: () => import('@/i18n/locales/zh-TW/agvAction'),
   'license-activation': () => import('@/i18n/locales/zh-TW/license-activation'),
   'access-denied': () => import('@/i18n/locales/zh-TW/access-denied'),
 }
@@ -206,6 +210,8 @@ const jaJpLoaders: NamespaceLoaders = {
   deviceAirShower: () => import('@/i18n/locales/ja-JP/deviceAirShower'),
   // P22 障害物回避テンプレート（mission-cluster/obstacle-avoidance;ページ専用名前空間）
   obstacleTemplate: () => import('@/i18n/locales/ja-JP/obstacleTemplate'),
+  // P23 车辆动作（mission-cluster/action-control/agv-action；页面私有命名空间）
+  agvAction: () => import('@/i18n/locales/ja-JP/agvAction'),
   'license-activation': () => import('@/i18n/locales/ja-JP/license-activation'),
   'access-denied': () => import('@/i18n/locales/ja-JP/access-denied'),
 }
@@ -252,6 +258,8 @@ const koKrLoaders: NamespaceLoaders = {
   deviceAirShower: () => import('@/i18n/locales/ko-KR/deviceAirShower'),
   // P22 장애물 회피 템플릿(mission-cluster/obstacle-avoidance;페이지 전용 네임스페이스)
   obstacleTemplate: () => import('@/i18n/locales/ko-KR/obstacleTemplate'),
+  // P23 车辆动作（mission-cluster/action-control/agv-action；页面私有命名空间）
+  agvAction: () => import('@/i18n/locales/ko-KR/agvAction'),
   'license-activation': () => import('@/i18n/locales/ko-KR/license-activation'),
   'access-denied': () => import('@/i18n/locales/ko-KR/access-denied'),
 }
