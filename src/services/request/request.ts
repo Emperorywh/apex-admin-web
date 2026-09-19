@@ -211,7 +211,7 @@ http.interceptors.request.use((config) => {
 })
 
 http.interceptors.response.use(
-  (response) => {
+  async (response) => {
     const contentType = String(response.headers?.['content-type'] ?? '')
     if (contentType.includes('text/html')) {
       // 代理目标返回 HTML（后端未启动、端口被其他应用占用等）：按不可达处理
@@ -226,12 +226,29 @@ http.interceptors.response.use(
     if (!contentType.includes('json')) {
       // 文件/流通道：Blob、二进制等原样透传，绝不套 Result 解包（规格 4.2 文件行）；
       // 声明 apexRawResponse 的下载请求透传完整响应，供调用方读取
-      // content-disposition 等响应头（JSON 错误仍走上方 unwrapResult 统一收敛）
+      // content-disposition 等响应头（JSON 错误仍走下方统一收敛）
       recordHealth(true)
       if (response.config.apexRawResponse === true) {
         return response as AxiosResponse
       }
       return response.data
+    }
+    // 下载通道（responseType='blob'）收到 JSON 业务错误：axios 已把错误体装成
+    // Blob，直接解包会误判「缺少 Result 包装」丢失真实业务消息（P26 联验实证
+    // 7000130「导出的系统日志文件为空」）——按文本读回解析后统一解包，真实
+    // 业务码/消息如实抛出，绝不把错误 JSON 保存为伪文件（DoD 9）。
+    if (response.config.responseType === 'blob' && response.data instanceof Blob) {
+      const parsed: unknown = await response.data
+        .text()
+        .then((text) => {
+          try {
+            return JSON.parse(text) as unknown
+          } catch {
+            return null
+          }
+        })
+        .catch(() => null)
+      return unwrapResult(parsed)
     }
     return unwrapResult(response.data as unknown)
   },

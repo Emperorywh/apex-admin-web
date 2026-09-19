@@ -530,7 +530,9 @@ export const appRouteDefinitions = defineAppRoutes([
             id: 'system-involve-system-log',
             path: 'system-log',
             loadPage: () => import('@/pages/system-involve/SystemLog/SystemLog'),
-            meta: businessMeta('系统日志', PERM.SYSTEM_LOG_VIEW, { pending: true }),
+            meta: businessMeta('系统日志', PERM.SYSTEM_LOG_VIEW, {
+              i18nNamespaces: ['systemLog'],
+            }),
           },
           {
             id: 'system-involve-system-setting',

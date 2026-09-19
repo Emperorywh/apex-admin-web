@@ -102,6 +102,8 @@ const enUsLoaders: NamespaceLoaders = {
   agvAction: () => import('@/i18n/locales/en-US/agvAction'),
   // P25 版本管理（system-involve/version-control；页面私有命名空间）
   systemVersion: () => import('@/i18n/locales/en-US/systemVersion'),
+  // P26 系统日志（system-involve/system-log；页面私有命名空间）
+  systemLog: () => import('@/i18n/locales/en-US/systemLog'),
   // P39 完整车辆详情（vehicle-info；页面私有命名空间，抽屉完整详情入口共用）
   vehicleInfo: () => import('@/i18n/locales/en-US/vehicleInfo'),
   dashboard: () => import('@/i18n/locales/en-US/dashboard'),
@@ -168,6 +170,8 @@ const zhTwLoaders: NamespaceLoaders = {
   agvAction: () => import('@/i18n/locales/zh-TW/agvAction'),
   // P25 版本管理（system-involve/version-control；页面私有命名空间）
   systemVersion: () => import('@/i18n/locales/zh-TW/systemVersion'),
+  // P26 系统日志（system-involve/system-log；页面私有命名空间）
+  systemLog: () => import('@/i18n/locales/zh-TW/systemLog'),
   'license-activation': () => import('@/i18n/locales/zh-TW/license-activation'),
   'access-denied': () => import('@/i18n/locales/zh-TW/access-denied'),
 }
@@ -218,6 +222,8 @@ const jaJpLoaders: NamespaceLoaders = {
   agvAction: () => import('@/i18n/locales/ja-JP/agvAction'),
   // P25 版本管理（system-involve/version-control；页面私有命名空间）
   systemVersion: () => import('@/i18n/locales/ja-JP/systemVersion'),
+  // P26 系统日志（system-involve/system-log；页面私有命名空间）
+  systemLog: () => import('@/i18n/locales/ja-JP/systemLog'),
   'license-activation': () => import('@/i18n/locales/ja-JP/license-activation'),
   'access-denied': () => import('@/i18n/locales/ja-JP/access-denied'),
 }
@@ -268,6 +274,8 @@ const koKrLoaders: NamespaceLoaders = {
   agvAction: () => import('@/i18n/locales/ko-KR/agvAction'),
   // P25 版本管理（system-involve/version-control；页面私有命名空间）
   systemVersion: () => import('@/i18n/locales/ko-KR/systemVersion'),
+  // P26 系统日志（system-involve/system-log；页面私有命名空间）
+  systemLog: () => import('@/i18n/locales/ko-KR/systemLog'),
   'license-activation': () => import('@/i18n/locales/ko-KR/license-activation'),
   'access-denied': () => import('@/i18n/locales/ko-KR/access-denied'),
 }
