@@ -369,7 +369,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P23 车辆动作
 
-- [ ] **P23 车辆动作**
+- [x] **P23 车辆动作**
 - **批次 / 前置**：B3 / B2 样板门禁。
 - **入口**：`/mission-cluster/action-control/agv-action`；**旧来源**：`ActionControl/AGVAction`；**目标**：`src/pages/action-control/AGVAction/AGVAction.tsx`。
 - **私有模块 / 语言分片**：`agv-action`；**接口依据**：action/agvAction。
