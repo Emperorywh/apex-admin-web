@@ -319,7 +319,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P18 风淋门
 
-- [ ] **P18 风淋门**
+- [x] **P18 风淋门**
 - **批次 / 前置**：B3 / B2 样板门禁。
 - **入口**：`/tri-resource/tri-device/air-shower-door`；**旧来源**：`TriDevice/AirShowerDoor_back`；**目标**：`src/pages/tri-device/AirShowerDoor/AirShowerDoor.tsx`。
 - **私有模块 / 语言分片**：`device-air-shower`；**接口依据**：device/airShowerDoor。

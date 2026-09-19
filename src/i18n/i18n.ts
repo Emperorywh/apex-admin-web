@@ -94,6 +94,8 @@ const enUsLoaders: NamespaceLoaders = {
   deviceChargePile: () => import('@/i18n/locales/en-US/deviceChargePile'),
   // P17 交通灯（tri-resource/tri-device/traffic-lights；页面私有命名空间）
   deviceTrafficLight: () => import('@/i18n/locales/en-US/deviceTrafficLight'),
+  // P18 风淋门(tri-resource/tri-device/air-shower-door;页面私有命名空间)
+  deviceAirShower: () => import('@/i18n/locales/en-US/deviceAirShower'),
   // P39 完整车辆详情（vehicle-info；页面私有命名空间，抽屉完整详情入口共用）
   vehicleInfo: () => import('@/i18n/locales/en-US/vehicleInfo'),
   dashboard: () => import('@/i18n/locales/en-US/dashboard'),
@@ -152,6 +154,8 @@ const zhTwLoaders: NamespaceLoaders = {
   deviceChargePile: () => import('@/i18n/locales/zh-TW/deviceChargePile'),
   // P17 交通灯（tri-resource/tri-device/traffic-lights；页面私有命名空间）
   deviceTrafficLight: () => import('@/i18n/locales/zh-TW/deviceTrafficLight'),
+  // P18 風淋門(tri-resource/tri-device/air-shower-door;頁面私有命名空間)
+  deviceAirShower: () => import('@/i18n/locales/zh-TW/deviceAirShower'),
   'license-activation': () => import('@/i18n/locales/zh-TW/license-activation'),
   'access-denied': () => import('@/i18n/locales/zh-TW/access-denied'),
 }
@@ -194,6 +198,8 @@ const jaJpLoaders: NamespaceLoaders = {
   deviceChargePile: () => import('@/i18n/locales/ja-JP/deviceChargePile'),
   // P17 交通灯（tri-resource/tri-device/traffic-lights；页面私有命名空间）
   deviceTrafficLight: () => import('@/i18n/locales/ja-JP/deviceTrafficLight'),
+  // P18 エアシャワー(tri-resource/tri-device/air-shower-door;ページ専用名前空間)
+  deviceAirShower: () => import('@/i18n/locales/ja-JP/deviceAirShower'),
   'license-activation': () => import('@/i18n/locales/ja-JP/license-activation'),
   'access-denied': () => import('@/i18n/locales/ja-JP/access-denied'),
 }
@@ -236,6 +242,8 @@ const koKrLoaders: NamespaceLoaders = {
   deviceChargePile: () => import('@/i18n/locales/ko-KR/deviceChargePile'),
   // P17 交通灯（tri-resource/tri-device/traffic-lights；页面私有命名空间）
   deviceTrafficLight: () => import('@/i18n/locales/ko-KR/deviceTrafficLight'),
+  // P18 에어샤워(tri-resource/tri-device/air-shower-door;페이지 전용 네임스페이스)
+  deviceAirShower: () => import('@/i18n/locales/ko-KR/deviceAirShower'),
   'license-activation': () => import('@/i18n/locales/ko-KR/license-activation'),
   'access-denied': () => import('@/i18n/locales/ko-KR/access-denied'),
 }

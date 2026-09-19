@@ -422,7 +422,8 @@ export const appRouteDefinitions = defineAppRoutes([
                 loadPage: () => import('@/pages/tri-device/AirShowerDoor/AirShowerDoor'),
                 meta: businessMeta('风淋门', PERM.DEVICE_AIR_SHOWER_DOOR_VIEW, {
                   icon: Wind,
-                  pending: true,
+                  // P18 交付：deviceAirShower 页面私有命名空间
+                  i18nNamespaces: ['deviceAirShower'],
                 }),
               },
             ],
