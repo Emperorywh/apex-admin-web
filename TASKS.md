@@ -289,7 +289,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P15 自动门
 
-- [ ] **P15 自动门**
+- [x] **P15 自动门**
 - **批次 / 前置**：B3 / B2 样板门禁。
 - **入口**：`/tri-resource/tri-device/auto-door`；**旧来源**：`TriDevice/AutoDoor_back`；**目标**：`src/pages/tri-device/AutoDoor/AutoDoor.tsx`。
 - **私有模块 / 语言分片**：`device-auto-door`；**接口依据**：device/autoDoor。

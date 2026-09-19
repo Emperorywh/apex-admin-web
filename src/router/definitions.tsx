@@ -391,7 +391,8 @@ export const appRouteDefinitions = defineAppRoutes([
                 loadPage: () => import('@/pages/tri-device/AutoDoor/AutoDoor'),
                 meta: businessMeta('自动门', PERM.DEVICE_AUTO_DOOR_VIEW, {
                   icon: DoorOpen,
-                  pending: true,
+                  // P15 交付：deviceAutoDoor 页面私有命名空间
+                  i18nNamespaces: ['deviceAutoDoor'],
                 }),
               },
               {

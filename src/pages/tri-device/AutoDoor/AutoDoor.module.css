@@ -1,0 +1,52 @@
+/*
+ * 自动门页布局（P15）：搜索框（左，旧实现 Search enterButton 同形态）+ 新增设备
+ * （右）+ 全宽表格（与 P04–P14 样板同构）；颜色全部引用全局 token，不硬编码。
+ */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+  min-width: 0;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* 搜索输入框：旧实现宽 300 + enterButton 同形态 */
+.search {
+  width: 300px;
+}
+
+.tableWrap {
+  flex: 1;
+  min-height: 0;
+}
+
+/* 长文本省略：列内统一 ellipsis + Tooltip 由单元格自行包裹 */
+.ellipsis {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+/* 设备配置 Popover 内的 JSON 预览区（旧实现 40vh 高、30vw 宽、纵向滚动同形态） */
+.configPre {
+  height: 40vh;
+  width: 30vw;
+  max-width: 560px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+  margin: 0;
+  font-size: 12px;
+}

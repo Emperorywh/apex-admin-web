@@ -88,6 +88,8 @@ const enUsLoaders: NamespaceLoaders = {
   dispatchConfig: () => import('@/i18n/locales/en-US/dispatchConfig'),
   // P14 电梯（tri-resource/tri-device/elevator；页面私有命名空间）
   deviceElevator: () => import('@/i18n/locales/en-US/deviceElevator'),
+  // P15 自动门（tri-resource/tri-device/auto-door；页面私有命名空间）
+  deviceAutoDoor: () => import('@/i18n/locales/en-US/deviceAutoDoor'),
   // P39 完整车辆详情（vehicle-info；页面私有命名空间，抽屉完整详情入口共用）
   vehicleInfo: () => import('@/i18n/locales/en-US/vehicleInfo'),
   dashboard: () => import('@/i18n/locales/en-US/dashboard'),
@@ -140,6 +142,8 @@ const zhTwLoaders: NamespaceLoaders = {
   dispatchConfig: () => import('@/i18n/locales/zh-TW/dispatchConfig'),
   // P14 电梯（tri-resource/tri-device/elevator；页面私有命名空间）
   deviceElevator: () => import('@/i18n/locales/zh-TW/deviceElevator'),
+  // P15 自动门（tri-resource/tri-device/auto-door；页面私有命名空间）
+  deviceAutoDoor: () => import('@/i18n/locales/zh-TW/deviceAutoDoor'),
   'license-activation': () => import('@/i18n/locales/zh-TW/license-activation'),
   'access-denied': () => import('@/i18n/locales/zh-TW/access-denied'),
 }
@@ -176,6 +180,8 @@ const jaJpLoaders: NamespaceLoaders = {
   dispatchConfig: () => import('@/i18n/locales/ja-JP/dispatchConfig'),
   // P14 电梯（tri-resource/tri-device/elevator；页面私有命名空间）
   deviceElevator: () => import('@/i18n/locales/ja-JP/deviceElevator'),
+  // P15 自动门（tri-resource/tri-device/auto-door；页面私有命名空间）
+  deviceAutoDoor: () => import('@/i18n/locales/ja-JP/deviceAutoDoor'),
   'license-activation': () => import('@/i18n/locales/ja-JP/license-activation'),
   'access-denied': () => import('@/i18n/locales/ja-JP/access-denied'),
 }
@@ -212,6 +218,8 @@ const koKrLoaders: NamespaceLoaders = {
   dispatchConfig: () => import('@/i18n/locales/ko-KR/dispatchConfig'),
   // P14 电梯（tri-resource/tri-device/elevator；页面私有命名空间）
   deviceElevator: () => import('@/i18n/locales/ko-KR/deviceElevator'),
+  // P15 自动门（tri-resource/tri-device/auto-door；页面私有命名空间）
+  deviceAutoDoor: () => import('@/i18n/locales/ko-KR/deviceAutoDoor'),
   'license-activation': () => import('@/i18n/locales/ko-KR/license-activation'),
   'access-denied': () => import('@/i18n/locales/ko-KR/access-denied'),
 }
