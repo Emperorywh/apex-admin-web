@@ -465,7 +465,7 @@
       "门禁全绿（lint 459文件0/0+typecheck+structure 457+build 968ms），文档联动 P20.md 新建/TASKS 勾选/operations 两行/contracts 权限行+第5节任务工艺行+变更日志/i18n-map P20 详细行+简表命名空间修正/RUN_STATE"
     ],
     "未完成步骤": [
-      "git push origin apple-rxx（P28 abc09b8/4e72c24 + P29 c18ff1f + P30 89f2d29 + P31 8c842d9 + P32 19fce76 + P19 fcc0778 + P24 31303af + P20 本轮新提交，共 9 提交均本地；本轮推送 SSL 握手失败=本地网络出口持续阻塞，非仓库问题）——下一轮触发时先补推再领取新任务（P21 工艺管理，队列序 40；前置 B2 样板门禁+P20 均已满足）"
+      "git push origin apple-rxx（P28 abc09b8/4e72c24 + P29 c18ff1f + P30 89f2d29 + P31 8c842d9 + P32 19fce76 + P19 fcc0778 + P24 31303af + P20 79cc496，共 9 提交均本地；本轮推送 SSL 握手失败=本地网络出口持续阻塞，非仓库问题）——下一轮触发时先补推再领取新任务（P21 工艺管理，队列序 40；前置 B2 样板门禁+P20 均已满足）"
     ],
     "阻塞原因": null
   },
