@@ -102,6 +102,8 @@ const enUsLoaders: NamespaceLoaders = {
   agvAction: () => import('@/i18n/locales/en-US/agvAction'),
   // P24 动作分组（mission-cluster/action-control/agv-action-group；页面私有命名空间）
   agvActionGroup: () => import('@/i18n/locales/en-US/agvActionGroup'),
+  // P20 任务工艺（mission-cluster/mission-create；页面私有命名空间）
+  orderTemplate: () => import('@/i18n/locales/en-US/orderTemplate'),
   // P25 版本管理（system-involve/version-control；页面私有命名空间）
   systemVersion: () => import('@/i18n/locales/en-US/systemVersion'),
   // P26 系统日志（system-involve/system-log；页面私有命名空间）
@@ -186,6 +188,8 @@ const zhTwLoaders: NamespaceLoaders = {
   agvAction: () => import('@/i18n/locales/zh-TW/agvAction'),
   // P24 动作分组（mission-cluster/action-control/agv-action-group；页面私有命名空间）
   agvActionGroup: () => import('@/i18n/locales/zh-TW/agvActionGroup'),
+  // P20 任务工艺（mission-cluster/mission-create；页面私有命名空间）
+  orderTemplate: () => import('@/i18n/locales/zh-TW/orderTemplate'),
   // P25 版本管理（system-involve/version-control；页面私有命名空间）
   systemVersion: () => import('@/i18n/locales/zh-TW/systemVersion'),
   // P26 系统日志（system-involve/system-log；页面私有命名空间）
@@ -254,6 +258,8 @@ const jaJpLoaders: NamespaceLoaders = {
   agvAction: () => import('@/i18n/locales/ja-JP/agvAction'),
   // P24 动作分组（mission-cluster/action-control/agv-action-group；页面私有命名空间）
   agvActionGroup: () => import('@/i18n/locales/ja-JP/agvActionGroup'),
+  // P20 任务工艺（mission-cluster/mission-create；页面私有命名空间）
+  orderTemplate: () => import('@/i18n/locales/ja-JP/orderTemplate'),
   // P25 版本管理（system-involve/version-control；页面私有命名空间）
   systemVersion: () => import('@/i18n/locales/ja-JP/systemVersion'),
   // P26 系统日志（system-involve/system-log；页面私有命名空间）
@@ -322,6 +328,8 @@ const koKrLoaders: NamespaceLoaders = {
   agvAction: () => import('@/i18n/locales/ko-KR/agvAction'),
   // P24 动作分组（mission-cluster/action-control/agv-action-group；页面私有命名空间）
   agvActionGroup: () => import('@/i18n/locales/ko-KR/agvActionGroup'),
+  // P20 任务工艺（mission-cluster/mission-create；页面私有命名空间）
+  orderTemplate: () => import('@/i18n/locales/ko-KR/orderTemplate'),
   // P25 版本管理（system-involve/version-control；页面私有命名空间）
   systemVersion: () => import('@/i18n/locales/ko-KR/systemVersion'),
   // P26 系统日志（system-involve/system-log；页面私有命名空间）

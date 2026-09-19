@@ -451,11 +451,16 @@ export const appRouteDefinitions = defineAppRoutes([
             meta: indexRedirectMeta('工艺配置'),
           },
           {
-            // 注意历史码值交叉：本页（任务工艺）挂 mission-flow:view
+            // 任务工艺（P20 交付解除 pending）：菜单码 mission-flow:view 挂守卫
+            // （注意历史码值交叉：本页为任务工艺但视图/按钮码均为 mission-flow:*，
+            // 旧路由与权限清单实证；按钮码 add/copy/update/delete 在页面内控制
+            // 入口显隐，后端权限树按既有码判权不凭空造码）
             id: 'mission-cluster-mission-create',
             path: 'mission-create',
             loadPage: () => import('@/pages/mission-cluster/MissionCreate/MissionCreate'),
-            meta: businessMeta('任务工艺', PERM.MISSION_FLOW_VIEW, { pending: true }),
+            meta: businessMeta('任务工艺', PERM.MISSION_FLOW_VIEW, {
+              i18nNamespaces: ['orderTemplate'],
+            }),
           },
           {
             // 注意历史码值交叉：本页（工艺管理）挂 mission-template:view

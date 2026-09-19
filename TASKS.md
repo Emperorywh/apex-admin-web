@@ -339,7 +339,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P20 任务工艺
 
-- [ ] **P20 任务工艺**
+- [x] **P20 任务工艺**（2026-09-20 勾选：带令牌联验通过——Apex request GET 平铺/4 列逐列核对+双层展开子表均 Apex data 模式/三层嵌套弹窗（创建/编辑/复制三态：互斥车辆分组+站点按 mapId 缓存+动作参数 value 守恒）/删除 confirmCommand 自清理终态空态/必填两条零请求/搜索三态/列偏好四步/五语言/双主题双宽度；API 层 27/27+终态零残留；权限码历史交叉实证=本页挂 mission-flow:* 族；后端允许模板重名契约发现）
 - **批次 / 前置**：B4b / B2 样板门禁、P23、P24。
 - **入口**：`/mission-cluster/mission-create`；**旧来源**：`MissionCluster/MissionCreate`；**目标**：`src/pages/mission-cluster/MissionCreate/MissionCreate.tsx`。
 - **私有模块 / 语言分片**：`order-template`；**接口依据**：dispatcher/orderTemplate、动作/地图/站点/车辆/分组选项。
