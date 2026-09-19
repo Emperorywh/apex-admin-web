@@ -99,6 +99,8 @@ export const PERM = {
   SYSTEM_OPERATION_LOG_VIEW: 'system:operation-log:view',
   /** 软件信息 */
   SYSTEM_SOFTWARE_VIEW: 'system:software:view',
+  /** 数据库备份（旧 .umirc.ts 漏写 access 但权限清单真实存在，P30 核对收敛） */
+  SYSTEM_DATABASE_BACKUP_VIEW: 'system:database-backup:view',
   /** 权限管理（分组目录；root 专属） */
   AUTH_MANAGE: 'auth:manage',
   /** 用户管理（root 专属） */

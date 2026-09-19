@@ -439,7 +439,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P30 数据库备份
 
-- [ ] **P30 数据库备份**
+- [x] **P30 数据库备份**（2026-09-20 勾选：带令牌联验通过——权限收敛（旧路由漏 access 但权限清单有 view 码，挂守卫）/库列表/备份文件列表 Apex/下载（小文件完成反馈+大文件走马灯取消中止+PGDM 魔数）/列偏好闭环/五语言/双主题双宽度；7.63GB 完整落盘留现场环境；下载端点无令牌直达业务码登记安全观察项）
 - **批次 / 前置**：B3 / B2 样板门禁。
 - **入口**：`/system-involve/database-backup`；**旧来源**：`SystemInvolve/DatabaseBackupManagement`；**目标**：`src/pages/system-involve/DatabaseBackupManagement/DatabaseBackupManagement.tsx`。
 - **私有模块 / 语言分片**：`database-backup`；**接口依据**：dataBase。

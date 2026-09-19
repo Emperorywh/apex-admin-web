@@ -80,7 +80,7 @@
 | P27 系统设置 | system-branding | system-branding | system-branding |
 | P28 操作日志 | operation-log | operationLog | operationLog |
 | P29 软件信息 | system-involve/software-information | **software-license**（页面私有命名空间；激活弹窗复用 P02 组件故路由 meta 并声明 license-activation；四语言分片同构：en 旧真译逐条沿用+插值 {{label}} 形态修正，繁日韩 B1 基线真实译文与 P02 术语对齐——啟用/有効化/활성화） | software-license |
-| P30 数据库备份 | database-backup | databaseBackup | databaseBackup |
+| P30 数据库备份 | system-involve/database-backup | **database-backup**（页面私有命名空间；四语言分片同构 24 键：en 旧真译逐条沿用+错误反馈 {{msg}} 插值形态修正，下载弹窗类旧资源缺失按 P25 风格补译并与 systemVersion 术语对齐，繁日韩 B1 基线真实译文——資料庫/データベース/데이터베이스 系；菜单项「数据库备份管理」四语言既有译文沿用） | database-backup |
 | P31 用户管理 | user-management | userManagement | 沿用 pages/system/user + services/system/user |
 | P32 角色管理 | role-management | roleManagement | 沿用 pages/system/role + services/system/role |
 | P33 任务统计 | order-statistics | orderStatistics | orderStatistics |

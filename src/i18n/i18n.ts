@@ -118,6 +118,8 @@ const enUsLoaders: NamespaceLoaders = {
   'license-activation': () => import('@/i18n/locales/en-US/license-activation'),
   // P29 软件信息（system-involve/software-information；页面私有命名空间，激活弹窗复用 P02 组件同声明 license-activation）
   'software-license': () => import('@/i18n/locales/en-US/software-license'),
+  // P30 数据库备份（system-involve/database-backup；页面私有命名空间）
+  'database-backup': () => import('@/i18n/locales/en-US/database-backup'),
   // P41 无权限页（un-access；布局外独立页）
   'access-denied': () => import('@/i18n/locales/en-US/access-denied'),
 }
@@ -185,6 +187,8 @@ const zhTwLoaders: NamespaceLoaders = {
   'license-activation': () => import('@/i18n/locales/zh-TW/license-activation'),
   // P29 软件信息（system-involve/software-information；页面私有命名空间，激活弹窗复用 P02 组件同声明 license-activation）
   'software-license': () => import('@/i18n/locales/zh-TW/software-license'),
+  // P30 数据库备份（system-involve/database-backup；页面私有命名空间）
+  'database-backup': () => import('@/i18n/locales/zh-TW/database-backup'),
   'access-denied': () => import('@/i18n/locales/zh-TW/access-denied'),
 }
 const jaJpLoaders: NamespaceLoaders = {
@@ -243,6 +247,8 @@ const jaJpLoaders: NamespaceLoaders = {
   'license-activation': () => import('@/i18n/locales/ja-JP/license-activation'),
   // P29 软件信息（system-involve/software-information；页面私有命名空间，激活弹窗复用 P02 组件同声明 license-activation）
   'software-license': () => import('@/i18n/locales/ja-JP/software-license'),
+  // P30 数据库备份（system-involve/database-backup；页面私有命名空间）
+  'database-backup': () => import('@/i18n/locales/ja-JP/database-backup'),
   'access-denied': () => import('@/i18n/locales/ja-JP/access-denied'),
 }
 const koKrLoaders: NamespaceLoaders = {
@@ -301,6 +307,8 @@ const koKrLoaders: NamespaceLoaders = {
   'license-activation': () => import('@/i18n/locales/ko-KR/license-activation'),
   // P29 软件信息（system-involve/software-information；页面私有命名空间，激活弹窗复用 P02 组件同声明 license-activation）
   'software-license': () => import('@/i18n/locales/ko-KR/software-license'),
+  // P30 数据库备份（system-involve/database-backup；页面私有命名空间）
+  'database-backup': () => import('@/i18n/locales/ko-KR/database-backup'),
   'access-denied': () => import('@/i18n/locales/ko-KR/access-denied'),
 }
 

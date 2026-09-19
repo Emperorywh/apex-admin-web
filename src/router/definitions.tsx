@@ -561,12 +561,16 @@ export const appRouteDefinitions = defineAppRoutes([
             }),
           },
           {
-            // 数据库备份：旧路由未写 access（P30 核对原权限清单后再定，规格 5.12）
+            // P30 解除暂缓：旧 .umirc.ts 漏写 access，但旧权限清单真实存在
+            // system:database-backup:view 菜单码（PERM + 菜单映射），按规格
+            // 5.12-12 核对收敛挂守卫，不当公开页、不凭空造码
             id: 'system-involve-database-backup',
             path: 'database-backup',
             loadPage: () =>
               import('@/pages/system-involve/DatabaseBackupManagement/DatabaseBackupManagement'),
-            meta: businessMeta('数据库备份管理', undefined, { pending: true }),
+            meta: businessMeta('数据库备份管理', PERM.SYSTEM_DATABASE_BACKUP_VIEW, {
+              i18nNamespaces: ['database-backup'],
+            }),
           },
         ],
       },
