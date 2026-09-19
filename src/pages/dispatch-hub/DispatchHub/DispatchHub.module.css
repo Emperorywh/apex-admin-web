@@ -1,0 +1,42 @@
+/*
+ * 调度中心页布局（P13）：分类 Tabs + 全高配置表格；
+ * 页面尺寸恒等于工作区盒（横向溢出由表格内滚动消化），
+ * 表格高度走 flex 弹性（禁止 calc(100vh - N) 硬编码）；
+ * 颜色全部引用全局 token。
+ */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
+}
+
+/* Tabs 撑满页面，内容区弹性持有表格容器 */
+.tabs {
+  flex: 1;
+  min-height: 0;
+}
+
+.tabs :global(.ant-tabs-nav) {
+  margin-bottom: 0;
+}
+
+.tabs :global(.ant-tabs-content-holder) {
+  height: 100%;
+}
+
+.tabs :global(.ant-tabs-content) {
+  height: 100%;
+}
+
+.tabs :global(.ant-tabs-tabpane) {
+  height: 100%;
+}
+
+.tableWrap {
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+  padding: 8px;
+}

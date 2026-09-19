@@ -344,9 +344,11 @@ export const appRouteDefinitions = defineAppRoutes([
         id: 'dispatch-hub',
         path: 'dispatch-hub',
         loadPage: () => import('@/pages/dispatch-hub/DispatchHub/DispatchHub'),
+        // P13 整页交付：解除 pending 挂菜单码 dispatch-hub:view
+        // （按钮码 save/reset 在页面内控制保存/重置入口与单元格可编辑显隐）
         meta: businessMeta('调度中心', PERM.DISPATCH_HUB_VIEW, {
           icon: Box,
-          pending: true,
+          i18nNamespaces: ['dispatchConfig'],
         }),
       },
       {
