@@ -332,8 +332,10 @@ export const appRouteDefinitions = defineAppRoutes([
             path: 'map-push-records',
             loadPage: () =>
               import('@/pages/map-through/MapPushNotificationRecords/MapPushNotificationRecords'),
+            // P12 整页交付：解除 pending 挂菜单码 map-push-record:view
+            // （按钮码 map-push-record:re-push 在页面内控制重推/取消入口显隐）
             meta: businessMeta('地图推送记录', PERM.MAP_PUSH_RECORD_VIEW, {
-              pending: true,
+              i18nNamespaces: ['mapPushRecord'],
             }),
           },
         ],

@@ -82,6 +82,8 @@ const enUsLoaders: NamespaceLoaders = {
   crossMap: () => import('@/i18n/locales/en-US/crossMap'),
   // P11 多地图点边组合（map-through/point-edge-combination；页面私有命名空间）
   nodeEdgeGroup: () => import('@/i18n/locales/en-US/nodeEdgeGroup'),
+  // P12 地图推送记录（map-through/map-push-records；页面私有命名空间）
+  mapPushRecord: () => import('@/i18n/locales/en-US/mapPushRecord'),
   // P39 完整车辆详情（vehicle-info；页面私有命名空间，抽屉完整详情入口共用）
   vehicleInfo: () => import('@/i18n/locales/en-US/vehicleInfo'),
   dashboard: () => import('@/i18n/locales/en-US/dashboard'),
@@ -128,6 +130,8 @@ const zhTwLoaders: NamespaceLoaders = {
   crossMap: () => import('@/i18n/locales/zh-TW/crossMap'),
   // P11 多地图点边组合（map-through/point-edge-combination；页面私有命名空间）
   nodeEdgeGroup: () => import('@/i18n/locales/zh-TW/nodeEdgeGroup'),
+  // P12 地图推送记录（map-through/map-push-records；页面私有命名空间）
+  mapPushRecord: () => import('@/i18n/locales/zh-TW/mapPushRecord'),
   'license-activation': () => import('@/i18n/locales/zh-TW/license-activation'),
   'access-denied': () => import('@/i18n/locales/zh-TW/access-denied'),
 }
@@ -158,6 +162,8 @@ const jaJpLoaders: NamespaceLoaders = {
   crossMap: () => import('@/i18n/locales/ja-JP/crossMap'),
   // P11 多地图点边组合（map-through/point-edge-combination；页面私有命名空间）
   nodeEdgeGroup: () => import('@/i18n/locales/ja-JP/nodeEdgeGroup'),
+  // P12 地图推送记录（map-through/map-push-records；页面私有命名空间）
+  mapPushRecord: () => import('@/i18n/locales/ja-JP/mapPushRecord'),
   'license-activation': () => import('@/i18n/locales/ja-JP/license-activation'),
   'access-denied': () => import('@/i18n/locales/ja-JP/access-denied'),
 }
@@ -188,6 +194,8 @@ const koKrLoaders: NamespaceLoaders = {
   crossMap: () => import('@/i18n/locales/ko-KR/crossMap'),
   // P11 多地图点边组合（map-through/point-edge-combination；页面私有命名空间）
   nodeEdgeGroup: () => import('@/i18n/locales/ko-KR/nodeEdgeGroup'),
+  // P12 地图推送记录（map-through/map-push-records；页面私有命名空间）
+  mapPushRecord: () => import('@/i18n/locales/ko-KR/mapPushRecord'),
   'license-activation': () => import('@/i18n/locales/ko-KR/license-activation'),
   'access-denied': () => import('@/i18n/locales/ko-KR/access-denied'),
 }

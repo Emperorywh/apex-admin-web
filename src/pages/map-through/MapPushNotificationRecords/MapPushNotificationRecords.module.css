@@ -1,0 +1,17 @@
+/*
+ * 地图推送记录页布局（P12）：无筛选工具行（接口仅分页参数，推送发起入口在
+ * P09 地图列表），全宽表格占满页面（与 P04–P11 样板同构）；
+ * 颜色全部引用全局 token。
+ */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
+}
+
+.tableWrap {
+  flex: 1;
+  min-height: 0;
+}

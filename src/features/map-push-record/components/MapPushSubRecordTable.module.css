@@ -1,0 +1,38 @@
+/*
+ * 推送子记录展开行子表布局（P12）：筛选条（车辆名称输入框 + 状态下拉，左对齐）+
+ * 全宽子表；颜色与间距全部引用全局 token，不引入组件外样式。
+ */
+
+.subTableWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+/* 筛选条：车辆名称关键字输入框 + 推送状态下拉（旧实现同布局） */
+.subFilterBar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* 车辆名称输入框：车辆名形如 test-<雪花id> 普遍较长，输入框给足宽度 */
+.keywordInput {
+  width: 260px;
+}
+
+/* 推送状态下拉：五个枚举选项的常规宽度 */
+.stateSelect {
+  width: 160px;
+}
+
+/* 失败/等待原因单元格：单行截断，全文经 Tooltip 悬浮查看（旧实现同形态） */
+.reasonCell {
+  display: block;
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
