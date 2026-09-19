@@ -249,7 +249,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P11 多地图点边组合
 
-- [ ] **P11 多地图点边组合**
+- [x] **P11 多地图点边组合**
 - **批次 / 前置**：B3 / B2 样板门禁。
 - **入口**：`/map-through/point-edge-combination`；**旧来源**：`MapThrough/PointEdgeCombination`；**目标**：`src/pages/map-through/PointEdgeCombination/PointEdgeCombination.tsx`。
 - **私有模块 / 语言分片**：`node-edge-group`；**接口依据**：dispatcher/systemNodeEdgeGroup。

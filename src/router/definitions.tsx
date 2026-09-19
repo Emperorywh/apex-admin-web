@@ -316,12 +316,15 @@ export const appRouteDefinitions = defineAppRoutes([
             }),
           },
           {
+            // 多地图点边组合（P11 交付解除 pending）：菜单码 point-edge-combination:view
+            // 挂路由守卫（按钮码 add/update/delete 在页面内控制入口显隐，
+            // 与旧 §7/§8.2 一致，后端权限树按既有码判权不凭空造码）
             id: 'map-through-point-edge-combination',
             path: 'point-edge-combination',
             loadPage: () =>
               import('@/pages/map-through/PointEdgeCombination/PointEdgeCombination'),
             meta: businessMeta('多地图点边组合', PERM.POINT_EDGE_COMBINATION_VIEW, {
-              pending: true,
+              i18nNamespaces: ['nodeEdgeGroup'],
             }),
           },
           {

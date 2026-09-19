@@ -80,6 +80,8 @@ const enUsLoaders: NamespaceLoaders = {
   mapList: () => import('@/i18n/locales/en-US/mapList'),
   // P10 跨地图关联（map-through/cross-maps；页面私有命名空间）
   crossMap: () => import('@/i18n/locales/en-US/crossMap'),
+  // P11 多地图点边组合（map-through/point-edge-combination；页面私有命名空间）
+  nodeEdgeGroup: () => import('@/i18n/locales/en-US/nodeEdgeGroup'),
   // P39 完整车辆详情（vehicle-info；页面私有命名空间，抽屉完整详情入口共用）
   vehicleInfo: () => import('@/i18n/locales/en-US/vehicleInfo'),
   dashboard: () => import('@/i18n/locales/en-US/dashboard'),
@@ -124,6 +126,8 @@ const zhTwLoaders: NamespaceLoaders = {
   mapList: () => import('@/i18n/locales/zh-TW/mapList'),
   // P10 跨地图关联（map-through/cross-maps；页面私有命名空间）
   crossMap: () => import('@/i18n/locales/zh-TW/crossMap'),
+  // P11 多地图点边组合（map-through/point-edge-combination；页面私有命名空间）
+  nodeEdgeGroup: () => import('@/i18n/locales/zh-TW/nodeEdgeGroup'),
   'license-activation': () => import('@/i18n/locales/zh-TW/license-activation'),
   'access-denied': () => import('@/i18n/locales/zh-TW/access-denied'),
 }
@@ -152,6 +156,8 @@ const jaJpLoaders: NamespaceLoaders = {
   mapList: () => import('@/i18n/locales/ja-JP/mapList'),
   // P10 跨地图关联（map-through/cross-maps；页面私有命名空间）
   crossMap: () => import('@/i18n/locales/ja-JP/crossMap'),
+  // P11 多地图点边组合（map-through/point-edge-combination；页面私有命名空间）
+  nodeEdgeGroup: () => import('@/i18n/locales/ja-JP/nodeEdgeGroup'),
   'license-activation': () => import('@/i18n/locales/ja-JP/license-activation'),
   'access-denied': () => import('@/i18n/locales/ja-JP/access-denied'),
 }
@@ -180,6 +186,8 @@ const koKrLoaders: NamespaceLoaders = {
   mapList: () => import('@/i18n/locales/ko-KR/mapList'),
   // P10 跨地图关联（map-through/cross-maps；页面私有命名空间）
   crossMap: () => import('@/i18n/locales/ko-KR/crossMap'),
+  // P11 多地图点边组合（map-through/point-edge-combination；页面私有命名空间）
+  nodeEdgeGroup: () => import('@/i18n/locales/ko-KR/nodeEdgeGroup'),
   'license-activation': () => import('@/i18n/locales/ko-KR/license-activation'),
   'access-denied': () => import('@/i18n/locales/ko-KR/access-denied'),
 }
