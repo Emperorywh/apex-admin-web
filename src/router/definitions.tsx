@@ -381,7 +381,8 @@ export const appRouteDefinitions = defineAppRoutes([
                 loadPage: () => import('@/pages/tri-device/Elevator/Elevator'),
                 meta: businessMeta('电梯', PERM.DEVICE_ELEVATOR_VIEW, {
                   icon: ArrowDownUp,
-                  pending: true,
+                  // P14 交付：deviceElevator 页面私有命名空间
+                  i18nNamespaces: ['deviceElevator'],
                 }),
               },
               {

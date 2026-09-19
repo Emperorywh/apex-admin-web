@@ -38,6 +38,7 @@
 | P11 多地图点边组合 | point-edge-combination | **nodeEdgeGroup**（按接口域 systemNodeEdgeGroup 语义命名；已交付四语言分片 36 key 同构（逐 key 比对一致）：en 旧真译逐条沿用（Group Name/Group Key/Included Groups/Updated/Node-Edge Group Name/Belonging Map/Node Count/Edge Count/Available & Selected Node-Edge Groups/Add/Remove 等），补译词条（删除影响说明、失效关联识别与阻止保存提示、出错拼接 {{msg}}）按旧真译风格；繁日韩 B1 基线（旧资源真繁体/真译沿用：刪除多地圖點邊組合/點邊組合名稱/グループ名/ノードエッジグループ/그룹 이름/노드-엣지 그룹 등，简体复制与欠落词补译；确定=確認/확인、取消=キャンセル/취소、清空=クリア/지우기 与 P10 crossMap 分片对齐）；「已不可用」公共词与 P04 vehicleGroup 分片同形） | features/node-edge-group + pages/map-through/PointEdgeCombination + services/node-edge-group |
 | P12 地图推送记录 | map-push-records | **mapPushRecord**（按接口域 mapPushRecord 命名；已交付四语言分片 30 key 同构（逐 key 比对一致）：en 旧真译逐条沿用（Map Name/Map Version/Push SLAM Base Map/Push Result/Re-push/Cancel Push/Waiting/Pushing/Cancelled/Failure Reason/Waiting Reason/Re-push initiated 等）且插值改本项目 {{var}} 双花括号语法（重新推送出错：{msg}→{{msg}}），确认框影响说明按旧真译风格补译；繁日韩 B1 基线补译（推送SLAM底图=SLAM ベースマップをプッシュ/SLAM 베이스맵 푸시、再プッシュ/재푸시、キャンセル済み/취소됨；操作=操作/작업、取消=キャンセル/취소 与 P09 mapList / P10 crossMap 分片对齐；车辆名称=車両名/차량 이름、创建时间=作成日時/생성 시간 与既有分片同形）；五状态枚举 key（等待/推送中/失败/成功/已取消）主表计数 Tag 与子表状态 Tag 共用） | features/map-push-record + pages/map-through/MapPushNotificationRecords + services/map-push-record |
 | P13 调度中心 | dispatch-hub | **dispatchConfig**（按页面域命名（与预填 dispatchHub 修正为既有 camelCase 分片惯例一致）；已交付四语言分片 16 key 同构（逐 key 比对一致）：en 旧真译逐条沿用（Config Name/Default Value/Config Value/Value Range/Unit/Please enter config value/Please select config value/Reset/Save current dispatch parameters?/Reset current dispatch parameters?/Dispatch parameters saved successfully 等）且插值改本项目 {{var}} 双花括号，冲突中止与重置影响说明按旧真译风格补译；繁日韩 B1 基线补译（配置名称=設定名/설정 이름、默认值=デフォルト値/기본값、配置值=設定値/설정값、配置值范围=値の範囲/값 범위、配置值单位=単位/단위；繁中「預設值」用台湾惯用语）；「保存」公共词走 common 命名空间回退（useTranslation 数组 fallback，不带 ns: 前缀）不重复入分片） | features/dispatch-config + pages/dispatch-hub/DispatchHub + services/dispatch-config |
+| P14 电梯 | tri-resource/tri-device/elevator | **deviceElevator**（按页面域命名；已交付四语言分片 63 key 同构（逐 key 比对一致）：en 旧真译逐条沿用（Device Name/Device ID/Floor/Device Driver/IP Address/Call Elevator/Open- & Close Elevator Door/Clear Occupying Elevator Vehicle/Elevator Status/Current Floor/Running State/Front- & Back Elevator Door State/Vehicle Occupying Elevator/新增-编辑-删除与命令反馈全量等）且插值改本项目 {{var}} 双花括号，命令确认影响说明与 G06 禁用说明按旧真译风格补译；繁日韩旧资源对本页 key 均为简中复制（非有效译文），按 B1 基线补译：繁中 IP位址/連接埠/網路狀態/線上-離線 台湾惯用语，日文 デバイス名/エレベーター呼び出し/開扉-閉扉/車内呼び（内呼业界用语）/占用車両，韩文 장치 이름/엘리베이터 호출/문 열기-닫기/내부 호출；公共词对齐既有分片：编辑=編輯/편집、删除=刪除/삭제、启用禁用=啟用禁用（繁）有効無効（日）활성화 비활성화（韩）、在线离线=線上/離線（繁）、オンライン/オフライン（日）、온라인/오프라인（韩）；清空/确定/取消页内分片自带与 P06 carrierType 同形态不依赖 common 回退） | features/device-elevator + pages/tri-device/Elevator + services/device-elevator |
 | P07 节点映射 | node-mapping | nodeMapping | nodeMapping |
 | P08 告警码管理 | alarm-code | alarmCode | alarmCode |
 | P09 地图列表 | map-list | mapList | mapList |
@@ -48,7 +49,7 @@
 | P11 多地图点边组合 | point-edge-combination | pointEdgeCombination | pointEdgeCombination |
 | P12 地图推送记录 | map-push-records | mapPushRecord | mapPushRecord |
 | P13 调度中心 | dispatch-hub | dispatchConfig | dispatchConfig |
-| P14 电梯 | elevator | elevator | elevator |
+| P14 电梯 | elevator | deviceElevator | deviceElevator |
 | P15 自动门 | auto-door | autoDoor | autoDoor |
 | P16 充电桩 | charge-pile | chargePile | chargePile |
 | P17 交通灯 | traffic-lights | trafficLight | trafficLight |
