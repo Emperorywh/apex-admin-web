@@ -299,7 +299,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P16 充电桩
 
-- [ ] **P16 充电桩**
+- [x] **P16 充电桩**
 - **批次 / 前置**：B3 / B2 样板门禁。
 - **入口**：`/tri-resource/tri-device/charge-pie`；**旧来源**：`TriDevice/ChargePile/ModbusChargePile`；**目标**：`src/pages/tri-device/ModbusChargePile/ModbusChargePile.tsx`。
 - **私有模块 / 语言分片**：`device-charge-pile`；**接口依据**：device/chargePile。

@@ -90,6 +90,8 @@ const enUsLoaders: NamespaceLoaders = {
   deviceElevator: () => import('@/i18n/locales/en-US/deviceElevator'),
   // P15 自动门（tri-resource/tri-device/auto-door；页面私有命名空间）
   deviceAutoDoor: () => import('@/i18n/locales/en-US/deviceAutoDoor'),
+  // P16 充电桩（tri-resource/tri-device/charge-pie；页面私有命名空间）
+  deviceChargePile: () => import('@/i18n/locales/en-US/deviceChargePile'),
   // P39 完整车辆详情（vehicle-info；页面私有命名空间，抽屉完整详情入口共用）
   vehicleInfo: () => import('@/i18n/locales/en-US/vehicleInfo'),
   dashboard: () => import('@/i18n/locales/en-US/dashboard'),
@@ -144,6 +146,8 @@ const zhTwLoaders: NamespaceLoaders = {
   deviceElevator: () => import('@/i18n/locales/zh-TW/deviceElevator'),
   // P15 自动门（tri-resource/tri-device/auto-door；页面私有命名空间）
   deviceAutoDoor: () => import('@/i18n/locales/zh-TW/deviceAutoDoor'),
+  // P16 充电桩（tri-resource/tri-device/charge-pie；页面私有命名空间）
+  deviceChargePile: () => import('@/i18n/locales/zh-TW/deviceChargePile'),
   'license-activation': () => import('@/i18n/locales/zh-TW/license-activation'),
   'access-denied': () => import('@/i18n/locales/zh-TW/access-denied'),
 }
@@ -182,6 +186,8 @@ const jaJpLoaders: NamespaceLoaders = {
   deviceElevator: () => import('@/i18n/locales/ja-JP/deviceElevator'),
   // P15 自动门（tri-resource/tri-device/auto-door；页面私有命名空间）
   deviceAutoDoor: () => import('@/i18n/locales/ja-JP/deviceAutoDoor'),
+  // P16 充电桩（tri-resource/tri-device/charge-pie；页面私有命名空间）
+  deviceChargePile: () => import('@/i18n/locales/ja-JP/deviceChargePile'),
   'license-activation': () => import('@/i18n/locales/ja-JP/license-activation'),
   'access-denied': () => import('@/i18n/locales/ja-JP/access-denied'),
 }
@@ -220,6 +226,8 @@ const koKrLoaders: NamespaceLoaders = {
   deviceElevator: () => import('@/i18n/locales/ko-KR/deviceElevator'),
   // P15 自动门（tri-resource/tri-device/auto-door；页面私有命名空间）
   deviceAutoDoor: () => import('@/i18n/locales/ko-KR/deviceAutoDoor'),
+  // P16 充电桩（tri-resource/tri-device/charge-pie；页面私有命名空间）
+  deviceChargePile: () => import('@/i18n/locales/ko-KR/deviceChargePile'),
   'license-activation': () => import('@/i18n/locales/ko-KR/license-activation'),
   'access-denied': () => import('@/i18n/locales/ko-KR/access-denied'),
 }

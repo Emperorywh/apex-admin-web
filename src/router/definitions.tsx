@@ -402,7 +402,8 @@ export const appRouteDefinitions = defineAppRoutes([
                 loadPage: () => import('@/pages/tri-device/ModbusChargePile/ModbusChargePile'),
                 meta: businessMeta('充电桩', PERM.DEVICE_CHARGE_PILE_VIEW, {
                   icon: PlugZap,
-                  pending: true,
+                  // P16 交付：deviceChargePile 页面私有命名空间
+                  i18nNamespaces: ['deviceChargePile'],
                 }),
               },
               {
