@@ -1,0 +1,25 @@
+{
+  "task": {
+    "implementation": "implemented",
+    "verification": "partial",
+    "gate": "ready",
+    "acceptanceRecord": "docs/migration/evidence/P43/run-94e66b2a-1c48-4651-adde-ae4a9513e6a7/acceptance.json",
+    "pendingItems": [
+      "A04：真实 token 过期收敛与双窗口退出同步归 V01 长会话复核（本轮登出清理与持久化恢复机制级已实证，T00/P01/P02/P21 同口径）",
+      "A24：长时多页签/真实规模稳定性归 V01 统一收口（本页零业务请求无资源增长面）",
+      "I06：真实网络级资源加载失败不白屏归 V01 复核（IAB 环境限制未构造；繁日韩分片补齐后不再依赖回退）"
+    ],
+    "note": "P43 交付（2026-09-20，run-94e66b2a）：menu 死链 7 文件删除+Profile 纪律收敛+三语言分片补齐（e8fbd5f）；静态门禁全绿；真实登录浏览器整页验收（守卫/落点/入口/零请求/五语言/双主题双视口/登出清理）；verification=partial（A04/A24/I06 deferred 归 V01），gate=ready；不勾选 TASKS"
+  },
+  "progress": [
+    "P43 清理收口完成：menu 死链 7 文件删除（虚构 REST /menus 全链+en-US/system.ts），Profile 页纪律收敛（状态枚举原值/roles 留白），profile 繁日韩三语言分片补齐并注册，G12 前端侧收口登记。",
+    "静态门禁四项全绿（lint 477 文件 0/0、typecheck、structure 470、build 1.21s）；代码提交 e8fbd5f2fe3051076031ce81184ec7aed5c4f56b。",
+    "浏览器整页验收全过：未登录守卫回跳/登录落点 redirect/Header 入口导航/零业务请求（XHR 计数=0）/五语言/双主题双视口 4 图/reload 持久化恢复/真实登出清理；acceptance.json 41 项矩阵（deferred：A04/A24/I06 cross_page 归 V01 与既有口径一致）。",
+    "交接记录 docs/migration/tasks/P43.md 交付；i18n-missing/i18n-map/gaps 登记同步更新。"
+  ],
+  "nextSteps": [
+    "提交 acceptance.json 与检查点，push --commit 到 origin/apple-rxx，end --outcome completed。"
+  ],
+  "blocker": null
+}
+

@@ -1,0 +1,493 @@
+{
+  "taskId": "P43",
+  "codeCommit": "e8fbd5f2fe3051076031ce81184ec7aed5c4f56b",
+  "runId": "run-94e66b2a-1c48-4651-adde-ae4a9513e6a7",
+  "verifiedAt": "2026-09-20T09:35:00Z",
+  "environment": {
+    "backend": "10.11.2.67:8888（同源代理，真实登录 root 会话）",
+    "browser": "IAB Chromium（隔离环境，PointerEvent 序列与 RO 垫片边界按 AGENTS 登记）",
+    "dataScale": "单会话 root；profile 页零业务请求，无数据规模依赖",
+    "role": "root（roles=[] 空数组真实形态）",
+    "viewports": [
+      "1920x945",
+      "1366x728"
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "languages": [
+      "zh-CN",
+      "en-US",
+      "zh-TW",
+      "ja-JP",
+      "ko-KR"
+    ],
+    "credentials": ".env.local（APEX_TEST_USERNAME/PASSWORD，来源名称记录，值不入档）"
+  },
+  "codeFiles": [
+    {
+      "path": "src/pages/profile/Profile/Profile.tsx",
+      "sha256": "26516cdad4aba6a486810f4d1657e7ce98c8eebfb75ffddfb59a24ef10afcbdf"
+    },
+    {
+      "path": "src/features/profile/components/ProfileForm/ProfileForm.tsx",
+      "sha256": "b37266d9ea62795c45e5ce571db4b78c40c8eaf3481824bcb952db706d49b44d"
+    },
+    {
+      "path": "src/i18n/i18n.ts",
+      "sha256": "59b1b431fd6f46da7454eb41b69c87a65508e02007345a76bc4232ed2c4b0554"
+    },
+    {
+      "path": "src/i18n/locales/en-US/profile.ts",
+      "sha256": "d482632f07679dbd191e85e7a2ba7054d7e8783de1151bbe92c2f1615f486d98"
+    },
+    {
+      "path": "src/i18n/locales/zh-TW/profile.ts",
+      "sha256": "2a920ef8ee20344805e3101eda7d32a84f272b933d843ee6ef43af6de3c3d082"
+    },
+    {
+      "path": "src/i18n/locales/ja-JP/profile.ts",
+      "sha256": "c399add1b1cb1c4397e76956a36a8016450b4ec1842db6d2944d05b6e94e32b6"
+    },
+    {
+      "path": "src/i18n/locales/ko-KR/profile.ts",
+      "sha256": "6a7dd077226a3b5ddaaacbd4acb2a8c737a5ba1e718e582006cd8f123ba71cfd"
+    }
+  ],
+  "deletedFiles": [
+    "src/pages/system/menu/Menu/Menu.tsx",
+    "src/features/system/menu/components/MenuForm/MenuForm.tsx",
+    "src/features/system/menu/hooks/useMenuTree.ts",
+    "src/services/system/menu/menu.service.ts",
+    "src/services/system/menu/menu.service.types.ts",
+    "src/types/system/menu/menu.types.ts",
+    "src/i18n/locales/en-US/system.ts"
+  ],
+  "releaseChecks": {
+    "scope": "passed",
+    "static": "passed",
+    "readOnly": "passed",
+    "ui": "passed",
+    "sharedConsumers": "passed"
+  },
+  "items": [
+    {
+      "id": "TASK",
+      "status": "passed",
+      "reason": "任务卡专项验收全满足：不调用虚构 /users/me（XHR 计数=0）；不伪造资料（编辑区不可用说明）；登录返回没有的字段不补示例（账户信息仅 username/state/level/roles 四项真实字段）；本页无保留表格（Descriptions 键值详情非表格，规格 6.1 允许）；菜单 CRUD 虚假能力移除；删除前逐一核对可达引用（menu 链仅链内互引、路由未挂载；活服务 brand/database-backup/sys-log/system-log/system-version 保留）",
+      "evidence": [
+        "docs/migration/tasks/P43.md"
+      ]
+    },
+    {
+      "id": "DoD1",
+      "status": "passed",
+      "reason": "来源=目标模板 profile 及相关公共入口，逐项核对（profile/Menu 链/system 服务/Header 入口/路由注册），无遗漏子组件",
+      "evidence": [
+        "docs/migration/tasks/P43.md"
+      ]
+    },
+    {
+      "id": "DoD2",
+      "status": "passed",
+      "reason": "页面零业务请求直读 redux auth 切片；对接虚构 REST /menus 的服务整体删除；不导入 axios/不拼业务 URL",
+      "evidence": [
+        "docs/migration/tasks/P43.md"
+      ]
+    },
+    {
+      "id": "DoD3",
+      "status": "passed",
+      "reason": "profile 路由受认证守卫（未登录直访回跳 /login?redirect=%2Fprofile 实测）；无权限/离线/空态由公共机制承担（本页无权限码，登录即可达=模板既定语义）",
+      "evidence": [
+        "docs/migration/tasks/P43.md"
+      ]
+    },
+    {
+      "id": "DoD4",
+      "status": "passed",
+      "reason": "本页无表格；被删 Menu 页的 antd Table 随死代码清除，运行路径表格统一无回归（A07 范围内）",
+      "evidence": [
+        "docs/migration/tasks/P43.md"
+      ]
+    },
+    {
+      "id": "DoD5",
+      "status": "not_applicable",
+      "reason": "本页无表格（账户信息为 Descriptions 键值详情）",
+      "evidence": [
+        "docs/migration/tasks/P43.md"
+      ]
+    },
+    {
+      "id": "DoD6",
+      "status": "not_applicable",
+      "reason": "本页无远端数据请求区域（零请求实证）",
+      "evidence": [
+        "docs/migration/tasks/P43.md"
+      ]
+    },
+    {
+      "id": "DoD7",
+      "status": "not_applicable",
+      "reason": "本页无编辑态/草稿/轮询（不可用说明为静态 Alert）",
+      "evidence": [
+        "docs/migration/tasks/P43.md"
+      ]
+    },
+    {
+      "id": "DoD8",
+      "status": "not_applicable",
+      "reason": "本页无写操作",
+      "evidence": [
+        "docs/migration/tasks/P43.md"
+      ]
+    },
+    {
+      "id": "DoD9",
+      "status": "not_applicable",
+      "reason": "本页无文件传输",
+      "evidence": [
+        "docs/migration/tasks/P43.md"
+      ]
+    },
+    {
+      "id": "DoD10",
+      "status": "not_applicable",
+      "reason": "本页无关联对象与地图",
+      "evidence": [
+        "docs/migration/tasks/P43.md"
+      ]
+    },
+    {
+      "id": "DoD11",
+      "status": "passed",
+      "reason": "profile 命名空间四语言分片齐备（en 10 键沿用+禁用键术语收敛；繁日韩 10 键补译，术语对齐 menu/access-user），五语言逐语言实测页面文案/页签/html lang",
+      "evidence": [
+        "docs/migration/tasks/P43.md",
+        "src/i18n/locales/zh-TW/profile.ts",
+        "src/i18n/locales/ja-JP/profile.ts",
+        "src/i18n/locales/ko-KR/profile.ts"
+      ]
+    },
+    {
+      "id": "DoD12",
+      "status": "passed",
+      "reason": "页面无用户名称/日志/原始标识翻译场景；零业务请求故无 Accept-Language 边界问题（公共机制归 T00）",
+      "evidence": [
+        "docs/migration/tasks/P43.md"
+      ]
+    },
+    {
+      "id": "DoD13",
+      "status": "passed",
+      "reason": "MacOS 外壳（顶栏/页签/Dock/玻璃效果）保留；1920/1366 × 浅色/深色四组截图布局完整无溢出",
+      "evidence": [
+        "docs/migration/evidence/P43/run-94e66b2a-1c48-4651-adde-ae4a9513e6a7/screenshots"
+      ]
+    },
+    {
+      "id": "DoD14",
+      "status": "not_applicable",
+      "reason": "本页无统计与时间业务（顶栏时钟为外壳既有能力）",
+      "evidence": [
+        "docs/migration/tasks/P43.md"
+      ]
+    },
+    {
+      "id": "DoD15",
+      "status": "passed",
+      "reason": "静态门禁四项全绿 + 真实登录浏览器验收 + 零请求核查；无写操作无 mock",
+      "evidence": [
+        "docs/migration/tasks/P43.md"
+      ]
+    },
+    {
+      "id": "DoD16",
+      "status": "passed",
+      "reason": "死代码清零（7 文件删除）、缺口登记（G12 前端侧收口）、消费者影响说明（i18n.ts 全站语言加载 build 佐证）、追踪编号登记",
+      "evidence": [
+        "docs/migration/gaps.md",
+        "docs/migration/tasks/P43.md"
+      ]
+    },
+    {
+      "id": "A01",
+      "status": "passed",
+      "reason": "P43 承接目标模板公共入口收口（不在 45 旧叶子内）；profile/菜单管理/重复用户角色入口/活服务边界逐项核对完成",
+      "evidence": [
+        "docs/migration/tasks/P43.md"
+      ]
+    },
+    {
+      "id": "A02",
+      "status": "not_applicable",
+      "reason": "本任务不含暂缓页（H01-H03 独立交付）",
+      "evidence": [
+        "docs/migration/tasks/P43.md"
+      ]
+    },
+    {
+      "id": "A03",
+      "status": "passed",
+      "reason": "真实登录链路复用（正确凭据登录成功跳转 redirect 目标）；profile 显示真实会话无伪管理员数据",
+      "evidence": [
+        "docs/migration/tasks/P43.md"
+      ]
+    },
+    {
+      "id": "A04",
+      "status": "deferred",
+      "category": "cross_page",
+      "basis": "真实 token 过期收敛与双窗口退出同步为长会话场景，IAB 环境无法构造（与 T00/P01/P02/P21 同口径）；本轮实测登出清理（token=null/user=null）与持久化恢复（reload 后 dark+zh-CN+会话）",
+      "owner": "V01",
+      "resumeCondition": "V01 长会话统一复核",
+      "evidence": [
+        "docs/migration/tasks/P43.md"
+      ],
+      "reason": "真实 token 过期收敛与双窗口退出同步为长会话场景，IAB 环境无法构造（与 T00/P01/P02/P21 同口径）；本轮实测登出清理（token=null/user=null）与持久化恢复（reload 后 dark+zh-CN+会话）"
+    },
+    {
+      "id": "A05",
+      "status": "passed",
+      "reason": "守卫实测（未登录回跳）；profile 无按钮权限码场景",
+      "evidence": [
+        "docs/migration/tasks/P43.md"
+      ]
+    },
+    {
+      "id": "A06",
+      "status": "passed",
+      "reason": "零业务请求即无协议偏差面；虚构 REST 端点（/menus）删除",
+      "evidence": [
+        "docs/migration/tasks/P43.md"
+      ]
+    },
+    {
+      "id": "A07",
+      "status": "passed",
+      "reason": "运行路径内最后一块 antd Table 遗留（menu 死页）随删除清除；本任务范围内全项目表格统一零残留（全局复核归 V01）",
+      "evidence": [
+        "docs/migration/tasks/P43.md"
+      ]
+    },
+    {
+      "id": "A08",
+      "status": "not_applicable",
+      "reason": "本页无表格",
+      "evidence": [
+        "docs/migration/tasks/P43.md"
+      ]
+    },
+    {
+      "id": "A09",
+      "status": "not_applicable",
+      "reason": "本页无表格选择与列偏好",
+      "evidence": [
+        "docs/migration/tasks/P43.md"
+      ]
+    },
+    {
+      "id": "A10",
+      "status": "passed",
+      "reason": "页面 remount/切语言全程 XHR 计数=0，无竞争面",
+      "evidence": [
+        "docs/migration/tasks/P43.md"
+      ]
+    },
+    {
+      "id": "A11",
+      "status": "not_applicable",
+      "reason": "本页无远端数据区域（零请求）",
+      "evidence": [
+        "docs/migration/tasks/P43.md"
+      ]
+    },
+    {
+      "id": "A12",
+      "status": "not_applicable",
+      "reason": "本页无实时轮询",
+      "evidence": [
+        "docs/migration/tasks/P43.md"
+      ]
+    },
+    {
+      "id": "A13",
+      "status": "not_applicable",
+      "reason": "本页无草稿（编辑区为不可用说明，非表单）",
+      "evidence": [
+        "docs/migration/tasks/P43.md"
+      ]
+    },
+    {
+      "id": "A14",
+      "status": "not_applicable",
+      "reason": "本页无控制/写命令",
+      "evidence": [
+        "docs/migration/tasks/P43.md"
+      ]
+    },
+    {
+      "id": "A15",
+      "status": "not_applicable",
+      "reason": "本页无批量与并发写入",
+      "evidence": [
+        "docs/migration/tasks/P43.md"
+      ]
+    },
+    {
+      "id": "A16",
+      "status": "not_applicable",
+      "reason": "本页无文件传输",
+      "evidence": [
+        "docs/migration/tasks/P43.md"
+      ]
+    },
+    {
+      "id": "A17",
+      "status": "not_applicable",
+      "reason": "本页无地图与关联对象",
+      "evidence": [
+        "docs/migration/tasks/P43.md"
+      ]
+    },
+    {
+      "id": "A18",
+      "status": "not_applicable",
+      "reason": "本页无工艺嵌套",
+      "evidence": [
+        "docs/migration/tasks/P43.md"
+      ]
+    },
+    {
+      "id": "A19",
+      "status": "not_applicable",
+      "reason": "本页无统计口径",
+      "evidence": [
+        "docs/migration/tasks/P43.md"
+      ]
+    },
+    {
+      "id": "A20",
+      "status": "passed",
+      "reason": "五语言切换（页面/页签/html lang）+ 双主题双视口（1920×945、1366×728 × light/dark）实测截图",
+      "evidence": [
+        "docs/migration/evidence/P43/run-94e66b2a-1c48-4651-adde-ae4a9513e6a7/screenshots"
+      ]
+    },
+    {
+      "id": "A21",
+      "status": "passed",
+      "reason": "菜单 CRUD 虚假能力（虚构 REST /menus）整体删除；profile 无伪造资料/示例数据；无 mock fallback",
+      "evidence": [
+        "docs/migration/tasks/P43.md"
+      ]
+    },
+    {
+      "id": "A22",
+      "status": "passed",
+      "reason": "/profile 直访守卫+合法回跳+登录落点 redirect 规则实测；Header 入口导航实测；无历史拼写别名场景（模板地址）",
+      "evidence": [
+        "docs/migration/tasks/P43.md"
+      ]
+    },
+    {
+      "id": "A23",
+      "status": "passed",
+      "reason": "pnpm check（lint/typecheck/structure）+ build 全绿；零依赖变更；无无关格式化",
+      "evidence": [
+        "docs/migration/tasks/P43.md"
+      ]
+    },
+    {
+      "id": "A24",
+      "status": "deferred",
+      "category": "cross_page",
+      "basis": "长时多页签/真实规模稳定性归 V01 统一收口（P21 同口径）；本页零请求无资源增长面",
+      "owner": "V01",
+      "resumeCondition": "V01 稳定性专项",
+      "evidence": [
+        "docs/migration/tasks/P43.md"
+      ],
+      "reason": "长时多页签/真实规模稳定性归 V01 统一收口（P21 同口径）；本页零请求无资源增长面"
+    },
+    {
+      "id": "I01",
+      "status": "passed",
+      "reason": "五语言切换实测（含繁日韩新分片真实消费）；reload 后语言偏好恢复实测（zh-CN + dark 主题同时验证）",
+      "evidence": [
+        "docs/migration/tasks/P43.md"
+      ]
+    },
+    {
+      "id": "I02",
+      "status": "passed",
+      "reason": "profile 旧模板文案映射登记 i18n-map（10 键四语言）；模板遗留 system 死键 26 个清除并登记；i18n-missing 对应条目移除",
+      "evidence": [
+        "docs/migration/i18n-map.md",
+        "docs/migration/i18n-missing.md"
+      ]
+    },
+    {
+      "id": "I03",
+      "status": "passed",
+      "reason": "{{username}} 插值五语言正确渲染（Account root / ログイン中のアカウント root / 계정 root 实测）",
+      "evidence": [
+        "docs/migration/tasks/P43.md"
+      ]
+    },
+    {
+      "id": "I04",
+      "status": "passed",
+      "reason": "语言切换无整页刷新（SPA 内切换，XHR 计数=0 无写请求重发面）；缓存页签语言同步由基座机制承担（本页无草稿）",
+      "evidence": [
+        "docs/migration/tasks/P43.md"
+      ]
+    },
+    {
+      "id": "I05",
+      "status": "passed",
+      "reason": "antd Descriptions/Alert/Tag 随 ConfigProvider 语言切换；本页无表格/图表/日期控件",
+      "evidence": [
+        "docs/migration/tasks/P43.md"
+      ]
+    },
+    {
+      "id": "I06",
+      "status": "deferred",
+      "category": "cross_page",
+      "basis": "网络级资源加载失败不白屏为 IAB 无法构造场景（与 T00/P01/P02/P21 同口径）；本页繁日韩分片补齐后不再依赖回退路径",
+      "owner": "V01",
+      "resumeCondition": "V01 资源故障统一复核",
+      "evidence": [
+        "docs/migration/tasks/P43.md"
+      ],
+      "reason": "网络级资源加载失败不白屏为 IAB 无法构造场景（与 T00/P01/P02/P21 同口径）；本页繁日韩分片补齐后不再依赖回退路径"
+    },
+    {
+      "id": "I07",
+      "status": "not_applicable",
+      "reason": "本页零业务请求，无语言头与后端文案边界（公共机制归 T00 实证）",
+      "evidence": [
+        "docs/migration/tasks/P43.md"
+      ]
+    },
+    {
+      "id": "I08",
+      "status": "passed",
+      "reason": "五语言/双主题/双视口布局实测；本页无日期数值业务展示（切语言不改业务值）",
+      "evidence": [
+        "docs/migration/tasks/P43.md"
+      ]
+    }
+  ],
+  "notes": "P43 为清理收口任务：代码基线 e8fbd5f（menu 死链 7 文件删除 + profile 纪律收敛 + 三语言分片新增）。本页零业务接口（真实只读语义=零请求 XHR 计数实证），故无独立 API 联调脚本；真实登录链路与浏览器整页验收全走真实后端。deferred 三项（A04/A24/I06）与 T00/P01/P02/P21 已登记口径一致，全部归 V01。verification=partial（存在 deferred），gate=ready；不勾选 TASKS。",
+  "releaseReasons": {
+    "scope": "目标模板公共入口逐项核对收口：profile 保留真实会话呈现、资料编辑不可用说明、菜单管理死链删除、重复用户/角色入口复核无残留、活服务逐一核对保留",
+    "static": "pnpm lint（477 文件 0/0）+ typecheck + check:structure（470 源文件）+ build（1.21s）全绿；删除链无悬空导入",
+    "readOnly": "本页零业务请求（window 级 XHR/fetch 计数器实证 remount 后计数=0，不调用 /users/me）；真实登录链路（错误凭据守卫/正确凭据登录/redirect 落点）全走真实后端",
+    "ui": "浏览器整页验收：守卫回跳/登录落点/页面渲染/入口导航/五语言/双主题双视口四组截图/登出清理；截图仅本地留存（screenshots/ 4 张）",
+    "sharedConsumers": "公共文件仅 i18n/i18n.ts（删死注册+补 profile 注册，build 全绿佐证全站语言加载无回归）；删除链消费者核查=仅链内互引；definitions.tsx 零改动"
+  }
+}
