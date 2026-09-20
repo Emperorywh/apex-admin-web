@@ -1,0 +1,49 @@
+{
+  "ok": true,
+  "taskId": "P33",
+  "runId": "run-p33-readonly",
+  "checkedAt": "2026-09-20T10:21:12.497Z",
+  "baseUrl": "http://localhost:5173",
+  "checks": [
+    {
+      "step": "login",
+      "ok": true,
+      "detail": "HTTP 200 code=200 activated=true"
+    },
+    {
+      "step": "quantity-default",
+      "ok": true,
+      "detail": "HTTP 200 code=200 rows=6"
+    },
+    {
+      "step": "quantity-filtered-equivalence",
+      "ok": true,
+      "detail": "HTTP 200 code=200 rows=1 types=WORK states=SUCCEEDED"
+    },
+    {
+      "step": "efficiency-default",
+      "ok": true,
+      "detail": "HTTP 200 code=200 rows=2 types=PARK|WORK"
+    },
+    {
+      "step": "efficiency-filtered-equivalence",
+      "ok": true,
+      "detail": "HTTP 200 code=200 rows=1 types=WORK"
+    },
+    {
+      "step": "simple-vehicles",
+      "ok": true,
+      "detail": "HTTP 200 code=200 items=56"
+    },
+    {
+      "step": "quantity-no-token-rejected",
+      "ok": true,
+      "detail": "HTTP 200 code=1000000 message=用户未登录"
+    },
+    {
+      "step": "logout",
+      "ok": true,
+      "detail": "HTTP 200 code=200"
+    }
+  ]
+}

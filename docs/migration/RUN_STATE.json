@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "revision": 40,
-  "updatedAt": "2026-09-20T09:38:32.182Z",
+  "revision": 44,
+  "updatedAt": "2026-09-20T11:03:47.139Z",
   "workspace": {
     "root": "C:\\code\\apex-admin-web",
     "branch": "apple-rxx",
@@ -842,13 +842,18 @@
         "P38",
         "P39"
       ],
-      "implementation": "not_started",
-      "verification": "not_started",
-      "gate": "blocked",
+      "implementation": "implemented",
+      "verification": "partial",
+      "gate": "ready",
       "handoff": "docs/migration/tasks/P33.md",
-      "acceptanceRecord": null,
-      "pendingItems": [],
-      "note": ""
+      "acceptanceRecord": "docs/migration/evidence/P33/run-3057971e-9304-4217-8018-ebab094591e0/acceptance.json",
+      "pendingItems": [
+        "A24：长时多页签/真实规模稳定性与图表重建资源回收归 V01 统一收口（dispose/重建机制级已实现）",
+        "I06：真实网络级资源加载失败不白屏归 V01 复核（IAB 环境限制未构造；T00/P01/P02/P21/P43 同口径）",
+        "G15：统计公式（Σ各类型平均值口径）真实后端语义最终核对归 V01 真实数据复核（页面侧口径已显式说明并交接 P35）",
+        "zh-TW/ja-JP 运行时逐语言切换留 V01 五语言回归（en/ko 已实测两条加载路径，分片同构 typecheck 键一致）"
+      ],
+      "note": "P33 交付（2026-09-20，run-3057971e）：双页签任务统计整页（report-order 服务+echarts 6.1.0 图表+纯计算模块+口径提示）；旧路由注释不可达而规格/TASKS 明确迁移的范围事实登记；静态门禁全绿；真实只读 8/8；浏览器整页验收（深浅×双视口×简中EN韩，失败态会话失效场景实测）；verification=partial（A24/I06/G15 deferred 归 V01），gate=ready；不勾选 TASKS"
     },
     {
       "id": "P34",
@@ -1008,8 +1013,47 @@
       "note": ""
     }
   ],
-  "currentTaskId": "P43",
+  "currentTaskId": "P33",
   "run": {
+    "runId": "run-3057971e-9304-4217-8018-ebab094591e0",
+    "taskId": "P33",
+    "purpose": "implement",
+    "owner": "sess_b566e27e-9f2e-4e36-ae83-2c4c5be2da51",
+    "runner": {
+      "provider": "zcode",
+      "sessionId": "sess_b566e27e-9f2e-4e36-ae83-2c4c5be2da51",
+      "turnId": "turn_29ec97aa-86bb-43db-9d44-764d4835ab35",
+      "automationRunId": "automation-4c58cefd-88c2-4b25-b14d-53904b310c3e:1789897800000",
+      "identitySource": "running_tool_part",
+      "toolPartId": "part_mu9mygbx_2ffcaa13-129f-4700-8a72-35c2d593ac8b",
+      "toolCallId": "call_a0eb127e8c974c78863738c6",
+      "messageId": "msg_mu9my9qu_5e1e8fd1-722e-4472-b8cc-126a910f70eb"
+    },
+    "startedAt": "2026-09-20T09:50:36.642Z",
+    "baseHead": "14d567db1d14c2cfacebd28aeaf98300bc4d5052",
+    "initialStatus": "M docs/migration/RUN_STATE.json\n?? docs/migration/evidence/runs/run-6a494b98-6cb3-4f57-9649-169e4b5ebda1.json\n?? docs/migration/evidence/runs/run-94e66b2a-1c48-4651-adde-ae4a9513e6a7.json",
+    "progress": [
+      "P33 任务统计整页交付：services/report-order（POST orderQuantityStatistics/orderEfficiencyStatistics 查询性质归只读）+ features/analyze-visual/order-statistics（纯计算 statistics.ts / useStatisticsQuery 防乱序+失败清空+可见有限退避自动重查 / StatisticsBarChart echarts 6.1.0 按需注册 / MetricHint 口径提示 / 双页签面板）+ 页面整页重写解除 pending。",
+      "新增依赖 echarts@6.1.0（官方 npm 正式版，lock 已提交）；i18n report-order 四语言全量真译分片+注册，orderRecord fallback 复用筛选/枚举译文；口径长文案以完整简中文案为 key。",
+      "静态门禁全绿：lint 0/0（491 文件）、typecheck、structure 483、build 1.18s。",
+      "真实只读 8/8（readonly-result.json）：登录/数量默认 6 行/数量筛选收敛等价/效率默认 2 类型/效率筛选收敛/车辆 56 项/无令牌 1000000 拒绝/登出。",
+      "浏览器整页验收：深浅主题×1920/1366×简中EN韩，数量/效率图表渲染、筛选联动、口径提示长文案、语言切换动态重建、1366 自适应、登出清理；失败态经会话失效真实场景触发 StateBlock。",
+      "文档登记：tasks/P33.md 交接（含旧路由注释不可达范围事实）、contracts.md 变更日志（echarts 依赖+统计口径 owner 交接 P35）、operations.md 3 行、i18n-map.md report-order 段；acceptance.json 41 项矩阵（deferred：A24/I06/G15）。"
+    ],
+    "nextSteps": [
+      "推送 origin/apple-rxx（代码 2deac9c + 文档提交），push --commit 核对远端，end --outcome completed。"
+    ],
+    "blocker": null
+  },
+  "publish": {
+    "status": "synced",
+    "taskId": "P43",
+    "commit": "14d567db1d14c2cfacebd28aeaf98300bc4d5052",
+    "confirmedRemoteHead": "14d567db1d14c2cfacebd28aeaf98300bc4d5052",
+    "checkedAt": "2026-09-20T09:40:02.352Z",
+    "error": null
+  },
+  "lastRun": {
     "runId": "run-94e66b2a-1c48-4651-adde-ae4a9513e6a7",
     "taskId": "P43",
     "purpose": "implement",
@@ -1036,52 +1080,16 @@
     "nextSteps": [
       "提交 acceptance.json 与检查点，push --commit 到 origin/apple-rxx，end --outcome completed。"
     ],
-    "blocker": null
-  },
-  "publish": {
-    "status": "synced",
-    "taskId": "P21",
-    "commit": "02923b315c87a1ae0d9f772edf07c698f32ef291",
-    "confirmedRemoteHead": "02923b315c87a1ae0d9f772edf07c698f32ef291",
-    "checkedAt": "2026-09-20T08:53:07.909Z",
-    "error": null
-  },
-  "lastRun": {
-    "runId": "run-6a494b98-6cb3-4f57-9649-169e4b5ebda1",
-    "taskId": "P21",
-    "purpose": "implement",
-    "owner": "sess_63fa6ccb-55fe-47c0-b03d-2ae18c3dd1f9",
-    "runner": {
-      "provider": "zcode",
-      "sessionId": "sess_63fa6ccb-55fe-47c0-b03d-2ae18c3dd1f9",
-      "turnId": "turn_1663d1ce-f3c7-49e5-8933-f0703a09a1aa",
-      "automationRunId": "automation-4c58cefd-88c2-4b25-b14d-53904b310c3e:manual:9c27397d-8a53-45ca-8f65-a753aafd4513",
-      "identitySource": "running_tool_part",
-      "toolPartId": "part_mu9iqa1v_9512c5ec-34b9-42c1-aa75-d21a964220c3",
-      "toolCallId": "call_5ff549dcea3141889f62f4dd",
-      "messageId": "msg_mu9iq4qj_7baa3638-b4e1-45ed-85de-cc01b712e3f5"
-    },
-    "startedAt": "2026-09-20T07:52:15.682Z",
-    "baseHead": "888d1a2d0365b4da88371e41f08ad431153c4257",
-    "initialStatus": "M docs/migration/RUN_STATE.json\n?? docs/migration/evidence/runs/workflow-identity-20260920.json",
-    "progress": [
-      "递归核对旧源码（index/FlowModal/CronExpress 六Tab/SubFlowTable）与 OpenAPI orderFlow 四 operation，逐列逐字段等价；补齐唯一差距：OrderFlowModal 模板选项加载失败 Transfer 显示「加载失败」（P10/P20 同款）。",
-      "静态门禁全绿（lint 481 文件 0/0、typecheck、structure 474、build 1.14s）；真实只读联调 8/8；浏览器整页验收全过；IAB 环境现象与垫片边界按 AGENTS 登记。",
-      "acceptance.json 49 项矩阵（deferred：A14/DoD8 site_acceptance、A04/A24/I06 cross_page 均归 V01）；代码提交 e8c556d。"
-    ],
-    "nextSteps": [
-      "提交 acceptance.json 与交接证据，push --commit e8c556d301ccb65400450a99651ec36f7a3f64fd，end --outcome completed。"
-    ],
     "blocker": null,
-    "endedAt": "2026-09-20T08:53:14.231Z",
+    "endedAt": "2026-09-20T09:40:14.084Z",
     "outcome": "completed",
-    "endHead": "02923b315c87a1ae0d9f772edf07c698f32ef291",
+    "endHead": "14d567db1d14c2cfacebd28aeaf98300bc4d5052",
     "publish": {
       "status": "synced",
-      "taskId": "P21",
-      "commit": "02923b315c87a1ae0d9f772edf07c698f32ef291",
-      "confirmedRemoteHead": "02923b315c87a1ae0d9f772edf07c698f32ef291",
-      "checkedAt": "2026-09-20T08:53:07.909Z",
+      "taskId": "P43",
+      "commit": "14d567db1d14c2cfacebd28aeaf98300bc4d5052",
+      "confirmedRemoteHead": "14d567db1d14c2cfacebd28aeaf98300bc4d5052",
+      "checkedAt": "2026-09-20T09:40:02.352Z",
       "error": null
     }
   },

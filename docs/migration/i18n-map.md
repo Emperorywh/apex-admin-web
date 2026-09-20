@@ -111,6 +111,8 @@
 3. **auth / error**：旧资源无独立对应分片（登录页与错误页文案散落顶层占位键）；T00.8 按目标键集合交付。「重试」沿用旧真译。P42 补齐 404 页旧 key 映射：`抱歉，您访问的页面不存在`（en 真译 Sorry, the page you visited does not exist；繁日韩 B1 基线译文）、`首页`（en 真译 Home）、`去登录`（en 真译 Go to Login，与 access-denied 同术语）；同时移除无消费者的模板 key「页面不存在或已被移动」「返回工作台」。
 4. **map**：T00.7 新增键，无旧 key 映射；T00.8 补齐四语言。
 
+5. **report-order（P33）**：旧 key 全部为顶层中文 key（`C:\code\dd\src\locales\*.json`），映射去向分两类——① 页面私有 key（页签/图表标题/占位/均值类目/时长单元词/口径说明）进 `report-order` 四语言分片：en 沿用旧真译（Task Quantity Statistics / Avg Total Time / Time (s) / Hour / minute / second / 0s 等），繁/日/韩旧资源为简中占位、按 B1 基线补真实译文（术语与 orderRecord 对齐：任務/작업/タスク）；② 筛选标签与枚举 label（开始时间/结束时间/任务类型/任务状态/任务车辆/查询、工作任务…失败 七状态四类型）经 `useTranslation(['report-order','orderRecord'], { nsMode: 'fallback' })` 直接复用 orderRecord 既有译文，不复制第二份。口径说明为本任务新增文案（完整简中文案为 key，四语言全量交付）。无新增缺失登记。观察项：en 时长单元词沿用旧真译拼接效果，V01 裁决。
+
 ## 规则摘要（详见规格 18.2）
 
 1. 旧 Umi 嵌套菜单 key 按目标路由元数据重新映射，不机械复制结构。

@@ -1,0 +1,559 @@
+{
+  "taskId": "P33",
+  "codeCommit": "2deac9c3c761da251efa396223401cb541b57fe8",
+  "codeFiles": [
+    {
+      "path": "src/services/report-order/report-order.service.ts",
+      "sha256": "c12f768cf298d988d0dbc1205e2e1415d2c0fafaadfb1f7574402235e4b2f9f2"
+    },
+    {
+      "path": "src/services/report-order/report-order.service.types.ts",
+      "sha256": "8d2871b594ce022b31828336d07f5f2dcecc60a764d52e18a946856f242de234"
+    },
+    {
+      "path": "src/features/analyze-visual/order-statistics/statistics.ts",
+      "sha256": "092596f9520396a6889e3f525afb8be32283db52d41a7059dae35802b4426fb2"
+    },
+    {
+      "path": "src/features/analyze-visual/order-statistics/hooks/useStatisticsQuery.ts",
+      "sha256": "2ceebd759fb506d068ce1a80f0bad16134a5f3c2e3f6bfcd38f223540186a133"
+    },
+    {
+      "path": "src/features/analyze-visual/order-statistics/components/OrderStatisticsFilter.tsx",
+      "sha256": "995374d4248d17f08335b5f50a63ee0619d43e8aee05a140aafbe2159fccc9eb"
+    },
+    {
+      "path": "src/features/analyze-visual/order-statistics/components/OrderStatisticsFilter.module.css",
+      "sha256": "4165ffdd9a5542c2a95442af501fe83bda639911f1b401cdae678b6cae83330e"
+    },
+    {
+      "path": "src/features/analyze-visual/order-statistics/components/QuantityStatisticsPanel.tsx",
+      "sha256": "d700f217bf11f03efdfbbdc60fb9c9ab29e3080855ed55e2ef66afd50fb1f43d"
+    },
+    {
+      "path": "src/features/analyze-visual/order-statistics/components/EfficiencyStatisticsPanel.tsx",
+      "sha256": "460dc4bf8010082b5f75fb2db720aeef588586c82d75ad7e958f4140835c52e0"
+    },
+    {
+      "path": "src/features/analyze-visual/order-statistics/components/StatisticsBarChart.tsx",
+      "sha256": "d91c970b23522bf2689660b0f23462287fb0f78d32b25f72927829a5ee9af6db"
+    },
+    {
+      "path": "src/features/analyze-visual/order-statistics/components/StatisticsBarChart.module.css",
+      "sha256": "efecadc85bf1819eeefe3665a379c1655fcfa245a13ee17d3d658ebe6e54ec7d"
+    },
+    {
+      "path": "src/features/analyze-visual/order-statistics/components/StatisticsPanel.module.css",
+      "sha256": "10f903d81715b2b860d939c6c9138392ef317220837e1e37b4041ec0bdb7490c"
+    },
+    {
+      "path": "src/features/analyze-visual/order-statistics/components/MetricHint.tsx",
+      "sha256": "b81918439603101fccff2baa1d632095e1a43039a2ea556e6e9c8b62ba03585a"
+    },
+    {
+      "path": "src/features/analyze-visual/order-statistics/components/MetricHint.module.css",
+      "sha256": "6ed9aa7a584cdb564703bf67f7d23551498a293749ec7e9be47ce1a95a89e35c"
+    },
+    {
+      "path": "src/pages/analyze-visual/OrderStatistics/OrderStatistics.tsx",
+      "sha256": "0e6947d1910bbd6e2b8036f99210883ba3f9733bf3aa6bcef89a0d4294c17ad7"
+    },
+    {
+      "path": "src/pages/analyze-visual/OrderStatistics/OrderStatistics.module.css",
+      "sha256": "fdc6d823d175469844354e0068667cb867fe3d1e00414f13f7fee228b4bd34e3"
+    },
+    {
+      "path": "src/router/definitions.tsx",
+      "sha256": "fc0aff2f0307e4b4e5b2682f881e7814dac5be31c21f8b21a13c1380b187c560"
+    },
+    {
+      "path": "src/i18n/i18n.ts",
+      "sha256": "57c2b8f81e8d4562065026bbb14f7ccdfafecf3166eb0cb851ff4b32c329bd9c"
+    },
+    {
+      "path": "src/i18n/locales/en-US/report-order.ts",
+      "sha256": "ad5e9e55d79ddca7e0e5e8017839005944b8cf4c0bad59b73d1f0bf1161e9cac"
+    },
+    {
+      "path": "src/i18n/locales/zh-TW/report-order.ts",
+      "sha256": "521a67bbe58b34ebefedb9a3124515d03bd262fa56cc2a9a5996ec8ee4cb184f"
+    },
+    {
+      "path": "src/i18n/locales/ja-JP/report-order.ts",
+      "sha256": "08e946e8c87c8662e3862aff206310c9caa0e8d6cec3a30f136a12f1d0aad7d0"
+    },
+    {
+      "path": "src/i18n/locales/ko-KR/report-order.ts",
+      "sha256": "e8010767e47406a7367821d617ff06b856b09611126a29ca98e3ebf072ba87eb"
+    },
+    {
+      "path": "package.json",
+      "sha256": "00b953c81c6f5a2d460b44ea13f5eb05a0b4ac152a702f8cfb97bad20e72fe20"
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "sha256": "f9735603e7a5b5c667a9cbea9182bed3fc08778ac53037e9e6463d85ae98684c"
+    }
+  ],
+  "releaseChecks": {
+    "scope": "passed",
+    "static": "passed",
+    "readOnly": "passed",
+    "ui": "passed",
+    "sharedConsumers": "passed"
+  },
+  "releaseReasons": [],
+  "items": [
+    {
+      "id": "TASK",
+      "status": "passed",
+      "reason": "任务卡专项全过：双页签数量/效率统计迁移、受支持筛选（效率页签契约无 orderStates 与旧同形）、echarts 图表+键盘可达口径提示、纯计算模块归专属 statistics.ts 并交接 P35、0/缺失/未知状态/空结果/失败区分、不制造同比环比、图表实例重建/销毁（DoD14 与专项详述）",
+      "evidence": [
+        "docs/migration/tasks/P33.md",
+        "docs/migration/evidence/P33/run-3057971e-9304-4217-8018-ebab094591e0/readonly-result.json",
+        "docs/migration/evidence/P33/run-3057971e-9304-4217-8018-ebab094591e0/run-p33-readonly.mjs"
+      ]
+    },
+    {
+      "id": "DoD1",
+      "status": "passed",
+      "reason": "旧 OrderStatistics 全部 4 文件（index/QuantityStatistics/EfficiencyStatistics/less）递归核对：无弹窗/子表/文件操作/跨页跳转；操作映射逐项登记交接记录",
+      "evidence": [
+        "docs/migration/tasks/P33.md"
+      ]
+    },
+    {
+      "id": "DoD2",
+      "status": "passed",
+      "reason": "页面不导入 axios 不拼 URL；严格 /fms/v1 路径与 OpenAPI schema（OrderQuantityStatisticsParam/OrderEfficiencyStatisticsParam/OrderQuantity/OrderEfficiency）逐字段一致；HTTP 200+code=200 判定；int64 JSON number 承载（G10 与 P21/P22 同口径）；无虚构 REST",
+      "evidence": [
+        "docs/migration/evidence/P33/run-3057971e-9304-4217-8018-ebab094591e0/readonly-result.json",
+        "docs/migration/evidence/P33/run-3057971e-9304-4217-8018-ebab094591e0/run-p33-readonly.mjs"
+      ]
+    },
+    {
+      "id": "DoD3",
+      "status": "passed",
+      "reason": "路由守卫 statistics:order:view（旧 PERM 定义未造码）；页内无按钮码（旧页查询按钮亦无 access）；失败/空结果/无权限经 StateBlock 与守卫区分；后端拒绝（1000000）不当成功",
+      "evidence": [
+        "docs/migration/evidence/P33/run-3057971e-9304-4217-8018-ebab094591e0/readonly-result.json",
+        "docs/migration/evidence/P33/run-3057971e-9304-4217-8018-ebab094591e0/run-p33-readonly.mjs",
+        "docs/migration/tasks/P33.md"
+      ]
+    },
+    {
+      "id": "DoD4",
+      "status": "not_applicable",
+      "reason": "旧页面为纯图表页（Tabs+筛选表单+ECharts）无任何表格，无表格替换与二次封装场景",
+      "evidence": [
+        "docs/migration/tasks/P33.md"
+      ]
+    },
+    {
+      "id": "DoD5",
+      "status": "not_applicable",
+      "reason": "无表格则无分页/行 ID/列偏好语义；统计接口返回全量聚合数组非分页",
+      "evidence": [
+        "docs/migration/tasks/P33.md"
+      ]
+    },
+    {
+      "id": "DoD6",
+      "status": "passed",
+      "reason": "useStatisticsQuery：新查询出发即中止旧请求（防乱序）、页签 scope 级联取消且静默、真正失败清空 data 置 error 保留筛选、StateBlock 呈现无重试按钮（按钮纪律）、可见有限退避自动重查 3 次（间隔复用轮询常量）",
+      "evidence": [
+        "docs/migration/tasks/P33.md"
+      ]
+    },
+    {
+      "id": "DoD7",
+      "status": "passed",
+      "reason": "筛选表单值在查询与失败间保留；普通查询页不轮询；Activity 页签隐藏卸载、恢复重挂自动重查一次=重新激活即查；登出清会话数据实测",
+      "evidence": [
+        "docs/migration/tasks/P33.md"
+      ]
+    },
+    {
+      "id": "DoD8",
+      "status": "not_applicable",
+      "reason": "本页无任何写操作/批量/控制（两个统计 POST 均查询性质无副作用）",
+      "evidence": [
+        "docs/migration/tasks/P33.md"
+      ]
+    },
+    {
+      "id": "DoD9",
+      "status": "not_applicable",
+      "reason": "本页无文件上传下载",
+      "evidence": [
+        "docs/migration/tasks/P33.md"
+      ]
+    },
+    {
+      "id": "DoD10",
+      "status": "not_applicable",
+      "reason": "本页无地图/关联选择",
+      "evidence": [
+        "docs/migration/tasks/P33.md"
+      ]
+    },
+    {
+      "id": "DoD11",
+      "status": "passed",
+      "reason": "report-order 四语言全量真译分片+注册；筛选/枚举复用 orderRecord 译文（fallback 模式路由 meta 声明齐）；运行时 zh-CN/en-US/ko-KR 实测图表/筛选/页签动态重建不刷新；zh-TW/ja-JP 分片同构 typecheck 键一致、运行时切换登记 V01 回归",
+      "evidence": [
+        "docs/migration/tasks/P33.md",
+        "docs/migration/tasks/P33.md"
+      ]
+    },
+    {
+      "id": "DoD12",
+      "status": "passed",
+      "reason": "枚举提交协议原值（WORK/SUCCEEDED 直接入参）；语言切换不重发统计查询（数据无服务端语言差异面）；Accept-Language 由请求层统一（T00 机制）；en 时长单元词沿用旧真译登记观察项",
+      "evidence": [
+        "docs/migration/tasks/P33.md"
+      ]
+    },
+    {
+      "id": "DoD13",
+      "status": "passed",
+      "reason": "1920/1366 双视口+深浅主题整页实测：工作区容器未被撑破、筛选/图表/Dock 同视口可达、图表 ResizeObserver 自适应；数据以柱形+数值标签+文字类目表达不单靠颜色",
+      "evidence": [
+        "docs/migration/tasks/P33.md"
+      ]
+    },
+    {
+      "id": "DoD14",
+      "status": "passed",
+      "reason": "单位（秒）按 OpenAPI 注释并显式标注 y 轴「时间（秒）」；0 正常显示（柱顶标签 0 值不显示=旧同语义）、缺失按旧 || 0 语义计入求和且口径说明、未知状态显示协议原值、空结果空坐标系、失败清空呈现；本页无除法指标；时间序列化 yyyy-MM-dd HH:mm:ss 部署时区语义与旧等价；图表按需注册/释放",
+      "evidence": [
+        "docs/migration/evidence/P33/run-3057971e-9304-4217-8018-ebab094591e0/readonly-result.json",
+        "docs/migration/evidence/P33/run-3057971e-9304-4217-8018-ebab094591e0/run-p33-readonly.mjs",
+        "docs/migration/tasks/P33.md"
+      ]
+    },
+    {
+      "id": "DoD15",
+      "status": "passed",
+      "reason": "lint 0/0（491 文件）+typecheck+structure 483+build 1.18s 全绿；真实只读 8/8（查询性质 POST 按业务分类归只读）；无单元测试、无 mock server/合成数据",
+      "evidence": [
+        "docs/migration/evidence/P33/run-3057971e-9304-4217-8018-ebab094591e0/readonly-result.json",
+        "docs/migration/evidence/P33/run-3057971e-9304-4217-8018-ebab094591e0/run-p33-readonly.mjs"
+      ]
+    },
+    {
+      "id": "DoD16",
+      "status": "passed",
+      "reason": "本页全新构建无 mock/Umi/假进度残留；未消费模板 dashboard mock（P34 owner）；缺口/共享契约改动/新依赖（echarts@6.1.0）/适用 A/I 已列交接记录",
+      "evidence": [
+        "docs/migration/tasks/P33.md"
+      ]
+    },
+    {
+      "id": "A01",
+      "status": "passed",
+      "reason": "本页入口（45 旧叶子之一的注释路由例外）来源→目标→operation→权限映射完整登记；弹窗/子表/文件清点无遗漏（TASK 项）",
+      "evidence": [
+        "docs/migration/tasks/P33.md"
+      ]
+    },
+    {
+      "id": "A02",
+      "status": "not_applicable",
+      "reason": "本页非三个暂缓页，不涉及暂缓边界",
+      "evidence": [
+        "docs/migration/tasks/P33.md"
+      ]
+    },
+    {
+      "id": "A03",
+      "status": "not_applicable",
+      "reason": "认证实现归 P01/T00；本页复用真实登录会话（只读脚本登录 activated=true 作为消费证据）",
+      "evidence": [
+        "docs/migration/evidence/P33/run-3057971e-9304-4217-8018-ebab094591e0/readonly-result.json",
+        "docs/migration/evidence/P33/run-3057971e-9304-4217-8018-ebab094591e0/run-p33-readonly.mjs"
+      ]
+    },
+    {
+      "id": "A04",
+      "status": "deferred",
+      "category": "cross_page",
+      "basis": "本页实测登出清理（回 /login redirect 参数+auth 持久化清空）；真实 token 过期收敛与双窗口退出同步机制级归 V01 长会话复核",
+      "owner": "V01",
+      "resumeCondition": "V01 长会话统一复核（与 T00/P01/P02/P21/P43 同口径）",
+      "evidence": [
+        "docs/migration/tasks/P33.md"
+      ],
+      "reason": "本页实测登出清理（回 /login redirect 参数+auth 持久化清空）；真实 token 过期收敛与双窗口退出同步机制级归 V01 长会话复核"
+    },
+    {
+      "id": "A05",
+      "status": "passed",
+      "reason": "菜单导航进入（Dock→数据统计→任务统计）与直访 URL 守卫一致；页内无按钮码场景与旧一致；后端 1000000 拒绝不当成功",
+      "evidence": [
+        "docs/migration/tasks/P33.md"
+      ]
+    },
+    {
+      "id": "A06",
+      "status": "passed",
+      "reason": "真实 method/path/DTO/业务码证据（只读 8/8 含无令牌 1000000 拒绝形态）；错误统一经请求层 ApiError 不依赖英文 success 文案",
+      "evidence": [
+        "docs/migration/evidence/P33/run-3057971e-9304-4217-8018-ebab094591e0/readonly-result.json",
+        "docs/migration/evidence/P33/run-3057971e-9304-4217-8018-ebab094591e0/run-p33-readonly.mjs"
+      ]
+    },
+    {
+      "id": "A07",
+      "status": "not_applicable",
+      "reason": "本页无任何表格渲染（DoD4）",
+      "evidence": [
+        "docs/migration/tasks/P33.md"
+      ]
+    },
+    {
+      "id": "A08",
+      "status": "not_applicable",
+      "reason": "无表格分页/行 ID/排序语义（接口为全量聚合）",
+      "evidence": [
+        "docs/migration/tasks/P33.md"
+      ]
+    },
+    {
+      "id": "A09",
+      "status": "not_applicable",
+      "reason": "无表格列偏好/选择语义",
+      "evidence": [
+        "docs/migration/tasks/P33.md"
+      ]
+    },
+    {
+      "id": "A10",
+      "status": "passed",
+      "reason": "查询级 AbortController+计数器防乱序（新查询出发即中止旧请求）、页签 scope 级联取消静默（切页/关页/刷新）",
+      "evidence": [
+        "docs/migration/tasks/P33.md"
+      ]
+    },
+    {
+      "id": "A11",
+      "status": "passed",
+      "reason": "真实失败清空对应图表区域+StateBlock（会话失效场景实测）；筛选保留；可见有限退避自动重查恢复；不以空数组/旧图冒充成功",
+      "evidence": [
+        "docs/migration/tasks/P33.md"
+      ]
+    },
+    {
+      "id": "A12",
+      "status": "not_applicable",
+      "reason": "普通查询页无持续轮询（DoD7 口径）；失败自动重查为有限次退避，已在 DoD6/A11 登记",
+      "evidence": [
+        "docs/migration/tasks/P33.md"
+      ]
+    },
+    {
+      "id": "A13",
+      "status": "not_applicable",
+      "reason": "本页无编辑草稿；筛选值保留已由 DoD7 覆盖",
+      "evidence": [
+        "docs/migration/tasks/P33.md"
+      ]
+    },
+    {
+      "id": "A14",
+      "status": "not_applicable",
+      "reason": "本页无控制/写命令",
+      "evidence": [
+        "docs/migration/tasks/P33.md"
+      ]
+    },
+    {
+      "id": "A15",
+      "status": "not_applicable",
+      "reason": "本页无批量/并发写",
+      "evidence": [
+        "docs/migration/tasks/P33.md"
+      ]
+    },
+    {
+      "id": "A16",
+      "status": "not_applicable",
+      "reason": "本页无文件传输",
+      "evidence": [
+        "docs/migration/tasks/P33.md"
+      ]
+    },
+    {
+      "id": "A17",
+      "status": "not_applicable",
+      "reason": "本页无地图/关联",
+      "evidence": [
+        "docs/migration/tasks/P33.md"
+      ]
+    },
+    {
+      "id": "A18",
+      "status": "not_applicable",
+      "reason": "本页非工艺域",
+      "evidence": [
+        "docs/migration/tasks/P33.md"
+      ]
+    },
+    {
+      "id": "A19",
+      "status": "passed",
+      "reason": "真实数据（约 58 万任务规模）、单位/分母口径显式（Σ各类型平均值不等于整体平均已说明）、缺失不补零、图表与纯计算模块共用一源；真实空结果与失败分开",
+      "evidence": [
+        "docs/migration/evidence/P33/run-3057971e-9304-4217-8018-ebab094591e0/readonly-result.json",
+        "docs/migration/evidence/P33/run-3057971e-9304-4217-8018-ebab094591e0/run-p33-readonly.mjs",
+        "docs/migration/tasks/P33.md"
+      ]
+    },
+    {
+      "id": "A20",
+      "status": "passed",
+      "reason": "简中/EN/韩运行时+深浅主题+1366/1920 桌面 Chromium 整页实测；繁/日分片已交付、运行时切换登记 V01 回归",
+      "evidence": [
+        "docs/migration/tasks/P33.md"
+      ]
+    },
+    {
+      "id": "A21",
+      "status": "passed",
+      "reason": "本页零 mock（新建文件无 mock/随机/伪进度/fallback）；模板 dashboard mock 未消费未改动",
+      "evidence": [
+        "docs/migration/tasks/P33.md"
+      ]
+    },
+    {
+      "id": "A22",
+      "status": "passed",
+      "reason": "路由从 pending 解除进入登录落点候选；菜单导航/直访/登出 redirect 参数实测合法",
+      "evidence": [
+        "docs/migration/tasks/P33.md"
+      ]
+    },
+    {
+      "id": "A23",
+      "status": "passed",
+      "reason": "echarts@6.1.0 官方 npm 正式版+lock 提交；四门禁全绿；git diff 仅授权文件无无关格式化",
+      "evidence": [
+        "docs/migration/tasks/P33.md"
+      ]
+    },
+    {
+      "id": "A24",
+      "status": "deferred",
+      "category": "cross_page",
+      "basis": "图表 dispose/重建机制级实现（Activity 隐藏释放、主题语言切换重绘实测）；长时多页签真实规模资源观测需专用环境",
+      "owner": "V01",
+      "resumeCondition": "V01 统一长时稳定性收口",
+      "evidence": [
+        "docs/migration/tasks/P33.md"
+      ],
+      "reason": "图表 dispose/重建机制级实现（Activity 隐藏释放、主题语言切换重绘实测）；长时多页签真实规模资源观测需专用环境"
+    },
+    {
+      "id": "I01",
+      "status": "not_applicable",
+      "reason": "语言入口/规范化归 T00/P01 基座；本页消费同一机制（切换入口实测见 I04）",
+      "evidence": [
+        "docs/migration/tasks/P33.md"
+      ]
+    },
+    {
+      "id": "I02",
+      "status": "passed",
+      "reason": "旧 key 到 report-order/orderRecord 映射完整登记 i18n-map.md：en 旧真译沿用清单、繁/日/韩补译、口径说明新增 key、无新增缺失登记",
+      "evidence": [
+        "docs/migration/tasks/P33.md"
+      ]
+    },
+    {
+      "id": "I03",
+      "status": "passed",
+      "reason": "本页文案无插值/ICU；时长拼接单元词沿用旧真译（en Hour/minute/second 拼接效果沿用旧系统，观察项登记 V01 裁决）",
+      "evidence": [
+        "docs/migration/tasks/P33.md"
+      ]
+    },
+    {
+      "id": "I04",
+      "status": "passed",
+      "reason": "语言切换图表/筛选/页签动态重建不刷新整页、不丢筛选值、无写请求可重发——en/ko 实测",
+      "evidence": [
+        "docs/migration/tasks/P33.md"
+      ]
+    },
+    {
+      "id": "I05",
+      "status": "passed",
+      "reason": "antd ConfigProvider locale 全局同步（T00 基座）；echarts 图表文案（标题/轴/图例/悬浮提示）随语言由页面重建；下拉/按钮 antd 文案随全局",
+      "evidence": [
+        "docs/migration/tasks/P33.md"
+      ]
+    },
+    {
+      "id": "I06",
+      "status": "deferred",
+      "category": "cross_page",
+      "basis": "资源加载失败不白屏为 T00.8 懒加载基座行为（失败回退原语言）；IAB 环境限制未构造网络级故障",
+      "owner": "V01",
+      "resumeCondition": "V01 长会话/网络故障场景统一复核",
+      "evidence": [
+        "docs/migration/tasks/P33.md"
+      ],
+      "reason": "资源加载失败不白屏为 T00.8 懒加载基座行为（失败回退原语言）；IAB 环境限制未构造网络级故障"
+    },
+    {
+      "id": "I07",
+      "status": "passed",
+      "reason": "统计查询 Accept-Language 由请求层统一携带（T00 机制）；本页无导出/服务端语言文案边界项",
+      "evidence": [
+        "docs/migration/tasks/P33.md"
+      ]
+    },
+    {
+      "id": "I08",
+      "status": "passed",
+      "reason": "语言切换不改时间参数协议值/枚举原值/时区语义；韩语/英语长标签在深浅主题 1366 布局完整实测",
+      "evidence": [
+        "docs/migration/tasks/P33.md"
+      ]
+    }
+  ],
+  "environment": {
+    "backend": "10.11.2.67:8888（经 Vite 同源代理 /fms）",
+    "dataScale": "任务总量约 58 万条（真实库）；车辆选项 56 项",
+    "role": "root（超级管理员；路由守卫 statistics:order:view）",
+    "viewports": [
+      "1920x945",
+      "1366x768"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "languages": [
+      "zh-CN",
+      "en-US",
+      "ko-KR（运行时）；zh-TW/ja-JP（分片同构，typecheck 键一致）"
+    ],
+    "browser": "ZCode IAB Chromium（Windows）"
+  },
+  "screenshotIndex": {
+    "local_only": true,
+    "dir": "screenshots/",
+    "files": [
+      "1366-light-efficiency.png",
+      "1366-light-quantity.png",
+      "1920-dark-efficiency.png",
+      "1920-dark-quantity-en.png",
+      "1920-dark-quantity-filtered.png",
+      "1920-dark-quantity-hint.png",
+      "1920-dark-quantity-ko.png",
+      "1920-dark-quantity.png",
+      "1920-light-quantity-ko.png"
+    ]
+  }
+}
