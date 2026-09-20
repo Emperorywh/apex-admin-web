@@ -1,0 +1,26 @@
+{
+  "task": {
+    "implementation": "implemented",
+    "verification": "partial",
+    "gate": "ready",
+    "acceptanceRecord": "docs/migration/evidence/P40/run-2384f48f-0de2-427b-96a9-97e15c6baaf0/acceptance.json",
+    "pendingItems": [
+      "A04/I06：真实 token 过期收敛、双窗口退出同步、真实网络级资源加载失败不白屏归 V01 长会话复核（本轮轮询失败退避+失败清空+守卫回跳+登出清理机制级已实证，T00/P01/P02/P21/P33/P34/P36/P37 同口径）",
+      "A24：长时多页签/真实规模稳定性与 Canvas 重绘资源回收归 V01 统一收口（本页单 Canvas 手绘无第三方图表实例，卸载即释放）",
+      "真实指针/自然浏览器交互复核（含全屏真实观感、独立窗口实际开窗）：IAB 输入管线/弹窗拦截环境限制（P39 RO 垫片同口径），归 V01",
+      "zh-TW/ja-JP/ko-KR 运行时切换抽验：分片同构审计通过、EN 实测，归 V01 五语言回归",
+      "G15：使用率口径（0~100 百分比真实样本已实证）后端语义最终核对归 V01 真实数据复核"
+    ],
+    "note": "P40 交付（2026-09-21，run-2384f48f）：整页实现（serverResource/current 快照+可见轮询+工作区页签/独立窗口/全屏三形态+Apex 快照表格）+monitor 路由迁入受保护根（P39 交接同构）+四语言分片 61 key 同构（07324a7，28 文件+2766 行）；静态门禁全绿；真实只读 9/9（使用率 0~100 口径实证）；浏览器整页验收 13 项（双视口双主题/轮询 5990ms 取证/真实失败态 D15/全屏/别名/登出清理）；自测修复 2 缺陷（fullscreenchange 不派发的按钮同步、漏 i18n key）；verification=partial（A04/A24/I06+跨页项 deferred 归 V01），gate=ready；不勾选 TASKS"
+  },
+  "progress": [
+    "acceptance.json 49 项矩阵（passed 31 / not_applicable 15 / deferred 3：A04/A24/I06）+code-files.json 24 文件哈希绑定提交 07324a7",
+    "待办：提交验收记录+RUN_STATE+上轮遗留运行记录 → push --commit HEAD → end --outcome completed"
+  ],
+  "nextSteps": [
+    "git add acceptance.json code-files.json RUN_STATE.json evidence/runs/run-de2ff6da…（上轮遗留）→ commit",
+    "node scripts/migration-runner.mjs push --run run-2384f48f-0de2-427b-96a9-97e15c6baaf0 --commit <HEAD>",
+    "node scripts/migration-runner.mjs end --run run-2384f48f-0de2-427b-96a9-97e15c6baaf0 --outcome completed"
+  ],
+  "blocker": null
+}

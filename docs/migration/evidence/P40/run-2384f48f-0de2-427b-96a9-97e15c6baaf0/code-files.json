@@ -1,0 +1,98 @@
+[
+  {
+    "path": "src\\pages\\analyze-visual\\ServerRealtimeResources\\ServerRealtimeResources.tsx",
+    "sha256": "a730e462054febd12f53b979a07d91207ef4a1734bfbf5bea55ce22c3a5e9576"
+  },
+  {
+    "path": "src\\pages\\analyze-visual\\ServerRealtimeResources\\ServerRealtimeResources.module.css",
+    "sha256": "4a18cd97ee687616377d3e56771378544fd13bb50e5841e5a0f48e869adccce2"
+  },
+  {
+    "path": "src\\features\\server-resource\\resourcePolicy.ts",
+    "sha256": "ee667ec11e23fcddabe89a2231f349965bb6f6b163f2aebc777adc89ed9a49f3"
+  },
+  {
+    "path": "src\\features\\server-resource\\components\\ResourceGauge.tsx",
+    "sha256": "bf53df58d8241404a90aed548343226c8a9b883897a0503f47205b5145566958"
+  },
+  {
+    "path": "src\\features\\server-resource\\components\\ResourceGauge.module.css",
+    "sha256": "82de7f4763db92fc2d79c6471561a4f8a19a16f253ef0851005d276a65e78048"
+  },
+  {
+    "path": "src\\features\\server-resource\\components\\ResourceTrendChart.tsx",
+    "sha256": "d5269d580becd4b333ea5e3d14140b993a4a808c11ea4f97811acd0a18da7218"
+  },
+  {
+    "path": "src\\features\\server-resource\\components\\ResourceTrendChart.module.css",
+    "sha256": "dd82f56c707c079ec0c7b60f5be9a94ddc2dedfec40a44b6e9ec518f8320115f"
+  },
+  {
+    "path": "src\\features\\server-resource\\components\\DiskPanel.tsx",
+    "sha256": "60ef5a2c337585d6398fbbcbe9043716cec79d80a1f313f933196f64036bf2b5"
+  },
+  {
+    "path": "src\\features\\server-resource\\components\\DiskPanel.module.css",
+    "sha256": "fb83b3c95ce2b3753203e59a3955811c0eb92d7c5e799148c5eeeab06e3f1081"
+  },
+  {
+    "path": "src\\features\\server-resource\\components\\SnapshotTableModal.tsx",
+    "sha256": "5c161028cbb38f5ffc6ff0e57ebda8df209483baebf8d34301239128d6f61444"
+  },
+  {
+    "path": "src\\features\\server-resource\\components\\SnapshotTableModal.module.css",
+    "sha256": "388b85115d16f0b5b6e921928639c52bd74952604c4442449fe0430c98bbc765"
+  },
+  {
+    "path": "src\\services\\server-resource\\server-resource.service.ts",
+    "sha256": "eae71be2352d34c3869baabe98785c52be264c039bfc9cde72e83deaa6d01e52"
+  },
+  {
+    "path": "src\\services\\server-resource\\server-resource.service.types.ts",
+    "sha256": "a7b7150d102c8d623bdb79c24663e7bd7743a6783adb91ac37b81580b33ff36b"
+  },
+  {
+    "path": "src\\i18n\\locales\\en-US\\server-resource.ts",
+    "sha256": "b9b1893eb204e29e65eacf8cedfca5548486d36b0842606dee973a4a064db210"
+  },
+  {
+    "path": "src\\i18n\\locales\\zh-TW\\server-resource.ts",
+    "sha256": "00f5d7b48d7ee659223e663063e61d606810dedaa51ea6601888cbdf3aff3f75"
+  },
+  {
+    "path": "src\\i18n\\locales\\ja-JP\\server-resource.ts",
+    "sha256": "3566430a65934624c4eeeb6f12773d181b1abf76c90c82aa844aa47f461bba09"
+  },
+  {
+    "path": "src\\i18n\\locales\\ko-KR\\server-resource.ts",
+    "sha256": "3ea95dce9cb3d82c90c43d09eab1617fd6ead0112df82c3da820976fea56a6db"
+  },
+  {
+    "path": "src\\i18n\\i18n.ts",
+    "sha256": "ad30b174d95e7c0ab069294a6666cbc8449d79554fdb698db1974c5719b2822f"
+  },
+  {
+    "path": "src\\router\\definitions.tsx",
+    "sha256": "7393f72393a509119c12f8398edaf480cfdfd80558f41877fe010615b814685e"
+  },
+  {
+    "path": "src\\utils\\window\\standaloneWindow.ts",
+    "sha256": "edb01e255cab94277e424e65395b204b24159b77e90a5b57b4d6594aa11c705f"
+  },
+  {
+    "path": "src\\hooks\\useVisiblePolling.ts",
+    "sha256": "648957cd345cb41979224132308215e8af634353b4a700323f3b534185395bf6"
+  },
+  {
+    "path": "src\\hooks\\useTheme.ts",
+    "sha256": "5505687fb3b8ffcbdb06fc9dd24b4cab7485fe0e45a0dab41544feac233d876f"
+  },
+  {
+    "path": "src\\hooks\\useApexLocale.ts",
+    "sha256": "9ae1cd981c34d2551ff5f4d9bf5613c70eb5882fd02917e3416948fcce1bc9d5"
+  },
+  {
+    "path": "src\\constants\\polling.constants.ts",
+    "sha256": "bae582c03c1a757149268490379637d2149ab5347a5517aa25ea22701e29d4a9"
+  }
+]

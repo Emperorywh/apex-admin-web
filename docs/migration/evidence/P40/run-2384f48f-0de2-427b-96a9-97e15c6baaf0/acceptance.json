@@ -1,0 +1,582 @@
+{
+  "taskId": "P40",
+  "codeCommit": "07324a7f0b36afa73b7955be8e42f7811ba69d96",
+  "codeFiles": [
+    {
+      "path": "src\\pages\\analyze-visual\\ServerRealtimeResources\\ServerRealtimeResources.tsx",
+      "sha256": "a730e462054febd12f53b979a07d91207ef4a1734bfbf5bea55ce22c3a5e9576"
+    },
+    {
+      "path": "src\\pages\\analyze-visual\\ServerRealtimeResources\\ServerRealtimeResources.module.css",
+      "sha256": "4a18cd97ee687616377d3e56771378544fd13bb50e5841e5a0f48e869adccce2"
+    },
+    {
+      "path": "src\\features\\server-resource\\resourcePolicy.ts",
+      "sha256": "ee667ec11e23fcddabe89a2231f349965bb6f6b163f2aebc777adc89ed9a49f3"
+    },
+    {
+      "path": "src\\features\\server-resource\\components\\ResourceGauge.tsx",
+      "sha256": "bf53df58d8241404a90aed548343226c8a9b883897a0503f47205b5145566958"
+    },
+    {
+      "path": "src\\features\\server-resource\\components\\ResourceGauge.module.css",
+      "sha256": "82de7f4763db92fc2d79c6471561a4f8a19a16f253ef0851005d276a65e78048"
+    },
+    {
+      "path": "src\\features\\server-resource\\components\\ResourceTrendChart.tsx",
+      "sha256": "d5269d580becd4b333ea5e3d14140b993a4a808c11ea4f97811acd0a18da7218"
+    },
+    {
+      "path": "src\\features\\server-resource\\components\\ResourceTrendChart.module.css",
+      "sha256": "dd82f56c707c079ec0c7b60f5be9a94ddc2dedfec40a44b6e9ec518f8320115f"
+    },
+    {
+      "path": "src\\features\\server-resource\\components\\DiskPanel.tsx",
+      "sha256": "60ef5a2c337585d6398fbbcbe9043716cec79d80a1f313f933196f64036bf2b5"
+    },
+    {
+      "path": "src\\features\\server-resource\\components\\DiskPanel.module.css",
+      "sha256": "fb83b3c95ce2b3753203e59a3955811c0eb92d7c5e799148c5eeeab06e3f1081"
+    },
+    {
+      "path": "src\\features\\server-resource\\components\\SnapshotTableModal.tsx",
+      "sha256": "5c161028cbb38f5ffc6ff0e57ebda8df209483baebf8d34301239128d6f61444"
+    },
+    {
+      "path": "src\\features\\server-resource\\components\\SnapshotTableModal.module.css",
+      "sha256": "388b85115d16f0b5b6e921928639c52bd74952604c4442449fe0430c98bbc765"
+    },
+    {
+      "path": "src\\services\\server-resource\\server-resource.service.ts",
+      "sha256": "eae71be2352d34c3869baabe98785c52be264c039bfc9cde72e83deaa6d01e52"
+    },
+    {
+      "path": "src\\services\\server-resource\\server-resource.service.types.ts",
+      "sha256": "a7b7150d102c8d623bdb79c24663e7bd7743a6783adb91ac37b81580b33ff36b"
+    },
+    {
+      "path": "src\\i18n\\locales\\en-US\\server-resource.ts",
+      "sha256": "b9b1893eb204e29e65eacf8cedfca5548486d36b0842606dee973a4a064db210"
+    },
+    {
+      "path": "src\\i18n\\locales\\zh-TW\\server-resource.ts",
+      "sha256": "00f5d7b48d7ee659223e663063e61d606810dedaa51ea6601888cbdf3aff3f75"
+    },
+    {
+      "path": "src\\i18n\\locales\\ja-JP\\server-resource.ts",
+      "sha256": "3566430a65934624c4eeeb6f12773d181b1abf76c90c82aa844aa47f461bba09"
+    },
+    {
+      "path": "src\\i18n\\locales\\ko-KR\\server-resource.ts",
+      "sha256": "3ea95dce9cb3d82c90c43d09eab1617fd6ead0112df82c3da820976fea56a6db"
+    },
+    {
+      "path": "src\\i18n\\i18n.ts",
+      "sha256": "ad30b174d95e7c0ab069294a6666cbc8449d79554fdb698db1974c5719b2822f"
+    },
+    {
+      "path": "src\\router\\definitions.tsx",
+      "sha256": "7393f72393a509119c12f8398edaf480cfdfd80558f41877fe010615b814685e"
+    },
+    {
+      "path": "src\\utils\\window\\standaloneWindow.ts",
+      "sha256": "edb01e255cab94277e424e65395b204b24159b77e90a5b57b4d6594aa11c705f"
+    },
+    {
+      "path": "src\\hooks\\useVisiblePolling.ts",
+      "sha256": "648957cd345cb41979224132308215e8af634353b4a700323f3b534185395bf6"
+    },
+    {
+      "path": "src\\hooks\\useTheme.ts",
+      "sha256": "5505687fb3b8ffcbdb06fc9dd24b4cab7485fe0e45a0dab41544feac233d876f"
+    },
+    {
+      "path": "src\\hooks\\useApexLocale.ts",
+      "sha256": "9ae1cd981c34d2551ff5f4d9bf5613c70eb5882fd02917e3416948fcce1bc9d5"
+    },
+    {
+      "path": "src\\constants\\polling.constants.ts",
+      "sha256": "bae582c03c1a757149268490379637d2149ab5347a5517aa25ea22701e29d4a9"
+    }
+  ],
+  "environment": {
+    "backend": "192.168.0.158:8888（Vite 同源代理 localhost:5175；后端 root 单会话）",
+    "role": "root（真实登录）",
+    "viewport": [
+      "1920×945",
+      "1366×768"
+    ],
+    "theme": [
+      "light",
+      "dark"
+    ],
+    "language": [
+      "zh-CN",
+      "en-US"
+    ],
+    "browser": "IAB Chromium（rAF/RO 冻结、fullscreenchange 不派发、输入管线故障、screenshot 偶发超时——环境限制与覆盖边界见 notes 与 P40.md 验证边界）",
+    "dataScale": "单服务器实时快照（28 核/62.56 GB 内存/2 磁盘分区），趋势窗口 90 点≈8 分钟客户端采样"
+  },
+  "releaseChecks": {
+    "scope": "passed",
+    "static": "passed",
+    "readOnly": "passed",
+    "ui": "passed",
+    "sharedConsumers": "passed"
+  },
+  "releaseReasons": [
+    "scope：整页交付（工作区页签形态+独立窗口/全屏入口+轮询+快照表格弹窗+五语言+路由迁入受保护根）；旧「返回」按钮随全屏大屏形态退役（规格 §7 形态决策覆盖，P40.md 登记）",
+    "static：oxlint 0/0（530 文件）/typecheck/check:structure 517 文件/build 1.23s（代码提交 07324a7）；i18n key 审计 61 key 四语言同构+页面全覆盖",
+    "readOnly：run-p40-readonly.mjs 9/9 通过（readonly-result.json）：无令牌 1000000、带令牌快照完整、使用率 0~100 口径实证、连续采样更新、登出清理",
+    "ui：browser-verify.json 13 项通过（守卫/回跳/双视口双主题/轮询取证/弹窗/真实失败态/全屏/别名/EN/登出清理）；IAB 环境限制（rAF/RO 冻结等）已取证并登记边界，垫片仅验证环境使用",
+    "sharedConsumers：router definitions（monitor 迁入受保护根+注释）、i18n.ts（+1 注册/语言）、standaloneWindow.ts（纯注释修正）；消费者影响已核（旧 id 无代码消费者 grep 实证；useVisiblePolling/polling.constants 行为不变）"
+  ],
+  "items": [
+    {
+      "id": "TASK",
+      "status": "passed",
+      "reason": "任务卡专项全部落实：CPU/内存/磁盘真实状态（GET serverResource/current 单快照喂仪表×3+指标卡×4+趋势+磁盘+快照表格）；可见轮询（useVisiblePolling 约 5s 串行，实测 5990ms）；全屏（Fullscreen API 进入/退出+按钮同步）；默认工作区页签+独立窗口入口；菜单别名 /analyze-visual/server-resource redirect 保留共享同码同实现",
+      "evidence": [
+        "docs/migration/tasks/P40.md",
+        "docs/migration/evidence/P40/run-2384f48f-0de2-427b-96a9-97e15c6baaf0/readonly-result.json",
+        "docs/migration/evidence/P40/run-2384f48f-0de2-427b-96a9-97e15c6baaf0/browser-verify.json"
+      ]
+    },
+    {
+      "id": "DoD1",
+      "status": "passed",
+      "reason": "旧页递归清点：index.tsx+Gauge/TrendChart/DiskList/DataTableOverlay/policy 全量 7 文件映射；复刻源 HTML 演示档位与 Google Fonts 外链旧代码已去除；旧「返回」按钮随全屏大屏形态退役（规格 §7 形态决策覆盖，差异登记 P40.md）；数据表格浮层等价迁移为 Apex 弹窗无遗漏",
+      "evidence": [
+        "docs/migration/tasks/P40.md"
+      ]
+    },
+    {
+      "id": "DoD2",
+      "status": "passed",
+      "reason": "真实服务与协议：GET serverResource/current 逐字段核对基线 OpenAPI（A82E…49C7C 复核一致）；不导入 axios/不拼 URL/不解原始包装；code=200 判定且不依赖 message==='success' 英文文案（规格 4.2，旧实现判定修正）；timestamp int64 JSON number 承载（G10）",
+      "evidence": [
+        "src/services/server-resource/server-resource.service.ts",
+        "src/services/server-resource/server-resource.service.types.ts",
+        "docs/migration/evidence/P40/run-2384f48f-0de2-427b-96a9-97e15c6baaf0/readonly-result.json"
+      ]
+    },
+    {
+      "id": "DoD3",
+      "status": "passed",
+      "reason": "权限与状态区分：server-resource-monitor:view 路由守卫（别名/直访/独立窗口同码）；无权限/失败/真实空/连接中分开（徽标 wait/live/error 三态+磁盘「暂无磁盘数据」空态）；后端拒绝不冒充成功",
+      "evidence": [
+        "docs/migration/tasks/P40.md",
+        "docs/migration/evidence/P40/run-2384f48f-0de2-427b-96a9-97e15c6baaf0/browser-verify.json",
+        "src/router/definitions.tsx"
+      ]
+    },
+    {
+      "id": "DoD4",
+      "status": "passed",
+      "reason": "表格统一：快照表格弹窗为 ApexTableReact data 模式（真实完整小集合）；旧自绘 HTML table 已替换（A07）；页面直接消费包公开 API 无二次封装",
+      "evidence": [
+        "src/features/server-resource/components/SnapshotTableModal.tsx",
+        "docs/migration/evidence/P40/run-2384f48f-0de2-427b-96a9-97e15c6baaf0/browser-verify.json"
+      ]
+    },
+    {
+      "id": "DoD5",
+      "status": "passed",
+      "reason": "表格语义：data 模式承载真实快照完整集合（合法形态）；稳定行 ID（指标标识+分区路径）；三列固定不启用排序/偏好（等价旧浮层表格能力，登记）；无分页/选择场景",
+      "evidence": [
+        "src/features/server-resource/components/SnapshotTableModal.tsx",
+        "docs/migration/tasks/P40.md"
+      ]
+    },
+    {
+      "id": "DoD6",
+      "status": "passed",
+      "reason": "取消与失败：轮询经 useVisiblePolling（页签关闭 scope 取消静默）；真实失败立即清空快照区域+徽标连接失败+脚注标示，趋势历史保留停止追加（旧口径），恢复自动续采；无空数组/零值冒充（normRate 缺失→null 显示 --）",
+      "evidence": [
+        "src/pages/analyze-visual/ServerRealtimeResources/ServerRealtimeResources.tsx",
+        "src/features/server-resource/resourcePolicy.ts",
+        "docs/migration/evidence/P40/run-2384f48f-0de2-427b-96a9-97e15c6baaf0/browser-verify.json"
+      ]
+    },
+    {
+      "id": "DoD7",
+      "status": "passed",
+      "reason": "生命周期：实时页仅页签激活+文档可见时约 5 秒串行刷新、恢复即查、失败倍率退避（useVisiblePolling 公共机制集中配置 polling.constants）；登出/过期清会话数据（登出清理实测）",
+      "evidence": [
+        "src/hooks/useVisiblePolling.ts",
+        "docs/migration/evidence/P40/run-2384f48f-0de2-427b-96a9-97e15c6baaf0/browser-verify.json",
+        "docs/migration/evidence/P40/run-2384f48f-0de2-427b-96a9-97e15c6baaf0/readonly-result.json"
+      ]
+    },
+    {
+      "id": "DoD8",
+      "status": "not_applicable",
+      "reason": "本页零写操作（快照只读查询）：无创建/删除/控制/发布/重启；分级确认/防重放不适用",
+      "evidence": [
+        "docs/migration/tasks/P40.md"
+      ]
+    },
+    {
+      "id": "DoD9",
+      "status": "not_applicable",
+      "reason": "本页无文件上传下载传输：serverResource/current 为纯 JSON 快照",
+      "evidence": [
+        "docs/migration/tasks/P40.md"
+      ]
+    },
+    {
+      "id": "DoD10",
+      "status": "not_applicable",
+      "reason": "本页无地图/关联实体选择；不涉及失效关联处理",
+      "evidence": [
+        "docs/migration/tasks/P40.md"
+      ]
+    },
+    {
+      "id": "DoD11",
+      "status": "passed",
+      "reason": "五语言随页交付：server-resource 命名空间四语言分片 61 key 同构（audit-i18n-keys.cjs 审计四语言零差异+页面 t() 61 key 全覆盖）；en 旧真译沿用（41+14 条）、繁日韩 B1 基线补译；插值全部 {{name}} 双花括号",
+      "evidence": [
+        "docs/migration/evidence/P40/run-2384f48f-0de2-427b-96a9-97e15c6baaf0/audit-i18n-keys.cjs",
+        "src/i18n/locales/en-US/server-resource.ts",
+        "docs/migration/tasks/P40.md"
+      ]
+    },
+    {
+      "id": "DoD12",
+      "status": "passed",
+      "reason": "语言边界：时钟 Intl 日期随语言格式化（仅呈现不改业务值）；趋势 X 轴固定 24h 时间标签（非翻译文案）；后端容量字符串原文透传不翻译；EN 切换实测无写请求重发（只读轮询自然携带新 Accept-Language）",
+      "evidence": [
+        "docs/migration/evidence/P40/run-2384f48f-0de2-427b-96a9-97e15c6baaf0/browser-verify.json",
+        "docs/migration/tasks/P40.md"
+      ]
+    },
+    {
+      "id": "DoD13",
+      "status": "passed",
+      "reason": "外观与终端：保留 MacOS 外壳/页签/玻璃效果/深浅主题/减少动画（仪表旋转环 prefers-reduced-motion 静止）；1920/1366 双视口实测无横向溢出（scrollW==clientW）；仪表限宽后整页免滚动全可见；布局容器未被撑破",
+      "evidence": [
+        "docs/migration/evidence/P40/run-2384f48f-0de2-427b-96a9-97e15c6baaf0/browser-verify.json",
+        "src/pages/analyze-visual/ServerRealtimeResources/ServerRealtimeResources.module.css"
+      ]
+    },
+    {
+      "id": "DoD14",
+      "status": "passed",
+      "reason": "统计与时间：使用率口径真实样本实证 0~100 百分比（CPU 0 真实零/内存 47.01/JVM 72.12/磁盘 43.85，G15 页面侧证据）；normRate 缺失/非法→null 显示 -- 不补 0（旧「非法值按 0」缺陷修正）；磁盘平均仅对可计算分区求平均；容量字符串透传；趋势窗口常量集中定义",
+      "evidence": [
+        "src/features/server-resource/resourcePolicy.ts",
+        "docs/migration/evidence/P40/run-2384f48f-0de2-427b-96a9-97e15c6baaf0/readonly-result.json",
+        "docs/migration/tasks/P40.md"
+      ]
+    },
+    {
+      "id": "DoD15",
+      "status": "passed",
+      "reason": "验证与证据：pnpm check（lint 0/0 530 文件/typecheck/structure 517）+build 1.23s 全绿；真实只读 9/9（带令牌/无令牌对照/连续采样/登出清理）；无新增单元测试；证据持久化 evidence 且脱敏（凭据仅 .env.local 来源名）",
+      "evidence": [
+        "docs/migration/evidence/P40/run-2384f48f-0de2-427b-96a9-97e15c6baaf0/readonly-result.json",
+        "docs/migration/evidence/P40/run-2384f48f-0de2-427b-96a9-97e15c6baaf0/audit-i18n-keys.cjs"
+      ]
+    },
+    {
+      "id": "DoD16",
+      "status": "passed",
+      "reason": "收尾：无 mock/假数据（normRate 不补 0、失败不伪造）；列剩余缺口（G15 最终语义归 V01）与未验证项（真实指针/独立窗口开窗/其余三语言运行时抽验）登记 P40.md；共享契约改动（router/i18n/standaloneWindow 注释）消费者已核",
+      "evidence": [
+        "docs/migration/tasks/P40.md",
+        "docs/migration/evidence/P40/run-2384f48f-0de2-427b-96a9-97e15c6baaf0/browser-verify.json"
+      ]
+    },
+    {
+      "id": "A01",
+      "status": "passed",
+      "reason": "45 旧叶子之一：/analyze-visual/server-resource-monitor+菜单别名 server-resource 迁移闭环；旧 7 文件全量映射（含 DataTableOverlay 表格化）",
+      "evidence": [
+        "docs/migration/tasks/P40.md"
+      ]
+    },
+    {
+      "id": "A02",
+      "status": "not_applicable",
+      "reason": "本页非暂缓页；三个暂缓页（H01-H03）边界不涉及本页",
+      "evidence": [
+        "docs/migration/tasks/P40.md"
+      ]
+    },
+    {
+      "id": "A03",
+      "status": "not_applicable",
+      "reason": "登录链路为 P01/T00 交付；本页仅消费会话（登录跳转实测正常）",
+      "evidence": [
+        "docs/migration/evidence/P40/run-2384f48f-0de2-427b-96a9-97e15c6baaf0/browser-verify.json"
+      ]
+    },
+    {
+      "id": "A04",
+      "status": "deferred",
+      "reason": "真实 token 过期收敛与双窗口退出同步归 V01 长会话复核（T00/P01/P02/P21/P33/P34/P36/P37 同口径）；本轮失败清空/守卫回跳/登出清理为机制级正面证据；过期瞬间挂载页面实时跳转未在 IAB 复现（reload 守卫正常）已登记供参考",
+      "evidence": [
+        "docs/migration/tasks/P40.md",
+        "docs/migration/evidence/P40/run-2384f48f-0de2-427b-96a9-97e15c6baaf0/browser-verify.json"
+      ],
+      "category": "cross_page",
+      "owner": "V01",
+      "resumeCondition": "V01 长会话专项复核",
+      "basis": "IAB 环境限制+公共机制非本页交付物"
+    },
+    {
+      "id": "A05",
+      "status": "passed",
+      "reason": "权限：server-resource-monitor:view 守卫覆盖菜单别名/直访/独立窗口同码（与旧 .umirc.ts 同码不凭空造码）；页内无按钮码（与旧一致）；hideInMenu 不作落点候选",
+      "evidence": [
+        "src/router/definitions.tsx",
+        "docs/migration/evidence/P40/run-2384f48f-0de2-427b-96a9-97e15c6baaf0/browser-verify.json"
+      ]
+    },
+    {
+      "id": "A06",
+      "status": "passed",
+      "reason": "协议：GET /fms/v1/serverResource/current 严格按 OpenAPI；Result 解包 code=200 判定；无令牌 1000000 对照实测；错误归一化走请求层",
+      "evidence": [
+        "docs/migration/evidence/P40/run-2384f48f-0de2-427b-96a9-97e15c6baaf0/readonly-result.json",
+        "src/services/server-resource/server-resource.service.ts"
+      ]
+    },
+    {
+      "id": "A07",
+      "status": "passed",
+      "reason": "全表格替换：本页唯一表格（快照弹窗）为 ApexTableReact data 模式，旧自绘 HTML table 已替换；无 antd Table 残留",
+      "evidence": [
+        "src/features/server-resource/components/SnapshotTableModal.tsx",
+        "docs/migration/evidence/P40/run-2384f48f-0de2-427b-96a9-97e15c6baaf0/browser-verify.json"
+      ]
+    },
+    {
+      "id": "A08",
+      "status": "passed",
+      "reason": "表格数据语义：data 模式承载真实快照完整集合（合法形态）；行 ID 稳定；无分页/筛选/排序场景（三列固定小表，等价旧实现，登记）",
+      "evidence": [
+        "docs/migration/tasks/P40.md"
+      ]
+    },
+    {
+      "id": "A09",
+      "status": "not_applicable",
+      "reason": "无跨页选择与列偏好场景（快照表三列固定，未启用列设置；等价旧浮层表格）",
+      "evidence": [
+        "docs/migration/tasks/P40.md"
+      ]
+    },
+    {
+      "id": "A10",
+      "status": "passed",
+      "reason": "请求竞争：轮询串行不并发；页签关闭/隐藏 scope 取消静默（useVisiblePolling 契约）；语言切换不触发额外请求（refresh 引用 ref 消费）",
+      "evidence": [
+        "src/hooks/useVisiblePolling.ts",
+        "docs/migration/evidence/P40/run-2384f48f-0de2-427b-96a9-97e15c6baaf0/browser-verify.json"
+      ]
+    },
+    {
+      "id": "A11",
+      "status": "passed",
+      "reason": "查询失败：立即清空快照远端区域+徽标红「连接失败」+脚注「连接失败，等待重试」；无手动刷新按钮（轮询退避自动恢复）；真实失败态在 root 令牌过期时自然发生并取证",
+      "evidence": [
+        "docs/migration/evidence/P40/run-2384f48f-0de2-427b-96a9-97e15c6baaf0/browser-verify.json",
+        "docs/migration/tasks/P40.md"
+      ]
+    },
+    {
+      "id": "A12",
+      "status": "passed",
+      "reason": "实时生命周期：约 5 秒串行（实测 5990ms）可见刷新、隐藏暂停保留快照、恢复立即查询、失败倍率退避至上限；无重复轮询（唯一 useVisiblePolling 入口）",
+      "evidence": [
+        "docs/migration/evidence/P40/run-2384f48f-0de2-427b-96a9-97e15c6baaf0/readonly-result.json",
+        "docs/migration/evidence/P40/run-2384f48f-0de2-427b-96a9-97e15c6baaf0/browser-verify.json",
+        "src/constants/polling.constants.ts"
+      ]
+    },
+    {
+      "id": "A13",
+      "status": "not_applicable",
+      "reason": "本页无编辑草稿（只读监控页）",
+      "evidence": [
+        "docs/migration/tasks/P40.md"
+      ]
+    },
+    {
+      "id": "A14",
+      "status": "not_applicable",
+      "reason": "本页无写操作/控制命令",
+      "evidence": [
+        "docs/migration/tasks/P40.md"
+      ]
+    },
+    {
+      "id": "A15",
+      "status": "not_applicable",
+      "reason": "本页无批量操作",
+      "evidence": [
+        "docs/migration/tasks/P40.md"
+      ]
+    },
+    {
+      "id": "A16",
+      "status": "not_applicable",
+      "reason": "本页无文件传输",
+      "evidence": [
+        "docs/migration/tasks/P40.md"
+      ]
+    },
+    {
+      "id": "A17",
+      "status": "not_applicable",
+      "reason": "本页无地图/关联选择",
+      "evidence": [
+        "docs/migration/tasks/P40.md"
+      ]
+    },
+    {
+      "id": "A18",
+      "status": "not_applicable",
+      "reason": "本页无工艺嵌套业务",
+      "evidence": [
+        "docs/migration/tasks/P40.md"
+      ]
+    },
+    {
+      "id": "A19",
+      "status": "passed",
+      "reason": "统计口径：使用率双口径兼容+真实样本实证 0~100 百分比；缺失不可计算显示 --（仪表/图例/磁盘/指标卡一致）；磁盘平均=可计算分区均值；0 与缺失严格区分（CPU 真实 0 显示 0.0%）",
+      "evidence": [
+        "src/features/server-resource/resourcePolicy.ts",
+        "docs/migration/evidence/P40/run-2384f48f-0de2-427b-96a9-97e15c6baaf0/readonly-result.json",
+        "docs/migration/tasks/P40.md"
+      ]
+    },
+    {
+      "id": "A20",
+      "status": "passed",
+      "reason": "语言主题终端：zh-CN/en-US 实测+分片四语言同构审计；浅/深双主题（CSS 变量+Canvas 主题档）1920/1366 实测；IAB Chromium；真实指针/macOS 归 V01",
+      "evidence": [
+        "docs/migration/evidence/P40/run-2384f48f-0de2-427b-96a9-97e15c6baaf0/browser-verify.json",
+        "docs/migration/evidence/P40/run-2384f48f-0de2-427b-96a9-97e15c6baaf0/audit-i18n-keys.cjs"
+      ]
+    },
+    {
+      "id": "A21",
+      "status": "passed",
+      "reason": "零 mock：无 mock 服务/样例数据/随机统计/伪进度/fallback；normRate 缺失→null 不伪造 0；失败呈现真实错误态",
+      "evidence": [
+        "src/features/server-resource/resourcePolicy.ts",
+        "docs/migration/tasks/P40.md"
+      ]
+    },
+    {
+      "id": "A22",
+      "status": "passed",
+      "reason": "首页与链接：菜单别名 /analyze-visual/server-resource redirect 实测可达（历史别名保留）；monitor 直访/独立窗口同路径；hideInMenu 不作落点候选",
+      "evidence": [
+        "docs/migration/evidence/P40/run-2384f48f-0de2-427b-96a9-97e15c6baaf0/browser-verify.json",
+        "src/router/definitions.tsx"
+      ]
+    },
+    {
+      "id": "A23",
+      "status": "passed",
+      "reason": "依赖与检查：无新增依赖（Apex/antd/lucide 既有）；lint 0/0+typecheck+structure+build 全绿；无无关格式化（git diff 仅本任务文件）",
+      "evidence": [
+        "docs/migration/evidence/P40/run-2384f48f-0de2-427b-96a9-97e15c6baaf0/readonly-result.json"
+      ]
+    },
+    {
+      "id": "A24",
+      "status": "deferred",
+      "reason": "长时多页签/真实规模稳定性归 V01 统一收口（本页单 Canvas 手绘无第三方图表实例，组件卸载即释放；约 20 分钟验证会话轮询持续无异常）",
+      "evidence": [
+        "docs/migration/tasks/P40.md"
+      ],
+      "category": "cross_page",
+      "owner": "V01",
+      "resumeCondition": "V01 统一收口",
+      "basis": "与 P33/P34/P37 同口径"
+    },
+    {
+      "id": "I01",
+      "status": "not_applicable",
+      "reason": "五语言入口/规范化为 T00/P01 基座（本页消费；EN 切换+html lang 同步实测）",
+      "evidence": [
+        "docs/migration/evidence/P40/run-2384f48f-0de2-427b-96a9-97e15c6baaf0/browser-verify.json"
+      ]
+    },
+    {
+      "id": "I02",
+      "status": "passed",
+      "reason": "旧资源迁移：旧 en 真译逐条沿用（41+14 条命中）；繁日韩旧资源对本页几乎全简中复制，按 B1 基线补真实译并登记；旧 key→新命名空间映射在分片注释与 P40.md 说明",
+      "evidence": [
+        "src/i18n/locales/en-US/server-resource.ts",
+        "docs/migration/tasks/P40.md"
+      ]
+    },
+    {
+      "id": "I03",
+      "status": "passed",
+      "reason": "插值：全部 {{name}} 双花括号（旧 React Intl 单花括号已改写）；EN 实测插值渲染正常（Sampling every 5s 等）",
+      "evidence": [
+        "docs/migration/evidence/P40/run-2384f48f-0de2-427b-96a9-97e15c6baaf0/audit-i18n-keys.cjs",
+        "docs/migration/evidence/P40/run-2384f48f-0de2-427b-96a9-97e15c6baaf0/browser-verify.json"
+      ]
+    },
+    {
+      "id": "I04",
+      "status": "passed",
+      "reason": "切换与草稿：EN→zh 切换整页重建（标题/图例/脚注/按钮/时钟）、无整页刷新、无写请求重发、轮询不中断；Canvas 趋势按语言重建序列名",
+      "evidence": [
+        "docs/migration/evidence/P40/run-2384f48f-0de2-427b-96a9-97e15c6baaf0/browser-verify.json"
+      ]
+    },
+    {
+      "id": "I05",
+      "status": "passed",
+      "reason": "第三方文案：Apex 表格 locale 经 useApexLocale 联动（快照弹窗）；antd Modal/按钮随全局语言；无裸占位符",
+      "evidence": [
+        "src/features/server-resource/components/SnapshotTableModal.tsx",
+        "docs/migration/evidence/P40/run-2384f48f-0de2-427b-96a9-97e15c6baaf0/browser-verify.json"
+      ]
+    },
+    {
+      "id": "I06",
+      "status": "deferred",
+      "reason": "资源加载失败不白屏归 V01 复核（IAB 无法构造网络级故障；分片加载失败保留原语言为 T00 基座机制，T00/P01/P02/P21/P33/P34/P37 同口径）",
+      "evidence": [
+        "docs/migration/tasks/P40.md"
+      ],
+      "category": "cross_page",
+      "owner": "V01",
+      "resumeCondition": "V01 五语言回归+资源故障专项",
+      "basis": "IAB 环境限制"
+    },
+    {
+      "id": "I07",
+      "status": "not_applicable",
+      "reason": "后端协同：轮询经统一请求入口携带 Accept-Language（T00 基座）；本页后端返回无语言相关文案（容量字符串为格式化数值）",
+      "evidence": [
+        "docs/migration/tasks/P40.md"
+      ]
+    },
+    {
+      "id": "I08",
+      "status": "passed",
+      "reason": "日期数值/布局：时钟 Intl 日期随语言、时间固定 24h（不改变业务值/时区）；五语言分片就绪（EN 实测）；双主题双视口实测可用；长译文无截断（时钟/按钮实测）",
+      "evidence": [
+        "docs/migration/evidence/P40/run-2384f48f-0de2-427b-96a9-97e15c6baaf0/browser-verify.json"
+      ]
+    }
+  ],
+  "notes": [
+    "IAB 环境限制（P34/P36/P37/P39 同口径）：① rAF 冻结——仪表 700ms 缓动数字停起点显示 0.0%，弧形 strokeDasharray 直达目标值实证数据渲染正确（真实浏览器缓动正常）；② ResizeObserver 冻结——弹窗 Apex 表格行不渲染（P39 实锤同根因），goto 后注入 RO+rAF 双垫片（仅验证环境，不进产品代码）后 5 行完整渲染；③ fullscreenchange 事件不派发（探针取证）——按钮已做乐观更新+事件权威同步兜底；④ screenshot 偶发超时（重试成功）；⑤ 输入管线故障——登录/菜单/登出经合成事件，真实指针归 V01",
+    "真实失败态（root 令牌自然过期）：D15 失败纪律完整实证——快照清空+徽标连接失败+趋势历史保留停止追加+脚注错误标示；过期后 reload 守卫回跳、重新登录恢复实时",
+    "互踢语义观察：curl 重新登录后浏览器旧 token 未立即失效（与 P34 记录的即时互踢不同），数分钟后自然过期；后端单会话语义存疑，登记供 V01 A04 参考，非 P40 页面问题",
+    "deferred 3 项（A04/A24/I06）均 cross_page 归 V01，与 T00/P01/P02/P21/P33/P34/P36/P37 同口径；真实指针/独立窗口开窗/其余三语言运行时抽验随 A20/A22/I08 边界登记归 V01"
+  ]
+}
