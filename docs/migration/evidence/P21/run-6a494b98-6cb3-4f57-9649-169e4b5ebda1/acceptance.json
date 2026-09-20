@@ -1,0 +1,569 @@
+{
+  "taskId": "P21",
+  "codeCommit": "e8c556d301ccb65400450a99651ec36f7a3f64fd",
+  "codeFiles": [
+    {
+      "path": "src/pages/mission-cluster/MissionFlow/MissionFlow.tsx",
+      "sha256": "e0136b694f35c74b3bb99fd4c3e9e85fd57ff226f610b0c3adeabefae06ef012"
+    },
+    {
+      "path": "src/pages/mission-cluster/MissionFlow/MissionFlow.module.css",
+      "sha256": "4faa92ea56c687d51ad21ef2f8b4fdc2ad75da644145e1e97d1c34d47bb75ba0"
+    },
+    {
+      "path": "src/features/mission-cluster/components/OrderFlowModal.tsx",
+      "sha256": "a9ee348c66c635e5a4a6fb078de3f32373c4c1a90238d8e49bed18c9e5bc17be"
+    },
+    {
+      "path": "src/features/mission-cluster/components/cron/cronConfig.ts",
+      "sha256": "78ee42a0c5ee74ed66397a259ed9135cc06141324258f94ae86fbc9c09b81aa0"
+    },
+    {
+      "path": "src/features/mission-cluster/components/cron/CronExpress.tsx",
+      "sha256": "5f8f27e3037ebf2dd2811aeea670dd3ad03e72213e88d0ee0babdceb17c098a1"
+    },
+    {
+      "path": "src/features/mission-cluster/components/cron/CronTabs.tsx",
+      "sha256": "3c4363413783fc1c8e17a2995cb866efd48b2e778ad48538beb05ac451fa391e"
+    },
+    {
+      "path": "src/features/mission-cluster/components/cron/CronFieldTab.tsx",
+      "sha256": "39b9aaef590284aead621b213716b69f21802cc591f240100e82a0c622a50784"
+    },
+    {
+      "path": "src/features/mission-cluster/components/cron/CronFromTo.tsx",
+      "sha256": "44b24bc4c7cc70e57985d8c7ed6ccacd1b5f884af14d805dbc09104d231d3204"
+    },
+    {
+      "path": "src/features/mission-cluster/components/cron/CronFromToCheckbox.tsx",
+      "sha256": "33b560487279dee7e6c164778c729056c5299d6dbaa73db782009128c6a6090f"
+    },
+    {
+      "path": "src/features/mission-cluster/components/cron/CronFromToInterval.tsx",
+      "sha256": "14e6ea03c8fa794b260cb4d4952f0642569291f178a2dbe8866b0a5c6426396c"
+    },
+    {
+      "path": "src/features/mission-cluster/components/cron/CronWeekTab.tsx",
+      "sha256": "f6a6866f4d94392aeeada1495b95916150dc7a706a6308945a4206952628e78c"
+    },
+    {
+      "path": "src/features/mission-cluster/components/cron/CronWeekWhich.tsx",
+      "sha256": "60a525157cce52937bc6f1e32778f7b8a0963a0698314103b5d80fdd32a030d6"
+    },
+    {
+      "path": "src/features/mission-cluster/components/cron/CronWeekLast.tsx",
+      "sha256": "d0dd2696845ce3ae3afd66e9e92c393dac3600dd3c2531fb3fb9b84f52937f1d"
+    },
+    {
+      "path": "src/services/order-flow/order-flow.service.ts",
+      "sha256": "e99dbe70072e21c3349d96e09da7cbb87a397a89fa463ca79e68dd10704b9ff6"
+    },
+    {
+      "path": "src/services/order-flow/order-flow.service.types.ts",
+      "sha256": "1093a9910fdcf766d38627cc029ee49d2533337b8a1d655a7f2bc3dd7f2cadfc"
+    },
+    {
+      "path": "src/i18n/locales/en-US/orderFlow.ts",
+      "sha256": "c4b62def52a9a962e2a60a53b6be29758e5920aa163402386f626fa497e10bd2"
+    },
+    {
+      "path": "src/i18n/locales/zh-TW/orderFlow.ts",
+      "sha256": "698c501a74bdde5d273aa2f68ae0c12f77c0c6ba30bd644ef1ecc3d970a028d4"
+    },
+    {
+      "path": "src/i18n/locales/ja-JP/orderFlow.ts",
+      "sha256": "e16a8ebc1f719e6a27f2f2569228e59712886188f27af3d937a05003ff26e8bd"
+    },
+    {
+      "path": "src/i18n/locales/ko-KR/orderFlow.ts",
+      "sha256": "151a0a86b474d7d3213ec10348cc9f2a5ecd05071bbf4637d6ba2ecf9608e558"
+    },
+    {
+      "path": "src/i18n/i18n.ts",
+      "sha256": "1a723632829b40ff213346a2e843aee05ac36ba393a3237cbd4b998f7600bcf6"
+    },
+    {
+      "path": "src/router/definitions.tsx",
+      "sha256": "a5c13a008a8c30ea19940b31fa60d466e9abf8f133be2568809398cf0b96bb9e"
+    },
+    {
+      "path": "src/constants/auth/permission.constants.ts",
+      "sha256": "6e3c547079aa363d040c55bfc9e2370b3d75c5bf2517e885fc8115452dfa5be5"
+    },
+    {
+      "path": "src/services/order-template/order-template.service.ts",
+      "sha256": "cdc5794dfcd2b60cdfdefb6ddbb1b16c3e544bcd654b56a256a477c0f332d76d"
+    }
+  ],
+  "releaseChecks": {
+    "scope": "passed",
+    "static": "passed",
+    "readOnly": "passed",
+    "ui": "passed",
+    "sharedConsumers": "passed"
+  },
+  "releaseReasons": {},
+  "items": [
+    {
+      "id": "TASK",
+      "status": "passed",
+      "reason": "旧 MissionCluster/MissionFlow 递归清点（index 6列/FlowModal 双态/SubFlowTable 4列/CronExpress 六Tab 周位 ?、N#M、NL）全部映射新实现；orderFlow 族 4 operation 全部接入无虚构；无未挂路由历史实现混入。",
+      "evidence": [
+        "docs/migration/tasks/P21.md",
+        "docs/migration/evidence/P21/run-6a494b98-6cb3-4f57-9649-169e4b5ebda1/code-files.json"
+      ]
+    },
+    {
+      "id": "DoD1",
+      "status": "passed",
+      "reason": "旧页面递归核对完成：列表/展开子表/创建重发弹窗/Cron 构建器逐组件等价迁移；交接记录含逐列逐字段对照。",
+      "evidence": [
+        "docs/migration/tasks/P21.md"
+      ]
+    },
+    {
+      "id": "DoD2",
+      "status": "passed",
+      "reason": "服务层严格 /fms/v1/dispatcher/orderFlow 四 operation，GET 平铺 G04 口径真实实证；页面不导入 axios 不拼 URL；int64 id 由 JSON number 承载与同族一致。",
+      "evidence": [
+        "docs/migration/tasks/P21.md",
+        "docs/migration/evidence/P21/run-6a494b98-6cb3-4f57-9649-169e4b5ebda1/readonly_verify_result.json"
+      ]
+    },
+    {
+      "id": "DoD3",
+      "status": "passed",
+      "reason": "mission-template 五码登录真实下发；view 挂路由守卫、create/resend/operate/sub-operate 控制入口显隐；未知枚举显示协议原值。",
+      "evidence": [
+        "docs/migration/tasks/P21.md",
+        "docs/migration/evidence/P21/run-6a494b98-6cb3-4f57-9649-169e4b5ebda1/readonly_verify_result.json"
+      ]
+    },
+    {
+      "id": "DoD4",
+      "status": "passed",
+      "reason": "主表与展开子表均 ApexTableReact（request/data 模式），无任何 antd Table 或二次封装。",
+      "evidence": [
+        "docs/migration/tasks/P21.md",
+        "docs/migration/evidence/P21/run-6a494b98-6cb3-4f57-9649-169e4b5ebda1/code-files.json"
+      ]
+    },
+    {
+      "id": "DoD5",
+      "status": "passed",
+      "reason": "稳定行 ID=id、toBackendPage 零基换算、rowCount=真实 total、筛选回首页、G09 不开放排序、列偏好 order-flow:main 隔离。",
+      "evidence": [
+        "docs/migration/tasks/P21.md"
+      ]
+    },
+    {
+      "id": "DoD6",
+      "status": "passed",
+      "reason": "Apex request 内建取消与错误重试；失败不返回空数组冒充；控制命令取消不发请求（浏览器零网络实证）。",
+      "evidence": [
+        "docs/migration/tasks/P21.md"
+      ]
+    },
+    {
+      "id": "DoD7",
+      "status": "passed",
+      "reason": "弹窗关闭销毁草稿=旧 handleCancel resetFields 同语义；配置页无轮询不擅自改数据新鲜度；无手动刷新按钮。",
+      "evidence": [
+        "docs/migration/tasks/P21.md"
+      ]
+    },
+    {
+      "id": "DoD8",
+      "status": "deferred",
+      "reason": "写命令机制级已实证（confirmCommand 五要素/防连点/不自动重放/提交≠完成附注），但创建工艺与主子控制命令的真实发送影响现场调度，本轮共享环境未执行。",
+      "evidence": [
+        "docs/migration/tasks/P21.md"
+      ],
+      "category": "site_acceptance",
+      "basis": "写命令机制级已实证（confirmCommand 五要素/防连点/不自动重放/提交≠完成附注），但创建工艺与主子控制命令的真实发送影响现场调度，本轮共享环境未执行。",
+      "resumeCondition": "专用测试调度环境可用或现场人员授权下执行一轮真实创建+主子控制命令，并以列表刷新核实状态回流",
+      "owner": "V01"
+    },
+    {
+      "id": "DoD9",
+      "status": "not_applicable",
+      "reason": "本页无任何文件上传下载操作（旧页亦无）。",
+      "evidence": [
+        "docs/migration/tasks/P21.md"
+      ]
+    },
+    {
+      "id": "DoD10",
+      "status": "passed",
+      "reason": "失效模板识别：重发回显中已删除模板合成占位条目附「（已不可用）」并阻止提交（浏览器实测+零网络），不静默丢弃不猜测替代。",
+      "evidence": [
+        "docs/migration/tasks/P21.md"
+      ]
+    },
+    {
+      "id": "DoD11",
+      "status": "passed",
+      "reason": "orderFlow 分片四语言注册+zh-CN 中文 key；en 旧真译沿用、繁日韩补译；浏览器五语言逐语言实测列头/按钮/占位/页签标题。",
+      "evidence": [
+        "docs/migration/tasks/P21.md"
+      ]
+    },
+    {
+      "id": "DoD12",
+      "status": "passed",
+      "reason": "控制命令提交 PAUSE/CONTINUE/CANCEL 协议原值；triggerType 提交 0/1 数值；用户名称与后端原文不猜测翻译。",
+      "evidence": [
+        "docs/migration/tasks/P21.md"
+      ]
+    },
+    {
+      "id": "DoD13",
+      "status": "passed",
+      "reason": "保留 MacOS 外壳/页签/玻璃效果/深浅主题；双主题双视口截图布局无溢出、操作列钉右可达、分页器完整。",
+      "evidence": [
+        "docs/migration/tasks/P21.md",
+        "docs/migration/evidence/P21/run-6a494b98-6cb3-4f57-9649-169e4b5ebda1/screenshots/light-1920-zhCN-expanded.png",
+        "docs/migration/evidence/P21/run-6a494b98-6cb3-4f57-9649-169e4b5ebda1/screenshots/dark-1920-zhCN-expanded.png",
+        "docs/migration/evidence/P21/run-6a494b98-6cb3-4f57-9649-169e4b5ebda1/screenshots/light-1366-zhCN-expanded.png",
+        "docs/migration/evidence/P21/run-6a494b98-6cb3-4f57-9649-169e4b5ebda1/screenshots/dark-1366-zhCN-expanded.png",
+        "docs/migration/evidence/P21/run-6a494b98-6cb3-4f57-9649-169e4b5ebda1/screenshots/light-1920-koKR-expanded.png"
+      ]
+    },
+    {
+      "id": "DoD14",
+      "status": "passed",
+      "reason": "Cron 表达式原样展示与提交，部署时区由后端解释；页面与构建器均无「下一次执行时间」推算逻辑（P21 专项纪律）；本页无统计。",
+      "evidence": [
+        "docs/migration/tasks/P21.md"
+      ]
+    },
+    {
+      "id": "DoD15",
+      "status": "passed",
+      "reason": "pnpm check 全绿+build 成功；真实只读 8/8（含无令牌对照）；写操作未自动试发；证据不含凭据（脚本从 .env.local 读取）。",
+      "evidence": [
+        "docs/migration/tasks/P21.md",
+        "docs/migration/evidence/P21/run-6a494b98-6cb3-4f57-9649-169e4b5ebda1/readonly_verify_result.json",
+        "docs/migration/evidence/P21/run-6a494b98-6cb3-4f57-9649-169e4b5ebda1/p21_readonly_verify.py"
+      ]
+    },
+    {
+      "id": "DoD16",
+      "status": "passed",
+      "reason": "无 mock/无 Umi 遗留/无调试残留（grep 0）；剩余缺口与 deferred 已在交接记录列明。",
+      "evidence": [
+        "docs/migration/tasks/P21.md"
+      ]
+    },
+    {
+      "id": "A01",
+      "status": "passed",
+      "reason": "本页条目：/mission-cluster/mission-flow 唯一入口映射旧 /mission-cluster/mission-flow，可达操作全覆盖。",
+      "evidence": [
+        "docs/migration/tasks/P21.md"
+      ]
+    },
+    {
+      "id": "A02",
+      "status": "not_applicable",
+      "reason": "本页不涉及三个暂缓页边界。",
+      "evidence": [
+        "docs/migration/tasks/P21.md"
+      ]
+    },
+    {
+      "id": "A03",
+      "status": "passed",
+      "reason": "真实登录（MD5 摘要 G03 已证实契约）+错误凭据拒绝链路复用 P01 已验收实现，本轮登录 code=200。",
+      "evidence": [
+        "docs/migration/tasks/P21.md",
+        "docs/migration/evidence/P21/run-6a494b98-6cb3-4f57-9649-169e4b5ebda1/readonly_verify_result.json"
+      ]
+    },
+    {
+      "id": "A04",
+      "status": "deferred",
+      "reason": "登录过期收敛/多窗口退出为全局会话机制，与 T00/P01/P02 同口径归 V01 长会话复核；本轮 reload 持久化恢复与登出清理已实测。",
+      "evidence": [
+        "docs/migration/tasks/P21.md"
+      ],
+      "category": "cross_page",
+      "basis": "登录过期收敛/多窗口退出为全局会话机制，与 T00/P01/P02 同口径归 V01 长会话复核；本轮 reload 持久化恢复与登出清理已实测。",
+      "resumeCondition": "V01 统一验收阶段以长会话/双窗口环境复核真实 token 过期收敛与退出同步（与 T00/P01/P02 同口径）",
+      "owner": "V01"
+    },
+    {
+      "id": "A05",
+      "status": "passed",
+      "reason": "本页条目：五码按钮级显隐+路由守卫+无权限隐藏入口；后端为最终鉴权方（无令牌 1000000）。",
+      "evidence": [
+        "docs/migration/tasks/P21.md",
+        "docs/migration/evidence/P21/run-6a494b98-6cb3-4f57-9649-169e4b5ebda1/readonly_verify_result.json"
+      ]
+    },
+    {
+      "id": "A06",
+      "status": "passed",
+      "reason": "四 operation method/path/body 与 OpenAPI 一致；业务码判定不依赖英文 message；Result 包装核对。",
+      "evidence": [
+        "docs/migration/tasks/P21.md",
+        "docs/migration/evidence/P21/run-6a494b98-6cb3-4f57-9649-169e4b5ebda1/readonly_verify_result.json"
+      ]
+    },
+    {
+      "id": "A07",
+      "status": "passed",
+      "reason": "业务表格零替代表格渲染（主表/子表均 Apex）。",
+      "evidence": [
+        "docs/migration/tasks/P21.md"
+      ]
+    },
+    {
+      "id": "A08",
+      "status": "passed",
+      "reason": "分页边界/稳定行 ID/未知总数不补 0/空值留白；排序未开放（后端无参数）。",
+      "evidence": [
+        "docs/migration/tasks/P21.md"
+      ]
+    },
+    {
+      "id": "A09",
+      "status": "passed",
+      "reason": "列偏好 order-flow:main 按用户与 tableId 隔离；当前页选择语义由 Apex 内建承接；偏好四切片受控接线。",
+      "evidence": [
+        "docs/migration/tasks/P21.md"
+      ]
+    },
+    {
+      "id": "A10",
+      "status": "passed",
+      "reason": "搜索条件经 ref 防闭包旧值；Apex request 内建乱序与取消收敛；切页由请求 scope 中止。",
+      "evidence": [
+        "docs/migration/tasks/P21.md"
+      ]
+    },
+    {
+      "id": "A11",
+      "status": "passed",
+      "reason": "查询失败清空对应区域+表格内建重试；Transfer 选项失败显示「加载失败」文本（本轮补齐）；空态与失败分离。",
+      "evidence": [
+        "docs/migration/tasks/P21.md"
+      ]
+    },
+    {
+      "id": "A12",
+      "status": "not_applicable",
+      "reason": "工艺列表为调度执行数据的配置查询，旧实现无轮询，等价迁移不新增（DoD7）。",
+      "evidence": [
+        "docs/migration/tasks/P21.md"
+      ]
+    },
+    {
+      "id": "A13",
+      "status": "passed",
+      "reason": "弹窗草稿关闭即弃=旧同语义；切页表格分页/展开状态随页签缓存保留；退出清会话数据由全局机制承接。",
+      "evidence": [
+        "docs/migration/tasks/P21.md"
+      ]
+    },
+    {
+      "id": "A14",
+      "status": "deferred",
+      "reason": "控制命令确认/防连点/未知态/不重放机制级已实证且取消路径零网络，真实命令发送（创建工艺/暂停/继续/取消）归专用调度环境或现场执行。",
+      "evidence": [
+        "docs/migration/tasks/P21.md",
+        "docs/migration/evidence/P21/run-6a494b98-6cb3-4f57-9649-169e4b5ebda1/readonly_verify_result.json"
+      ],
+      "category": "site_acceptance",
+      "basis": "控制命令确认/防连点/未知态/不重放机制级已实证且取消路径零网络，真实命令发送（创建工艺/暂停/继续/取消）归专用调度环境或现场执行。",
+      "resumeCondition": "专用测试调度环境可用或现场人员授权下执行一轮真实创建+主子控制命令，并以列表刷新核实状态回流",
+      "owner": "V01"
+    },
+    {
+      "id": "A15",
+      "status": "not_applicable",
+      "reason": "本页无批量操作（旧页亦无）。",
+      "evidence": [
+        "docs/migration/tasks/P21.md"
+      ]
+    },
+    {
+      "id": "A16",
+      "status": "not_applicable",
+      "reason": "本页无文件传输。",
+      "evidence": [
+        "docs/migration/tasks/P21.md"
+      ]
+    },
+    {
+      "id": "A17",
+      "status": "passed",
+      "reason": "失效关联识别：已删除模板在重发回显中保留原名称标识、阻止错误提交（浏览器实测）；本页无地图选点。",
+      "evidence": [
+        "docs/migration/tasks/P21.md"
+      ]
+    },
+    {
+      "id": "A18",
+      "status": "passed",
+      "reason": "Cron 语义（6 段秒位、周位 ?、N#M、NL、前置通配收敛 0）与旧构建器逐点等价；主/子控制分别校验对象与权限码；嵌套子表 Apex。",
+      "evidence": [
+        "docs/migration/tasks/P21.md"
+      ]
+    },
+    {
+      "id": "A19",
+      "status": "not_applicable",
+      "reason": "本页无统计指标。",
+      "evidence": [
+        "docs/migration/tasks/P21.md"
+      ]
+    },
+    {
+      "id": "A20",
+      "status": "passed",
+      "reason": "五语言+双主题+1366/1920 实测；IAB 输入通道限制已登记，真实 OS 指针差异不影响布局与文案结论。",
+      "evidence": [
+        "docs/migration/tasks/P21.md",
+        "docs/migration/evidence/P21/run-6a494b98-6cb3-4f57-9649-169e4b5ebda1/screenshots/light-1366-zhCN-expanded.png"
+      ]
+    },
+    {
+      "id": "A21",
+      "status": "passed",
+      "reason": "本页零 mock 零随机零伪进度；模板选项来自真实 getOrderTemplates。",
+      "evidence": [
+        "docs/migration/tasks/P21.md"
+      ]
+    },
+    {
+      "id": "A22",
+      "status": "passed",
+      "reason": "未登录直访回跳 /login?redirect 合法站内回跳；历史路由无别名需求；落点规则经 P01 统一机制。",
+      "evidence": [
+        "docs/migration/tasks/P21.md"
+      ]
+    },
+    {
+      "id": "A23",
+      "status": "passed",
+      "reason": "lint 481 文件 0/0、typecheck、structure 474、build 全绿；官方依赖锁文件未变动；无无关格式化。",
+      "evidence": [
+        "docs/migration/tasks/P21.md"
+      ]
+    },
+    {
+      "id": "A24",
+      "status": "deferred",
+      "reason": "长时多页签/真实规模稳定性归 V01 统一收口（本环境真实数据仅 1 条，规模样本不足）。",
+      "evidence": [
+        "docs/migration/tasks/P21.md"
+      ],
+      "category": "cross_page",
+      "basis": "长时多页签/真实规模稳定性归 V01 统一收口（本环境真实数据仅 1 条，规模样本不足）。",
+      "resumeCondition": "V01 统一验收阶段以真实业务规模、多页签长时运行环境复核稳定性并记录规模/浏览器/时长",
+      "owner": "V01"
+    },
+    {
+      "id": "I01",
+      "status": "passed",
+      "reason": "五语言菜单切换实测：html lang 同步（en-US/zh-TW/ja-JP/ko-KR）、刷新后持久化恢复。",
+      "evidence": [
+        "docs/migration/tasks/P21.md"
+      ]
+    },
+    {
+      "id": "I02",
+      "status": "passed",
+      "reason": "en 旧真译逐条沿用+升级补译；繁日韩真实译文；中文 key 即文案（zh-CN 无资源文件）。",
+      "evidence": [
+        "docs/migration/tasks/P21.md",
+        "docs/migration/evidence/P21/run-6a494b98-6cb3-4f57-9649-169e4b5ebda1/code-files.json"
+      ]
+    },
+    {
+      "id": "I03",
+      "status": "passed",
+      "reason": "插值 {{operation}}/{{msg}}/{{count}}/{{text}} 实测（确认框英文文案/失效拦截消息）；Cron 表达式花括号无 ICU 误处理。",
+      "evidence": [
+        "docs/migration/tasks/P21.md"
+      ]
+    },
+    {
+      "id": "I04",
+      "status": "passed",
+      "reason": "语言切换无整页刷新：列头/按钮/占位/页签标题动态更新，草稿与筛选不丢。",
+      "evidence": [
+        "docs/migration/tasks/P21.md"
+      ]
+    },
+    {
+      "id": "I05",
+      "status": "passed",
+      "reason": "antd ConfigProvider、Apex locale、dayjs、html lang 同步切换（useApexLocale 注入）。",
+      "evidence": [
+        "docs/migration/tasks/P21.md"
+      ]
+    },
+    {
+      "id": "I06",
+      "status": "deferred",
+      "reason": "分片懒加载失败不白屏为公共机制（四分片完整无缺失回退），IAB 无法构造网络级资源故障，与 T00/P01/P02 同口径归 V01；本页选项失败呈现已实现（静态审查+代码路径）。",
+      "evidence": [
+        "docs/migration/tasks/P21.md"
+      ],
+      "category": "cross_page",
+      "basis": "分片懒加载失败不白屏为公共机制（四分片完整无缺失回退），IAB 无法构造网络级资源故障，与 T00/P01/P02 同口径归 V01；本页选项失败呈现已实现（静态审查+代码路径）。",
+      "resumeCondition": "V01 统一验收阶段构造资源加载故障复核不白屏与简中回退登记（与 T00/P01/P02 同口径）",
+      "owner": "V01"
+    },
+    {
+      "id": "I07",
+      "status": "passed",
+      "reason": "Accept-Language 由请求层统一发送（含上传通道公共机制）；本页无服务端语言相关只读展示需重查。",
+      "evidence": [
+        "docs/migration/tasks/P21.md"
+      ]
+    },
+    {
+      "id": "I08",
+      "status": "passed",
+      "reason": "五语言切换不改变 Cron 原文/循环次数/枚举提交值；双主题双视口布局可读。",
+      "evidence": [
+        "docs/migration/tasks/P21.md",
+        "docs/migration/evidence/P21/run-6a494b98-6cb3-4f57-9649-169e4b5ebda1/screenshots/dark-1366-zhCN-expanded.png"
+      ]
+    }
+  ],
+  "environment": {
+    "backend": "http://192.168.0.158:8888（dev 同源代理，共享现场环境）",
+    "dataScale": "pageOrderFlows total=1（真实现存数据 1 条）、getOrderTemplates count=1",
+    "role": "root（mission-template 五码全下发）",
+    "viewports": [
+      "1920x945",
+      "1366x728"
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "languages": [
+      "zh-CN",
+      "en-US",
+      "zh-TW",
+      "ja-JP",
+      "ko-KR"
+    ],
+    "browser": "ZCode IAB Chromium（RO 垫片+事件序列垫片，边界见交接记录第 5 节）"
+  },
+  "evidenceIndex": {
+    "screenshots": "screenshots/ 目录 5 张 PNG 仅本地留存（.gitignore 排除），其他环境缺少原图时相应视觉项不可复核",
+    "scripts": [
+      "docs/migration/evidence/P21/run-6a494b98-6cb3-4f57-9649-169e4b5ebda1/p21_readonly_verify.py"
+    ],
+    "results": [
+      "docs/migration/evidence/P21/run-6a494b98-6cb3-4f57-9649-169e4b5ebda1/readonly_verify_result.json",
+      "docs/migration/evidence/P21/run-6a494b98-6cb3-4f57-9649-169e4b5ebda1/code-files.json"
+    ]
+  }
+}

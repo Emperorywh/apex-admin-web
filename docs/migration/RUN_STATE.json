@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "revision": 32,
-  "updatedAt": "2026-09-20T07:49:28.185Z",
+  "revision": 36,
+  "updatedAt": "2026-09-20T08:52:22.839Z",
   "workspace": {
     "root": "C:\\code\\apex-admin-web",
     "branch": "apple-rxx",
@@ -793,13 +793,18 @@
         "P39",
         "P20"
       ],
-      "implementation": "in_progress",
-      "verification": "pending_review",
-      "gate": "blocked",
+      "implementation": "implemented",
+      "verification": "partial",
+      "gate": "ready",
       "handoff": "docs/migration/tasks/P21.md",
-      "acceptanceRecord": null,
-      "pendingItems": [],
-      "note": "用户已确认旧运行停止；3734a69 已有 P21 代码，未发现正式交接和终态验证"
+      "acceptanceRecord": "docs/migration/evidence/P21/run-6a494b98-6cb3-4f57-9649-169e4b5ebda1/acceptance.json",
+      "pendingItems": [
+        "A14/DoD8：createOrderFlow 创建工艺与 orderFlowOperation/subOrderFlowOperation 主子控制命令的真实发送归 V01 专用调度环境或现场授权执行（机制级已实证：确认框五要素/防连点/取消零网络/失败留稿/不自动重放）",
+        "A04/I06：真实 token 过期收敛与资源加载失败不白屏归 V01 长会话复核（与 T00/P01/P02 同口径）",
+        "A24：长时多页签/真实规模稳定性归 V01 统一收口（本环境真实数据仅 1 条）",
+        "观察项：App.tsx 语言快速连切竞态（公共语言基座 T00.8，promise 完成序覆盖 settings.locale）登记待样板级复核，非 P21 引入"
+      ],
+      "note": "P21 恢复轮交付（2026-09-20，run-6a494b98）：代码基线 3734a69 整页实现+本轮 OrderFlowModal 选项失败呈现补丁（e8c556d）；旧源码/OpenAPI 逐项核对等价；静态门禁全绿；真实只读 8/8（GET 平铺 G04 实证、五码下发、无令牌对照）；浏览器整页验收（列表 7 列/展开子表/控制确认框五要素+取消零网络/创建弹窗必填拦截零网络/Cron 构建器六 Tab+写回/重发失效模板合成与拦截/五语言/双主题双视口 5 图/登出清理）；verification=partial（写操作与跨页项 deferred），gate=ready；不勾选 TASKS"
     },
     {
       "id": "P43",
@@ -1001,6 +1006,42 @@
   ],
   "currentTaskId": "P21",
   "run": {
+    "runId": "run-6a494b98-6cb3-4f57-9649-169e4b5ebda1",
+    "taskId": "P21",
+    "purpose": "implement",
+    "owner": "sess_63fa6ccb-55fe-47c0-b03d-2ae18c3dd1f9",
+    "runner": {
+      "provider": "zcode",
+      "sessionId": "sess_63fa6ccb-55fe-47c0-b03d-2ae18c3dd1f9",
+      "turnId": "turn_1663d1ce-f3c7-49e5-8933-f0703a09a1aa",
+      "automationRunId": "automation-4c58cefd-88c2-4b25-b14d-53904b310c3e:manual:9c27397d-8a53-45ca-8f65-a753aafd4513",
+      "identitySource": "running_tool_part",
+      "toolPartId": "part_mu9iqa1v_9512c5ec-34b9-42c1-aa75-d21a964220c3",
+      "toolCallId": "call_5ff549dcea3141889f62f4dd",
+      "messageId": "msg_mu9iq4qj_7baa3638-b4e1-45ed-85de-cc01b712e3f5"
+    },
+    "startedAt": "2026-09-20T07:52:15.682Z",
+    "baseHead": "888d1a2d0365b4da88371e41f08ad431153c4257",
+    "initialStatus": "M docs/migration/RUN_STATE.json\n?? docs/migration/evidence/runs/workflow-identity-20260920.json",
+    "progress": [
+      "递归核对旧源码（index/FlowModal/CronExpress 六Tab/SubFlowTable）与 OpenAPI orderFlow 四 operation，逐列逐字段等价；补齐唯一差距：OrderFlowModal 模板选项加载失败 Transfer 显示「加载失败」（P10/P20 同款）。",
+      "静态门禁全绿（lint 481 文件 0/0、typecheck、structure 474、build 1.14s）；真实只读联调 8/8；浏览器整页验收全过；IAB 环境现象与垫片边界按 AGENTS 登记。",
+      "acceptance.json 49 项矩阵（deferred：A14/DoD8 site_acceptance、A04/A24/I06 cross_page 均归 V01）；代码提交 e8c556d。"
+    ],
+    "nextSteps": [
+      "提交 acceptance.json 与交接证据，push --commit e8c556d301ccb65400450a99651ec36f7a3f64fd，end --outcome completed。"
+    ],
+    "blocker": null
+  },
+  "publish": {
+    "status": "synced",
+    "taskId": "P21",
+    "commit": "888d1a2d0365b4da88371e41f08ad431153c4257",
+    "confirmedRemoteHead": "888d1a2d0365b4da88371e41f08ad431153c4257",
+    "checkedAt": "2026-09-20T07:51:24.364Z",
+    "error": null
+  },
+  "lastRun": {
     "runId": "workflow-identity-20260920",
     "taskId": "P21",
     "purpose": "delivery",
@@ -1020,44 +1061,16 @@
     "nextSteps": [
       "提交并推送本轮修复后 end 释放维护锁；通过现有 ZCode 自动化立即运行一次，观察真实 P21 领取。"
     ],
-    "blocker": null
-  },
-  "publish": {
-    "status": "synced",
-    "commit": "92ce98f9d3b605257ccfc46b8694962d770d8e17",
-    "confirmedRemoteHead": "92ce98f9d3b605257ccfc46b8694962d770d8e17",
-    "checkedAt": "2026-09-20T07:41:59.550Z",
-    "error": null
-  },
-  "lastRun": {
-    "runId": "workflow-unblock-20260920",
-    "taskId": "P41",
-    "purpose": "delivery",
-    "owner": "01a0bc51-8b6b-7c10-9b66-f2a1a13c00f4",
-    "startedAt": "2026-09-20T06:48:17.673Z",
-    "baseHead": "f787ef8714969268d264a02930ad8a0c7d44100e",
-    "initialStatus": "M docs/migration/RUN_STATE.json\n?? docs/migration/evidence/recovery/audit-20260920-p41-384240b.json",
-    "progress": [
-      "确认 P41 对应 ZCode 轮次于 13:15 取消，依据真实 begin 工具及 turn 终态恢复；旧任务不标记完成",
-      "新增 prepare：绑定真实会话、核验并恢复遗留锁、实时对账远端、同轮领取一个任务",
-      "保留未完成开发优先和 P21 当前任务；原 48 项队列及 T00/P01/P02 验收证据不变",
-      "pnpm check、build、migration:check 和 16 项 CLI/SQLite/Git 集成烟测通过；截图继续排除 Git",
-      "修复已提交并推送 02b1f8d94dd8f08c2a75c8dbafc1064150a8b454，脚本再次查询远端确认一致；提交不含截图"
-    ],
-    "nextSteps": [
-      "下一自动轮执行 prepare --session auto，领取 P21 implement；历史复核顺延至页面实现收口",
-      "本轮结束回执按既定流程作为下一轮已知文档改动，不影响领取业务任务"
-    ],
     "blocker": null,
-    "endedAt": "2026-09-20T07:04:39.777Z",
+    "endedAt": "2026-09-20T07:51:31.794Z",
     "outcome": "completed",
-    "endHead": "02b1f8d94dd8f08c2a75c8dbafc1064150a8b454",
+    "endHead": "888d1a2d0365b4da88371e41f08ad431153c4257",
     "publish": {
       "status": "synced",
-      "taskId": "P41",
-      "commit": "02b1f8d94dd8f08c2a75c8dbafc1064150a8b454",
-      "confirmedRemoteHead": "02b1f8d94dd8f08c2a75c8dbafc1064150a8b454",
-      "checkedAt": "2026-09-20T07:04:02.650Z",
+      "taskId": "P21",
+      "commit": "888d1a2d0365b4da88371e41f08ad431153c4257",
+      "confirmedRemoteHead": "888d1a2d0365b4da88371e41f08ad431153c4257",
+      "checkedAt": "2026-09-20T07:51:24.364Z",
       "error": null
     }
   },

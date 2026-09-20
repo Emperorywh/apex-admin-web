@@ -2,18 +2,23 @@
   "task": {
     "implementation": "implemented",
     "verification": "partial",
-    "gate": "ready"
+    "gate": "ready",
+    "acceptanceRecord": "docs/migration/evidence/P21/run-6a494b98-6cb3-4f57-9649-169e4b5ebda1/acceptance.json",
+    "pendingItems": [
+      "A14/DoD8：createOrderFlow 创建工艺与 orderFlowOperation/subOrderFlowOperation 主子控制命令的真实发送归 V01 专用调度环境或现场授权执行（机制级已实证：确认框五要素/防连点/取消零网络/失败留稿/不自动重放）",
+      "A04/I06：真实 token 过期收敛与资源加载失败不白屏归 V01 长会话复核（与 T00/P01/P02 同口径）",
+      "A24：长时多页签/真实规模稳定性归 V01 统一收口（本环境真实数据仅 1 条）",
+      "观察项：App.tsx 语言快速连切竞态（公共语言基座 T00.8，promise 完成序覆盖 settings.locale）登记待样板级复核，非 P21 引入"
+    ],
+    "note": "P21 恢复轮交付（2026-09-20，run-6a494b98）：代码基线 3734a69 整页实现+本轮 OrderFlowModal 选项失败呈现补丁（e8c556d）；旧源码/OpenAPI 逐项核对等价；静态门禁全绿；真实只读 8/8（GET 平铺 G04 实证、五码下发、无令牌对照）；浏览器整页验收（列表 7 列/展开子表/控制确认框五要素+取消零网络/创建弹窗必填拦截零网络/Cron 构建器六 Tab+写回/重发失效模板合成与拦截/五语言/双主题双视口 5 图/登出清理）；verification=partial（写操作与跨页项 deferred），gate=ready；不勾选 TASKS"
   },
   "progress": [
-    "恢复 P21 开发轮（代码基线 3734a69 已含整页实现）：递归核对旧源码 MissionFlow/FlowModal/CronExpress 六Tab/SubFlowTable 与 OpenAPI orderFlow 四 operation，逐列逐字段核对等价。",
-    "补齐唯一实现差距：OrderFlowModal 模板选项加载失败时 Transfer notFoundContent 显示 common「加载失败」（P10/P20 同款按钮纪律）；静态门禁全绿（lint 481 文件 0/0、typecheck、structure 474、build 1.14s）。",
-    "真实只读联调 8/8：登录五码下发、pageOrderFlows GET 平铺（G04 实证）、schema 抽样、query 命中/未命中、无令牌 1000000、getOrderTemplates；脚本与结果持久化 evidence/P21/run-6a494b98-…。",
-    "浏览器整页验收：守卫回跳、列表 7 列真实数据、展开子表、控制命令确认框五要素+取消零网络、创建弹窗必填拦截零网络、Cron 构建器六 Tab+写回 0 0 0 0 0 ?、重发回显+失效模板合成与拦截零网络、五语言、双主题双视口截图 5 张、登出清理。",
-    "交接记录 P21.md 重写为交付与验收记录；IAB 环境现象（RO 垫片、输入通道、动画冻结、旧合成帧）按 AGENTS 边界登记；写操作 deferred（site_acceptance 归 V01 专用环境）；App.tsx 语言连切竞态登记观察项归 T00/V01。"
+    "递归核对旧源码（index/FlowModal/CronExpress 六Tab/SubFlowTable）与 OpenAPI orderFlow 四 operation，逐列逐字段等价；补齐唯一差距：OrderFlowModal 模板选项加载失败 Transfer 显示「加载失败」（P10/P20 同款）。",
+    "静态门禁全绿（lint 481 文件 0/0、typecheck、structure 474、build 1.14s）；真实只读联调 8/8；浏览器整页验收全过；IAB 环境现象与垫片边界按 AGENTS 登记。",
+    "acceptance.json 49 项矩阵（deferred：A14/DoD8 site_acceptance、A04/A24/I06 cross_page 均归 V01）；代码提交 e8c556d。"
   ],
   "nextSteps": [
-    "提交代码（OrderFlowModal 补丁）、交接与文字证据；写 acceptance.json（codeCommit 绑定代码提交、23 文件哈希）后提交并推送 origin/apple-rxx；end --outcome completed。",
-    "写操作（创建工艺/主子控制命令）待 V01 在专用调度环境或现场授权下验收。"
+    "提交 acceptance.json 与交接证据，push --commit e8c556d301ccb65400450a99651ec36f7a3f64fd，end --outcome completed。"
   ],
   "blocker": null
 }
