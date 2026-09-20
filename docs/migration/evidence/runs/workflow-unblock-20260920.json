@@ -1,0 +1,32 @@
+{
+  "runId": "workflow-unblock-20260920",
+  "taskId": "P41",
+  "purpose": "delivery",
+  "owner": "01a0bc51-8b6b-7c10-9b66-f2a1a13c00f4",
+  "startedAt": "2026-09-20T06:48:17.673Z",
+  "baseHead": "f787ef8714969268d264a02930ad8a0c7d44100e",
+  "initialStatus": "M docs/migration/RUN_STATE.json\n?? docs/migration/evidence/recovery/audit-20260920-p41-384240b.json",
+  "progress": [
+    "确认 P41 对应 ZCode 轮次于 13:15 取消，依据真实 begin 工具及 turn 终态恢复；旧任务不标记完成",
+    "新增 prepare：绑定真实会话、核验并恢复遗留锁、实时对账远端、同轮领取一个任务",
+    "保留未完成开发优先和 P21 当前任务；原 48 项队列及 T00/P01/P02 验收证据不变",
+    "pnpm check、build、migration:check 和 16 项 CLI/SQLite/Git 集成烟测通过；截图继续排除 Git",
+    "修复已提交并推送 02b1f8d94dd8f08c2a75c8dbafc1064150a8b454，脚本再次查询远端确认一致；提交不含截图"
+  ],
+  "nextSteps": [
+    "下一自动轮执行 prepare --session auto，领取 P21 implement；历史复核顺延至页面实现收口",
+    "本轮结束回执按既定流程作为下一轮已知文档改动，不影响领取业务任务"
+  ],
+  "blocker": null,
+  "endedAt": "2026-09-20T07:04:39.777Z",
+  "outcome": "completed",
+  "endHead": "02b1f8d94dd8f08c2a75c8dbafc1064150a8b454",
+  "publish": {
+    "status": "synced",
+    "taskId": "P41",
+    "commit": "02b1f8d94dd8f08c2a75c8dbafc1064150a8b454",
+    "confirmedRemoteHead": "02b1f8d94dd8f08c2a75c8dbafc1064150a8b454",
+    "checkedAt": "2026-09-20T07:04:02.650Z",
+    "error": null
+  }
+}

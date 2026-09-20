@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "revision": 27,
-  "updatedAt": "2026-09-20T07:02:53.951Z",
+  "revision": 30,
+  "updatedAt": "2026-09-20T07:04:39.839Z",
   "workspace": {
     "root": "C:\\code\\apex-admin-web",
     "branch": "apple-rxx",
@@ -1000,7 +1000,16 @@
     }
   ],
   "currentTaskId": "P21",
-  "run": {
+  "run": null,
+  "publish": {
+    "status": "synced",
+    "taskId": "P41",
+    "commit": "02b1f8d94dd8f08c2a75c8dbafc1064150a8b454",
+    "confirmedRemoteHead": "02b1f8d94dd8f08c2a75c8dbafc1064150a8b454",
+    "checkedAt": "2026-09-20T07:04:02.650Z",
+    "error": null
+  },
+  "lastRun": {
     "runId": "workflow-unblock-20260920",
     "taskId": "P41",
     "purpose": "delivery",
@@ -1012,36 +1021,25 @@
       "确认 P41 对应 ZCode 轮次于 13:15 取消，依据真实 begin 工具及 turn 终态恢复；旧任务不标记完成",
       "新增 prepare：绑定真实会话、核验并恢复遗留锁、实时对账远端、同轮领取一个任务",
       "保留未完成开发优先和 P21 当前任务；原 48 项队列及 T00/P01/P02 验收证据不变",
-      "pnpm check、build、migration:check 和 16 项 CLI/SQLite/Git 集成烟测通过；截图继续排除 Git"
+      "pnpm check、build、migration:check 和 16 项 CLI/SQLite/Git 集成烟测通过；截图继续排除 Git",
+      "修复已提交并推送 02b1f8d94dd8f08c2a75c8dbafc1064150a8b454，脚本再次查询远端确认一致；提交不含截图"
     ],
     "nextSteps": [
-      "完成本轮控制器修复的提交与推送，然后 end 释放维护锁",
-      "下一自动轮执行 prepare --session auto，领取 P21 implement；历史复核顺延至页面实现收口"
+      "下一自动轮执行 prepare --session auto，领取 P21 implement；历史复核顺延至页面实现收口",
+      "本轮结束回执按既定流程作为下一轮已知文档改动，不影响领取业务任务"
     ],
-    "blocker": null
-  },
-  "publish": {
-    "status": "synced",
-    "taskId": "P41",
-    "commit": "f787ef8714969268d264a02930ad8a0c7d44100e",
-    "confirmedRemoteHead": "f787ef8714969268d264a02930ad8a0c7d44100e",
-    "checkedAt": "2026-09-20T07:02:14.786Z",
-    "error": null
-  },
-  "lastRun": {
-    "runId": "audit-20260920-p41-384240b",
-    "taskId": "P41",
-    "purpose": "audit",
-    "owner": "zcode-p41-audit-20260920",
-    "startedAt": "2026-09-20T05:06:42.375Z",
-    "baseHead": "384240bc740bd552e575f226f71d5de07f75a6f3",
-    "initialStatus": "M docs/migration/RUN_STATE.json\n?? docs/migration/evidence/runs/audit-20260920-p02-408144b.json",
-    "progress": [],
-    "nextSteps": [],
     "blocker": null,
-    "endedAt": "2026-09-20T06:48:17.054Z",
-    "outcome": "interrupted",
-    "recoveryEvidence": "docs/migration/evidence/recovery/audit-20260920-p41-384240b.json"
+    "endedAt": "2026-09-20T07:04:39.777Z",
+    "outcome": "completed",
+    "endHead": "02b1f8d94dd8f08c2a75c8dbafc1064150a8b454",
+    "publish": {
+      "status": "synced",
+      "taskId": "P41",
+      "commit": "02b1f8d94dd8f08c2a75c8dbafc1064150a8b454",
+      "confirmedRemoteHead": "02b1f8d94dd8f08c2a75c8dbafc1064150a8b454",
+      "checkedAt": "2026-09-20T07:04:02.650Z",
+      "error": null
+    }
   },
   "historicalEvidence": "docs/migration/evidence/legacy-20260920/manifest.json",
   "recoveryPolicy": "只接受对应运行结束的外部证据或用户明确确认；禁止按锁年龄和临时进程退出判断。",
