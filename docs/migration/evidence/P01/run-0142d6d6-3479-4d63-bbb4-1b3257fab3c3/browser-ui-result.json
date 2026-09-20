@@ -1,0 +1,44 @@
+{
+  "runId": "run-0142d6d6-3479-4d63-bbb4-1b3257fab3c3",
+  "taskId": "P01",
+  "purpose": "audit（第二次复核轮，基线 bbe05cb）",
+  "checkedAt": "2026-09-21T06:05:00+08:00",
+  "browser": "ZCode IAB（Chromium 内核，Windows 11）",
+  "viewport": "1280×720（IAB 默认；1366/1920 双视口上轮 audit-20260920-p01-44fc5e6 已实测，本轮未重复）",
+  "theme": "dark（持久化偏好恢复；上轮已覆盖浅色+深色诊断双主题）",
+  "language": "en-US（持久化语言恢复实测）+ zh-CN 命名空间加载",
+  "steps": [
+    {
+      "id": "login-page-render",
+      "status": "passed",
+      "detail": "登录页整页渲染正常：默认壁纸（systemLogos items=0 / loginBackground 404 回退分支生效）、品牌标题 Dispatch System、表单横排标签（Username:/Password:）、右上语言切换按钮；持久化语言 en-US 恢复（aria 快照全英文，I01 恢复语义同口径复验）",
+      "evidence": "screenshots/login-page-en.png"
+    },
+    {
+      "id": "real-login-landing-dashboard",
+      "status": "passed",
+      "detail": "真实凭据登录（cua 真实指针点击 Sign in）→ 落点 http://localhost:5173/dashboard（D29 兑现：P34 交付解除 /dashboard pending 后，有权限首页成为登录落点；上轮落 /order-record 的结论按新路由基线更新）；「Login successful」真实提示出现；Dashboard 整页渲染完整（顶栏+页签 Dashboard selected+8 KPI 卡+AGV 状态分布图+今日完成趋势+实时告警真实空态 No open alerts+Dock 导航）",
+      "evidence": [
+        "screenshots/landing-dashboard.png",
+        "aria-snapshot：KPI 数据 6,429→6,436 连续跳动（P34 board 聚合 5s 可见轮询真实工作）"
+      ]
+    },
+    {
+      "id": "logout-cleanup",
+      "status": "passed",
+      "detail": "登出后回 /login?redirect=%2Fdashboard（认证守卫保留站内回跳参数）；登录表单已清空；localStorage persist:apex-admin:auth 中 token 为空（会话数据清理）"
+    },
+    {
+      "id": "external-redirect-rejected",
+      "status": "passed",
+      "detail": "外站回跳拒绝实测：带 ?redirect=https%3A%2F%2Fevil.example.com%2Fadmin 打开登录页并真实登录 → URL 中外站 redirect 参数被剥除，登录成功落站内落点 /dashboard，未跳转外站（resolveSafeRedirectPath 仅站内合法目标放行的行为在当前基线复验成立）"
+    },
+    {
+      "id": "logout-final-cleanup",
+      "status": "passed",
+      "detail": "测试结束再次登出清理会话（回 /login?redirect=%2Fdashboard），不留活令牌；与真实只读脚本第 8 项登出共同保证本轮无残留会话"
+    }
+  ],
+  "inputPipelineNote": "IAB 输入管线冻结两次复现（同页签 goto 后快照冻结；新页签 fill 生效但 Playwright click 超时）。第一次登录落点 /dashboard 经 cua 真实指针点击完成；第二次登录（外站场景）提交与两次登出动作经 evaluate 合成指针序列完成（诊断垫片，仅触发提交，不替代真实指针验收——真实指针登录路径已由第一次登录验证）",
+  "screenshots": "screenshots/ 目录仅本地留存（.gitignore 排除，不入 Git）"
+}

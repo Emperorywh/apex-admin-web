@@ -1,0 +1,48 @@
+{
+  "ok": true,
+  "proxyTarget": "http://192.168.0.158:8888",
+  "checks": [
+    {
+      "step": "login-wrong-credentials",
+      "ok": true,
+      "detail": "HTTP 200 code=1000010 message=用户名或密码错误"
+    },
+    {
+      "step": "login-md5-correct",
+      "ok": true,
+      "detail": "HTTP 200 code=200 activated=true permCodes=155"
+    },
+    {
+      "step": "system-logos-list",
+      "ok": true,
+      "detail": "HTTP 200 code=200 items=0"
+    },
+    {
+      "step": "login-background-absent-fallback-condition",
+      "ok": true,
+      "detail": "HTTP 404 contentType=n/a"
+    },
+    {
+      "step": "dashboard-landing-permission-present",
+      "ok": true,
+      "detail": "dashboard-realtime:view 在 155 个权限码中"
+    },
+    {
+      "step": "token-readonly-pageusers",
+      "ok": true,
+      "detail": "HTTP 200 code=200 total=3"
+    },
+    {
+      "step": "token-readonly-anon-contrast",
+      "ok": true,
+      "detail": "HTTP 200 code=1000000"
+    },
+    {
+      "step": "logout",
+      "ok": true,
+      "detail": "HTTP 200 code=200"
+    }
+  ],
+  "checkedAt": "2026-09-20T21:55:53.899Z",
+  "note": "输出不含密码与 token；除登录/登出外无写请求。"
+}

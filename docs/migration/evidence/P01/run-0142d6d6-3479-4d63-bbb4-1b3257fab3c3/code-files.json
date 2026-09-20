@@ -1,0 +1,122 @@
+[
+  {
+    "path": "src/pages/auth/Login/Login.tsx",
+    "sha256": "ae7c2c313c3038822f298e7cee5a59f31efdd98cd655dca87b5a298829c260f3",
+    "changed": false
+  },
+  {
+    "path": "src/pages/auth/Login/Login.module.css",
+    "sha256": "21f774749a4d7a69f93440aa2e7fd174ca5e6994dae6525a81945f9769fbb092",
+    "changed": false
+  },
+  {
+    "path": "src/features/auth/components/LoginForm/LoginForm.tsx",
+    "sha256": "06b6a6089b7719603d2d1f3495864435c29a1bfd70bf9120926e6438d694c978",
+    "changed": false
+  },
+  {
+    "path": "src/features/auth/components/LoginForm/LoginForm.module.css",
+    "sha256": "fb8655a7039fd12648bdc483732132ce8e0c2bfc7a57e62f6c7b1c8a91f915ea",
+    "changed": false
+  },
+  {
+    "path": "src/features/auth/components/LoginLanguageSwitch/LoginLanguageSwitch.tsx",
+    "sha256": "dba4ca0af9bdf96873960479f55a2b73183fbb6f4fd87af577f819f30f191c98",
+    "changed": false
+  },
+  {
+    "path": "src/features/auth/components/LoginLanguageSwitch/LoginLanguageSwitch.module.css",
+    "sha256": "21b4a58c7bdbf981d8accd03953e0973ab99eb341637c3be3afcf2ba51852c0c",
+    "changed": false
+  },
+  {
+    "path": "src/i18n/locales/en-US/auth.ts",
+    "sha256": "2f85bc9e25f82c54abeb11ccd72533644cb20b56639e326f581d7bb1e8e67380",
+    "changed": false
+  },
+  {
+    "path": "src/i18n/locales/ja-JP/auth.ts",
+    "sha256": "d2cc39101820b4254449bf3af41b57b167d185cf5eb84bed767dea0343bae4a2",
+    "changed": false
+  },
+  {
+    "path": "src/i18n/locales/ko-KR/auth.ts",
+    "sha256": "04cfa3dfef37a72d147dd0d0ec25e1aa09b7047b07423a7aacd86663c060777f",
+    "changed": false
+  },
+  {
+    "path": "src/i18n/locales/zh-TW/auth.ts",
+    "sha256": "1c1297a66a3ab5dc81c0a8dbe4f84bcca93b1dcddc3bb089b56b99c3a1314b53",
+    "changed": false
+  },
+  {
+    "path": "src/services/system/brand/brand.service.ts",
+    "sha256": "e2b2f2a86b4d45508030c60864734ec9e241f57c9d5aea60b1f7800b851d9a03",
+    "changed": false
+  },
+  {
+    "path": "src/services/auth/auth.service.ts",
+    "sha256": "5c332c25cbc8854d437e7b84b45e78c8c0af09ce68074b9ecb79426564abefa5",
+    "changed": false
+  },
+  {
+    "path": "src/services/auth/auth.service.types.ts",
+    "sha256": "19e4f76f1b64506bac1243170dc34f84e223ad5c85fb96c5ecac67c4325e503a",
+    "changed": false
+  },
+  {
+    "path": "src/services/auth/authBridge.ts",
+    "sha256": "b2474d61c55c62508ab778f013a3c17011e7081b6ce51bc3db5620cbd287390b",
+    "changed": false
+  },
+  {
+    "path": "src/features/auth/hooks/useLogin.ts",
+    "sha256": "75a3ca7937223bc2d6ccf4519ff5501174289ce32e968d466322bb0c754dfc41",
+    "changed": false
+  },
+  {
+    "path": "src/router/routeAccess.ts",
+    "sha256": "1fff603b9678023c6abc4b757a548c6953aee087bee59b496158f48d85d62e92",
+    "changed": false
+  },
+  {
+    "path": "src/router/definitions.tsx",
+    "sha256": "e02d0d676b011c194108df5663c5b4dd1fedd6d4c9bbe1b63c469c58f872ba6e",
+    "changed": true
+  },
+  {
+    "path": "src/store/slices/authSlice.ts",
+    "sha256": "1fd2576d835ac08559eb304d14b8a8442dd7b46e4570898d9993b4505d0b706f",
+    "changed": false
+  },
+  {
+    "path": "src/services/request/request.ts",
+    "sha256": "86cacd6c84b42b9910b7a1b83f7bcd5b3a9916024a82478c907ef0b9b8c85196",
+    "changed": false
+  },
+  {
+    "path": "src/constants/auth/auth.constants.ts",
+    "sha256": "d3f505ab69cebad19a4b326ece56c8a054b9c9e70c54ef968793e5f96d7bd800",
+    "changed": false
+  },
+  {
+    "path": "src/constants/auth/permission.constants.ts",
+    "sha256": "6e3c547079aa363d040c55bfc9e2370b3d75c5bf2517e885fc8115452dfa5be5",
+    "changed": false
+  },
+  {
+    "path": "src/utils/auth/permission.ts",
+    "sha256": "932af23797704ef460764e90a5a3772d1ef76e986d7c07521b826d27f6360abe",
+    "changed": false
+  },
+  {
+    "path": "src/i18n/i18n.ts",
+    "sha256": "b867e71364ae386b5cd20ab413f16b131c71a58d8085fb3a717daf9cde791392",
+    "changed": true
+  },
+  {
+    "path": "src/App/App.tsx",
+    "sha256": "7cee1ffaeb634905ea2076ea5144115020abf81bef4a620430a980494042986d",
+    "changed": false
+  }
+]

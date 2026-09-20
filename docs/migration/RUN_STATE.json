@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "revision": 77,
-  "updatedAt": "2026-09-20T20:58:12.562Z",
+  "revision": 82,
+  "updatedAt": "2026-09-20T22:06:43.828Z",
   "workspace": {
     "root": "C:\\code\\apex-admin-web",
     "branch": "apple-rxx",
@@ -39,12 +39,13 @@
       "verification": "partial",
       "gate": "ready",
       "handoff": "docs/migration/tasks/P01.md",
-      "acceptanceRecord": "docs/migration/evidence/P01/audit-20260920-p01-44fc5e6/acceptance.json",
+      "acceptanceRecord": "docs/migration/evidence/P01/run-0142d6d6-3479-4d63-bbb4-1b3257fab3c3/acceptance.json",
       "pendingItems": [
-        "A04：真实 token 过期收敛与双窗口退出同步场景归 V01 长会话复核（持久化恢复/登出清理/无虚构刷新机制级已实证，与 T00 同口径）",
-        "I06：真实网络级资源加载失败不白屏场景归 V01 复核（品牌 404 资源缺失分支已实测不白屏；IAB 无法构造网络故障，T00 同口径）"
+        "A04：真实 token 过期收敛与双窗口退出同步场景归 V01 长会话复核（机制级两轮均实证，与 T00/P02 同口径）",
+        "I06：真实网络级语言资源加载失败不白屏场景归 V01 复核（品牌 404 资源缺失分支两轮实测不白屏；IAB 无法构造网络故障）",
+        "品牌图成功显示路径：联调环境未上传品牌图，有图环境或 P27 上传完成后顺带复验"
       ],
-      "note": "audit 复核通过（2026-09-20，run audit-20260920-p01-44fc5e6）：静态门禁复用同日 T00 audit 在 a9a3cc0 的复绿结果（基线后仅 docs 提交，src 零变化）；真实登录链路复测 5/5（错误凭据 code=1000010 补上轮缺口、正确凭据 activated=true/155 权限码、品牌通道 items=0+loginBackground 404 回退条件、登出清理）；浏览器 UI 验收（1366/1920、浅色+深色诊断、IAB Chromium）覆盖五语言切换（en/ja html lang 同步+输入草稿保留）、错误凭据真实提示 aria 快照、外站回跳拒绝实测（evil.example.com→落 /order-record）、登录落点规则（/dashboard 迁移完成前不作落点）、刷新恢复、登出清理；verification=partial（A04/I06 deferred 归 V01，与 T00 同口径），gate=ready 维持 B1 放行；不勾选 TASKS"
+      "note": "audit 第二次复核通过（2026-09-21，run run-0142d6d6）：上轮 24 受检文件 22 个零变更、2 个变更文件（definitions.tsx/i18n.ts）经 T00 audit 逐 hunk 审查为本轮 P01 视角复核均授权扩展（login 节点与 auth 四语言注册零改动），哈希重绑 bbe05cb；当前基线静态门禁复用 T00 audit 392e831 全量复绿结果（392e831..bbe05cb 仅 docs）；真实只读复测 8/8（错误凭据 1000010/MD5 登录 activated=true 155 权限码/dashboard 落点权限前提/pageUsers total=3/无令牌对照 1000000/品牌通道/登出清理）；浏览器针对性复测 5 项含关键行为变化实测——登录落点随 P34 交付解除 /dashboard pending 兑现为 /dashboard（上轮落 /order-record 结论更新，D29）、外站回跳拒绝复验、登出清理复验；OpenAPI 哈希一致；verification=partial（A04/I06 deferred 归 V01），gate=ready 维持 B1 放行；不勾选 TASKS"
     },
     {
       "id": "P02",
@@ -1032,6 +1033,44 @@
   ],
   "currentTaskId": "P35",
   "run": {
+    "runId": "run-0142d6d6-3479-4d63-bbb4-1b3257fab3c3",
+    "taskId": "P01",
+    "purpose": "audit",
+    "owner": "sess_673460df-fc22-4f08-9511-41ec43469a2f",
+    "runner": {
+      "provider": "zcode",
+      "sessionId": "sess_673460df-fc22-4f08-9511-41ec43469a2f",
+      "turnId": "turn_563f11cd-ef59-48ca-8d6b-2ac809c0e2a3",
+      "automationRunId": "automation-4c58cefd-88c2-4b25-b14d-53904b310c3e:1789941000000",
+      "identitySource": "running_tool_part",
+      "toolPartId": "part_muacodq2_4688f828-9848-4c79-8fc6-348deb0536af",
+      "toolCallId": "call_24c89cd55164431d9dd0f002",
+      "messageId": "msg_muaco2oh_00c4a3e7-6bbf-4d9f-bae6-ada6738ecc26"
+    },
+    "startedAt": "2026-09-20T21:50:36.657Z",
+    "baseHead": "bbe05cb6bd3c0283a834b7cddc60d9b274e643fe",
+    "initialStatus": "M docs/migration/RUN_STATE.json\n?? docs/migration/evidence/runs/run-b11c9c11-7926-49b5-b491-283f704b9be4.json",
+    "progress": [
+      "P01 audit 复核（run-0142d6d6）：24 受检文件 22 个零变更、2 个变更公共文件从 P01 视角逐 hunk 复核通过（均为登记授权扩展）",
+      "静态门禁复用 T00 audit @ 392e831 复绿结果（bbe05cb 仅 docs，git diff 证实零代码变化）；OpenAPI 哈希复核一致",
+      "真实只读复测 8/8（新增 dashboard-realtime:view 落点前提+无令牌 1000000 对照）",
+      "浏览器针对性复测 5/5：登录落点 /dashboard（D29 兑现）/外站回跳拒绝/登出清理/登录页渲染/Dashboard 整页+轮询实证；截图本地留存",
+      "acceptance.json 写入：49 项矩阵（A04/I06 deferred 归 V01）+ 24 文件哈希重绑 @ bbe05cb；P01.md 交接记录本轮复核节更新"
+    ],
+    "nextSteps": [
+      "提交验收记录/交接记录/RUN_STATE → push --commit HEAD → end --outcome completed"
+    ],
+    "blocker": null
+  },
+  "publish": {
+    "status": "synced",
+    "taskId": "T00",
+    "commit": "bbe05cb6bd3c0283a834b7cddc60d9b274e643fe",
+    "confirmedRemoteHead": "bbe05cb6bd3c0283a834b7cddc60d9b274e643fe",
+    "checkedAt": "2026-09-20T20:59:32.315Z",
+    "error": null
+  },
+  "lastRun": {
     "runId": "run-b11c9c11-7926-49b5-b491-283f704b9be4",
     "taskId": "T00",
     "purpose": "audit",
@@ -1058,58 +1097,16 @@
     "nextSteps": [
       "提交验收记录/交接记录/RUN_STATE → push --commit HEAD → end --outcome completed"
     ],
-    "blocker": null
-  },
-  "publish": {
-    "status": "synced",
-    "taskId": "P35",
-    "commit": "392e8316abe3b203867ffd5ff20afe1c6b389fe5",
-    "confirmedRemoteHead": "392e8316abe3b203867ffd5ff20afe1c6b389fe5",
-    "checkedAt": "2026-09-20T19:52:25.004Z",
-    "error": null
-  },
-  "lastRun": {
-    "runId": "run-6059fd83-fb54-4c29-9ecb-de2491f7f122",
-    "taskId": "P35",
-    "purpose": "implement",
-    "owner": "sess_8c97f3f9-7813-4bc5-b178-bf70d9197fa9",
-    "runner": {
-      "provider": "zcode",
-      "sessionId": "sess_8c97f3f9-7813-4bc5-b178-bf70d9197fa9",
-      "turnId": "turn_25eeea70-2866-4d19-99d5-b3f6ff811df2",
-      "automationRunId": "automation-4c58cefd-88c2-4b25-b14d-53904b310c3e:1789930200000",
-      "identitySource": "running_tool_part",
-      "toolPartId": "part_mua68xng_57c66b06-a7d4-471a-bbf1-d09318f32744",
-      "toolCallId": "call_a783055b2901497eab254fab",
-      "messageId": "msg_mua68iyk_bb2db194-9443-4525-bc3d-9a1e7a1acb42"
-    },
-    "startedAt": "2026-09-20T18:50:38.234Z",
-    "baseHead": "d407ab0f990d3b0a47e93eb9ec8876e1e77aa958",
-    "initialStatus": "M docs/migration/RUN_STATE.json\n?? docs/migration/evidence/runs/run-2384f48f-0de2-427b-96a9-97e15c6baaf0.json",
-    "progress": [
-      "P35 整页交付：report-task 服务（taskStatistics）+ features/analyze-visual/task-statistics（statistics 纯计算 + 同构查询 hook + 4 echarts 图表）+ 页面重写（工具栏/KPI 4 卡/2×2 图表/Apex 每日明细）+ 四语言分片 57 key + i18n 注册 + 路由解除 pending",
-      "静态门禁全绿（lint 0/0、typecheck、structure 529 文件、build 1.20s；hint key 完整简中文案化修复后复绿）",
-      "真实只读 13/13（readonly-result.json）：taskStatistics KPI 试算互证、6 桶 label 归一化、vehicleKeys 筛选、agvStateStatistics/agvExecutingTimeStatistics 口径试算、无令牌拒绝、登出清理",
-      "浏览器整页验收：KPI 与只读一致、4 图 canvas 取证、排序 aria-sort 三态、口径提示 9 处简中/en 插值（修复短 key 缺陷）、ja/en/zh-CN 整页重建、双视口双主题、登出清理、登录合法回跳",
-      "acceptance.json 50 项矩阵（passed 36 / not_applicable 12 / deferred 5：A04/A24/I06/P35-5/P35-6）+ code-files.json 17 文件哈希",
-      "待办：提交实现代码 → 回填 codeCommit → 提交验收记录/交接/RUN_STATE/i18n-map → push --commit HEAD → end --outcome completed"
-    ],
-    "nextSteps": [
-      "git add 实现代码 17 文件 → commit（implCommit）",
-      "回填 acceptance.json codeCommit=implCommit → git add docs → commit",
-      "node scripts/migration-runner.mjs push --run run-6059fd83-fb54-4c29-9ecb-de2491f7f122 --commit <HEAD>",
-      "node scripts/migration-runner.mjs end --run run-6059fd83-fb54-4c29-9ecb-de2491f7f122 --outcome completed"
-    ],
     "blocker": null,
-    "endedAt": "2026-09-20T19:52:29.083Z",
+    "endedAt": "2026-09-20T20:59:42.287Z",
     "outcome": "completed",
-    "endHead": "392e8316abe3b203867ffd5ff20afe1c6b389fe5",
+    "endHead": "bbe05cb6bd3c0283a834b7cddc60d9b274e643fe",
     "publish": {
       "status": "synced",
-      "taskId": "P35",
-      "commit": "392e8316abe3b203867ffd5ff20afe1c6b389fe5",
-      "confirmedRemoteHead": "392e8316abe3b203867ffd5ff20afe1c6b389fe5",
-      "checkedAt": "2026-09-20T19:52:25.004Z",
+      "taskId": "T00",
+      "commit": "bbe05cb6bd3c0283a834b7cddc60d9b274e643fe",
+      "confirmedRemoteHead": "bbe05cb6bd3c0283a834b7cddc60d9b274e643fe",
+      "checkedAt": "2026-09-20T20:59:32.315Z",
       "error": null
     }
   },

@@ -1,0 +1,25 @@
+{
+  "task": {
+    "implementation": "implemented",
+    "verification": "partial",
+    "gate": "ready",
+    "acceptanceRecord": "docs/migration/evidence/P01/run-0142d6d6-3479-4d63-bbb4-1b3257fab3c3/acceptance.json",
+    "pendingItems": [
+      "A04：真实 token 过期收敛与双窗口退出同步场景归 V01 长会话复核（机制级两轮均实证，与 T00/P02 同口径）",
+      "I06：真实网络级语言资源加载失败不白屏场景归 V01 复核（品牌 404 资源缺失分支两轮实测不白屏；IAB 无法构造网络故障）",
+      "品牌图成功显示路径：联调环境未上传品牌图，有图环境或 P27 上传完成后顺带复验"
+    ],
+    "note": "audit 第二次复核通过（2026-09-21，run run-0142d6d6）：上轮 24 受检文件 22 个零变更、2 个变更文件（definitions.tsx/i18n.ts）经 T00 audit 逐 hunk 审查为本轮 P01 视角复核均授权扩展（login 节点与 auth 四语言注册零改动），哈希重绑 bbe05cb；当前基线静态门禁复用 T00 audit 392e831 全量复绿结果（392e831..bbe05cb 仅 docs）；真实只读复测 8/8（错误凭据 1000010/MD5 登录 activated=true 155 权限码/dashboard 落点权限前提/pageUsers total=3/无令牌对照 1000000/品牌通道/登出清理）；浏览器针对性复测 5 项含关键行为变化实测——登录落点随 P34 交付解除 /dashboard pending 兑现为 /dashboard（上轮落 /order-record 结论更新，D29）、外站回跳拒绝复验、登出清理复验；OpenAPI 哈希一致；verification=partial（A04/I06 deferred 归 V01），gate=ready 维持 B1 放行；不勾选 TASKS"
+  },
+  "progress": [
+    "P01 audit 复核（run-0142d6d6）：24 受检文件 22 个零变更、2 个变更公共文件从 P01 视角逐 hunk 复核通过（均为登记授权扩展）",
+    "静态门禁复用 T00 audit @ 392e831 复绿结果（bbe05cb 仅 docs，git diff 证实零代码变化）；OpenAPI 哈希复核一致",
+    "真实只读复测 8/8（新增 dashboard-realtime:view 落点前提+无令牌 1000000 对照）",
+    "浏览器针对性复测 5/5：登录落点 /dashboard（D29 兑现）/外站回跳拒绝/登出清理/登录页渲染/Dashboard 整页+轮询实证；截图本地留存",
+    "acceptance.json 写入：49 项矩阵（A04/I06 deferred 归 V01）+ 24 文件哈希重绑 @ bbe05cb；P01.md 交接记录本轮复核节更新"
+  ],
+  "nextSteps": [
+    "提交验收记录/交接记录/RUN_STATE → push --commit HEAD → end --outcome completed"
+  ],
+  "blocker": null
+}
