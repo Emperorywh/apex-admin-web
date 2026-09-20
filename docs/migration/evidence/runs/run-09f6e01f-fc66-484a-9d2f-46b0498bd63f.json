@@ -1,0 +1,40 @@
+{
+  "runId": "run-09f6e01f-fc66-484a-9d2f-46b0498bd63f",
+  "taskId": "P36",
+  "purpose": "implement",
+  "owner": "sess_17994c10-dbb9-4424-addb-917469840fcf",
+  "runner": {
+    "provider": "zcode",
+    "sessionId": "sess_17994c10-dbb9-4424-addb-917469840fcf",
+    "turnId": "turn_20712f1d-070f-4ca1-8bab-9ffff071e63a",
+    "automationRunId": "automation-4c58cefd-88c2-4b25-b14d-53904b310c3e:1789912200000",
+    "identitySource": "running_tool_part",
+    "toolPartId": "part_mu9viw6c_93071c7a-bc8c-48ce-8aa5-91f820220697",
+    "toolCallId": "call_ff0ca3dae01b4363a975bfc0",
+    "messageId": "msg_mu9vis9c_7e280a91-a58b-45b4-a17a-599bc7092408"
+  },
+  "startedAt": "2026-09-20T13:50:27.154Z",
+  "baseHead": "d30483ab2cac68cb0e5688b722ee35e89b939b5a",
+  "initialStatus": "M docs/migration/RUN_STATE.json\n?? docs/migration/evidence/runs/run-72990389-0d3f-40a6-958d-a9693ed3ce96.json",
+  "progress": [
+    "P36 全部验证完成：静态门禁全绿（oxlint 0/0 503 文件/typecheck/structure 494/build 1.27s）；真实只读 15/15（聚合窗口试算互证/topAgvDate 缺省对照/明细行形态/筛选 isClosed true+false 显式有效值/alarmLevel 语义/无令牌 1000000/登出清理）",
+    "浏览器整页验收（1920+1366、浅+深、zh-CN+EN）：登录落点 D29、首页告警面板「查看全部告警」→/analyze-visual/dashboard-fault 实测（P34→P36 补验核心关闭）、KPI 0 与 -- 区分、图表真实空态、筛选请求体 {pageNo:1,pageSize:10,alarmCode:\"F\"} 回首页、真实空结果共 0 条、重置回 48 条、级别下拉 FATAL/WARNING 协议值、EN 全页重建无残留、1366 无横向溢出 KPI 2 列换行、Sign out 清理",
+    "代码提交 d9c8d7d（25 文件+2428 行）；验收矩阵 45 项（deferred 4：A04/A24/I06/ROW_RENDER 均 cross_page 归 V01）；acceptance.json+code-files.json（31 文件哈希绑定提交）",
+    "环境限制登记（P39/P34 同口径）：IAB RO 冻结致表格行渲染/行展开未获视觉证据（P03 零改动对照同症状+双垫片无效=环境劣化非代码回归，数据管线实证正常）；screenshot 合成帧超时无截图；旧页签 React 调度停滞新建页签恢复"
+  ],
+  "nextSteps": [
+    "提交文档（P36.md/P34.md 补验登记/contracts/operations/i18n-map/acceptance/RUN_STATE/上轮遗留运行记录）+ push --commit d9c8d7d… + end --outcome completed"
+  ],
+  "blocker": null,
+  "endedAt": "2026-09-20T15:06:12.496Z",
+  "outcome": "completed",
+  "endHead": "cae6866dcd60f1da2019cf67b8a1397e0fa8caff",
+  "publish": {
+    "status": "synced",
+    "taskId": "P36",
+    "commit": "cae6866dcd60f1da2019cf67b8a1397e0fa8caff",
+    "confirmedRemoteHead": "cae6866dcd60f1da2019cf67b8a1397e0fa8caff",
+    "checkedAt": "2026-09-20T15:06:05.977Z",
+    "error": null
+  }
+}

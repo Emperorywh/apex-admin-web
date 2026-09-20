@@ -1,0 +1,18 @@
+{
+  "task": { "implementation": "in_progress", "verification": "not_started", "gate": "blocked" },
+  "progress": [
+    "P37 实现完成（基线 cae6866）：服务层 services/report-vehicle-state（agvExecutingTimeStatistics/agvStateStatistics 两 operation，查询性质 POST 归只读；states/vehicleKeys 空数组归一化为不传参）",
+    "共享计算 owner：features/analyze-visual/vehicle-status/{states,selectors,statistics,formatters}.ts（状态元数据/聚合纯函数/KPI 口径含 EFFECTIVE_WORK_STATES 供 P35，不另写第二份）",
+    "页面整页：工具栏草稿态（RangePicker+状态多选+按小时维度+24h 校验）+ KPI 4 卡（RealtimeKpiCard+nullableKpi）+ 车辆×状态堆叠柱（echarts 按需注册+dataZoom）+ Apex data 模式明细表（列偏好+本地筛选+时长/占比排序）",
+    "死代码判定：旧 charts 目录 StateSharePie/StateDurationRankBar/VehicleTotalRankBar 仅 import 未接线，旧页实际渲染仅堆叠柱一张图——以可达实现为准不迁移",
+    "五语言 report-vehicle-state 分片×4（en 沿用旧真译，zh-TW/ja/ko 按基准补译）+ i18n.ts 四表注册；路由解除 pending+声明命名空间",
+    "行为差异登记：旧「失败保留上次数据降级展示」与 DoD 6 冲突不迁移，改为失败清空+StateBlock（聚合区）/Apex 内建错误态（明细表）+有限退避自动重查",
+    "静态门禁全绿：oxlint 0/0（516 文件）/typecheck/structure 506 文件无违规/build 1.17s"
+  ],
+  "nextSteps": [
+    "真实只读验证（run-p37-readonly.mjs：默认窗口聚合+试算互证/状态筛选/byHour 24h 边界/agvStateStatistics 服务层/无令牌对照/登出清理）",
+    "浏览器整页验收（1920+1366、浅+深、zh-CN+EN：KPI/图表 dataZoom/明细筛选排序/语言切换/空值纪律）",
+    "acceptance.json + 交接记录 P37.md + contracts/operations 登记 + 提交推送 + end"
+  ],
+  "blocker": null
+}

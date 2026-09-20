@@ -71,6 +71,7 @@
 - 本项目 i18next 配置 `keySeparator=false; nsSeparator=false`（中文 key 即文案）：**`t()` 一律不带「ns:」前缀**——带了不会被解析成命名空间，整串「orderInfo:独立窗口」会被当作 key 原样显示在页面上，typecheck/build 照不到。
 - 一个组件要跨命名空间取文案（如详情组件主体文案走 orderRecord、新增按钮文案走 orderInfo）：`useTranslation(['orderRecord','orderInfo'], { nsMode: 'fallback' })` + 无前缀 key，i18next 按数组顺序回退查找；宿主路由 meta.i18nNamespaces 必须把用到的命名空间都声明齐（切换语言时才预载）。
 - 顶栏/语言菜单按钮的 title/aria-label 也是翻译文案：DOM 定位（querySelector 按 title）在非简中语言下会失效，自动化验证要用位置或结构选择器。
+- 插值占位一律 `{{name}}` 双花括号（2026-09-20 P37 实测沉淀）：旧项目 `{name}` 单花括号形态迁到 i18next 后**不会被插值**——简中（key 即文案）会把「已加载 {count} 条记录」原样显示，lint/typecheck/build 全部照不到，只能靠真实渲染发现；含插值的 key 在四语言分片里同样要用双花括号。
 
 ## 7. 文档联动
 

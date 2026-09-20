@@ -1,0 +1,62 @@
+{
+  "ok": true,
+  "checkedAt": "2026-09-20T16:13:58.064Z",
+  "base": "http://localhost:5173",
+  "checks": [
+    {
+      "step": "login",
+      "ok": true,
+      "detail": "HTTP 200 code=200 activated=true"
+    },
+    {
+      "step": "executing-time-statistics",
+      "ok": true,
+      "detail": "HTTP 200 code=200 vehicleExecutingDurations=162 窗口=2026-09-15~2026-09-21"
+    },
+    {
+      "step": "exec-row-shape",
+      "ok": true,
+      "detail": "state 未知枚举行=0（[]，未知枚举页面显示原值）；totalDurationSeconds 非法行=0"
+    },
+    {
+      "step": "exec-kpi-summary",
+      "ok": true,
+      "detail": "试算（页面同口径）：vehicleCount=54 workSeconds=63798789 trafficSeconds=281354081 errorSeconds=0 utilization=122.8707 avgTrafficMs=5210260759 avgWorkMs=1181459056 avgErrorMs=0（供 UI 对照）"
+    },
+    {
+      "step": "exec-first-row",
+      "ok": true,
+      "detail": "首行 vehicleKey=\"2093172509957582848\" vehicleName=\"测试大地图-2093172509957582848\" state=EXECUTING_PARK totalDurationSeconds=613"
+    },
+    {
+      "step": "exec-filter-states",
+      "ok": true,
+      "detail": "states=['ERROR'] → 0 行全部 ERROR=true"
+    },
+    {
+      "step": "exec-by-hour-within-24h",
+      "ok": true,
+      "detail": "byHour=true 窗口 1 小时 → HTTP 200 code=200"
+    },
+    {
+      "step": "exec-by-hour-over-24h",
+      "ok": true,
+      "detail": "byHour=true 窗口 7 天 → HTTP 200 code=200 message=success（后端约束对照；前端已在查询前拦截并提示，不发该请求）"
+    },
+    {
+      "step": "daily-state-statistics",
+      "ok": true,
+      "detail": "HTTP 200 code=200 dailyStateDurations=7 按天升序=true；首行 {\"date\":\"2026-09-15T00:00:00\",\"totalDurationSeconds\":109476142,\"vehicleCount\":54}"
+    },
+    {
+      "step": "exec-no-token",
+      "ok": true,
+      "detail": "HTTP 200 code=1000000 message=用户未登录"
+    },
+    {
+      "step": "logout",
+      "ok": true,
+      "detail": "HTTP 200 code=200"
+    }
+  ]
+}

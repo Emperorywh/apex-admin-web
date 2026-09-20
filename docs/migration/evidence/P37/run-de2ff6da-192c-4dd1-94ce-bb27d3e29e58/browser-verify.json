@@ -1,0 +1,36 @@
+{
+  "checkedAt": "2026-09-20T16:40:00Z",
+  "backend": "10.11.2.67:8888（同源代理 localhost:5173）",
+  "role": "root（真实登录，avatar title=root 实证）",
+  "viewport": ["1920×945", "1366×768"],
+  "theme": ["light", "dark"],
+  "language": ["zh-CN", "en-US", "ja-JP"],
+  "browser": "IAB Chromium",
+  "dataScale": "近 7 天窗口 162 行（54 车 × 每车 3 状态），dailyStateDurations 7 天",
+  "steps": [
+    { "step": "守卫回跳", "expected": "未登录直访 /analyze-visual/vehicle-status → 登录页带合法 redirect 参数，登录后回跳统计页", "actual": "/login?redirect=%2Fanalyze-visual%2Fvehicle-status → 登录成功后落 /analyze-visual/vehicle-status", "result": "pass" },
+    { "step": "菜单导航", "expected": "Dock「数据统计」组出现「车辆状态统计」入口（7 个入口之一），点击进入", "actual": "菜单项存在，点击后 URL=/analyze-visual/vehicle-status，页签建立", "result": "pass" },
+    { "step": "工具栏", "expected": "默认窗口近 7 天（部署时区墙钟）、状态多选、按小时维度开关+口径提示、查询/重置、已加载计数", "actual": "2026-09-15 00:00:00 ~ 2026-09-21 23:59:59；「已加载 162 条记录 · 00:21:41」（插值生效）", "result": "pass" },
+    { "step": "KPI 与脚本试算互证", "expected": "与 readonly-result.json 试算同口径：vehicleCount=54、workSeconds→17721h（数据持续增长量级吻合）、utilization>100%（测试数据：Σ执行时长≈窗口秒数 122 倍，口径「分母不乘车辆数」四语言说明）、avgTraffic 1447h 19m、avgError=0s（真实 0）", "actual": "12,277.1%/覆盖 54 辆车·执行作业 17732h 52m/1447h 19m/328h 23m/0s——全部吻合", "result": "pass" },
+    { "step": "空值纪律（ERROR 真实空结果）", "expected": "选「异常」查询：利用率 0.0%（分子真实 0）与平均时长 --（分母 0 不可计算）严格区分；图表/明细「暂无数据」空态；已加载 0 条", "actual": "利用率 0.0%、覆盖 0 辆车·执行作业 0s、平均交管 --、平均故障 --、图表暂无数据、共 0 条、已加载 0 条记录", "result": "pass" },
+    { "step": "明细行数据", "expected": "状态 Tag 固定语义色+中文、时长人性化、小时 2 位小数千分位、占比与同车合计 100% 互证", "actual": "执行停靠 10m 13s/0.17 h/0.0%；执行作业 225h 19m/225.33 h/15.0%；交管等待 1276h 6m/1,276.11 h/85.0%（同车合计 100.0%）", "result": "pass" },
+    { "step": "排序", "expected": "仅「时长」「占该车总时长」两列开放排序（旧 sorter 等价），aria-sort 循环切换", "actual": "仅两列渲染排序按钮（apex-table-sort-button）；点击后 descending→ascending 切换实证", "result": "pass" },
+    { "step": "重置", "expected": "草稿与查询态同步重置并重新查询", "actual": "恢复默认窗口，已加载 162 条记录", "result": "pass" },
+    { "step": "24h 校验拦截", "expected": "按小时维度 + 7 天窗口点查询 → 警告提示且不发请求", "actual": "message「按小时维度统计时，时间范围不能超过 24 小时」出现，已加载计数未变（162 条保持=请求未发出）", "result": "pass" },
+    { "step": "深色主题", "expected": "主题切换后卡片/图表跟随，图表重绘", "actual": "data-theme=dark、chartCard 背景 rgb(27,37,61)、canvas 像素级绘制证据（painted=true）", "result": "pass" },
+    { "step": "1366 视口", "expected": "无横向溢出、KPI 换行 2×2", "actual": "docOverflow=false、pageOverflow=false、kpiWrapped=true（4 卡两行）", "result": "pass" },
+    { "step": "EN 整页重建", "expected": "语言切换后工具栏/KPI/图表/明细全英文、html lang 同步、插值正常、无 key 残留", "actual": "htmlLang=en-US；Work Utilization/Avg. Traffic Hold Duration/Vehicle × State Duration (Stacked)/State Duration Details/% of Vehicle Total/162 records loaded 全部生效", "result": "pass" },
+    { "step": "ja-JP 分片加载", "expected": "日语分片真实加载，第三条语言加载路径", "actual": "htmlLang=ja-JP；タスク実行稼働率/平均故障時間/車両 × ステータス 時間の積み上げ/ステータス時間明細/162 件のレコードを読み込みました", "result": "pass" },
+    { "step": "登出清理", "expected": "Sign out 后回登录页、会话数据清空", "actual": "URL=/login；sessionStorage 会话键清空；persist:apex-admin:auth 仅剩空结构（token:null/permissions:[]，无 token 形态残留）", "result": "pass" }
+  ],
+  "environmentLimits": [
+    "IAB RO 冻结（P36/P34 同口径）：表格行渲染在部分加载周期为 0 行（数据管线 162 条正常、正常周期已取证 10 行内容）；排序后的行序、dataZoom 缩放/图例交互未获视觉证据；1366 下 canvas 内联宽度未随容器收缩（echarts resize 依赖 RO）",
+    "screenshot 合成帧超时无截图：视觉取证改用 DOM/canvas 像素级证据（canvas painted、卡片背景色、KPI 文本匹配）",
+    "IAB 输入管线故障（P34 同口径）：locator click 全线超时，登录/筛选/排序/主题/语言/登出经 evaluate 派发完整 pointer 序列完成；真实指针自然浏览器复核归 V01",
+    "zh-TW/ko-KR 运行时切换未实测（ja-JP 已实测第三条加载路径，分片同构 typecheck 键一致）；归 V01 五语言回归"
+  ],
+  "defectsFoundAndFixed": [
+    "i18next 插值占位符误用单花括号 {count}/{vehicles}/{duration}（页面 3 处 + 四语言分片 key/值），简中显示占位原文；修正为 {{count}} 等双花括号后复测插值生效",
+    "Apex 表格排序缺少表格级 enableSorting（仅列级声明不生效）；补表格级开关后排序按钮渲染且 aria-sort 切换实证（本项目首个开启排序页面，先例登记）"
+  ]
+}

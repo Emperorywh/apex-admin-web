@@ -1,0 +1,598 @@
+{
+  "taskId": "P37",
+  "codeCommit": "dbfc75aded188af5711c11c2a74d206b6e2b68a4",
+  "codeFiles": [
+    {
+      "path": "src/pages/analyze-visual/VehicleStatus/VehicleStatus.tsx",
+      "sha256": "461c0b2f3d0cd6cacfd56e23afe5697055a31b6081d3338fc5bf29fa84a3548e"
+    },
+    {
+      "path": "src/pages/analyze-visual/VehicleStatus/VehicleStatus.module.css",
+      "sha256": "17bbee75943560bd5b0ef2e45dd70ed63f6b532c102198e31cd3c5681698cb7c"
+    },
+    {
+      "path": "src/features/analyze-visual/vehicle-status/states.ts",
+      "sha256": "6ec3d613f34f52669752dc1f6e1a9d413d9559c8fc0349a7beecaa1e03ed4711"
+    },
+    {
+      "path": "src/features/analyze-visual/vehicle-status/selectors.ts",
+      "sha256": "e5df993e20d9fd865854f8cc01046be0f506f50e543ae30c550582974e00cd16"
+    },
+    {
+      "path": "src/features/analyze-visual/vehicle-status/statistics.ts",
+      "sha256": "7d41facad5c1734f3eeb38bbbf8bf62ffde428d8d551fb822fe8e99765c0d891"
+    },
+    {
+      "path": "src/features/analyze-visual/vehicle-status/formatters.ts",
+      "sha256": "1b6d7af0e2a969579a9105cc3b69ccbcf2ae828a43a3216e6658db6da5992d40"
+    },
+    {
+      "path": "src/features/analyze-visual/vehicle-status/hooks/useVehicleStateQuery.ts",
+      "sha256": "b2ff96a001e91b2c6678418089826270465dbb958d5df57c2f5d66d0fc128a5b"
+    },
+    {
+      "path": "src/features/analyze-visual/vehicle-status/components/VehicleStateStackedBar.tsx",
+      "sha256": "709aa0ccdd2312985864392f6928ed9da6566d2a3ab2f8f3f99e061c2151834f"
+    },
+    {
+      "path": "src/features/analyze-visual/vehicle-status/components/VehicleChart.module.css",
+      "sha256": "8be31a2e360538180de961e47f06a01515d4e9c5736186ad6c7eccdb7f0aa76f"
+    },
+    {
+      "path": "src/services/report-vehicle-state/report-vehicle-state.service.ts",
+      "sha256": "7f6f4c715d73fcab81e5a06d70513672758297ce4cea78b94daecf9298c481db"
+    },
+    {
+      "path": "src/services/report-vehicle-state/report-vehicle-state.service.types.ts",
+      "sha256": "2a89d5da4b51e32343954fa62992a09d6cdbccdbb383cf093b482266024b549a"
+    },
+    {
+      "path": "src/i18n/locales/en-US/report-vehicle-state.ts",
+      "sha256": "bbafc44ce2de0621429be2d3284e318e22bf8e697354c7ba6e8363e2dc754a06"
+    },
+    {
+      "path": "src/i18n/locales/zh-TW/report-vehicle-state.ts",
+      "sha256": "7eebe4d6c4cbf63e1b3b3421598569b60b99106c56383c42e16ec89cce3a1475"
+    },
+    {
+      "path": "src/i18n/locales/ja-JP/report-vehicle-state.ts",
+      "sha256": "871296c3fe233928192cbdb40c3e4385474500b33f9640b31832b6d6103a67b4"
+    },
+    {
+      "path": "src/i18n/locales/ko-KR/report-vehicle-state.ts",
+      "sha256": "029eaeada8f19cb5046899c0c61350d89ad54a929f65eaa565cab6d921629660"
+    },
+    {
+      "path": "src/i18n/i18n.ts",
+      "sha256": "ee72ee2913fb1a7beef66565e9606b207b370d107b2f10748bf5eda5a854efe9"
+    },
+    {
+      "path": "src/router/definitions.tsx",
+      "sha256": "9f0a9ead956453331f78a430e6aa6f4185bb0b730f57801ef7a4278bd35f0241"
+    },
+    {
+      "path": "src/features/dashboard/components/RealtimeKpiCard.tsx",
+      "sha256": "cce3974211cee42066bb201d3697b2f7f1aa757f214ae30f73f90eed6943c8d0"
+    },
+    {
+      "path": "src/features/dashboard/kpiViewModel.ts",
+      "sha256": "b8f84249316e680bad5c81b97f1d815c4c8b4bec7d524c5e685aeb92c19e4f51"
+    },
+    {
+      "path": "src/features/dashboard/realtime.ts",
+      "sha256": "3b98bfec898e92275a186a80954a0dc2027caa475f19bbafa97cd447dae25008"
+    },
+    {
+      "path": "src/features/analyze-visual/order-statistics/components/MetricHint.tsx",
+      "sha256": "b81918439603101fccff2baa1d632095e1a43039a2ea556e6e9c8b62ba03585a"
+    },
+    {
+      "path": "src/components/StateBlock/StateBlock.tsx",
+      "sha256": "6ffa0c64f1d57d02e12a3f49d524cb3ab41f8f899b2602b55a6c5445aff6d43f"
+    },
+    {
+      "path": "src/hooks/useApexLocale.ts",
+      "sha256": "9ae1cd981c34d2551ff5f4d9bf5613c70eb5882fd02917e3416948fcce1bc9d5"
+    },
+    {
+      "path": "src/hooks/useColumnPreferences.ts",
+      "sha256": "dd508f421678d73e025772c68b2bfafced350b40b7f6e59e6abad79810e8ef91"
+    },
+    {
+      "path": "src/hooks/usePageRequest.ts",
+      "sha256": "72e2ebd815081efe1b3c68925402ed8172722e055759801a757f5e218255d460"
+    },
+    {
+      "path": "src/components/RequestScopeProvider/RequestScopeContext.ts",
+      "sha256": "d92247d7c107ea03309839b40ffd55ef16aa8a1e57ed1e2c1174a1cc41651666"
+    },
+    {
+      "path": "src/services/request/request.ts",
+      "sha256": "86cacd6c84b42b9910b7a1b83f7bcd5b3a9916024a82478c907ef0b9b8c85196"
+    },
+    {
+      "path": "src/constants/auth/permission.constants.ts",
+      "sha256": "6e3c547079aa363d040c55bfc9e2370b3d75c5bf2517e885fc8115452dfa5be5"
+    },
+    {
+      "path": "src/constants/datetime.ts",
+      "sha256": "470e26bcf98fc58dcc86fcef07f7267cfa1963c1826aa875753cf202702a3b25"
+    },
+    {
+      "path": "src/constants/polling.constants.ts",
+      "sha256": "bae582c03c1a757149268490379637d2149ab5347a5517aa25ea22701e29d4a9"
+    },
+    {
+      "path": "src/utils/table/rowId.ts",
+      "sha256": "082c09b2bbf0d3169df8dff5e6caa7ca477ff3d18c5ac226745d9f14727e6b84"
+    },
+    {
+      "path": "src/utils/table/tablePaging.ts",
+      "sha256": "3f23fe89e366ae23ea87e75bf1b55c724b4231928d086846d9b9a9c17b5d0ae1"
+    }
+  ],
+  "environment": {
+    "backend": "10.11.2.67:8888（同源代理 localhost:5173）",
+    "role": "root（真实登录，avatar title=root 实证）",
+    "viewport": [
+      "1920×945",
+      "1366×768"
+    ],
+    "theme": [
+      "light",
+      "dark"
+    ],
+    "language": [
+      "zh-CN",
+      "en-US",
+      "ja-JP"
+    ],
+    "browser": "IAB Chromium（RO 冻结+输入管线故障+截图超时，见 notes 环境限制）",
+    "dataScale": "近 7 天窗口 162 行（54 车×每车 3 状态）；agvStateStatistics 7 天按天升序"
+  },
+  "releaseChecks": {
+    "scope": "passed",
+    "static": "passed",
+    "readOnly": "passed",
+    "ui": "passed",
+    "sharedConsumers": "passed"
+  },
+  "releaseReasons": [
+    "scope：整页交付（工具栏/4 KPI/堆叠柱/Apex 明细排序+本地筛选/五语言/路由解除 pending）；旧 charts 死代码（StateSharePie/StateDurationRankBar/VehicleTotalRankBar 仅 import 未接线）以可达实现为准不迁移",
+    "static：oxlint 0/0（517 文件）/typecheck/check:structure 506 文件无违规/build 1.17s（代码提交 dbfc75a）",
+    "readOnly：run-p37-readonly.mjs 11/11 通过（readonly-result.json）",
+    "ui：browser-verify.json 14/14 通过（DOM/canvas 像素级取证；RO 冻结相关视觉项按 P36 同口径 deferred 归 V01）",
+    "sharedConsumers：RealtimeKpiCard/MetricHint/formatDurationMs/kpiViewModel/StateBlock 等只读复用未改动（哈希入 codeFiles 核对）；features/analyze-visual/vehicle-status 为新增域（P35 强制消费契约）；i18n.ts 四表各增 1 行；路由节点自 pending 转 ready 仅影响本页"
+  ],
+  "items": [
+    {
+      "id": "TASK",
+      "status": "passed",
+      "reason": "任务卡专项：状态时长（每车×每状态 totalDurationSeconds 秒单位核实）/单车跨车聚合（groupByVehicle/aggregateByState 纯函数 owner）/图表（堆叠柱 dataZoom）/明细（Apex data 模式+时长占比排序+本地筛选）；集中实现 P35 共用车辆统计计算（EFFECTIVE_WORK_STATES 等，P35 消费不得另写）",
+      "evidence": [
+        "docs/migration/tasks/P37.md",
+        "docs/migration/evidence/P37/run-de2ff6da-192c-4dd1-94ce-bb27d3e29e58/readonly-result.json",
+        "docs/migration/evidence/P37/run-de2ff6da-192c-4dd1-94ce-bb27d3e29e58/browser-verify.json"
+      ]
+    },
+    {
+      "id": "DoD1",
+      "status": "passed",
+      "reason": "旧页递归清点：VehicleStatus.tsx（工具栏/4 KPI/堆叠柱/明细）全量映射；charts×3 死代码（import 未接线）判定不迁移并登记；无弹窗/子表/文件操作",
+      "evidence": [
+        "docs/migration/tasks/P37.md"
+      ]
+    },
+    {
+      "id": "DoD2",
+      "status": "passed",
+      "reason": "真实服务与协议：POST agvExecutingTimeStatistics 逐字段核对 OpenAPI；不导入 axios/不拼 URL/不解原始包装；业务码判定；int64 秒按 JSON number 承载（G10）",
+      "evidence": [
+        "src/services/report-vehicle-state/report-vehicle-state.service.ts",
+        "docs/migration/evidence/P37/run-de2ff6da-192c-4dd1-94ce-bb27d3e29e58/readonly-result.json"
+      ]
+    },
+    {
+      "id": "DoD3",
+      "status": "passed",
+      "reason": "权限与状态区分：菜单码 vehicle-status:view 挂路由守卫（解除 pending）；无权限（无令牌 code=1000000）/空结果（ERROR 0 行空态）/失败（StateBlock）分别呈现",
+      "evidence": [
+        "src/router/definitions.tsx",
+        "docs/migration/evidence/P37/run-de2ff6da-192c-4dd1-94ce-bb27d3e29e58/browser-verify.json"
+      ]
+    },
+    {
+      "id": "DoD4",
+      "status": "passed",
+      "reason": "表格统一：明细表 ApexTableReact data 模式（无 antd Table/自绘表格/二次封装），页面直接消费官方 API",
+      "evidence": [
+        "src/pages/analyze-visual/VehicleStatus/VehicleStatus.tsx"
+      ]
+    },
+    {
+      "id": "DoD5",
+      "status": "passed",
+      "reason": "表格语义：聚合接口一次返回全量记录（162 行真实完整小集合）适用 data 模式；稳定行 ID=vehicleKey|state；本地筛选仅过滤表格不影响图表（旧等价）；列偏好 report-vehicle-state:detail 隔离；分页共 N 条真实",
+      "evidence": [
+        "src/pages/analyze-visual/VehicleStatus/VehicleStatus.tsx",
+        "docs/migration/evidence/P37/run-de2ff6da-192c-4dd1-94ce-bb27d3e29e58/browser-verify.json"
+      ]
+    },
+    {
+      "id": "DoD6",
+      "status": "passed",
+      "reason": "取消与失败：防乱序（新查询中止旧请求）/取消级联/失败清空+可见有限退避 3 次+查询按钮恢复；旧「失败保留旧数据降级展示」与 DoD6 冲突不迁移（差异登记）；表格内建错误态（重试按钮仅表格内部）",
+      "evidence": [
+        "src/features/analyze-visual/vehicle-status/hooks/useVehicleStateQuery.ts",
+        "docs/migration/tasks/P37.md"
+      ]
+    },
+    {
+      "id": "DoD7",
+      "status": "passed",
+      "reason": "草稿与生命周期：查询条件草稿态编辑不触发请求（点查询才应用）；切页 scope 取消+LRU 由布局基座承载；报表页不默认轮询（规格 8.2）；自动重查在页签非激活/文档不可见时不发请求",
+      "evidence": [
+        "src/features/analyze-visual/vehicle-status/hooks/useVehicleStateQuery.ts"
+      ]
+    },
+    {
+      "id": "DoD8",
+      "status": "not_applicable",
+      "reason": "本页为只读统计报表页，无任何写操作/批量/控制入口（两 operation 均查询性质 POST，按业务语义归只读）",
+      "evidence": [
+        "docs/migration/tasks/P37.md"
+      ]
+    },
+    {
+      "id": "DoD9",
+      "status": "not_applicable",
+      "reason": "无文件上传下载/导出能力（旧页同样没有）",
+      "evidence": [
+        "docs/migration/tasks/P37.md"
+      ]
+    },
+    {
+      "id": "DoD10",
+      "status": "not_applicable",
+      "reason": "无地图/实体关联选择能力（车辆维度聚合不涉及实体选择器；本地筛选选项来自当前数据，无失效回退场景）",
+      "evidence": [
+        "docs/migration/tasks/P37.md"
+      ]
+    },
+    {
+      "id": "DoD11",
+      "status": "passed",
+      "reason": "五语言随页交付：report-vehicle-state 四语言分片（en 旧真译沿用含 5 条口径长文案、繁日韩 B1 基线补译）；语言切换列/枚举/图表动态重建不刷新整页；zh-CN/en-US/ja-JP 三条加载路径实测",
+      "evidence": [
+        "src/i18n/locales/en-US/report-vehicle-state.ts",
+        "docs/migration/evidence/P37/run-de2ff6da-192c-4dd1-94ce-bb27d3e29e58/browser-verify.json"
+      ]
+    },
+    {
+      "id": "DoD12",
+      "status": "passed",
+      "reason": "语言边界：状态枚举提交协议原值；未知状态显示原值不猜语义；日期值不翻译；无服务端语言相关只读依赖",
+      "evidence": [
+        "src/features/analyze-visual/vehicle-status/states.ts"
+      ]
+    },
+    {
+      "id": "DoD13",
+      "status": "passed",
+      "reason": "外观与终端：页内超宽内部滚动消化（1920/1366 docOverflow=false）；KPI 4 卡 1366 换行 2×2；深浅主题跟随变量；长口径 Tooltip 键盘可达（MetricHint tabIndex）",
+      "evidence": [
+        "docs/migration/evidence/P37/run-de2ff6da-192c-4dd1-94ce-bb27d3e29e58/browser-verify.json"
+      ]
+    },
+    {
+      "id": "DoD14",
+      "status": "passed",
+      "reason": "统计与时间：口径经契约+旧实现等价核实（利用率分母=窗口秒数不乘车辆数+终点截断当前时刻；平均分母=车辆数未出现状态按 0 参与；0 与 -- 严格区分）；部署时区墙钟串；echarts 按需注册+dispose；图表与明细共用同一份原始记录与纯计算模块",
+      "evidence": [
+        "src/features/analyze-visual/vehicle-status/statistics.ts",
+        "docs/migration/evidence/P37/run-de2ff6da-192c-4dd1-94ce-bb27d3e29e58/browser-verify.json"
+      ]
+    },
+    {
+      "id": "DoD15",
+      "status": "passed",
+      "reason": "验证与证据：静态门禁全绿+真实只读 11/11+浏览器整页 14/14；无写操作故无现场副作用验收范围；证据无凭据（脚本从本机既有安全来源读取，记录不含密码/token）",
+      "evidence": [
+        "docs/migration/evidence/P37/run-de2ff6da-192c-4dd1-94ce-bb27d3e29e58/readonly-result.json",
+        "docs/migration/evidence/P37/run-de2ff6da-192c-4dd1-94ce-bb27d3e29e58/browser-verify.json"
+      ]
+    },
+    {
+      "id": "DoD16",
+      "status": "passed",
+      "reason": "交接收尾：无 mock/Umi/假进度残留；剩余缺口与跨页项登记；共享契约改动已登记 contracts.md/operations.md/i18n-map.md",
+      "evidence": [
+        "docs/migration/tasks/P37.md",
+        "docs/migration/contracts.md"
+      ]
+    },
+    {
+      "id": "A01",
+      "status": "not_applicable",
+      "reason": "45 个旧叶子范围盘点归 T00/V01 全项目台账（P36 同口径）；本页对应旧入口 /analyze-visual/vehicle-status 已在 TASKS 映射",
+      "evidence": [
+        "docs/migration/tasks/P37.md"
+      ]
+    },
+    {
+      "id": "A02",
+      "status": "not_applicable",
+      "reason": "暂缓页说明归 H01–H03 owner；本页无暂缓入口",
+      "evidence": [
+        "docs/migration/tasks/P37.md"
+      ]
+    },
+    {
+      "id": "A03",
+      "status": "not_applicable",
+      "reason": "认证会话公共机制归 T00/P01 owner（真实登录/持久化恢复/无伪刷新本轮只读复用）",
+      "evidence": [
+        "docs/migration/tasks/P37.md"
+      ]
+    },
+    {
+      "id": "A04",
+      "status": "deferred",
+      "category": "cross_page",
+      "basis": "真实 token 过期收敛与双窗口退出同步归 V01 长会话复核；本轮多页签互踢触发并发过期收敛+登出清理（persist 仅剩空结构）为机制级正面证据，T00/P01/P02/P21/P33/P34/P36 同口径",
+      "owner": "V01",
+      "resumeCondition": "V01 长会话专项复核",
+      "reason": "真实 token 过期收敛与双窗口退出同步的现场场景未在本轮构造（deferred）",
+      "evidence": [
+        "docs/migration/tasks/P37.md"
+      ]
+    },
+    {
+      "id": "A05",
+      "status": "not_applicable",
+      "reason": "权限体系主责 T00/P31/P32；本页无按钮码，菜单/直访守卫一致已由路由守卫机制承载并实测（A22）",
+      "evidence": [
+        "docs/migration/tasks/P37.md"
+      ]
+    },
+    {
+      "id": "A06",
+      "status": "passed",
+      "reason": "真实 method/path/DTO：POST agvExecutingTimeStatistics/agvStateStatistics 逐字段核对 OpenAPI；分页/时间/int64 证据齐全；无令牌拒绝形态记录",
+      "evidence": [
+        "src/services/report-vehicle-state/report-vehicle-state.service.types.ts",
+        "docs/migration/evidence/P37/run-de2ff6da-192c-4dd1-94ce-bb27d3e29e58/readonly-result.json"
+      ]
+    },
+    {
+      "id": "A07",
+      "status": "passed",
+      "reason": "表格统一：明细表 ApexTableReact data 模式；无 antd Table/自绘表格/二次封装",
+      "evidence": [
+        "src/pages/analyze-visual/VehicleStatus/VehicleStatus.tsx"
+      ]
+    },
+    {
+      "id": "A08",
+      "status": "passed",
+      "reason": "稳定行 ID=vehicleKey|state（旧同口径）；列偏好 tableId 隔离可重置；当前页选择不适用（本表无选择列=旧等价）",
+      "evidence": [
+        "src/pages/analyze-visual/VehicleStatus/VehicleStatus.tsx"
+      ]
+    },
+    {
+      "id": "A09",
+      "status": "passed",
+      "reason": "data 模式分页语义：全量 162 行/共 N 条真实/17 页翻页/10-20-50 换页实测；排序仅时长/占比两列（旧 sorter 等价），enableSorting 表格级+列级覆盖",
+      "evidence": [
+        "docs/migration/evidence/P37/run-de2ff6da-192c-4dd1-94ce-bb27d3e29e58/browser-verify.json"
+      ]
+    },
+    {
+      "id": "A10",
+      "status": "passed",
+      "reason": "失败清空该请求对应远端区域+错误态（聚合区 StateBlock/明细 Apex error），不用旧数据冒充成功；ERROR 空结果与失败分开呈现",
+      "evidence": [
+        "src/features/analyze-visual/vehicle-status/hooks/useVehicleStateQuery.ts",
+        "docs/migration/evidence/P37/run-de2ff6da-192c-4dd1-94ce-bb27d3e29e58/browser-verify.json"
+      ]
+    },
+    {
+      "id": "A11",
+      "status": "passed",
+      "reason": "防乱序：新查询出发即中止上一次在途请求；查询条件与草稿保留；筛选变化不影响图表（本地筛选纯前端）",
+      "evidence": [
+        "src/features/analyze-visual/vehicle-status/hooks/useVehicleStateQuery.ts"
+      ]
+    },
+    {
+      "id": "A12",
+      "status": "not_applicable",
+      "reason": "报表页不默认轮询（规格 8.2）；失败退避自动重查为失败恢复机制（可见性判断已实现），非实时轮询页",
+      "evidence": [
+        "src/features/analyze-visual/vehicle-status/hooks/useVehicleStateQuery.ts"
+      ]
+    },
+    {
+      "id": "A13",
+      "status": "not_applicable",
+      "reason": "本页无表单编辑类草稿（查询条件草稿由组件 state 承载、切页保留依赖布局 LRU 基座，DoD7 已覆盖）",
+      "evidence": [
+        "docs/migration/tasks/P37.md"
+      ]
+    },
+    {
+      "id": "A14",
+      "status": "not_applicable",
+      "reason": "无写操作（只读统计页）",
+      "evidence": [
+        "docs/migration/tasks/P37.md"
+      ]
+    },
+    {
+      "id": "A15",
+      "status": "not_applicable",
+      "reason": "无写操作（只读统计页）",
+      "evidence": [
+        "docs/migration/tasks/P37.md"
+      ]
+    },
+    {
+      "id": "A16",
+      "status": "not_applicable",
+      "reason": "无文件通道操作",
+      "evidence": [
+        "docs/migration/tasks/P37.md"
+      ]
+    },
+    {
+      "id": "A17",
+      "status": "not_applicable",
+      "reason": "无地图/实体关联选择",
+      "evidence": [
+        "docs/migration/tasks/P37.md"
+      ]
+    },
+    {
+      "id": "A18",
+      "status": "not_applicable",
+      "reason": "无工艺嵌套业务",
+      "evidence": [
+        "docs/migration/tasks/P37.md"
+      ]
+    },
+    {
+      "id": "A19",
+      "status": "deferred",
+      "category": "site_acceptance",
+      "basis": "统计口径（G15）页面侧已按契约+旧实现等价交付：试算互证（utilization/avgTrafficMs/avgErrorMs 与 UI 同口径）、0 与 -- 严格区分、公式四语言显式说明；后端语义最终核对（利用率>100% 数据现象、Σ口径一致性）归 V01 真实数据复核，P33 同口径",
+      "owner": "V01",
+      "resumeCondition": "V01 真实数据口径复核",
+      "reason": "统计口径（G15）页面侧已交付并四语言显式说明，后端语义最终核对 deferred",
+      "evidence": [
+        "docs/migration/tasks/P37.md",
+        "docs/migration/evidence/P37/run-de2ff6da-192c-4dd1-94ce-bb27d3e29e58/browser-verify.json"
+      ]
+    },
+    {
+      "id": "A20",
+      "status": "passed",
+      "reason": "五语言（zh-CN/en-US/ja-JP 实测+繁日韩分片交付）、深浅主题、1366/1920 视口实测；长文案 Tooltip 键盘可达",
+      "evidence": [
+        "docs/migration/evidence/P37/run-de2ff6da-192c-4dd1-94ce-bb27d3e29e58/browser-verify.json"
+      ]
+    },
+    {
+      "id": "A21",
+      "status": "passed",
+      "reason": "零 mock：无 mock repository/样例数据/随机统计/伪进度/fallback；数据全部来自真实接口",
+      "evidence": [
+        "src/pages/analyze-visual/VehicleStatus/VehicleStatus.tsx"
+      ]
+    },
+    {
+      "id": "A22",
+      "status": "passed",
+      "reason": "首页与链接：菜单入口（数据统计组）/直访守卫/redirect 合法回跳实测；登录落点规则不受影响（落点为 /dashboard）",
+      "evidence": [
+        "docs/migration/evidence/P37/run-de2ff6da-192c-4dd1-94ce-bb27d3e29e58/browser-verify.json"
+      ]
+    },
+    {
+      "id": "A23",
+      "status": "passed",
+      "reason": "官方 npm 依赖（echarts 6.1.0 既有/apex-table-react 既有）+锁文件未新增变更+静态检查有效执行；无无关格式化",
+      "evidence": [
+        "docs/migration/tasks/P37.md"
+      ]
+    },
+    {
+      "id": "A24",
+      "status": "deferred",
+      "category": "cross_page",
+      "basis": "长时多页签/真实规模稳定性归 V01 统一收口（本轮 162 行/54 车为真实规模样本；约 30 分钟会话无异常）",
+      "owner": "V01",
+      "resumeCondition": "V01 长时稳定性专项",
+      "reason": "长时多页签/真实规模稳定性专项未在本轮执行（deferred）",
+      "evidence": [
+        "docs/migration/tasks/P37.md"
+      ]
+    },
+    {
+      "id": "I01",
+      "status": "passed",
+      "reason": "语言入口/规范化归 T00/P01 基座（已交付）；本页 zh-CN↔en-US↔ja-JP 切换后 html lang 同步+localStorage 单一来源",
+      "evidence": [
+        "docs/migration/evidence/P37/run-de2ff6da-192c-4dd1-94ce-bb27d3e29e58/browser-verify.json"
+      ]
+    },
+    {
+      "id": "I02",
+      "status": "passed",
+      "reason": "旧资源迁移：en 旧真译逐条沿用（含 5 条口径长文案与状态 13 词）；繁日韩旧资源缺失按 B1 基线补译并登记 i18n-map；无故意丢译文",
+      "evidence": [
+        "docs/migration/i18n-map.md",
+        "src/i18n/locales/en-US/report-vehicle-state.ts"
+      ]
+    },
+    {
+      "id": "I03",
+      "status": "passed",
+      "reason": "插值 {{count}}/{{vehicles}}/{{duration}} 四语言实测渲染；发现单花括号缺陷并修复（教训沉淀 AGENTS §6）；无裸占位符",
+      "evidence": [
+        "docs/migration/evidence/P37/run-de2ff6da-192c-4dd1-94ce-bb27d3e29e58/browser-verify.json"
+      ]
+    },
+    {
+      "id": "I04",
+      "status": "passed",
+      "reason": "切换语言资源预载后整页重建：列/枚举/图表轴名图例重建、不刷新整页、不丢查询草稿、不重发写请求（无写请求）",
+      "evidence": [
+        "docs/migration/evidence/P37/run-de2ff6da-192c-4dd1-94ce-bb27d3e29e58/browser-verify.json"
+      ]
+    },
+    {
+      "id": "I05",
+      "status": "passed",
+      "reason": "第三方/辅助文案：antd 分页器/Select/dayjs 跟随语言；Apex locale 经 useApexLocale；图表 tooltip/轴名/图例随 t 重建",
+      "evidence": [
+        "src/pages/analyze-visual/VehicleStatus/VehicleStatus.tsx"
+      ]
+    },
+    {
+      "id": "I06",
+      "status": "deferred",
+      "category": "cross_page",
+      "basis": "真实网络级资源加载失败不白屏归 V01（IAB 环境限制未构造）；分片懒加载失败回退机制为代码审查证据，T00/P01/P02/P21/P33/P34/P36 同口径",
+      "owner": "V01",
+      "resumeCondition": "V01 网络故障专项复核",
+      "reason": "真实网络级资源加载失败场景在 IAB 环境不可构造（deferred）",
+      "evidence": [
+        "docs/migration/tasks/P37.md"
+      ]
+    },
+    {
+      "id": "I07",
+      "status": "passed",
+      "reason": "请求层 Accept-Language 统一由 T00 机制承载（本页无上传通道）；后端错误消息原文展示不伪译（code=1000000 用户未登录形态记录）",
+      "evidence": [
+        "docs/migration/evidence/P37/run-de2ff6da-192c-4dd1-94ce-bb27d3e29e58/readonly-result.json"
+      ]
+    },
+    {
+      "id": "I08",
+      "status": "passed",
+      "reason": "切语言不改时区/业务值/枚举（数值 Intl 按 locale 格式化、协议值不变）；五语言×深浅×最低视口记录（zh/en/ja×双主题×双视口实测，繁/韩运行时切换归 V01）",
+      "evidence": [
+        "docs/migration/evidence/P37/run-de2ff6da-192c-4dd1-94ce-bb27d3e29e58/browser-verify.json"
+      ]
+    }
+  ],
+  "notes": [
+    "代码提交 dbfc75a（17 文件+1834 行）；受检文件哈希绑定 codeFiles（32 文件含只读复用公共依赖）",
+    "自测发现并修复 2 缺陷（回归复测通过）：i18next 插值单花括号（页面 3 处+四语言分片，教训沉淀 AGENTS §6）；Apex 表格级 enableSorting 缺失（本项目首个排序页面先例登记）",
+    "byHour>24h 后端返回 code=200 未强制约束（对照登记）：前端 24h 拦截为唯一防线，与旧实现等价",
+    "旧 charts 死代码（StateSharePie/StateDurationRankBar/VehicleTotalRankBar import 未接线）以可达实现为准不迁移；SPEC_vehicle_status_legend.md 为监控画布图例规范，与统计页无直接关系仅状态色语义背景",
+    "环境限制登记（P36/P34 同口径）：IAB RO 冻结——表格行渲染/排序行序/dataZoom 缩放交互视觉证据缺失（数据管线 162 条正常、行内容正常周期已取证 10 行、排序 aria-sort 状态机实证）；screenshot 合成帧超时，视觉取证改 DOM/canvas 像素证据（canvas painted、卡片背景色、KPI 文本匹配）；IAB 输入管线故障——登录/筛选/排序/主题/语言/登出经 evaluate 派发完整 pointer 序列完成，真实指针自然浏览器复核归 V01"
+  ]
+}

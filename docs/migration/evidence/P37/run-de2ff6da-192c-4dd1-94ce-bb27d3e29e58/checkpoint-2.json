@@ -1,0 +1,15 @@
+{
+  "task": { "implementation": "implemented", "verification": "partial", "gate": "blocked" },
+  "progress": [
+    "真实只读 11/11 通过（readonly-result.json）：登录 code=200/activated=true；默认窗口聚合 162 行（54 车）；行形态 state 枚举 0 未知/totalDurationSeconds 非法 0；试算互证（utilization=122.87/avgTrafficMs=5210260759/avgErrorMs=0 供 UI 对照）；states=['ERROR'] 0 行全部该级别；byHour 1h 窗口 code=200；byHour 超 24h 后端返回 code=200（后端未强制该约束——前端 24h 拦截为唯一防线，登记）；agvStateStatistics 7 天按天升序+vehicleCount=54（P35 服务层就绪）；无令牌 code=1000000；登出清理",
+    "浏览器整页验收 14/14 通过（browser-verify.json）：守卫回跳+redirect 合法回跳/菜单导航/KPI 与脚本试算互证/ERROR 空结果 0.0% 与 -- 严格区分/明细行数据（同车占比合计 100%）/排序仅两列+aria-sort 循环/重置/24h 校验拦截（警告+请求未发出）/深色主题 canvas 重绘/1366 无溢出 KPI 2×2/EN+ja-JP 整页重建插值正常/登出清理",
+    "自测发现并修复 2 缺陷：i18next 插值单花括号→双花括号（页面 3 处+四语言分片）；Apex 表格级 enableSorting 缺失（本项目首个排序页面，先例登记）",
+    "静态门禁修复后复绿：oxlint 0/0（517 文件）/typecheck/structure 506 文件"
+  ],
+  "nextSteps": [
+    "环境限制登记（P36/P34 同口径）：IAB RO 冻结行渲染/排序行序/dataZoom 视觉证据缺失；screenshot 超时改 DOM/像素取证；输入管线故障 evaluate 派发 pointer 序列（真实指针归 V01）",
+    "写 acceptance.json+code-files.json、交接记录 P37.md、contracts/operations/i18n-map 登记",
+    "git 逐文件暂存提交（代码 feat + 文档 docs 两提交）+ push --commit + end --outcome completed"
+  ],
+  "blocker": null
+}

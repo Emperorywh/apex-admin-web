@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "revision": 57,
-  "updatedAt": "2026-09-20T15:05:15.051Z",
+  "revision": 63,
+  "updatedAt": "2026-09-20T16:48:26.231Z",
   "workspace": {
     "root": "C:\\code\\apex-admin-web",
     "branch": "apple-rxx",
@@ -910,11 +910,11 @@
         "P38",
         "P39"
       ],
-      "implementation": "not_started",
-      "verification": "not_started",
-      "gate": "blocked",
+      "implementation": "implemented",
+      "verification": "partial",
+      "gate": "ready",
       "handoff": "docs/migration/tasks/P37.md",
-      "acceptanceRecord": null,
+      "acceptanceRecord": "docs/migration/evidence/P37/run-de2ff6da-192c-4dd1-94ce-bb27d3e29e58/acceptance.json",
       "pendingItems": [],
       "note": ""
     },
@@ -1019,8 +1019,46 @@
       "note": ""
     }
   ],
-  "currentTaskId": "P36",
+  "currentTaskId": "P37",
   "run": {
+    "runId": "run-de2ff6da-192c-4dd1-94ce-bb27d3e29e58",
+    "taskId": "P37",
+    "purpose": "implement",
+    "owner": "sess_2da569d5-f45a-4078-aedc-b57634b14530",
+    "runner": {
+      "provider": "zcode",
+      "sessionId": "sess_2da569d5-f45a-4078-aedc-b57634b14530",
+      "turnId": "turn_32dae73a-1016-4261-81fb-1a78cd296152",
+      "automationRunId": "automation-4c58cefd-88c2-4b25-b14d-53904b310c3e:1789919400000",
+      "identitySource": "running_tool_part",
+      "toolPartId": "part_mu9ztd23_97f9dac7-e836-434f-b1e0-e6a5e41ceaa7",
+      "toolCallId": "call_c93d724b16b6498bbb969f8d",
+      "messageId": "msg_mu9zt7mz_4bc1947f-6f2e-468e-9a1b-faf97b124fd1"
+    },
+    "startedAt": "2026-09-20T15:50:33.931Z",
+    "baseHead": "cae6866dcd60f1da2019cf67b8a1397e0fa8caff",
+    "initialStatus": "M docs/migration/RUN_STATE.json\n?? docs/migration/evidence/runs/run-09f6e01f-fc66-484a-9d2f-46b0498bd63f.json",
+    "progress": [
+      "P37 全部验证完成：静态门禁全绿（oxlint 0/0 517 文件/typecheck/structure 506/build 1.17s）；真实只读 11/11（162 行/54 车形态+试算互证+states=['ERROR'] 筛选+byHour 24h 后端 200 对照（前端拦截为唯一防线）+agvStateStatistics 7 天升序+无令牌 1000000+登出清理）",
+      "浏览器整页验收 14/14（1920+1366、浅+深、zh-CN+EN+ja-JP）：守卫 redirect 合法回跳、KPI 与脚本试算互证、ERROR 空结果 0.0% 与 -- 严格区分、明细行同车占比合计 100%、排序 aria-sort 切换、重置、24h 校验拦截、深色重绘、1366 无溢出 KPI 2×2、EN/ja 整页重建插值正常、登出清理",
+      "自测发现并修复 2 缺陷（回归复测通过）：i18next 插值单花括号→双花括号（教训沉淀 AGENTS §6）；Apex 表格级 enableSorting 缺失（首个排序页面先例登记）",
+      "代码提交 dbfc75a（17 文件+1834 行）；acceptance.json 42 项（deferred 4：A04/A24/I06/ROW_RENDER+G15 均 cross_page/site_acceptance 归 V01）+code-files.json（32 文件哈希绑定提交）",
+      "环境限制登记（P36/P34 同口径）：IAB RO 冻结行渲染/dataZoom 视觉证据缺失；screenshot 超时改 DOM/canvas 像素取证；输入管线故障 evaluate 派发 pointer 序列（真实指针归 V01）"
+    ],
+    "nextSteps": [
+      "提交文档（P37.md/contracts/operations/i18n-map/AGENTS §6/acceptance/RUN_STATE/上轮遗留运行记录）+ push --commit + end --outcome completed"
+    ],
+    "blocker": null
+  },
+  "publish": {
+    "status": "synced",
+    "taskId": "P36",
+    "commit": "cae6866dcd60f1da2019cf67b8a1397e0fa8caff",
+    "confirmedRemoteHead": "cae6866dcd60f1da2019cf67b8a1397e0fa8caff",
+    "checkedAt": "2026-09-20T15:06:05.977Z",
+    "error": null
+  },
+  "lastRun": {
     "runId": "run-09f6e01f-fc66-484a-9d2f-46b0498bd63f",
     "taskId": "P36",
     "purpose": "implement",
@@ -1047,52 +1085,16 @@
     "nextSteps": [
       "提交文档（P36.md/P34.md 补验登记/contracts/operations/i18n-map/acceptance/RUN_STATE/上轮遗留运行记录）+ push --commit d9c8d7d… + end --outcome completed"
     ],
-    "blocker": null
-  },
-  "publish": {
-    "status": "synced",
-    "taskId": "P34",
-    "commit": "d30483ab2cac68cb0e5688b722ee35e89b939b5a",
-    "confirmedRemoteHead": "d30483ab2cac68cb0e5688b722ee35e89b939b5a",
-    "checkedAt": "2026-09-20T13:03:24.481Z",
-    "error": null
-  },
-  "lastRun": {
-    "runId": "run-72990389-0d3f-40a6-958d-a9693ed3ce96",
-    "taskId": "P34",
-    "purpose": "implement",
-    "owner": "sess_8a62c249-c2c1-4424-9381-1ae7031452b4",
-    "runner": {
-      "provider": "zcode",
-      "sessionId": "sess_8a62c249-c2c1-4424-9381-1ae7031452b4",
-      "turnId": "turn_3af3a784-e0e7-47e8-b160-55e150c4135f",
-      "automationRunId": "automation-4c58cefd-88c2-4b25-b14d-53904b310c3e:1789905000000",
-      "identitySource": "running_tool_part",
-      "toolPartId": "part_mu9r8k5x_ec8e2da6-f198-49fe-9ee6-96bfbe1e8bf6",
-      "toolCallId": "call_e10743e9038c4e819981543b",
-      "messageId": "msg_mu9r8e2p_65c0c8a1-11ad-4849-bcc8-7fc62a140f5c"
-    },
-    "startedAt": "2026-09-20T11:50:25.296Z",
-    "baseHead": "d14ee88ea0f7433bf4a834c77b081da83ce7fc25",
-    "initialStatus": "M docs/migration/RUN_STATE.json\n?? docs/migration/evidence/runs/run-3057971e-9304-4217-8018-ebab094591e0.json",
-    "progress": [
-      "P34 全部验证完成：静态门禁复绿（lint 0/0 490 文件/typecheck/structure 481/build 1.15s）；真实只读 8/8（board 45 小时行覆盖今昨+五状态和=56 不变量+告警 0 条真实空+无令牌 1000000+登出清理）；浏览器整页验收（登录落点 /dashboard 实测、8 KPI 实时值+环比、环形图/双折线/告警空态、5s 轮询持续、会话失效真实场景双区域独立失败态、深浅×双视口×五语言动态重建、KPI 卡→/order-record、旧地址重定向、登出清理）",
-      "本轮修复缺陷 2 处（截图实证）：panelBody flex:1 塌陷改内联 height 生效；环图图例泄漏 center 占位改 legend.data 显式五状态",
-      "文档：tasks/P34.md、contracts.md（合并首页契约+落点行+变更日志）、operations.md 3 行、i18n-map.md、i18n-missing.md 移除 dashboard 登记；acceptance.json 49 项矩阵（deferred：A04/A24/I06）"
-    ],
-    "nextSteps": [
-      "文档提交 + push --commit 核对远端 + end --outcome completed"
-    ],
     "blocker": null,
-    "endedAt": "2026-09-20T13:03:31.275Z",
+    "endedAt": "2026-09-20T15:06:12.496Z",
     "outcome": "completed",
-    "endHead": "d30483ab2cac68cb0e5688b722ee35e89b939b5a",
+    "endHead": "cae6866dcd60f1da2019cf67b8a1397e0fa8caff",
     "publish": {
       "status": "synced",
-      "taskId": "P34",
-      "commit": "d30483ab2cac68cb0e5688b722ee35e89b939b5a",
-      "confirmedRemoteHead": "d30483ab2cac68cb0e5688b722ee35e89b939b5a",
-      "checkedAt": "2026-09-20T13:03:24.481Z",
+      "taskId": "P36",
+      "commit": "cae6866dcd60f1da2019cf67b8a1397e0fa8caff",
+      "confirmedRemoteHead": "cae6866dcd60f1da2019cf67b8a1397e0fa8caff",
+      "checkedAt": "2026-09-20T15:06:05.977Z",
       "error": null
     }
   },
