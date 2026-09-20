@@ -463,11 +463,16 @@ export const appRouteDefinitions = defineAppRoutes([
             }),
           },
           {
-            // 注意历史码值交叉：本页（工艺管理）挂 mission-template:view
+            // 工艺管理（P21 交付解除 pending）：菜单码 mission-template:view 挂
+            // 守卫（注意历史码值交叉：本页视图/按钮码均为 mission-template:*，
+            // 任务工艺页才是 mission-flow:*；按钮码 create/resend/operate/
+            // sub-operate 在页面内控制入口显隐，后端权限树按既有码判权不凭空造码）
             id: 'mission-cluster-mission-flow',
             path: 'mission-flow',
             loadPage: () => import('@/pages/mission-cluster/MissionFlow/MissionFlow'),
-            meta: businessMeta('工艺管理', PERM.MISSION_TEMPLATE_VIEW, { pending: true }),
+            meta: businessMeta('工艺管理', PERM.MISSION_TEMPLATE_VIEW, {
+              i18nNamespaces: ['orderFlow'],
+            }),
           },
           {
             // 避障模板（P22 交付解除 pending）：菜单码 obstacle-avoidance:view

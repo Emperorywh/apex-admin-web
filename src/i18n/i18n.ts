@@ -104,6 +104,8 @@ const enUsLoaders: NamespaceLoaders = {
   agvActionGroup: () => import('@/i18n/locales/en-US/agvActionGroup'),
   // P20 任务工艺（mission-cluster/mission-create；页面私有命名空间）
   orderTemplate: () => import('@/i18n/locales/en-US/orderTemplate'),
+  // P21 工艺管理（mission-cluster/mission-flow；页面私有命名空间）
+  orderFlow: () => import('@/i18n/locales/en-US/orderFlow'),
   // P25 版本管理（system-involve/version-control；页面私有命名空间）
   systemVersion: () => import('@/i18n/locales/en-US/systemVersion'),
   // P26 系统日志（system-involve/system-log；页面私有命名空间）
@@ -190,6 +192,8 @@ const zhTwLoaders: NamespaceLoaders = {
   agvActionGroup: () => import('@/i18n/locales/zh-TW/agvActionGroup'),
   // P20 任务工艺（mission-cluster/mission-create；页面私有命名空间）
   orderTemplate: () => import('@/i18n/locales/zh-TW/orderTemplate'),
+  // P21 工艺管理（mission-cluster/mission-flow；页面私有命名空间）
+  orderFlow: () => import('@/i18n/locales/zh-TW/orderFlow'),
   // P25 版本管理（system-involve/version-control；页面私有命名空间）
   systemVersion: () => import('@/i18n/locales/zh-TW/systemVersion'),
   // P26 系统日志（system-involve/system-log；页面私有命名空间）
@@ -260,6 +264,8 @@ const jaJpLoaders: NamespaceLoaders = {
   agvActionGroup: () => import('@/i18n/locales/ja-JP/agvActionGroup'),
   // P20 任务工艺（mission-cluster/mission-create；页面私有命名空间）
   orderTemplate: () => import('@/i18n/locales/ja-JP/orderTemplate'),
+  // P21 工艺管理（mission-cluster/mission-flow；页面私有命名空间）
+  orderFlow: () => import('@/i18n/locales/ja-JP/orderFlow'),
   // P25 版本管理（system-involve/version-control；页面私有命名空间）
   systemVersion: () => import('@/i18n/locales/ja-JP/systemVersion'),
   // P26 系统日志（system-involve/system-log；页面私有命名空间）
@@ -330,6 +336,8 @@ const koKrLoaders: NamespaceLoaders = {
   agvActionGroup: () => import('@/i18n/locales/ko-KR/agvActionGroup'),
   // P20 任务工艺（mission-cluster/mission-create；页面私有命名空间）
   orderTemplate: () => import('@/i18n/locales/ko-KR/orderTemplate'),
+  // P21 工艺管理（mission-cluster/mission-flow；页面私有命名空间）
+  orderFlow: () => import('@/i18n/locales/ko-KR/orderFlow'),
   // P25 版本管理（system-involve/version-control；页面私有命名空间）
   systemVersion: () => import('@/i18n/locales/ko-KR/systemVersion'),
   // P26 系统日志（system-involve/system-log；页面私有命名空间）
