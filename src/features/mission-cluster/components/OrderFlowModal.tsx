@@ -24,6 +24,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { App, Form, Input, InputNumber, Modal, Radio, Transfer } from 'antd'
 import type { RadioGroupProps, TransferProps } from 'antd'
+// 跨命名空间：主体文案走 orderFlow，选项加载失败走 common「加载失败」
+// （AGENTS 第 6 节 nsMode fallback，无前缀 key 按数组顺序回退）
 import { useTranslation } from 'react-i18next'
 import { apiErrorMessage, isCancelledError } from '@/services/request/request'
 import { fetchOrderTemplates } from '@/services/order-template/order-template.service'
@@ -63,7 +65,7 @@ interface OrderFlowModalProps {
 }
 
 export function OrderFlowModal({ open, mode, target, onClose, onSucceeded }: OrderFlowModalProps) {
-  const { t } = useTranslation('orderFlow')
+  const { t } = useTranslation(['orderFlow', 'common'], { nsMode: 'fallback' })
   const { message } = App.useApp()
   const [form] = Form.useForm<OrderFlowFormValues>()
   const [submitting, setSubmitting] = useState(false)
@@ -268,6 +270,9 @@ export function OrderFlowModal({ open, mode, target, onClose, onSucceeded }: Ord
             showSearch={{ placeholder: t('搜索') }}
             titles={[t('待选工艺'), t('已选工艺')]}
             actions={[t('添加'), t('撤回')]}
+            // 选项加载失败时把空列表文案覆盖为「加载失败」状态文本（不设重试
+            // 按钮=按钮纪律，P10/P20 同款；重新打开弹窗自动重查即恢复路径）
+            locale={templateOptions.error ? { notFoundContent: t('加载失败') } : undefined}
             // 旧 listStyle 300×360 双栏（antd v6 以 styles.section 承载）
             styles={{ section: { width: 300, height: 360 } }}
           />

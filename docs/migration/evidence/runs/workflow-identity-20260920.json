@@ -1,0 +1,33 @@
+{
+  "runId": "workflow-identity-20260920",
+  "taskId": "P21",
+  "purpose": "delivery",
+  "owner": "01a0bc51-8b6b-7c10-9b66-f2a1a13c00f4",
+  "runner": {
+    "provider": "manual",
+    "sessionId": "01a0bc51-8b6b-7c10-9b66-f2a1a13c00f4"
+  },
+  "startedAt": "2026-09-20T07:41:59.609Z",
+  "baseHead": "92ce98f9d3b605257ccfc46b8694962d770d8e17",
+  "initialStatus": "",
+  "progress": [
+    "修复 prepare 身份识别：实时 running Bash part + message.anchor.turnId，核对自动调度/任务/会话目录；不再要求运行中 turn_usage 已落库。",
+    "锁恢复增加实时工具活动检查；独立 Git/SQLite 集成验证 21/21 通过，pnpm check/build、migration check 通过。",
+    "TASKS、AUTOMATION_PROMPT 和 P21 交接已同步；故障取证见 identity-diagnosis.json；本轮未改业务实现或验收状态。"
+  ],
+  "nextSteps": [
+    "提交并推送本轮修复后 end 释放维护锁；通过现有 ZCode 自动化立即运行一次，观察真实 P21 领取。"
+  ],
+  "blocker": null,
+  "endedAt": "2026-09-20T07:51:31.794Z",
+  "outcome": "completed",
+  "endHead": "888d1a2d0365b4da88371e41f08ad431153c4257",
+  "publish": {
+    "status": "synced",
+    "taskId": "P21",
+    "commit": "888d1a2d0365b4da88371e41f08ad431153c4257",
+    "confirmedRemoteHead": "888d1a2d0365b4da88371e41f08ad431153c4257",
+    "checkedAt": "2026-09-20T07:51:24.364Z",
+    "error": null
+  }
+}

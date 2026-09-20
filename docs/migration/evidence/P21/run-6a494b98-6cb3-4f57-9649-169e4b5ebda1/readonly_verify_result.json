@@ -1,0 +1,45 @@
+{
+  "base": "http://192.168.0.158:8888",
+  "results": [
+    {
+      "item": "login",
+      "ok": true,
+      "detail": "code=200 activated=True mission-template权限码=['mission-template:create', 'mission-template:operate', 'mission-template:resend', 'mission-template:sub-operate', 'mission-template:view']"
+    },
+    {
+      "item": "pageOrderFlows.p1s10",
+      "ok": true,
+      "detail": "code=200 total=1 size=10 current=1 records=1 topKeys=['current', 'pages', 'records', 'size', 'total']"
+    },
+    {
+      "item": "orderFlow.schema",
+      "ok": true,
+      "detail": "fields={\"id\": \"int\", \"createTime\": \"str\", \"updateTime\": \"str\", \"createUser\": \"str\", \"updateUser\": \"str\", \"orderFlowName\": \"str\", \"orderFlowKey\": \"str\", \"triggerType\": \"int\", \"triggerTimes\": \"int\", \"cronExpression\": \"str\", \"subOrderFlows\": \"list\"} subCount=1 subFields={\"id\": \"int\", \"createTime\": \"str\", \"updateTime\": \"str\", \"createUser\": \"str\", \"updateUser\": \"str\", \"orderFlowKey\": \"str\", \"subOrderFlowKey\": \"str\", \"orderTemplateName\": \"str\", \"orderTemplateKey\": \"str\", \"appointVehicleKey\": \"NoneType\", \"appointVehicleName\": \"NoneType\", \"appointVehicleGroupKey\": \"NoneType\", \"appointVehicleGroupName\": \"NoneType\", \"subOrderMissions\": \"list\", \"subOrderFlowState\": \"str\"}"
+    },
+    {
+      "item": "pageOrderFlows.query.hit",
+      "ok": true,
+      "detail": "query='P2' code=200 total=1（命中应>0）"
+    },
+    {
+      "item": "pageOrderFlows.query.miss",
+      "ok": true,
+      "detail": "code=200 total=0 records=0（未命中空态）"
+    },
+    {
+      "item": "pageOrderFlows.noToken",
+      "ok": true,
+      "detail": "http=200 code=1000000（非 200 业务码=守卫生效）"
+    },
+    {
+      "item": "getOrderTemplates",
+      "ok": true,
+      "detail": "code=200 count=1 sampleKeys=['8d790858a242484a892f1a179aa4e0fd']"
+    },
+    {
+      "item": "result.wrap",
+      "ok": true,
+      "detail": "login code=200 message='success' timestamp=True"
+    }
+  ]
+}
