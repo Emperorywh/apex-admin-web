@@ -1,0 +1,42 @@
+/* 统计页签面板布局：筛选在上、图表标题与绘图区撑满剩余高度 */
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--app-space-3);
+  height: 100%;
+  min-height: 0;
+  padding-top: var(--app-space-2);
+}
+
+/* 图表区域：占满面板剩余高度（容器 flex:1 + min-height:0，
+   图表组件内部再以 100% 高度自适应——不硬编码视口高度） */
+.chartArea {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 标题行：React 层渲染承载口径提示（旧 echarts 内置 title 的等价迁移，居中 16px/600） */
+.chartHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  flex: none;
+  padding-bottom: var(--app-space-2);
+}
+
+.chartTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--app-text);
+}
+
+/* 绘图区：占标题以下全部剩余空间，最小高度兜底 */
+.chartArea > :last-child {
+  flex: 1;
+  min-height: 0;
+}

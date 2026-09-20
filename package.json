@@ -33,6 +33,7 @@
     "apex-table-react": "^0.1.0",
     "axios": "^1.19.0",
     "dayjs": "^1.11.23",
+    "echarts": "^6.1.0",
     "i18next": "^26.4.0",
     "konva": "^9.3.20",
     "lucide-react": "^1.34.0",

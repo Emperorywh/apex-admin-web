@@ -634,11 +634,16 @@ export const appRouteDefinitions = defineAppRoutes([
             meta: indexRedirectMeta('数据统计'),
           },
           {
+            // 任务统计（P33 交付解除 pending）：菜单码 statistics:order:view 挂路由守卫
+            // （旧 .umirc.ts 中该路由处于注释状态，规格 3.3/TASKS 明确列为迁移项，
+            // 用户决策优先；页内无按钮码，事实登记 tasks/P33.md）
             id: 'analyze-visual-order-statistics',
             path: 'order-statistics',
             loadPage: () =>
               import('@/pages/analyze-visual/OrderStatistics/OrderStatistics'),
-            meta: businessMeta('任务统计', PERM.STATISTICS_ORDER_VIEW, { pending: true }),
+            meta: businessMeta('任务统计', PERM.STATISTICS_ORDER_VIEW, {
+              i18nNamespaces: ['report-order', 'orderRecord'],
+            }),
           },
           {
             // H03 暂缓入口（D07）：本期确定不迁移，页面加载统一「本期暂未迁移」说明；

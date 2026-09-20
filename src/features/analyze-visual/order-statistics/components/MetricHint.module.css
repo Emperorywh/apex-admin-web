@@ -1,0 +1,16 @@
+/* 口径提示触发图标：与标题文字基线对齐，弱化存在感（旧 InfoHint colorTextTertiary 同位） */
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 4px;
+  color: var(--app-text-4);
+  cursor: help;
+  outline: none;
+}
+
+/* 键盘聚焦可见轮廓（可达性底线），鼠标态不显示 */
+.trigger:focus-visible {
+  outline: 2px solid var(--app-blue);
+  outline-offset: 1px;
+  border-radius: 3px;
+}

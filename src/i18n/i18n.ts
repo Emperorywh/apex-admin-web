@@ -131,6 +131,9 @@ const enUsLoaders: NamespaceLoaders = {
   'access-role': () => import('@/i18n/locales/en-US/access-role'),
   // P19 三方交管（tri-resource/tri-traffic；页面私有命名空间，增改删弹窗共用）
   'tripartite-traffic': () => import('@/i18n/locales/en-US/tripartite-traffic'),
+  // P33 任务统计（analyze-visual/order-statistics；页面私有命名空间，
+  // 筛选标签/枚举 label 复用 orderRecord，页面以 fallback 双命名空间取词）
+  'report-order': () => import('@/i18n/locales/en-US/report-order'),
   // P41 无权限页（un-access；布局外独立页）
   'access-denied': () => import('@/i18n/locales/en-US/access-denied'),
 }
@@ -214,6 +217,8 @@ const zhTwLoaders: NamespaceLoaders = {
   'access-role': () => import('@/i18n/locales/zh-TW/access-role'),
   // P19 三方交管（tri-resource/tri-traffic；页面私有命名空间，增改删弹窗共用）
   'tripartite-traffic': () => import('@/i18n/locales/zh-TW/tripartite-traffic'),
+  // P33 任务统计（analyze-visual/order-statistics；页面私有命名空间）
+  'report-order': () => import('@/i18n/locales/zh-TW/report-order'),
   'access-denied': () => import('@/i18n/locales/zh-TW/access-denied'),
 }
 const jaJpLoaders: NamespaceLoaders = {
@@ -288,6 +293,8 @@ const jaJpLoaders: NamespaceLoaders = {
   'access-role': () => import('@/i18n/locales/ja-JP/access-role'),
   // P19 三方交管（tri-resource/tri-traffic；页面私有命名空间，增改删弹窗共用）
   'tripartite-traffic': () => import('@/i18n/locales/ja-JP/tripartite-traffic'),
+  // P33 任务统计（analyze-visual/order-statistics；页面私有命名空间）
+  'report-order': () => import('@/i18n/locales/ja-JP/report-order'),
   'access-denied': () => import('@/i18n/locales/ja-JP/access-denied'),
 }
 const koKrLoaders: NamespaceLoaders = {
@@ -362,6 +369,8 @@ const koKrLoaders: NamespaceLoaders = {
   'access-role': () => import('@/i18n/locales/ko-KR/access-role'),
   // P19 三方交管（tri-resource/tri-traffic；页面私有命名空间，增改删弹窗共用）
   'tripartite-traffic': () => import('@/i18n/locales/ko-KR/tripartite-traffic'),
+  // P33 任务统计（analyze-visual/order-statistics；页面私有命名空间）
+  'report-order': () => import('@/i18n/locales/ko-KR/report-order'),
   'access-denied': () => import('@/i18n/locales/ko-KR/access-denied'),
 }
 
