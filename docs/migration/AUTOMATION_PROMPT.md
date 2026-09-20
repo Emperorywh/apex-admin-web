@@ -8,7 +8,7 @@
 
 先执行 `node scripts/migration-runner.mjs status`。定时任务不自动恢复遗留锁：锁存在时只核验对应运行，仍在执行或无法证明已经结束就结束本轮，不改代码、台账或锁。不得凭时间、心跳或临时 shell 进程消失接管。确有对应会话终止证据或用户明确确认后，按 TASKS §2 的 recover 流程保留证明再恢复。
 
-以 status 给出的 next 为本轮任务与 purpose。历史状态/证据不一致优先做该任务的 audit，复用已有代码与持久证据，不重新开发整页。非复核轮恢复当前任务，不挑容易任务，不跳过受阻任务。先取得锁：`node scripts/migration-runner.mjs begin --run <唯一运行ID> --session <实际会话ID> --task <任务ID> --purpose <audit或implement或acceptance或delivery>`。收到成功后才可以修改项目；开始前保存的 Git 状态是用户修改保护基线。
+以 status 给出的 next 为本轮任务与 purpose。未完成任务优先，验收复核顺延：仅当不存在待开发任务（V01 除外）时，才逐项复核历史待验收任务；复核轮复用已有代码与持久证据，不重新开发整页。开发轮恢复当前任务，不挑容易任务，不跳过受阻任务。先取得锁：`node scripts/migration-runner.mjs begin --run <唯一运行ID> --session <实际会话ID> --task <任务ID> --purpose <audit或implement或acceptance或delivery>`。收到成功后才可以修改项目；开始前保存的 Git 状态是用户修改保护基线。
 
 ## 实施与放行
 

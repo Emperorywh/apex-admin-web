@@ -152,13 +152,24 @@ function save(state) {
 }
 
 /**
- * 历史状态不一致优先逐项复核，每轮仍只处理一个任务。
- * 未满足放行条件的实现阻塞后续；已明确放行但待现场验收不伪装成最终完成。
- * 提交后中断先补推送，总验收前先逐项补验，避免最终任务无法更新前项的死锁。
+ * 未完成任务优先（2026-09-20 用户决策调整）：先完成全部页面实现（V01 除外），
+ * 历史任务的验收复核顺延到开发收口后逐项补做，避免复核长期占用轮次拖住尚未复刻的页面。
+ * 已明确放行但待现场验收不伪装成最终完成；提交后中断先补推送。
+ * 开发依赖按 TASKS §3 口径以「代码/契约已合并（implemented）」判定，不要求前置任务先通过复核；
+ * 进入 V01 前仍须先完成顺延的复核并逐项补验，避免最终任务无法更新前项的死锁。
  */
 function nextTask(state) {
   const unpublishedCommit = state.publish.status !== 'synced' || state.publish.commit !== git('rev-parse', 'HEAD')
   if (unpublishedCommit) return { taskId: state.publish.taskId || state.lastRun?.taskId || state.currentTaskId || 'T00', purpose: 'delivery' }
+  // 开发优先分支：优先恢复 currentTaskId 对应的未完成任务，否则按队列顺序取下一个待开发任务
+  const developable = state.queue.find(task => task.id !== 'V01' && (task.implementation === 'not_started' || task.implementation === 'in_progress'))
+  if (developable) {
+    const current = state.queue.find(task => task.id === state.currentTaskId && (task.implementation === 'not_started' || task.implementation === 'in_progress'))
+    const target = current || developable
+    const unmet = target.dependencies.filter(id => state.queue.find(task => task.id === id).implementation !== 'implemented')
+    return { taskId: target.id, purpose: 'implement', unmet }
+  }
+  // 开发收口后才恢复历史待复核项（每轮一项 audit），复核结论决定放行与验收状态
   const audit = state.queue.find(task => (task.implementation === 'implemented' && task.gate === 'pending_review') || evidenceProblem(task))
   if (audit) return { taskId: audit.id, purpose: 'audit' }
   const current = state.queue.find(task => task.id === state.currentTaskId && task.gate !== 'ready')
