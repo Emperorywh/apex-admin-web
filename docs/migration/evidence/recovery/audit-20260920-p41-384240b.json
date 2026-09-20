@@ -1,0 +1,52 @@
+{
+  "proof": {
+    "runId": "audit-20260920-p41-384240b",
+    "ended": true,
+    "kind": "runner_terminal_state",
+    "checkedAt": "2026-09-20T06:48:16.601306+00:00",
+    "reference": "ZCode CLI SQLite: successful begin tool part and exact turn cancelled; task index and automation terminal records",
+    "sessionId": "sess_c27edd63-89ee-45c9-b2ad-13cd1fe3f73e",
+    "turn": {
+      "turn_id": "turn_6f4b40a7-d9b9-488e-b230-c2d701471f33",
+      "status": "cancelled",
+      "started_at": 1789880651583,
+      "completed_at": 1789881320247
+    },
+    "task": {
+      "task_id": "sess_c27edd63-89ee-45c9-b2ad-13cd1fe3f73e",
+      "task_status": "completed",
+      "workspace_path": "C:\\code\\apex-admin-web",
+      "updated_at": 1789881320246
+    },
+    "automationRun": {
+      "run_id": "automation-4c58cefd-88c2-4b25-b14d-53904b310c3e:1789880640000",
+      "session_id": "sess_c27edd63-89ee-45c9-b2ad-13cd1fe3f73e",
+      "outcome": "succeeded",
+      "updated_at": 1789881320248
+    },
+    "beginPartId": "part_mu9ctdm6_b7e56e3c-2328-445a-8288-2c9a353cb774",
+    "beginCommand": "node scripts/migration-runner.mjs begin --run audit-20260920-p41-384240b --session zcode-p41-audit-20260920 --task P41 --purpose audit",
+    "beginToolResultRunId": "audit-20260920-p41-384240b"
+  },
+  "previousLock": {
+    "schemaVersion": 2,
+    "runId": "audit-20260920-p41-384240b",
+    "taskId": "P41",
+    "owner": "zcode-p41-audit-20260920",
+    "startedAt": "2026-09-20T05:06:42.150Z",
+    "heartbeatAt": "2026-09-20T05:06:42.458Z"
+  },
+  "previousRun": {
+    "runId": "audit-20260920-p41-384240b",
+    "taskId": "P41",
+    "purpose": "audit",
+    "owner": "zcode-p41-audit-20260920",
+    "startedAt": "2026-09-20T05:06:42.375Z",
+    "baseHead": "384240bc740bd552e575f226f71d5de07f75a6f3",
+    "initialStatus": "M docs/migration/RUN_STATE.json\n?? docs/migration/evidence/runs/audit-20260920-p02-408144b.json",
+    "progress": [],
+    "nextSteps": [],
+    "blocker": null
+  },
+  "recordedAt": "2026-09-20T06:48:17.049Z"
+}

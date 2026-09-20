@@ -1,8 +1,11 @@
 {
   "scope": "控制器命令行集成烟测，不是业务验收或单元测试",
-  "checkedAt": "2026-09-20T01:39:01.982594+00:00",
-  "runnerSha256": "2c1ddcb36ce3fcb24da85ef96a72e71985344d0b747b369b4f9c54f88eca65e3",
-  "passedCases": 10,
+  "checkedAt": "2026-09-20T07:02:17.094880+00:00",
+  "runnerSha256": "d64bc347eec83c4e49cecbb58d94ff600058ab92a22da263a79defc5a8e98499",
+  "zcodeAdapterSha256": "8b7391dc48ffd2f3197ed5556145b30af05cc179f0e15d9b155bbbe1ce6002b8",
+  "passedCases": 16,
+  "expectedCases": 16,
+  "status": "passed",
   "results": [
     {
       "case": "48 项队列与复选框投影校验",
@@ -29,7 +32,7 @@
       "status": "passed"
     },
     {
-      "case": "不匹配证明拒绝；对应终态证明归档后恢复",
+      "case": "不匹配证明拒绝；人工恢复分支保留证明后释放",
       "status": "passed"
     },
     {
@@ -37,11 +40,35 @@
       "status": "passed"
     },
     {
-      "case": "49 条完整矩阵可投影；受检文件变化转复核且 check 拒绝旧证据",
+      "case": "49 条完整矩阵可投影；check 拒绝过期证据，开发顺序不被历史复核抢占",
       "status": "passed"
     },
     {
       "case": "V01 前先逐任务补验，避免总验收阶段串行死锁",
+      "status": "passed"
+    },
+    {
+      "case": "自拟 session 名称在取锁前被拒绝",
+      "status": "passed"
+    },
+    {
+      "case": "无法绑定真实会话的旧锁保持原样",
+      "status": "passed"
+    },
+    {
+      "case": "会话看似完成但轮次、工具或排队输入仍活动时拒绝恢复",
+      "status": "passed"
+    },
+    {
+      "case": "成功 begin 绑定取消轮次；同轮恢复并领取开发任务，保存真实新会话身份",
+      "status": "passed"
+    },
+    {
+      "case": "活动恢复短锁保持互斥；恢复者已终止后可清理短锁继续恢复",
+      "status": "passed"
+    },
+    {
+      "case": "远端已同步的旧回执同轮修正；V01 不抢占未开发页面；持锁不显示可领取 next",
       "status": "passed"
     }
   ]

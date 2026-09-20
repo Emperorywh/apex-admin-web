@@ -6,8 +6,10 @@
 import copy
 import hashlib
 import json
+import os
 import pathlib
 import shutil
+import sqlite3
 import subprocess
 import tempfile
 from datetime import datetime, timezone
@@ -20,6 +22,8 @@ WORK.mkdir()
 (WORK / 'scripts').mkdir()
 (WORK / 'docs/migration/evidence').mkdir(parents=True)
 shutil.copyfile(ROOT / 'scripts/migration-runner.mjs', WORK / 'scripts/migration-runner.mjs')
+shutil.copyfile(ROOT / 'scripts/migration-zcode.mjs', WORK / 'scripts/migration-zcode.mjs')
+SESSION = '00000000-0000-0000-0000-000000000000'
 results = []
 
 
@@ -31,6 +35,7 @@ def call(*args, expected=0):
 
 
 def cli(*args, expected=0):
+    args = tuple(SESSION if arg == 'isolated-cli-smoke' else arg for arg in args)
     return call('node', 'scripts/migration-runner.mjs', *args, expected=expected)
 
 
@@ -77,7 +82,7 @@ try:
     cli('check')
     passed('48 项队列与复选框投影校验')
 
-    commands = [['node', 'scripts/migration-runner.mjs', 'begin', '--run', f'concurrent-{i}', '--session', 'isolated-cli-smoke', '--task', 'T00'] for i in range(2)]
+    commands = [['node', 'scripts/migration-runner.mjs', 'begin', '--run', f'concurrent-{i}', '--session', SESSION, '--task', 'T00'] for i in range(2)]
     processes = [subprocess.Popen(command, cwd=WORK, text=True, encoding='utf-8', stdout=subprocess.PIPE, stderr=subprocess.PIPE) for command in commands]
     for process in processes:
         process.communicate()
@@ -102,10 +107,10 @@ try:
     cli('begin', '--run', 'recovery-smoke', '--session', 'isolated-cli-smoke', '--task', 'T00')
     write('proof.json', {'runId': 'another-run', 'ended': True})
     cli('recover', '--run', 'recovery-smoke', '--proof', 'proof.json', expected=1)
-    write('proof.json', {'runId': 'recovery-smoke', 'ended': True, 'kind': 'runner_terminal_state', 'reference': '隔离烟测调用进程已退出；不存在业务 Agent', 'checkedAt': datetime.now(timezone.utc).isoformat()})
-    cli('recover', '--run', 'recovery-smoke', '--proof', 'proof.json')
+    write('proof.json', {'runId': 'recovery-smoke', 'ended': True, 'kind': 'user_confirmation', 'reference': '仅隔离烟测人工恢复分支的输入夹具，不代表真实业务授权', 'checkedAt': datetime.now(timezone.utc).isoformat()})
+    cli('recover', '--run', 'recovery-smoke', '--proof', 'proof.json', '--session', SESSION)
     assert state()['run'] is None and not (WORK / 'docs/migration/.lock').exists()
-    passed('不匹配证明拒绝；对应终态证明归档后恢复')
+    passed('不匹配证明拒绝；人工恢复分支保留证明后释放')
 
     # 本地提交变化必须转入交付轮，重复核验不能创建新提交或重复业务操作。
     # 这一步只把一个文本提交推送至临时裸仓库，无任何网络推送。
@@ -133,10 +138,10 @@ try:
     cli('check')
     cli('end', '--run', 'evidence-smoke', '--outcome', 'completed')
     (WORK / 'code.txt').write_text('changed fixture\n', encoding='utf-8')
-    assert json.loads(cli('status'))['next'] == {'taskId': 'T00', 'purpose': 'audit'}
+    assert json.loads(cli('status'))['next']['taskId'] == 'P01'
     cli('check', expected=1)
     (WORK / 'code.txt').write_text('control fixture\n', encoding='utf-8')
-    passed('49 条完整矩阵可投影；受检文件变化转复核且 check 拒绝旧证据')
+    passed('49 条完整矩阵可投影；check 拒绝过期证据，开发顺序不被历史复核抢占')
 
     final_state = state()
     for task in final_state['queue'][:-1]:
@@ -151,6 +156,80 @@ try:
     write('docs/migration/RUN_STATE.json', final_state)
     assert json.loads(cli('status'))['next'] == {'taskId': 'T00', 'purpose': 'acceptance'}
     passed('V01 前先逐任务补验，避免总验收阶段串行死锁')
+
+    # 使用隔离 SQLite 记录复现真实的取消遗锁；数据库及会话均为控制器夹具。
+    # 覆盖未知、活动、排队与终态，不以时间流逝替代可证实的运行状态。
+    fresh = copy.deepcopy(seed)
+    fresh['publish'] = {'status': 'synced', 'commit': delivered_head}
+    write('docs/migration/RUN_STATE.json', fresh)
+    cli('begin', '--run', 'invalid-session', '--session', 'zcode-p41-audit', '--task', 'T00', expected=1)
+    assert not (WORK / 'docs/migration/.lock').exists()
+    passed('自拟 session 名称在取锁前被拒绝')
+    zhome = SANDBOX / 'zcode'
+    (zhome / 'v2').mkdir(parents=True)
+    (zhome / 'cli/db').mkdir(parents=True)
+    os.environ['MIGRATION_ZCODE_HOME'] = str(zhome)
+    idx = sqlite3.connect(zhome / 'v2/tasks-index.sqlite')
+    db = sqlite3.connect(zhome / 'cli/db/db.sqlite')
+    idx.executescript('CREATE TABLE tasks(task_id TEXT, task_status TEXT, workspace_path TEXT, updated_at INTEGER); CREATE TABLE automation_runs(run_id TEXT, session_id TEXT, outcome TEXT, updated_at INTEGER, created_at INTEGER);')
+    db.executescript('CREATE TABLE session(id TEXT, directory TEXT); CREATE TABLE part(id TEXT, session_id TEXT, data TEXT); CREATE TABLE turn_usage(session_id TEXT, turn_id TEXT, status TEXT, started_at INTEGER, completed_at INTEGER); CREATE TABLE tool_usage(session_id TEXT, tool_call_id TEXT, turn_id TEXT, status TEXT); CREATE TABLE session_input(session_id TEXT, status TEXT);')
+    old_sid = 'sess_00000000-0000-0000-0000-000000000001'
+    new_sid = 'sess_00000000-0000-0000-0000-000000000002'
+    for sid, label, task_status, outcome, turn_status in [(old_sid, 'old', 'completed', 'succeeded', 'running'), (new_sid, 'new', 'running', 'running', 'running')]:
+        idx.execute('INSERT INTO tasks VALUES(?,?,?,?)', (sid, task_status, str(WORK), 2))
+        idx.execute('INSERT INTO automation_runs VALUES(?,?,?,?,?)', (label+'-auto', sid, outcome, 2, 1))
+        db.execute('INSERT INTO session VALUES(?,?)', (sid, str(WORK)))
+        db.execute('INSERT INTO turn_usage VALUES(?,?,?,?,?)', (sid, label+'-turn', turn_status, 1, None))
+    idx.commit(); db.commit()
+    cli('begin', '--run', 'legacy-cancelled', '--session', SESSION, '--task', 'T00')
+    lock = json.loads((WORK / 'docs/migration/.lock/lock.json').read_text(encoding='utf-8'))
+    lock.pop('runner')
+    lock['owner'] = 'zcode-t00-legacy-name'
+    write('docs/migration/.lock/lock.json', lock)
+    before_probe = (WORK / 'docs/migration/RUN_STATE.json').read_bytes()
+    assert json.loads(cli('prepare', '--session', 'auto'))['action'] == 'blocked'
+    assert (WORK / 'docs/migration/RUN_STATE.json').read_bytes() == before_probe
+    passed('无法绑定真实会话的旧锁保持原样')
+    part = {'type': 'tool', 'callID': 'begin-call', 'state': {'status': 'completed', 'input': {'command': 'node scripts/migration-runner.mjs begin --run legacy-cancelled'}, 'output': json.dumps(state()['run'])}}
+    db.execute('INSERT INTO part VALUES(?,?,?)', ('begin-part', old_sid, json.dumps(part)))
+    db.execute('INSERT INTO tool_usage VALUES(?,?,?,?)', (old_sid, 'begin-call', 'old-turn', 'completed'))
+    db.commit()
+    assert json.loads(cli('prepare', '--session', 'auto'))['action'] == 'blocked'
+    db.execute("UPDATE turn_usage SET status='cancelled', completed_at=2 WHERE session_id=?", (old_sid,))
+    db.execute('INSERT INTO tool_usage VALUES(?,?,?,?)', (old_sid, 'pending-tool', 'old-turn', 'running')); db.commit()
+    assert json.loads(cli('prepare', '--session', 'auto'))['action'] == 'blocked'
+    db.execute("UPDATE tool_usage SET status='completed' WHERE tool_call_id='pending-tool'")
+    db.execute('INSERT INTO session_input VALUES(?,?)', (old_sid, 'admitted')); db.commit()
+    assert json.loads(cli('prepare', '--session', 'auto'))['action'] == 'blocked'
+    assert (WORK / 'docs/migration/RUN_STATE.json').read_bytes() == before_probe
+    passed('会话看似完成但轮次、工具或排队输入仍活动时拒绝恢复')
+    db.execute("UPDATE session_input SET status='cancelled' WHERE session_id=?", (old_sid,)); db.commit()
+    guard = {'runId': 'recovery-fixture', 'runner': {'provider': 'zcode', 'sessionId': new_sid, 'turnId': 'new-turn', 'automationRunId': 'new-auto'}}
+    write('docs/migration/.lock/recovery.lock', guard)
+    cli('prepare', '--session', 'auto', expected=1)
+    cli('sync', '--run', 'legacy-cancelled', expected=1)
+    assert (WORK / 'docs/migration/RUN_STATE.json').read_bytes() == before_probe
+    guard['runner'] = {'provider': 'zcode', 'sessionId': old_sid, 'turnId': 'old-turn', 'automationRunId': 'old-auto'}
+    write('docs/migration/.lock/recovery.lock', guard)
+    resumed = json.loads(cli('prepare', '--session', 'auto'))
+    assert resumed['taskId'] == 'T00' and resumed['purpose'] == 'implement'
+    assert resumed['runner']['sessionId'] == new_sid and resumed['runner']['turnId'] == 'new-turn'
+    recovered = json.loads((WORK / 'docs/migration/evidence/recovery/legacy-cancelled.json').read_text(encoding='utf-8'))
+    assert recovered['proof']['binding']['beginPartId'] == 'begin-part'
+    assert recovered['proof']['turn']['status'] == 'cancelled'
+    cli('end', '--run', resumed['runId'], '--outcome', 'checkpoint')
+    passed('成功 begin 绑定取消轮次；同轮恢复并领取开发任务，保存真实新会话身份')
+    passed('活动恢复短锁保持互斥；恢复者已终止后可清理短锁继续恢复')
+    idx.close(); db.close()
+    fresh['publish'] = {'status': 'synced', 'commit': head}
+    fresh['currentTaskId'] = 'V01'
+    write('docs/migration/RUN_STATE.json', fresh)
+    reconciled = json.loads(cli('prepare', '--session', SESSION))
+    assert reconciled['taskId'] == 'T00' and reconciled['purpose'] == 'implement'
+    assert state()['publish']['commit'] == delivered_head
+    assert json.loads(cli('status'))['next'] is None
+    cli('end', '--run', reconciled['runId'], '--outcome', 'checkpoint')
+    passed('远端已同步的旧回执同轮修正；V01 不抢占未开发页面；持锁不显示可领取 next')
 finally:
-    REPORT.write_text(json.dumps({'scope': '控制器命令行集成烟测，不是业务验收或单元测试', 'checkedAt': datetime.now(timezone.utc).isoformat(), 'runnerSha256': hashlib.sha256((ROOT / 'scripts/migration-runner.mjs').read_bytes()).hexdigest(), 'passedCases': len(results), 'results': results}, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+    REPORT.write_text(json.dumps({'scope': '控制器命令行集成烟测，不是业务验收或单元测试', 'checkedAt': datetime.now(timezone.utc).isoformat(), 'runnerSha256': hashlib.sha256((ROOT / 'scripts/migration-runner.mjs').read_bytes()).hexdigest(), 'zcodeAdapterSha256': hashlib.sha256((ROOT / 'scripts/migration-zcode.mjs').read_bytes()).hexdigest(), 'passedCases': len(results), 'expectedCases': 16, 'status': 'passed' if len(results) == 16 else 'failed', 'results': results}, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
 print(json.dumps({'passedCases': len(results), 'report': str(REPORT)}, ensure_ascii=True))

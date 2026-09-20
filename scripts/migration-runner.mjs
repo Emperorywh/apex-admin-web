@@ -8,6 +8,7 @@ import { execFileSync } from 'node:child_process'
 import { closeSync, existsSync, fsyncSync, mkdirSync, openSync, readFileSync, readdirSync, realpathSync, renameSync, rmdirSync, unlinkSync, writeFileSync } from 'node:fs'
 import { dirname, relative, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { probeRunnerEnd, resolveRunnerSession } from './migration-zcode.mjs'
 
 const root = realpathSync(resolve(dirname(fileURLToPath(import.meta.url)), '..'))
 const statePath = resolve(root, 'docs/migration/RUN_STATE.json')
@@ -69,10 +70,12 @@ const owner = () => json(lockPath)
  */
 function withOwner(action) {
   required(options.run && owner().runId === options.run, '未持有当前锁，停止写入')
+  required(!existsSync(resolve(lockDir, 'recovery.lock')), '锁正在核验恢复，停止写入')
   const commandLock = resolve(lockDir, 'command.lock')
   const descriptor = openSync(commandLock, 'wx')
   try {
     required(owner().runId === options.run, '锁持有者变化')
+    required(!existsSync(resolve(lockDir, 'recovery.lock')), '锁正在核验恢复，停止写入')
     const state = readState()
     required(state.run?.runId === options.run, '锁与 RUN_STATE 不一致；先恢复，不得直接覆盖')
     return action(state)
@@ -164,7 +167,7 @@ function nextTask(state) {
   // 开发优先分支：优先恢复 currentTaskId 对应的未完成任务，否则按队列顺序取下一个待开发任务
   const developable = state.queue.find(task => task.id !== 'V01' && (task.implementation === 'not_started' || task.implementation === 'in_progress'))
   if (developable) {
-    const current = state.queue.find(task => task.id === state.currentTaskId && (task.implementation === 'not_started' || task.implementation === 'in_progress'))
+    const current = state.queue.find(task => task.id !== 'V01' && task.id === state.currentTaskId && (task.implementation === 'not_started' || task.implementation === 'in_progress'))
     const target = current || developable
     const unmet = target.dependencies.filter(id => state.queue.find(task => task.id === id).implementation !== 'implemented')
     return { taskId: target.id, purpose: 'implement', unmet }
@@ -221,23 +224,34 @@ function evidenceProblem(task) {
  * 启动先获取原子目录锁，写入所有权和起始 Git 快照后再允许开发。
  * 不清理既有工作区；推送阻塞和分支偏移必须先恢复。
  */
-function begin() {
-  required(/^[a-zA-Z0-9_-]{8,100}$/.test(options.run || '') && options.session, 'begin 需要唯一 --run 和所属 --session')
+async function begin(automatic = false) {
+  if (automatic) options.run ||= `run-${randomUUID()}`
+  required(/^[a-zA-Z0-9_-]{8,100}$/.test(options.run || '') && (options.session || automatic), 'begin 需要唯一 --run 和真实 --session')
+  const runner = await resolveRunnerSession(root, options.session || 'auto')
+  required(!existsSync(localPath(`docs/migration/evidence/runs/${options.run}.json`)), '运行标识已结束，禁止复用')
   mkdirSync(lockDir)
   let initialized = false
   try {
-    writeJson(lockPath, { schemaVersion: 2, runId: options.run, taskId: options.task, owner: options.session, startedAt: now(), heartbeatAt: now() })
+    writeJson(lockPath, { schemaVersion: 2, runId: options.run, taskId: options.task, owner: runner.sessionId, runner, startedAt: now(), heartbeatAt: now() })
     const state = readState()
     validate(state)
     required(!state.run, 'RUN_STATE 有未结束运行，须核实终止后恢复')
     required(git('branch', '--show-current') === state.workspace.branch, '当前分支与约定分支不符')
+    reconcileRemote(state)
     const candidate = nextTask(state)
+    if (automatic && !candidate) {
+      save(state)
+      console.log(JSON.stringify({ action: 'complete', next: null }))
+      return
+    }
+    if (automatic) options.task = candidate?.taskId
     const purpose = options.purpose || candidate?.purpose
     required(candidate && candidate.taskId === options.task, '只能处理 status 给出的下一项')
     required(purpose === candidate.purpose || purpose === 'delivery', '本轮类型不符')
     required(purpose === 'delivery' || !['pending', 'blocked'].includes(state.publish.status), '先用 delivery 轮恢复推送')
     required(purpose !== 'implement' || candidate.unmet.length === 0, `依赖未放行：${candidate.unmet?.join(', ')}`)
-    state.run = { runId: options.run, taskId: options.task, purpose, owner: options.session, startedAt: now(), baseHead: git('rev-parse', 'HEAD'), initialStatus: git('status', '--porcelain=v1'), progress: [], nextSteps: [], blocker: null }
+    state.run = { runId: options.run, taskId: options.task, purpose, owner: runner.sessionId, runner, startedAt: now(), baseHead: git('rev-parse', 'HEAD'), initialStatus: git('status', '--porcelain=v1'), progress: [], nextSteps: [], blocker: null }
+    writeJson(lockPath, { ...owner(), taskId: options.task, purpose })
     if (purpose === 'implement') {
       state.currentTaskId = options.task
       state.queue.find(task => task.id === options.task).implementation = 'in_progress'
@@ -255,6 +269,36 @@ function begin() {
       rmdirSync(lockDir)
     }
   }
+}
+
+/**
+ * 回执只描述上次核验的提交，不等于当前 HEAD 的真实交付状态。
+ * 领取业务任务前查询远端：已同步则修正回执并在同轮继续，真正未推送才进入交付轮。
+ */
+function reconcileRemote(state) {
+  const head = git('rev-parse', 'HEAD')
+  if (state.publish.status === 'synced' && state.publish.commit === head) return
+  const remoteHead = git('ls-remote', '--exit-code', state.workspace.remote, `refs/heads/${state.workspace.remoteBranch}`).split(/\s+/)[0]
+  if (remoteHead === head) state.publish = { status: 'synced', commit: head, confirmedRemoteHead: remoteHead, checkedAt: now(), error: null }
+  else state.publish = { ...state.publish, status: 'pending', commit: head, confirmedRemoteHead: remoteHead, checkedAt: now() }
+}
+
+/**
+ * 每轮唯一启动入口：核对遗留锁终态、恢复、远端对账、选择并领取一个任务。
+ * 预检只做执行控制，不算推进额外业务任务；活动锁和不确定状态仍保持原样。
+ */
+async function prepare() {
+  if (existsSync(lockDir)) {
+    required(existsSync(lockPath), '锁目录缺少身份记录，停止自动恢复')
+    const previous = owner()
+    const proof = await probeRunnerEnd(root, previous)
+    if (!proof.ended) {
+      console.log(JSON.stringify({ action: 'blocked', lock: previous, reason: proof.reason, next: null }, null, 2))
+      return
+    }
+    await recover(proof)
+  }
+  await begin(true)
 }
 
 /**
@@ -276,7 +320,7 @@ function publish(state, performPush) {
   }
   const confirmed = git('ls-remote', '--exit-code', remote, ref).split(/\s+/)[0]
   required(confirmed === head, '远端确认与预期提交不符，保持待推送')
-  state.publish = { status: 'synced', commit: head, confirmedRemoteHead: confirmed, checkedAt: now(), error: null }
+  state.publish = { status: 'synced', taskId: state.run.taskId, commit: head, confirmedRemoteHead: confirmed, checkedAt: now(), error: null }
   save(state)
 }
 
@@ -284,34 +328,61 @@ function publish(state, performPush) {
  * 恢复遗留锁必须提供对应运行已终止的外部证据，绝不依据文件年龄自动接管。
  * 将证明和原锁归档后才释放路径；不知道旧运行标识时先人工核实，不能猜测。
  */
-function recover() {
-  const proof = json(localPath(options.proof))
+async function recover(automaticProof) {
+  let proof = automaticProof || json(localPath(options.proof))
   const previous = owner()
   required(proof.runId === previous.runId && proof.ended === true && ['user_confirmation', 'runner_terminal_state'].includes(proof.kind) && proof.reference && proof.checkedAt, '恢复证明不完整或与旧运行不符')
-  required(options.run === previous.runId, '恢复必须明确指定旧运行标识')
-  const state = readState()
-  required(!state.run || state.run.runId === previous.runId, 'RUN_STATE 指向另一运行，停止恢复')
-  const destination = localPath(`docs/migration/evidence/recovery/${previous.runId}.json`)
-  if (existsSync(destination)) required(json(destination).previousLock?.runId === previous.runId, '已有恢复记录与原锁不符，需人工对账')
-  else writeJson(destination, { proof, previousLock: previous, previousRun: state.run, recordedAt: now() })
-  if (state.run) {
-    state.lastRun = { ...state.run, endedAt: now(), outcome: 'interrupted', recoveryEvidence: relative(root, destination).replaceAll('\\', '/') }
-    state.run = null
-    state.revision += 1
-    state.updatedAt = now()
-    validate(state)
-    writeJson(statePath, state)
+  required(automaticProof || options.run === previous.runId, '恢复必须明确指定旧运行标识')
+  if (proof.kind === 'runner_terminal_state') {
+    proof = await probeRunnerEnd(root, previous)
+    required(proof.ended, `运行终态无法再次确认：${proof.reason}`)
   }
-  required(owner().runId === previous.runId, '恢复期间锁持有者变化')
-  const archive = localPath(`.run-lock/recovered-${previous.runId}-${randomUUID()}`)
-  mkdirSync(dirname(archive), { recursive: true })
-  renameSync(lockDir, archive)
-  console.log('已保存终止证据并归档旧锁；下一轮必须重新 begin')
+  const recoveryLock = resolve(lockDir, 'recovery.lock')
+  const recoveryRunner = await resolveRunnerSession(root, options.session || 'auto')
+  /**
+   * 恢复命令本身也可能被取消；短恢复锁同样绑定真实会话，不能产生第二种永久遗留锁。
+   * 仅在上次恢复者已终止、记录未变化时移除其短锁，活动恢复者仍享有独占权。
+   */
+  if (existsSync(recoveryLock)) {
+    const priorRecovery = json(recoveryLock)
+    const priorEnd = await probeRunnerEnd(root, priorRecovery)
+    required(priorEnd.ended && json(recoveryLock).runId === priorRecovery.runId, '已有恢复命令仍活动或无法核实终态')
+    unlinkSync(recoveryLock)
+  }
+  const descriptor = openSync(recoveryLock, 'wx')
+  writeFileSync(descriptor, JSON.stringify({ runId: `recovery-${randomUUID()}`, runner: recoveryRunner, startedAt: now() }))
+  closeSync(descriptor)
+  let archive
+  try {
+    required(owner().runId === previous.runId, '恢复期间锁持有者变化')
+    const state = readState()
+    required(!state.run || state.run.runId === previous.runId, 'RUN_STATE 指向另一运行，停止恢复')
+    const destination = localPath(`docs/migration/evidence/recovery/${previous.runId}.json`)
+    if (existsSync(destination)) required(json(destination).previousLock?.runId === previous.runId, '已有恢复记录与原锁不符，需人工对账')
+    else writeJson(destination, { proof, previousLock: previous, previousRun: state.run, recordedAt: now() })
+    if (state.run) {
+      state.lastRun = { ...state.run, endedAt: now(), outcome: 'interrupted', recoveryEvidence: relative(root, destination).replaceAll('\\', '/') }
+      state.run = null
+      state.revision += 1
+      state.updatedAt = now()
+      validate(state)
+      writeJson(statePath, state)
+    }
+    required(owner().runId === previous.runId, '恢复期间锁持有者变化')
+    archive = localPath(`.run-lock/recovered-${previous.runId}-${randomUUID()}`)
+    mkdirSync(dirname(archive), { recursive: true })
+    renameSync(lockDir, archive)
+    if (!automaticProof) console.log('已保存终止证据并归档旧锁；可在本轮继续 prepare')
+  } finally {
+    const held = archive && existsSync(archive) ? resolve(archive, 'recovery.lock') : recoveryLock
+    if (existsSync(held)) unlinkSync(held)
+  }
 }
 
 try {
-  if (command === 'begin') begin()
-  else if (command === 'recover') recover()
+  if (command === 'prepare') await prepare()
+  else if (command === 'begin') await begin()
+  else if (command === 'recover') await recover()
   else if (command === 'status' || command === 'check') {
     const state = readState()
     validate(state)
@@ -325,7 +396,7 @@ try {
       }
       checkDocumentSecrets()
     }
-    console.log(JSON.stringify({ revision: state.revision, currentTaskId: state.currentTaskId, run: state.run, lock: existsSync(lockPath) ? owner() : null, next: nextTask(state), publish: state.publish, taskProjectionMismatches: mismatches, counts: { total: state.queue.length, implemented: state.queue.filter(task => task.implementation === 'implemented').length, accepted: state.queue.filter(task => task.verification === 'passed').length, ready: state.queue.filter(task => task.gate === 'ready').length } }, null, 2))
+    console.log(JSON.stringify({ revision: state.revision, currentTaskId: state.currentTaskId, run: state.run, lock: existsSync(lockPath) ? owner() : null, next: existsSync(lockDir) || state.run ? null : nextTask(state), remoteRecheckRequired: state.publish.commit !== git('rev-parse', 'HEAD') || state.publish.status !== 'synced', publish: state.publish, taskProjectionMismatches: mismatches, counts: { total: state.queue.length, implemented: state.queue.filter(task => task.implementation === 'implemented').length, accepted: state.queue.filter(task => task.verification === 'passed').length, ready: state.queue.filter(task => task.gate === 'ready').length } }, null, 2))
   } else if (['checkpoint', 'sync', 'end', 'push', 'verify-remote'].includes(command)) withOwner(state => {
     if (command === 'checkpoint') {
       required(Number(options.revision) === state.revision, '修订号已变化，重新读取后再保存')
@@ -357,7 +428,7 @@ try {
     }
     console.log(`已完成 ${command}，修订号 ${state.revision}`)
   })
-  else throw new Error('支持：status/check/begin/checkpoint/sync/end/verify-remote/push/recover；参数见 TASKS.md §2')
+  else throw new Error('支持：prepare/status/check/begin/checkpoint/sync/end/verify-remote/push/recover；参数见 TASKS.md §2')
   if (command === 'end') {
     required(owner().runId === options.run && !readState().run, '结束记录未落盘或锁已变化，禁止释放')
     const archive = localPath(`.run-lock/ended-${options.run}-${randomUUID()}`)

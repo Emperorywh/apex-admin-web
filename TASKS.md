@@ -33,17 +33,18 @@
 
 ### 2.2 锁、检查点与中断恢复
 
-唯一锁为 `docs/migration/.lock`。通过 `scripts/migration-runner.mjs` 操作，禁止每轮自行实现 mkdir/删锁/状态覆盖。`status` 和 `check` 为只读命令；其他命令须对应持锁身份。脚本无需新增依赖。
+唯一锁为 `docs/migration/.lock`。通过 `scripts/migration-runner.mjs` 操作，禁止每轮自行实现 mkdir/删锁/状态覆盖。自动任务统一使用 prepare 启动；status/check 只读，不能把诊断输出当作已领取任务。脚本使用 Node 22.22+ 内置 SQLite，只读查询当前用户的 ZCode 数据库，不新增依赖。
 
 ```text
 node scripts/migration-runner.mjs status
+node scripts/migration-runner.mjs prepare --session auto
 node scripts/migration-runner.mjs begin --run <唯一运行ID> --session <实际会话ID> --task <ID> --purpose <audit|implement|acceptance|delivery>
 node scripts/migration-runner.mjs checkpoint --run <运行ID> --revision <读取的revision> --file <仓库内检查点JSON>
 node scripts/migration-runner.mjs sync --run <运行ID>
 node scripts/migration-runner.mjs end --run <运行ID> --outcome <completed|checkpoint|blocked>
 ```
 
-`begin` 原子取得锁并保存运行身份、当前任务、起始 HEAD、原有 Git 改动后才允许修改。状态用同目录临时文件刷盘后原子替换；每次更新递增 revision。检查点只允许更新本轮任务和恢复步骤，不得改队列、前置或工作目录。示例检查点：
+`prepare` 在同轮完成遗留锁终态核验、恢复、远端回执对账及原子取锁，返回本轮唯一身份。自动任务通过活动调度轮识别真实 session/turn，不接受自拟会话名称；多轮活动或数据库不兼容时停止猜测。`begin` 保留作显式领取入口，也校验真实身份并对账；人工维护可传真实会话 UUID。取锁后保存当前任务、起始 HEAD、原有 Git 改动，再允许修改。状态用同目录临时文件刷盘后原子替换；每次更新递增 revision。检查点只允许更新本轮任务和恢复步骤，不得改队列、前置或工作目录。示例检查点：
 
 ```json
 {
@@ -54,7 +55,7 @@ node scripts/migration-runner.mjs end --run <运行ID> --outcome <completed|chec
 }
 ```
 
-锁存在且运行仍活跃或无法核实已结束时，本轮不写项目并结束。心跳、mtime、PID 仅辅助诊断，不能证明 Agent 结束。恢复必须保存包含 `runId/ended=true/kind/reference/checkedAt` 的仓库内 JSON：kind 只能为 `user_confirmation`（实际用户明确确认）或 `runner_terminal_state`（对应会话的真实终态），reference 指向真实依据；然后执行 `recover --run <旧运行ID> --proof <证明JSON>`。脚本保留证明及原锁后才释放路径；禁止自行伪造证明。
+锁存在时由 prepare 核对精确的 ZCode 轮次、当前会话和自动调度终态，并确认没有活动轮次、工具或排队输入。旧锁可通过实际成功的 begin 工具记录绑定真实会话；聊天提及锁名不构成证据。已结束则自动保存 `runner_terminal_state` 证明、归档旧锁并继续本轮；活动或未知则原样退出。心跳、mtime、PID 仅辅助诊断，不能证明 Agent 结束。仍无法核实的锁只可依据用户明确确认，保存 `runId/ended=true/kind=user_confirmation/reference/checkedAt` 后调用 `recover --run <旧运行ID> --proof <证明JSON> --session <auto或本轮真实会话UUID>`；runner_terminal_state 恢复会重新读取数据库，不信任手填的 ended=true。恢复命令的短互斥锁也记录会话身份，异常中断按同样的终态规则恢复。禁止伪造证明。
 
 正常 `end` 先保存持久结束记录再释放本轮锁。异常终止可能留下锁，不能假设 finally 必然执行；中断恢复先对账，不重放结果未知的业务写入。单文件原子替换不是跨文件事务：若 RUN_STATE 已更新而 TASKS 勾选未同步，核验证据后由持锁者 `sync` 重建投影。
 
@@ -96,7 +97,7 @@ node scripts/migration-runner.mjs verify-remote --run <运行ID>
 node scripts/migration-runner.mjs push --run <运行ID> --commit <已审阅HEAD完整哈希>
 ```
 
-先查询远端，再决定补推，最后核对远端真实提交。失败单列 publish=blocked，下一轮先用 delivery 恢复交付，不领取后续开发。推送成功后的 RUN_STATE 回执允许作为下轮已知文档改动，不为“把提交哈希写入自身提交”无限追加提交。禁止仅凭旧的“待推送”文字或本地远程跟踪引用推断远端状态。
+先查询远端，再决定补推，最后核对远端真实提交。publish= synced 只证明其 commit 字段所指提交；HEAD 变化后 prepare 用 ls-remote 重新确认，远端已一致则修正回执并立即领取业务任务，不额外消耗一次 delivery 轮。真正未推送才领取 delivery，失败单列 publish=blocked，不领取后续开发。推送成功后的 RUN_STATE 回执允许作为下轮已知文档改动，不为“把提交哈希写入自身提交”无限追加提交。禁止仅凭旧的“待推送”文字或本地远程跟踪引用推断远端状态。
 
 阻塞未变化只做最小只读探测，不重复全量检查、写同样记录或试发副作用请求；有代码、环境或契约变化才重跑受影响门禁。仅在实际进展、完成、新阻塞或需要用户行动时通知。
 
