@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "revision": 11,
-  "updatedAt": "2026-09-20T02:26:04.466Z",
+  "revision": 15,
+  "updatedAt": "2026-09-20T03:39:52.670Z",
   "workspace": {
     "root": "C:\\code\\apex-admin-web",
     "branch": "apple-rxx",
@@ -36,14 +36,15 @@
         "T00"
       ],
       "implementation": "implemented",
-      "verification": "pending_review",
-      "gate": "pending_review",
+      "verification": "partial",
+      "gate": "ready",
       "handoff": "docs/migration/tasks/P01.md",
-      "acceptanceRecord": null,
+      "acceptanceRecord": "docs/migration/evidence/P01/audit-20260920-p01-44fc5e6/acceptance.json",
       "pendingItems": [
-        "核对完整 DoD / 专项 / A / I 矩阵，补齐缺失证据，禁止把登记例外当最终通过"
+        "A04：真实 token 过期收敛与双窗口退出同步场景归 V01 长会话复核（持久化恢复/登出清理/无虚构刷新机制级已实证，与 T00 同口径）",
+        "I06：真实网络级资源加载失败不白屏场景归 V01 复核（品牌 404 资源缺失分支已实测不白屏；IAB 无法构造网络故障，T00 同口径）"
       ],
-      "note": "历史已交付，保留代码进度；旧勾选不再作为完整验收凭证"
+      "note": "audit 复核通过（2026-09-20，run audit-20260920-p01-44fc5e6）：静态门禁复用同日 T00 audit 在 a9a3cc0 的复绿结果（基线后仅 docs 提交，src 零变化）；真实登录链路复测 5/5（错误凭据 code=1000010 补上轮缺口、正确凭据 activated=true/155 权限码、品牌通道 items=0+loginBackground 404 回退条件、登出清理）；浏览器 UI 验收（1366/1920、浅色+深色诊断、IAB Chromium）覆盖五语言切换（en/ja html lang 同步+输入草稿保留）、错误凭据真实提示 aria 快照、外站回跳拒绝实测（evil.example.com→落 /order-record）、登录落点规则（/dashboard 迁移完成前不作落点）、刷新恢复、登出清理；verification=partial（A04/I06 deferred 归 V01，与 T00 同口径），gate=ready 维持 B1 放行；不勾选 TASKS"
     },
     {
       "id": "P02",
@@ -997,6 +998,34 @@
   ],
   "currentTaskId": "P21",
   "run": {
+    "runId": "audit-20260920-p01-44fc5e6",
+    "taskId": "P01",
+    "purpose": "audit",
+    "owner": "zcode-p01-audit-20260920",
+    "startedAt": "2026-09-20T03:05:50.012Z",
+    "baseHead": "44fc5e6d20b1874d3bf5775b3d3dd2b1f5964492",
+    "initialStatus": "M docs/migration/RUN_STATE.json\n?? docs/migration/evidence/runs/audit-20260920-t00-a9a3cc0.json",
+    "progress": [
+      "开局核对：OpenAPI 哈希一致（A82E9B5F…）、规格/TASKS/规格交接完整重读、legacy 归档确认无 P01 资产（历史截图未持久化，本轮补新鲜证据）",
+      "代码审查：Login/LoginForm/LoginLanguageSwitch/brand.service/auth.service/routeAccess 与交接一致，无伪管理员/直通登录残留",
+      "真实只读复测 5/5：run-p01-audit-readonly.mjs（错误凭据 1000010/正确凭据 155 权限码/品牌列表/背景 404/登出）",
+      "浏览器 UI 验收 13 步全过：browser-ui-result.json（含 IAB 输入管线冻结边界登记与新页签恢复处置）",
+      "生成验收记录 acceptance.json（49 items：27 passed/20 not_applicable/2 deferred + 24 codeFiles SHA-256 绑定 44fc5e6）并重写 P01.md"
+    ],
+    "nextSteps": [
+      "提交推送本轮 audit 证据与台账更新",
+      "runner end 结束本轮"
+    ],
+    "blocker": null
+  },
+  "publish": {
+    "status": "synced",
+    "commit": "44fc5e6d20b1874d3bf5775b3d3dd2b1f5964492",
+    "confirmedRemoteHead": "44fc5e6d20b1874d3bf5775b3d3dd2b1f5964492",
+    "checkedAt": "2026-09-20T02:28:48.270Z",
+    "error": null
+  },
+  "lastRun": {
     "runId": "audit-20260920-t00-a9a3cc0",
     "taskId": "T00",
     "purpose": "audit",
@@ -1015,34 +1044,15 @@
       "提交推送本轮 audit 证据与台账更新",
       "runner end 结束本轮"
     ],
-    "blocker": null
-  },
-  "publish": {
-    "status": "synced",
-    "commit": "a9a3cc040b7577733e70373325e9f7f67a762fa9",
-    "confirmedRemoteHead": "a9a3cc040b7577733e70373325e9f7f67a762fa9",
-    "checkedAt": "2026-09-20T02:01:03.277Z",
-    "error": null
-  },
-  "lastRun": {
-    "runId": "delivery-20260920-p21-a9a3cc0",
-    "taskId": "P21",
-    "purpose": "delivery",
-    "owner": "ZCode-delivery-20260920b",
-    "startedAt": "2026-09-20T02:00:49.895Z",
-    "baseHead": "a9a3cc040b7577733e70373325e9f7f67a762fa9",
-    "initialStatus": "",
-    "progress": [],
-    "nextSteps": [],
     "blocker": null,
-    "endedAt": "2026-09-20T02:01:15.803Z",
+    "endedAt": "2026-09-20T02:28:57.718Z",
     "outcome": "completed",
-    "endHead": "a9a3cc040b7577733e70373325e9f7f67a762fa9",
+    "endHead": "44fc5e6d20b1874d3bf5775b3d3dd2b1f5964492",
     "publish": {
       "status": "synced",
-      "commit": "a9a3cc040b7577733e70373325e9f7f67a762fa9",
-      "confirmedRemoteHead": "a9a3cc040b7577733e70373325e9f7f67a762fa9",
-      "checkedAt": "2026-09-20T02:01:03.277Z",
+      "commit": "44fc5e6d20b1874d3bf5775b3d3dd2b1f5964492",
+      "confirmedRemoteHead": "44fc5e6d20b1874d3bf5775b3d3dd2b1f5964492",
+      "checkedAt": "2026-09-20T02:28:48.270Z",
       "error": null
     }
   },

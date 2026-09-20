@@ -1,0 +1,127 @@
+{
+  "ok": true,
+  "runId": "audit-20260920-p01-44fc5e6",
+  "codeCommit": "44fc5e6d20b1874d3bf5775b3d3dd2b1f5964492",
+  "viewport": [
+    "1366x768",
+    "1920x1080"
+  ],
+  "themes": [
+    "light",
+    "dark（诊断性直写持久化 theme 触发，测后已恢复 light；不证明外壳主题菜单可点，该入口归 T00）"
+  ],
+  "languages": [
+    "zh-CN",
+    "en-US",
+    "ja-JP",
+    "zh-TW/ko-KR 菜单可见"
+  ],
+  "steps": [
+    {
+      "step": "initial-render",
+      "ok": true,
+      "detail": "1366 浅色：玻璃卡片居中、语言按钮右上、表单横排标签、默认壁纸回退（本环境 loginBackground 404 实证回退条件）",
+      "evidence": "screenshots/login-light-1366-initial.png"
+    },
+    {
+      "step": "language-menu",
+      "ok": true,
+      "detail": "五语言菜单齐全且语言名自名不译：简体中文/繁體中文/English/日本語/한국어",
+      "evidence": "screenshots/login-language-menu.png"
+    },
+    {
+      "step": "switch-en-US",
+      "ok": true,
+      "detail": "html lang=en-US；页面全部文案英文化（Dispatch System/Username/Password/Sign in/Switch language）"
+    },
+    {
+      "step": "switch-ja-JP-draft-keep",
+      "ok": true,
+      "detail": "填入 i04-draft-check 后切日语：html lang=ja-JP、输入值保留（无整页刷新）——I04"
+    },
+    {
+      "step": "switch-back-zh-CN",
+      "ok": true,
+      "detail": "html lang=zh-CN；persist:apex-admin:settings.locale 与 apex-admin:lang 均为 zh-CN（单一语言来源）"
+    },
+    {
+      "step": "wrong-credentials",
+      "ok": true,
+      "detail": "真实错误凭据提交：停留登录页，aria 快照捕获 alert「用户名或密码错误」（后端 1000010 原文）；HTTP 层同码见 p01-readonly-result.json；toast 3 秒自动消失致两次截图未捕获，以 aria 快照+HTTP 证据为准",
+      "evidence": "screenshots/login-after-wrong-creds.png"
+    },
+    {
+      "step": "external-redirect-rejected",
+      "ok": true,
+      "detail": "携带 ?redirect=https://evil.example.com/admin 登录成功：未跳外站，落站内规则落点 /order-record（resolveSafeRedirectPath 拒绝绝对地址）——A22"
+    },
+    {
+      "step": "success-feedback",
+      "ok": true,
+      "detail": "登录成功后 aria 快照捕获 alert「登录成功」（check-circle）"
+    },
+    {
+      "step": "landing-rule",
+      "ok": true,
+      "detail": "落点 /order-record（首个有权限已迁移业务页）；/dashboard 定义树标记迁移完成前不作落点（definitions.tsx:180 注释），行为符合 resolveLandingPath 设计"
+    },
+    {
+      "step": "refresh-restore",
+      "ok": true,
+      "detail": "reload 后仍在 /order-record、persist:apex-admin:auth 在、标题「任务管理 · 调度系统」——A04 持久化恢复半项"
+    },
+    {
+      "step": "logout-cleanup",
+      "ok": true,
+      "detail": "头像菜单退出登录后回 /login，persist:apex-admin:auth 清为 token:null/permissions:[]，守卫保留站内回跳参数 ?redirect=/order-record，显示「登录已过期，请重新登录」"
+    },
+    {
+      "step": "viewport-1920",
+      "ok": true,
+      "detail": "1920×1080 浅色：卡片居中、无溢出、按钮可达",
+      "evidence": "screenshots/login-light-1920.png"
+    },
+    {
+      "step": "theme-dark-diagnostic",
+      "ok": true,
+      "detail": "诊断性直写 theme=dark 后 data-theme=dark 生效：深色玻璃卡片/输入框/文字可读（壁纸为固定品牌资产不随主题，与交付设计一致）",
+      "evidence": "screenshots/login-dark-1920.png"
+    }
+  ],
+  "environmentBoundaries": [
+    "IAB 输入管线在同页签 goto/reload 后两次复现冻结（点击不抵达 React 事件系统，activeElement=BODY），以新开页签恢复；全部交互经真实指针（cua）路径完成",
+    "Playwright locator click 在 antd 触发器上持续 actionability 超时（与 AGENTS §5 已知行为一致），改用坐标指针",
+    "深色主题为诊断性直写持久化触发，不证明主题菜单可点（外壳范围 T00）；测后已恢复 light",
+    "IAB 内核为 Chromium（Windows 11 主机）；macOS Chrome/Edge 未覆盖（规格允许登记）",
+    "退出登录确认弹窗未及观察（900ms 内已完成跳转）；退出 UI 链路细节归 T00/A04 范围，本轮以最终态（/login+会话清空）为准"
+  ],
+  "screenshots": [
+    {
+      "file": "screenshots/login-after-wrong-creds.png",
+      "sha256": "9872b26b36bf5daddaad95471d2f2d2648071074973e9ef15816d1ee0aa18d0d",
+      "classification": "local_only"
+    },
+    {
+      "file": "screenshots/login-dark-1920.png",
+      "sha256": "eaba705ea9acf6cf542d48243f1b84f42ac04ddf73df0189372396be5975f44d",
+      "classification": "local_only"
+    },
+    {
+      "file": "screenshots/login-language-menu.png",
+      "sha256": "e79ce0eaf2d085d2ac5004c696ee2f3c27b2edf5a5b036f76dd60456d198df0c",
+      "classification": "local_only"
+    },
+    {
+      "file": "screenshots/login-light-1366-initial.png",
+      "sha256": "bbec04f1ec1edf049cb387b0f69315202a843bf663c6bbb39d9b9fccbaadba4b",
+      "classification": "local_only"
+    },
+    {
+      "file": "screenshots/login-light-1920.png",
+      "sha256": "2051f2b9e4ac21730d4d841474ed02ded82107c2a7b5e0061d6d93afdea88090",
+      "classification": "local_only"
+    }
+  ],
+  "screenshotsNote": "截图仅本地留存（.gitignore 排除），本索引提供相对路径与 SHA-256；其他环境缺少原图时不可复核",
+  "checkedAt": "2026-09-20T03:35:40.971Z"
+}

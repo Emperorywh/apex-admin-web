@@ -1,0 +1,31 @@
+{
+  "runId": "audit-20260920-t00-a9a3cc0",
+  "taskId": "T00",
+  "purpose": "audit",
+  "owner": "ZCode-audit-20260920",
+  "startedAt": "2026-09-20T02:06:43.990Z",
+  "baseHead": "a9a3cc040b7577733e70373325e9f7f67a762fa9",
+  "initialStatus": "M  docs/migration/RUN_STATE.json\nA  docs/migration/evidence/runs/delivery-20260920-p21-a9a3cc0.json",
+  "progress": [
+    "核对 T00 冻结（65d192e）→HEAD 公共文件全量 diff：均为 P02/P03/P06/P10/P26/P27/P30/P41/P42 交接记录登记的授权扩展或 pending 移除等预期生命周期动作，未发现契约破坏",
+    "复跑 pnpm check（oxlint 477 文件 0/0 + typecheck + structure 474 文件）+ pnpm build 通过",
+    "真实登录+带令牌只读复测 5/5 通过（run-audit-readonly.mjs，经 dev 代理 → 192.168.0.158:8888，MD5 登录 activated=true/155 权限码/pageUsers code=200/无令牌对照 1000000/登出清理）",
+    "跨页衔接项证据核实：表格真实列表（P03/P05）、轮询（P05/P39）、传输通道（P08/P25/P26）、地图选点（P07）、独立窗口（P39）均已消费验证；A04/I06 保留 deferred 归 V01",
+    "生成验收记录 acceptance.json（49 items 覆盖 TASK/DoD1-16/A01-A24/I01-I08 + 52 codeFiles SHA-256 绑定）"
+  ],
+  "nextSteps": [
+    "提交推送本轮 audit 证据与台账更新",
+    "runner end 结束本轮"
+  ],
+  "blocker": null,
+  "endedAt": "2026-09-20T02:28:57.718Z",
+  "outcome": "completed",
+  "endHead": "44fc5e6d20b1874d3bf5775b3d3dd2b1f5964492",
+  "publish": {
+    "status": "synced",
+    "commit": "44fc5e6d20b1874d3bf5775b3d3dd2b1f5964492",
+    "confirmedRemoteHead": "44fc5e6d20b1874d3bf5775b3d3dd2b1f5964492",
+    "checkedAt": "2026-09-20T02:28:48.270Z",
+    "error": null
+  }
+}
