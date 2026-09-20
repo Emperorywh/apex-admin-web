@@ -1,0 +1,126 @@
+[
+ {
+  "path": "src/services/report-fault/report-fault.service.ts",
+  "sha256": "cf2f39c7e20449dac36b01ac8b56aa9a9301a17ab620bbfe802e5c280360e5cb"
+ },
+ {
+  "path": "src/services/report-fault/report-fault.service.types.ts",
+  "sha256": "49e1dae42397ce5fe7d04281a6adf2a1527ceb6685b08f8d10e9f3f5e2a5cef2"
+ },
+ {
+  "path": "src/features/analyze-visual/fault-alert/statistics.ts",
+  "sha256": "0f9e2b8e703fe2f5c3c66254dc0070a41fb9dd9b56d9c14ac37c4e0c2fab222c"
+ },
+ {
+  "path": "src/features/analyze-visual/fault-alert/description.ts",
+  "sha256": "ddebc22139f486935e95a3bf96f986df3ae552a64b1af6cba94c81033c9b4149"
+ },
+ {
+  "path": "src/features/analyze-visual/fault-alert/filterModel.ts",
+  "sha256": "9ecb5faa2136d49cf42c58418017a53ff3e45e2f632c0844341011540dd55084"
+ },
+ {
+  "path": "src/features/analyze-visual/fault-alert/hooks/useAggregationQuery.ts",
+  "sha256": "ac0661955a1eff0863e94f992b5bd0a50c4b8c6759319120758bbcbe3c39d848"
+ },
+ {
+  "path": "src/features/analyze-visual/fault-alert/components/FaultTrendChart.tsx",
+  "sha256": "1ec455e8cc43d1abd6f5934e4dce00f58c602351ff3224c210621afa339e3ad3"
+ },
+ {
+  "path": "src/features/analyze-visual/fault-alert/components/VehicleFaultRankChart.tsx",
+  "sha256": "79a011e1f3786b9b0b76a8b7a5e97f988488651446f1faeaaa12b62cd2949b82"
+ },
+ {
+  "path": "src/features/analyze-visual/fault-alert/components/FaultDetailFilter.tsx",
+  "sha256": "dcfebb59087bb7575037843c5472b21c850e4bdbbb9f7d0dae35888359ad6c99"
+ },
+ {
+  "path": "src/features/analyze-visual/fault-alert/components/FaultDetailFilter.module.css",
+  "sha256": "dca37ad2aac2b55c4dd115c36abea45fd868a06c79556667e278f8694111e2fd"
+ },
+ {
+  "path": "src/features/analyze-visual/fault-alert/components/FaultChart.module.css",
+  "sha256": "4e627b4c63712fe480ec8d2f6b603c7467423450d287f497e0e3c6b0d51d70d2"
+ },
+ {
+  "path": "src/pages/analyze-visual/FaultAlert/FaultAlert.tsx",
+  "sha256": "edb94e60912a91582d0b123b22a45f00ba049dec90d5588d707727d64f721035"
+ },
+ {
+  "path": "src/pages/analyze-visual/FaultAlert/FaultAlert.module.css",
+  "sha256": "a4aa4bce2686a1ac05f0be0538afce8f1251f6dc7ce103b55d5081c72649b68b"
+ },
+ {
+  "path": "src/i18n/locales/en-US/report-fault.ts",
+  "sha256": "83abd2ac861dd0dd3e0ee994c0f92d7010c01d3075f327e6f26e2aa1ea5dc211"
+ },
+ {
+  "path": "src/i18n/locales/zh-TW/report-fault.ts",
+  "sha256": "5db6d7ab548977b781e92265d4a1524206b60d6ec91292355cb27102ab2b4b20"
+ },
+ {
+  "path": "src/i18n/locales/ja-JP/report-fault.ts",
+  "sha256": "d84758fbe4a9c64fcf499b2fe03a39e6b62e05a99420313ed7381ce24fd0d10b"
+ },
+ {
+  "path": "src/i18n/locales/ko-KR/report-fault.ts",
+  "sha256": "3ddc56d104b433f40ce5feccde93b2bbd8d3dca4b2267d1bce8194ee0d7f8cdc"
+ },
+ {
+  "path": "src/i18n/i18n.ts",
+  "sha256": "980544ddae09679e89d9fee8303ae8dafae879903b235221fada5eb6965beda2"
+ },
+ {
+  "path": "src/i18n/locales/en-US/dashboard.ts",
+  "sha256": "d33fc5a38f63fb7df2879fbddd217f8bd22b134e142b0a595108ba186f01eb93"
+ },
+ {
+  "path": "src/i18n/locales/zh-TW/dashboard.ts",
+  "sha256": "1c5267b664b8b06fac02d462820495f3b2196cb9d636265793cad2ad6776cabc"
+ },
+ {
+  "path": "src/i18n/locales/ja-JP/dashboard.ts",
+  "sha256": "0ae5f0f65492a86771af5297147076f7aad1f69062b38464953e64b4769fad05"
+ },
+ {
+  "path": "src/i18n/locales/ko-KR/dashboard.ts",
+  "sha256": "a6ea3b334c823d55b3f639d4a9cde8afe9a772742c48218d06cf21470c850d96"
+ },
+ {
+  "path": "src/router/definitions.tsx",
+  "sha256": "7217a6e0cd4bef08722db14516459f08c2adc2aeae2bd29752da13b1b3e8d0c9"
+ },
+ {
+  "path": "src/pages/dashboard/Dashboard/Dashboard.tsx",
+  "sha256": "4f605fbc1fe114a525c5bfccda796acbdb558b1607f5193c70d84e4e9a603bf9"
+ },
+ {
+  "path": "src/pages/dashboard/Dashboard/Dashboard.module.css",
+  "sha256": "97929206ff25a186cd6265ec9b9bb1ccaa28826ce48e64e12137440ec66baebc"
+ },
+ {
+  "path": "src/features/dashboard/components/RealtimeKpiCard.tsx",
+  "sha256": "cce3974211cee42066bb201d3697b2f7f1aa757f214ae30f73f90eed6943c8d0"
+ },
+ {
+  "path": "src/features/dashboard/kpiViewModel.ts",
+  "sha256": "b8f84249316e680bad5c81b97f1d815c4c8b4bec7d524c5e685aeb92c19e4f51"
+ },
+ {
+  "path": "src/features/dashboard/realtime.ts",
+  "sha256": "3b98bfec898e92275a186a80954a0dc2027caa475f19bbafa97cd447dae25008"
+ },
+ {
+  "path": "src/features/analyze-visual/order-statistics/components/MetricHint.tsx",
+  "sha256": "b81918439603101fccff2baa1d632095e1a43039a2ea556e6e9c8b62ba03585a"
+ },
+ {
+  "path": "src/features/order-detail/orderDetailNavigation.ts",
+  "sha256": "83daab4d6389bfd16e36e73e0dca35fd883cb8188168356db0b1af85b6d1ae43"
+ },
+ {
+  "path": "src/features/vehicle-detail/vehicleDetailNavigation.ts",
+  "sha256": "de1acefa4eeab2f29f6d7f66d1d8599915700511cb555d03a2a590c3e1f1cdbf"
+ }
+]

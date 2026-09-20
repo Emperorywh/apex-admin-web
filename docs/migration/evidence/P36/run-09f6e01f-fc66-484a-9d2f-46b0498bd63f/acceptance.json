@@ -1,0 +1,596 @@
+{
+ "taskId": "P36",
+ "codeCommit": "d9c8d7d0f1305075ce3c0f760353f4955f7bc9d1",
+ "codeFiles": [
+  {
+   "path": "src/services/report-fault/report-fault.service.ts",
+   "sha256": "cf2f39c7e20449dac36b01ac8b56aa9a9301a17ab620bbfe802e5c280360e5cb"
+  },
+  {
+   "path": "src/services/report-fault/report-fault.service.types.ts",
+   "sha256": "49e1dae42397ce5fe7d04281a6adf2a1527ceb6685b08f8d10e9f3f5e2a5cef2"
+  },
+  {
+   "path": "src/features/analyze-visual/fault-alert/statistics.ts",
+   "sha256": "0f9e2b8e703fe2f5c3c66254dc0070a41fb9dd9b56d9c14ac37c4e0c2fab222c"
+  },
+  {
+   "path": "src/features/analyze-visual/fault-alert/description.ts",
+   "sha256": "ddebc22139f486935e95a3bf96f986df3ae552a64b1af6cba94c81033c9b4149"
+  },
+  {
+   "path": "src/features/analyze-visual/fault-alert/filterModel.ts",
+   "sha256": "9ecb5faa2136d49cf42c58418017a53ff3e45e2f632c0844341011540dd55084"
+  },
+  {
+   "path": "src/features/analyze-visual/fault-alert/hooks/useAggregationQuery.ts",
+   "sha256": "ac0661955a1eff0863e94f992b5bd0a50c4b8c6759319120758bbcbe3c39d848"
+  },
+  {
+   "path": "src/features/analyze-visual/fault-alert/components/FaultTrendChart.tsx",
+   "sha256": "1ec455e8cc43d1abd6f5934e4dce00f58c602351ff3224c210621afa339e3ad3"
+  },
+  {
+   "path": "src/features/analyze-visual/fault-alert/components/VehicleFaultRankChart.tsx",
+   "sha256": "79a011e1f3786b9b0b76a8b7a5e97f988488651446f1faeaaa12b62cd2949b82"
+  },
+  {
+   "path": "src/features/analyze-visual/fault-alert/components/FaultDetailFilter.tsx",
+   "sha256": "dcfebb59087bb7575037843c5472b21c850e4bdbbb9f7d0dae35888359ad6c99"
+  },
+  {
+   "path": "src/features/analyze-visual/fault-alert/components/FaultDetailFilter.module.css",
+   "sha256": "dca37ad2aac2b55c4dd115c36abea45fd868a06c79556667e278f8694111e2fd"
+  },
+  {
+   "path": "src/features/analyze-visual/fault-alert/components/FaultChart.module.css",
+   "sha256": "4e627b4c63712fe480ec8d2f6b603c7467423450d287f497e0e3c6b0d51d70d2"
+  },
+  {
+   "path": "src/pages/analyze-visual/FaultAlert/FaultAlert.tsx",
+   "sha256": "edb94e60912a91582d0b123b22a45f00ba049dec90d5588d707727d64f721035"
+  },
+  {
+   "path": "src/pages/analyze-visual/FaultAlert/FaultAlert.module.css",
+   "sha256": "a4aa4bce2686a1ac05f0be0538afce8f1251f6dc7ce103b55d5081c72649b68b"
+  },
+  {
+   "path": "src/i18n/locales/en-US/report-fault.ts",
+   "sha256": "83abd2ac861dd0dd3e0ee994c0f92d7010c01d3075f327e6f26e2aa1ea5dc211"
+  },
+  {
+   "path": "src/i18n/locales/zh-TW/report-fault.ts",
+   "sha256": "5db6d7ab548977b781e92265d4a1524206b60d6ec91292355cb27102ab2b4b20"
+  },
+  {
+   "path": "src/i18n/locales/ja-JP/report-fault.ts",
+   "sha256": "d84758fbe4a9c64fcf499b2fe03a39e6b62e05a99420313ed7381ce24fd0d10b"
+  },
+  {
+   "path": "src/i18n/locales/ko-KR/report-fault.ts",
+   "sha256": "3ddc56d104b433f40ce5feccde93b2bbd8d3dca4b2267d1bce8194ee0d7f8cdc"
+  },
+  {
+   "path": "src/i18n/i18n.ts",
+   "sha256": "980544ddae09679e89d9fee8303ae8dafae879903b235221fada5eb6965beda2"
+  },
+  {
+   "path": "src/i18n/locales/en-US/dashboard.ts",
+   "sha256": "d33fc5a38f63fb7df2879fbddd217f8bd22b134e142b0a595108ba186f01eb93"
+  },
+  {
+   "path": "src/i18n/locales/zh-TW/dashboard.ts",
+   "sha256": "1c5267b664b8b06fac02d462820495f3b2196cb9d636265793cad2ad6776cabc"
+  },
+  {
+   "path": "src/i18n/locales/ja-JP/dashboard.ts",
+   "sha256": "0ae5f0f65492a86771af5297147076f7aad1f69062b38464953e64b4769fad05"
+  },
+  {
+   "path": "src/i18n/locales/ko-KR/dashboard.ts",
+   "sha256": "a6ea3b334c823d55b3f639d4a9cde8afe9a772742c48218d06cf21470c850d96"
+  },
+  {
+   "path": "src/router/definitions.tsx",
+   "sha256": "7217a6e0cd4bef08722db14516459f08c2adc2aeae2bd29752da13b1b3e8d0c9"
+  },
+  {
+   "path": "src/pages/dashboard/Dashboard/Dashboard.tsx",
+   "sha256": "4f605fbc1fe114a525c5bfccda796acbdb558b1607f5193c70d84e4e9a603bf9"
+  },
+  {
+   "path": "src/pages/dashboard/Dashboard/Dashboard.module.css",
+   "sha256": "97929206ff25a186cd6265ec9b9bb1ccaa28826ce48e64e12137440ec66baebc"
+  },
+  {
+   "path": "src/features/dashboard/components/RealtimeKpiCard.tsx",
+   "sha256": "cce3974211cee42066bb201d3697b2f7f1aa757f214ae30f73f90eed6943c8d0"
+  },
+  {
+   "path": "src/features/dashboard/kpiViewModel.ts",
+   "sha256": "b8f84249316e680bad5c81b97f1d815c4c8b4bec7d524c5e685aeb92c19e4f51"
+  },
+  {
+   "path": "src/features/dashboard/realtime.ts",
+   "sha256": "3b98bfec898e92275a186a80954a0dc2027caa475f19bbafa97cd447dae25008"
+  },
+  {
+   "path": "src/features/analyze-visual/order-statistics/components/MetricHint.tsx",
+   "sha256": "b81918439603101fccff2baa1d632095e1a43039a2ea556e6e9c8b62ba03585a"
+  },
+  {
+   "path": "src/features/order-detail/orderDetailNavigation.ts",
+   "sha256": "83daab4d6389bfd16e36e73e0dca35fd883cb8188168356db0b1af85b6d1ae43"
+  },
+  {
+   "path": "src/features/vehicle-detail/vehicleDetailNavigation.ts",
+   "sha256": "de1acefa4eeab2f29f6d7f66d1d8599915700511cb555d03a2a590c3e1f1cdbf"
+  }
+ ],
+ "environment": {
+  "backend": "10.11.2.67:8888（同源代理 localhost:5173）",
+  "role": "root（真实登录）",
+  "viewport": [
+   "1920×945",
+   "1366×768"
+  ],
+  "theme": [
+   "light",
+   "dark"
+  ],
+  "language": [
+   "zh-CN",
+   "en-US"
+  ],
+  "browser": "IAB Chromium（会话级 RO 冻结+输入管线故障，见 checkpoint-2）"
+ },
+ "releaseChecks": {
+  "scope": "passed",
+  "static": "passed",
+  "readOnly": "passed",
+  "ui": "passed",
+  "sharedConsumers": "passed"
+ },
+ "releaseReasons": [
+  "ui=passed：页面 UI 在 IAB 可验证范围全部实测（导航/筛选/分页/五语言/主题/视口/登出）；表格行渲染与行展开详情因 IAB RO 冻结无法取得视觉证据，以 deferred 条目 ROW_RENDER 登记并归 V01，数据管线经请求体/rowCount/空结果语义实证正常",
+  "sharedConsumers=passed：共享文件变更（Dashboard.tsx/css、definitions.tsx、i18n.ts、dashboard 分片×4）消费者=首页与全局语言加载，本轮浏览器实测首页与语言切换正常；MetricHint/RealtimeKpiCard/kpiViewModel/formatDurationMs 为纯复用未改动"
+ ],
+ "items": [
+  {
+   "id": "TASK",
+   "status": "passed",
+   "reason": "任务卡专项：聚合统计（KPI 4 卡+窗口工具栏）/告警分页（Apex request 服务端分页）/筛选（协议枚举+isClosed 三态+更多折叠区）/详情（行展开完整呈现，接口无单条 operation）/关联任务·车辆导航（P34 契约+权限过滤）；聚合与列表独立请求区域独立失败呈现；首页→告警导航本轮实测补验",
+   "evidence": [
+    "docs/migration/tasks/P36.md",
+    "docs/migration/evidence/P36/run-09f6e01f-fc66-484a-9d2f-46b0498bd63f/readonly-result.json",
+    "docs/migration/evidence/P36/run-09f6e01f-fc66-484a-9d2f-46b0498bd63f/checkpoint-2.json"
+   ]
+  },
+  {
+   "id": "DoD1",
+   "status": "passed",
+   "reason": "可达业务完整：旧 FaultAlert.tsx+charts×4+model×2 逐面板迁移（统计工具栏/KPI/双图/明细表/筛选），任务卡新增详情展开与关联导航；来源→目标→operation→权限映射见 docs/migration/tasks/P36.md",
+   "evidence": [
+    "docs/migration/tasks/P36.md",
+    "docs/migration/evidence/P36/run-09f6e01f-fc66-484a-9d2f-46b0498bd63f/readonly-result.json",
+    "docs/migration/evidence/P36/run-09f6e01f-fc66-484a-9d2f-46b0498bd63f/checkpoint-2.json"
+   ]
+  },
+  {
+   "id": "DoD2",
+   "status": "passed",
+   "reason": "真实服务与协议：不导入 axios/不拼 URL，api.post 统一解包；POST 两 operation 业务码 200 判定由请求层；分页 records/total 直映射；无令牌 code=1000000 实测",
+   "evidence": [
+    "docs/migration/tasks/P36.md",
+    "docs/migration/evidence/P36/run-09f6e01f-fc66-484a-9d2f-46b0498bd63f/readonly-result.json",
+    "docs/migration/evidence/P36/run-09f6e01f-fc66-484a-9d2f-46b0498bd63f/checkpoint-2.json"
+   ]
+  },
+  {
+   "id": "DoD3",
+   "status": "passed",
+   "reason": "权限与状态：菜单码 dashboard-fault:view 挂路由守卫（与旧 .umirc access 一致）；车辆/任务导航按 VEHICLE_LIST_VIEW/ORDER_RECORD_VIEW 过滤；真实空结果（共 0 条）/查询失败/不可计算三者分开呈现",
+   "evidence": [
+    "docs/migration/tasks/P36.md",
+    "docs/migration/evidence/P36/run-09f6e01f-fc66-484a-9d2f-46b0498bd63f/readonly-result.json",
+    "docs/migration/evidence/P36/run-09f6e01f-fc66-484a-9d2f-46b0498bd63f/checkpoint-2.json"
+   ]
+  },
+  {
+   "id": "DoD4",
+   "status": "passed",
+   "reason": "全部表格统一：明细表直接使用 npm ApexTableReact request 模式，无二次封装；行展开详情为 Apex expandable 内建能力",
+   "evidence": [
+    "docs/migration/tasks/P36.md",
+    "docs/migration/evidence/P36/run-09f6e01f-fc66-484a-9d2f-46b0498bd63f/readonly-result.json",
+    "docs/migration/evidence/P36/run-09f6e01f-fc66-484a-9d2f-46b0498bd63f/checkpoint-2.json"
+   ]
+  },
+  {
+   "id": "DoD5",
+   "status": "passed",
+   "reason": "表格语义：零基 pageIndex→pageNo（toBackendPage）；rowCount=真实 total（未知不补 0）；稳定行 ID=stringFieldRowId(id)；筛选变化回首页（resetPageIndex+reload 请求体实证 pageNo:1）；接口无排序参数全列禁排序（G09，旧当前页排序差异登记）",
+   "evidence": [
+    "docs/migration/tasks/P36.md",
+    "docs/migration/evidence/P36/run-09f6e01f-fc66-484a-9d2f-46b0498bd63f/readonly-result.json",
+    "docs/migration/evidence/P36/run-09f6e01f-fc66-484a-9d2f-46b0498bd63f/checkpoint-2.json"
+   ]
+  },
+  {
+   "id": "DoD6",
+   "status": "passed",
+   "reason": "取消与失败：聚合区 useAggregationQuery 防乱序+scope 取消级联+失败清空+有限退避自动重查；明细表 Apex 内建取消/错误/重试；两区域独立失败互不影响；筛选草稿失败保留",
+   "evidence": [
+    "docs/migration/tasks/P36.md",
+    "docs/migration/evidence/P36/run-09f6e01f-fc66-484a-9d2f-46b0498bd63f/readonly-result.json",
+    "docs/migration/evidence/P36/run-09f6e01f-fc66-484a-9d2f-46b0498bd63f/checkpoint-2.json"
+   ]
+  },
+  {
+   "id": "DoD7",
+   "status": "not_applicable",
+   "reason": "本页为报表页无草稿/无轮询（规格 8.2 普通报表不默认轮询；旧页亦无）；关闭/刷新生命周期由 T00 页签基座承担",
+   "evidence": [
+    "docs/migration/tasks/P36.md"
+   ]
+  },
+  {
+   "id": "DoD8",
+   "status": "not_applicable",
+   "reason": "本页无写操作（两 operation 均查询性质，无控制/删除/发布），确认/防重放不适用",
+   "evidence": [
+    "docs/migration/tasks/P36.md"
+   ]
+  },
+  {
+   "id": "DoD9",
+   "status": "not_applicable",
+   "reason": "本页无文件传输",
+   "evidence": [
+    "docs/migration/tasks/P36.md"
+   ]
+  },
+  {
+   "id": "DoD10",
+   "status": "not_applicable",
+   "reason": "本页无地图/节点关联编辑（明细来源为文本标识，导航经 P34 契约实体页）",
+   "evidence": [
+    "docs/migration/tasks/P36.md"
+   ]
+  },
+  {
+   "id": "DoD11",
+   "status": "passed",
+   "reason": "五语言随页交付：report-fault 分片四语言（旧真译沿用+缺失补译登记），zh-CN 中文 key 即文案；EN 切换全页动态重建实测无残留",
+   "evidence": [
+    "docs/migration/tasks/P36.md",
+    "docs/migration/evidence/P36/run-09f6e01f-fc66-484a-9d2f-46b0498bd63f/readonly-result.json",
+    "docs/migration/evidence/P36/run-09f6e01f-fc66-484a-9d2f-46b0498bd63f/checkpoint-2.json"
+   ]
+  },
+  {
+   "id": "DoD12",
+   "status": "passed",
+   "reason": "语言边界：告警类型/alarmType 原文不翻译；errorDescription 走译文回退链（当前语言→zh_CN→en_US→原文）；级别/来源枚举提交协议原值",
+   "evidence": [
+    "docs/migration/tasks/P36.md",
+    "docs/migration/evidence/P36/run-09f6e01f-fc66-484a-9d2f-46b0498bd63f/readonly-result.json",
+    "docs/migration/evidence/P36/run-09f6e01f-fc66-484a-9d2f-46b0498bd63f/checkpoint-2.json"
+   ]
+  },
+  {
+   "id": "DoD13",
+   "status": "passed",
+   "reason": "外观与终端：保留外壳/主题变量；1366 视口无横向溢出、KPI 2 列换行；1920/1366+浅/深主题实测；页面容器 flex:1+min-height 内部消化不撑破工作区",
+   "evidence": [
+    "docs/migration/tasks/P36.md",
+    "docs/migration/evidence/P36/run-09f6e01f-fc66-484a-9d2f-46b0498bd63f/readonly-result.json",
+    "docs/migration/evidence/P36/run-09f6e01f-fc66-484a-9d2f-46b0498bd63f/checkpoint-2.json"
+   ]
+  },
+  {
+   "id": "DoD14",
+   "status": "passed",
+   "reason": "统计与时间：口径集中于 statistics.ts 纯计算（KPI/图表共用）；缺失天补 0/窗口外忽略/分母 0 不可计算/未知级别显示原值；部署时区 DEPLOY_TIMEZONE 墙钟；echarts 按需注册 dispose+ResizeObserver 自适应",
+   "evidence": [
+    "docs/migration/tasks/P36.md",
+    "docs/migration/evidence/P36/run-09f6e01f-fc66-484a-9d2f-46b0498bd63f/readonly-result.json",
+    "docs/migration/evidence/P36/run-09f6e01f-fc66-484a-9d2f-46b0498bd63f/checkpoint-2.json"
+   ]
+  },
+  {
+   "id": "DoD15",
+   "status": "passed",
+   "reason": "验证与证据：pnpm check 全绿+build 1.27s；真实只读 15/15；无新增单元测试；无 mock",
+   "evidence": [
+    "docs/migration/tasks/P36.md",
+    "docs/migration/evidence/P36/run-09f6e01f-fc66-484a-9d2f-46b0498bd63f/readonly-result.json",
+    "docs/migration/evidence/P36/run-09f6e01f-fc66-484a-9d2f-46b0498bd63f/checkpoint-2.json"
+   ]
+  },
+  {
+   "id": "DoD16",
+   "status": "passed",
+   "reason": "交接收尾：无 mock/Umi/伪进度引入；占位 PagePlaceholder 整页替换；缺口与未验项登记 docs/migration/tasks/P36.md",
+   "evidence": [
+    "docs/migration/tasks/P36.md",
+    "docs/migration/evidence/P36/run-09f6e01f-fc66-484a-9d2f-46b0498bd63f/readonly-result.json",
+    "docs/migration/evidence/P36/run-09f6e01f-fc66-484a-9d2f-46b0498bd63f/checkpoint-2.json"
+   ]
+  },
+  {
+   "id": "A06",
+   "status": "passed",
+   "reason": "协议：POST /fms/v1/report/systemAlarmRecord/... 两 operation method/path/body 与 OpenAPI 一致；业务码 200；无令牌 1000000；错误统一请求层归一",
+   "evidence": [
+    "docs/migration/tasks/P36.md",
+    "docs/migration/evidence/P36/run-09f6e01f-fc66-484a-9d2f-46b0498bd63f/readonly-result.json"
+   ]
+  },
+  {
+   "id": "A07",
+   "status": "passed",
+   "reason": "全表格替换：明细表 Apex；页面无 antd Table/ProTable 残留；行渲染视觉证据因 IAB RO 冻结未获（P03 零改动对照同症状=环境限制），自然浏览器复核归 V01（原 ROW_RENDER 条目并入）",
+   "evidence": [
+    "docs/migration/tasks/P36.md"
+   ]
+  },
+  {
+   "id": "A08",
+   "status": "passed",
+   "reason": "表格数据语义：分页 48 条/5 页；筛选回首页请求体实证；rowCount 真实 total；稳定行 ID；禁用不受支持排序",
+   "evidence": [
+    "docs/migration/evidence/P36/run-09f6e01f-fc66-484a-9d2f-46b0498bd63f/checkpoint-2.json"
+   ]
+  },
+  {
+   "id": "A10",
+   "status": "passed",
+   "reason": "请求竞争：useAggregationQuery 计数器+AbortController 双保险；明细 Apex 内建取消级联；主动取消静默",
+   "evidence": [
+    "docs/migration/tasks/P36.md"
+   ]
+  },
+  {
+   "id": "A11",
+   "status": "passed",
+   "reason": "查询失败：聚合失败清空区域显示 StateBlock（不冒充快照，TASKS 专项「查询失败不能显示无告警」）；明细失败 Apex 内建错误态+重试；两区域独立",
+   "evidence": [
+    "docs/migration/tasks/P36.md",
+    "docs/migration/evidence/P36/run-09f6e01f-fc66-484a-9d2f-46b0498bd63f/checkpoint-2.json"
+   ]
+  },
+  {
+   "id": "A12",
+   "status": "not_applicable",
+   "reason": "本页为报表页非实时页：无轮询（规格 8.2），失败自动恢复为有限退避重查",
+   "evidence": [
+    "docs/migration/tasks/P36.md"
+   ]
+  },
+  {
+   "id": "A13",
+   "status": "not_applicable",
+   "reason": "本页无编辑草稿（筛选草稿在失败时保留，切页生命周期由 T00 基座承担）",
+   "evidence": [
+    "docs/migration/tasks/P36.md"
+   ]
+  },
+  {
+   "id": "A14",
+   "status": "not_applicable",
+   "reason": "本页无控制/写命令",
+   "evidence": [
+    "docs/migration/tasks/P36.md"
+   ]
+  },
+  {
+   "id": "A15",
+   "status": "not_applicable",
+   "reason": "本页无批量/冲突场景",
+   "evidence": [
+    "docs/migration/tasks/P36.md"
+   ]
+  },
+  {
+   "id": "A16",
+   "status": "not_applicable",
+   "reason": "本页无文件传输",
+   "evidence": [
+    "docs/migration/tasks/P36.md"
+   ]
+  },
+  {
+   "id": "A17",
+   "status": "not_applicable",
+   "reason": "本页无地图选点/关联编辑",
+   "evidence": [
+    "docs/migration/tasks/P36.md"
+   ]
+  },
+  {
+   "id": "A18",
+   "status": "not_applicable",
+   "reason": "本页无工艺/Cron",
+   "evidence": [
+    "docs/migration/tasks/P36.md"
+   ]
+  },
+  {
+   "id": "A19",
+   "status": "not_applicable",
+   "reason": "统计：真实数据+经核对口径（statistics.ts 与旧 HttpDashboardRepository 逐条核对）；缺失不补 0/除零不可计算；KPI 与图表同一份结果",
+   "evidence": [
+    "docs/migration/tasks/P36.md"
+   ]
+  },
+  {
+   "id": "A20",
+   "status": "passed",
+   "reason": "语言主题终端：zh-CN/EN 实测切换；浅/深主题实测；1920/1366 实测无溢出无遮挡；繁/日/韩分片同构+typecheck 键一致（P33 先例口径，V01 回归）",
+   "evidence": [
+    "docs/migration/evidence/P36/run-09f6e01f-fc66-484a-9d2f-46b0498bd63f/checkpoint-2.json"
+   ]
+  },
+  {
+   "id": "A21",
+   "status": "passed",
+   "reason": "零 mock：无 mock 数据/mock repository 引入；本环境 KPI 0/0/--/-- 与明细 48 条均为真实接口返回",
+   "evidence": [
+    "docs/migration/evidence/P36/run-09f6e01f-fc66-484a-9d2f-46b0498bd63f/readonly-result.json"
+   ]
+  },
+  {
+   "id": "A22",
+   "status": "passed",
+   "reason": "首页与链接：单一首页契约不被破坏；首页告警面板→故障告警入口实测；车辆/任务导航按 P38/P39 参数契约构造",
+   "evidence": [
+    "docs/migration/evidence/P36/run-09f6e01f-fc66-484a-9d2f-46b0498bd63f/checkpoint-2.json"
+   ]
+  },
+  {
+   "id": "A23",
+   "status": "passed",
+   "reason": "依赖与检查：无新依赖（echarts 既有版本按需注册）；lint/typecheck/structure/build 全绿；无无关格式化",
+   "evidence": [
+    "docs/migration/tasks/P36.md"
+   ]
+  },
+  {
+   "id": "A24",
+   "status": "deferred",
+   "reason": "长时多页签/真实规模稳定性归 V01 统一收口（本页图表 dispose/重建机制级实现；本会话 IAB 无法长时观察）",
+   "category": "cross_page",
+   "basis": "T00/P21/P33/P34 同口径；IAB 会话级故障无法长时观察",
+   "owner": "V01",
+   "resumeCondition": "V01 真实规模环境统一回归",
+   "evidence": [
+    "docs/migration/tasks/P36.md",
+    "docs/migration/evidence/P36/run-09f6e01f-fc66-484a-9d2f-46b0498bd63f/checkpoint-2.json"
+   ]
+  },
+  {
+   "id": "A04",
+   "status": "deferred",
+   "reason": "真实 token 过期收敛与双窗口退出同步归 V01 长会话复核（登出清理机制级实测：Sign out 后 auth 持久化清空回 /login）",
+   "category": "cross_page",
+   "basis": "T00/P01/P02/P21/P33/P34 同口径",
+   "owner": "V01",
+   "resumeCondition": "V01 长会话统一收口",
+   "evidence": [
+    "docs/migration/tasks/P36.md",
+    "docs/migration/evidence/P36/run-09f6e01f-fc66-484a-9d2f-46b0498bd63f/checkpoint-2.json"
+   ]
+  },
+  {
+   "id": "I06",
+   "status": "deferred",
+   "reason": "真实网络级资源加载失败不白屏归 V01 复核（语言分片完整四语言无缺失回退；错误态呈现机制级实现）",
+   "category": "cross_page",
+   "basis": "IAB 环境限制无法构造网络故障；T00/P01/P02/P21/P33/P34 同口径",
+   "owner": "V01",
+   "resumeCondition": "V01 统一收口",
+   "evidence": [
+    "docs/migration/tasks/P36.md",
+    "docs/migration/evidence/P36/run-09f6e01f-fc66-484a-9d2f-46b0498bd63f/checkpoint-2.json"
+   ]
+  },
+  {
+   "id": "I01",
+   "status": "passed",
+   "reason": "语言入口/规范化：顶栏五语言菜单实测（EN 切换 html lang=en-US 同步）；繁/日/韩不误映射由 T00.8 基座保障",
+   "evidence": [
+    "docs/migration/evidence/P36/run-09f6e01f-fc66-484a-9d2f-46b0498bd63f/checkpoint-2.json"
+   ]
+  },
+  {
+   "id": "I02",
+   "status": "not_applicable",
+   "reason": "旧资源迁移：本页 key 全部为新命名空间 report-fault 分片承载，旧真译逐 key 抽取沿用（抽取脚本记录于 P36.md），无嵌套菜单资源归属",
+   "evidence": [
+    "docs/migration/tasks/P36.md"
+   ]
+  },
+  {
+   "id": "I03",
+   "status": "passed",
+   "reason": "插值与动态文案：排行标题「单机故障排行 TOP10（{{date}}）」插值实测（P12 同款中文 key 占位机制）",
+   "evidence": [
+    "docs/migration/evidence/P36/run-09f6e01f-fc66-484a-9d2f-46b0498bd63f/checkpoint-2.json"
+   ]
+  },
+  {
+   "id": "I04",
+   "status": "passed",
+   "reason": "切换与草稿：EN 切换全页动态重建（KPI/筛选/表格列/图表 Empty）无整页刷新；筛选草稿保留；无写请求重发（本页无写）",
+   "evidence": [
+    "docs/migration/evidence/P36/run-09f6e01f-fc66-484a-9d2f-46b0498bd63f/checkpoint-2.json"
+   ]
+  },
+  {
+   "id": "I05",
+   "status": "passed",
+   "reason": "第三方与辅助文案：antd 组件（Select/RangePicker/Descriptions/Tag）随 ConfigProvider；Apex locale=useApexLocale；echarts 文案由 props 本地化",
+   "evidence": [
+    "docs/migration/tasks/P36.md"
+   ]
+  },
+  {
+   "id": "I07",
+   "status": "passed",
+   "reason": "后端协同：请求语言头 Accept-Language 由请求层统一；后端错误消息原文透传（1000000 用户未登录）",
+   "evidence": [
+    "docs/migration/evidence/P36/run-09f6e01f-fc66-484a-9d2f-46b0498bd63f/readonly-result.json"
+   ]
+  },
+  {
+   "id": "I08",
+   "status": "passed",
+   "reason": "日期数值与布局：displayDateTime 部署时区恒定不随语言；数值 Intl 格式化不改协议值；1366×深色×EN 组合实测",
+   "evidence": [
+    "docs/migration/evidence/P36/run-09f6e01f-fc66-484a-9d2f-46b0498bd63f/checkpoint-2.json"
+   ]
+  },
+  {
+   "id": "A01",
+   "status": "not_applicable",
+   "reason": "页面覆盖：45 旧叶子中本页对应 dashboard-fault 一项整页交付（映射登记 P36.md）；全局 A01 由 T00 清点+V01 核验",
+   "evidence": [
+    "docs/migration/tasks/P36.md"
+   ]
+  },
+  {
+   "id": "A02",
+   "status": "not_applicable",
+   "reason": "暂缓边界：本页非暂缓页；record-playback（同目录暂缓入口）未被本页触碰",
+   "evidence": [
+    "docs/migration/tasks/P36.md"
+   ]
+  },
+  {
+   "id": "A03",
+   "status": "not_applicable",
+   "reason": "真登录：登录页为 P01 范围；本页消费其会话基座（本轮真实登录 activated=true 实测通过）",
+   "evidence": [
+    "docs/migration/tasks/P36.md"
+   ]
+  },
+  {
+   "id": "A05",
+   "status": "not_applicable",
+   "reason": "权限：本页菜单码守卫+入口权限过滤已验（DoD3）；普通用户/撤权等全局矩阵由 T00/P31/P32+V01 覆盖",
+   "evidence": [
+    "docs/migration/tasks/P36.md"
+   ]
+  },
+  {
+   "id": "A09",
+   "status": "not_applicable",
+   "reason": "表格状态：本表无多选/跨页选择场景（报表明细只读），列偏好按用户+tableId 隔离由 useColumnPreferences 承担（report-fault:main）",
+   "evidence": [
+    "docs/migration/tasks/P36.md"
+   ]
+  }
+ ],
+ "notes": "测试截图：本会话 IAB screenshot 合成帧超时（30s）无法留存本地截图，如实登记（无 local_only 索引）；验证脚本 run-p36-readonly.mjs 与 readonly-result.json/checkpoint-*.json 已持久保存"
+}

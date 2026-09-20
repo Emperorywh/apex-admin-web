@@ -1,0 +1,82 @@
+{
+  "ok": true,
+  "checkedAt": "2026-09-20T14:24:00.329Z",
+  "base": "http://localhost:5173",
+  "checks": [
+    {
+      "step": "login",
+      "ok": true,
+      "detail": "HTTP 200 code=200 activated=true"
+    },
+    {
+      "step": "alarm-statistics",
+      "ok": true,
+      "detail": "HTTP 200 code=200 dailyAlarmCounts=0 topAgvAlarms=0 窗口=2026-09-07~2026-09-20"
+    },
+    {
+      "step": "stats-window-scope",
+      "ok": true,
+      "detail": "dailyAlarmCounts 全部落在窗口内（0 天）"
+    },
+    {
+      "step": "stats-kpi-summary",
+      "ok": true,
+      "detail": "试算（statistics.ts 同口径）：faultCount=0 openAlertCount=0 closedRate=null(分母0) avgDurationMs=null(分母0)（供 UI 对照）"
+    },
+    {
+      "step": "stats-top-order",
+      "ok": true,
+      "detail": "topAgvAlarms 0 行；首行 null"
+    },
+    {
+      "step": "alarm-statistics-no-top",
+      "ok": true,
+      "detail": "HTTP 200 code=200 topAgvAlarms=\"n/a\"（不传 topAgvDate 预期不下发）"
+    },
+    {
+      "step": "alarm-page",
+      "ok": true,
+      "detail": "HTTP 200 code=200 records=10 total=48"
+    },
+    {
+      "step": "alarm-page-row-shape",
+      "ok": true,
+      "detail": "首行 id=48（number）level=FATAL sourceType=VEHICLE isClosed=true durationSeconds=1（未关闭行预期缺失=true）"
+    },
+    {
+      "step": "alarm-page-description",
+      "ok": true,
+      "detail": "描述样本：errorDescription=\"vehicle emergency stop triggered\" 译文 0 条"
+    },
+    {
+      "step": "alarm-page-order-link",
+      "ok": true,
+      "detail": "关联任务样本：orderKey=069d48c1a2da4d1c92c5cf5cd8a5f0de orderName=mock-5d28331a495141c9ba4e01cf277ceaa4（导航候选）"
+    },
+    {
+      "step": "alarm-page-filter-closed",
+      "ok": true,
+      "detail": "isClosed=true → 10 行全部已关闭=true"
+    },
+    {
+      "step": "alarm-page-filter-explicit-false",
+      "ok": true,
+      "detail": "isClosed=false（显式 false 有效值）→ 0 行全部未关闭=true"
+    },
+    {
+      "step": "alarm-page-filter-level",
+      "ok": true,
+      "detail": "alarmLevel=WARNING → 0 行全部该级别=true"
+    },
+    {
+      "step": "alarm-statistics-no-token",
+      "ok": true,
+      "detail": "HTTP 200 code=1000000 message=用户未登录"
+    },
+    {
+      "step": "logout",
+      "ok": true,
+      "detail": "HTTP 200 code=200"
+    }
+  ]
+}

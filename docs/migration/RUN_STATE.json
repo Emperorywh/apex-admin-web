@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "revision": 50,
-  "updatedAt": "2026-09-20T13:02:22.418Z",
+  "revision": 57,
+  "updatedAt": "2026-09-20T15:05:15.051Z",
   "workspace": {
     "root": "C:\\code\\apex-admin-web",
     "branch": "apple-rxx",
@@ -891,11 +891,11 @@
         "P38",
         "P39"
       ],
-      "implementation": "not_started",
-      "verification": "not_started",
-      "gate": "blocked",
+      "implementation": "implemented",
+      "verification": "partial",
+      "gate": "ready",
       "handoff": "docs/migration/tasks/P36.md",
-      "acceptanceRecord": null,
+      "acceptanceRecord": "docs/migration/evidence/P36/run-09f6e01f-fc66-484a-9d2f-46b0498bd63f/acceptance.json",
       "pendingItems": [],
       "note": ""
     },
@@ -1019,8 +1019,45 @@
       "note": ""
     }
   ],
-  "currentTaskId": "P34",
+  "currentTaskId": "P36",
   "run": {
+    "runId": "run-09f6e01f-fc66-484a-9d2f-46b0498bd63f",
+    "taskId": "P36",
+    "purpose": "implement",
+    "owner": "sess_17994c10-dbb9-4424-addb-917469840fcf",
+    "runner": {
+      "provider": "zcode",
+      "sessionId": "sess_17994c10-dbb9-4424-addb-917469840fcf",
+      "turnId": "turn_20712f1d-070f-4ca1-8bab-9ffff071e63a",
+      "automationRunId": "automation-4c58cefd-88c2-4b25-b14d-53904b310c3e:1789912200000",
+      "identitySource": "running_tool_part",
+      "toolPartId": "part_mu9viw6c_93071c7a-bc8c-48ce-8aa5-91f820220697",
+      "toolCallId": "call_ff0ca3dae01b4363a975bfc0",
+      "messageId": "msg_mu9vis9c_7e280a91-a58b-45b4-a17a-599bc7092408"
+    },
+    "startedAt": "2026-09-20T13:50:27.154Z",
+    "baseHead": "d30483ab2cac68cb0e5688b722ee35e89b939b5a",
+    "initialStatus": "M docs/migration/RUN_STATE.json\n?? docs/migration/evidence/runs/run-72990389-0d3f-40a6-958d-a9693ed3ce96.json",
+    "progress": [
+      "P36 全部验证完成：静态门禁全绿（oxlint 0/0 503 文件/typecheck/structure 494/build 1.27s）；真实只读 15/15（聚合窗口试算互证/topAgvDate 缺省对照/明细行形态/筛选 isClosed true+false 显式有效值/alarmLevel 语义/无令牌 1000000/登出清理）",
+      "浏览器整页验收（1920+1366、浅+深、zh-CN+EN）：登录落点 D29、首页告警面板「查看全部告警」→/analyze-visual/dashboard-fault 实测（P34→P36 补验核心关闭）、KPI 0 与 -- 区分、图表真实空态、筛选请求体 {pageNo:1,pageSize:10,alarmCode:\"F\"} 回首页、真实空结果共 0 条、重置回 48 条、级别下拉 FATAL/WARNING 协议值、EN 全页重建无残留、1366 无横向溢出 KPI 2 列换行、Sign out 清理",
+      "代码提交 d9c8d7d（25 文件+2428 行）；验收矩阵 45 项（deferred 4：A04/A24/I06/ROW_RENDER 均 cross_page 归 V01）；acceptance.json+code-files.json（31 文件哈希绑定提交）",
+      "环境限制登记（P39/P34 同口径）：IAB RO 冻结致表格行渲染/行展开未获视觉证据（P03 零改动对照同症状+双垫片无效=环境劣化非代码回归，数据管线实证正常）；screenshot 合成帧超时无截图；旧页签 React 调度停滞新建页签恢复"
+    ],
+    "nextSteps": [
+      "提交文档（P36.md/P34.md 补验登记/contracts/operations/i18n-map/acceptance/RUN_STATE/上轮遗留运行记录）+ push --commit d9c8d7d… + end --outcome completed"
+    ],
+    "blocker": null
+  },
+  "publish": {
+    "status": "synced",
+    "taskId": "P34",
+    "commit": "d30483ab2cac68cb0e5688b722ee35e89b939b5a",
+    "confirmedRemoteHead": "d30483ab2cac68cb0e5688b722ee35e89b939b5a",
+    "checkedAt": "2026-09-20T13:03:24.481Z",
+    "error": null
+  },
+  "lastRun": {
     "runId": "run-72990389-0d3f-40a6-958d-a9693ed3ce96",
     "taskId": "P34",
     "purpose": "implement",
@@ -1046,55 +1083,16 @@
     "nextSteps": [
       "文档提交 + push --commit 核对远端 + end --outcome completed"
     ],
-    "blocker": null
-  },
-  "publish": {
-    "status": "synced",
-    "taskId": "P33",
-    "commit": "d14ee88ea0f7433bf4a834c77b081da83ce7fc25",
-    "confirmedRemoteHead": "d14ee88ea0f7433bf4a834c77b081da83ce7fc25",
-    "checkedAt": "2026-09-20T11:05:05.560Z",
-    "error": null
-  },
-  "lastRun": {
-    "runId": "run-3057971e-9304-4217-8018-ebab094591e0",
-    "taskId": "P33",
-    "purpose": "implement",
-    "owner": "sess_b566e27e-9f2e-4e36-ae83-2c4c5be2da51",
-    "runner": {
-      "provider": "zcode",
-      "sessionId": "sess_b566e27e-9f2e-4e36-ae83-2c4c5be2da51",
-      "turnId": "turn_29ec97aa-86bb-43db-9d44-764d4835ab35",
-      "automationRunId": "automation-4c58cefd-88c2-4b25-b14d-53904b310c3e:1789897800000",
-      "identitySource": "running_tool_part",
-      "toolPartId": "part_mu9mygbx_2ffcaa13-129f-4700-8a72-35c2d593ac8b",
-      "toolCallId": "call_a0eb127e8c974c78863738c6",
-      "messageId": "msg_mu9my9qu_5e1e8fd1-722e-4472-b8cc-126a910f70eb"
-    },
-    "startedAt": "2026-09-20T09:50:36.642Z",
-    "baseHead": "14d567db1d14c2cfacebd28aeaf98300bc4d5052",
-    "initialStatus": "M docs/migration/RUN_STATE.json\n?? docs/migration/evidence/runs/run-6a494b98-6cb3-4f57-9649-169e4b5ebda1.json\n?? docs/migration/evidence/runs/run-94e66b2a-1c48-4651-adde-ae4a9513e6a7.json",
-    "progress": [
-      "P33 任务统计整页交付：services/report-order（POST orderQuantityStatistics/orderEfficiencyStatistics 查询性质归只读）+ features/analyze-visual/order-statistics（纯计算 statistics.ts / useStatisticsQuery 防乱序+失败清空+可见有限退避自动重查 / StatisticsBarChart echarts 6.1.0 按需注册 / MetricHint 口径提示 / 双页签面板）+ 页面整页重写解除 pending。",
-      "新增依赖 echarts@6.1.0（官方 npm 正式版，lock 已提交）；i18n report-order 四语言全量真译分片+注册，orderRecord fallback 复用筛选/枚举译文；口径长文案以完整简中文案为 key。",
-      "静态门禁全绿：lint 0/0（491 文件）、typecheck、structure 483、build 1.18s。",
-      "真实只读 8/8（readonly-result.json）：登录/数量默认 6 行/数量筛选收敛等价/效率默认 2 类型/效率筛选收敛/车辆 56 项/无令牌 1000000 拒绝/登出。",
-      "浏览器整页验收：深浅主题×1920/1366×简中EN韩，数量/效率图表渲染、筛选联动、口径提示长文案、语言切换动态重建、1366 自适应、登出清理；失败态经会话失效真实场景触发 StateBlock。",
-      "文档登记：tasks/P33.md 交接（含旧路由注释不可达范围事实）、contracts.md 变更日志（echarts 依赖+统计口径 owner 交接 P35）、operations.md 3 行、i18n-map.md report-order 段；acceptance.json 41 项矩阵（deferred：A24/I06/G15）。"
-    ],
-    "nextSteps": [
-      "推送 origin/apple-rxx（代码 2deac9c + 文档提交），push --commit 核对远端，end --outcome completed。"
-    ],
     "blocker": null,
-    "endedAt": "2026-09-20T11:05:14.705Z",
+    "endedAt": "2026-09-20T13:03:31.275Z",
     "outcome": "completed",
-    "endHead": "d14ee88ea0f7433bf4a834c77b081da83ce7fc25",
+    "endHead": "d30483ab2cac68cb0e5688b722ee35e89b939b5a",
     "publish": {
       "status": "synced",
-      "taskId": "P33",
-      "commit": "d14ee88ea0f7433bf4a834c77b081da83ce7fc25",
-      "confirmedRemoteHead": "d14ee88ea0f7433bf4a834c77b081da83ce7fc25",
-      "checkedAt": "2026-09-20T11:05:05.560Z",
+      "taskId": "P34",
+      "commit": "d30483ab2cac68cb0e5688b722ee35e89b939b5a",
+      "confirmedRemoteHead": "d30483ab2cac68cb0e5688b722ee35e89b939b5a",
+      "checkedAt": "2026-09-20T13:03:24.481Z",
       "error": null
     }
   },

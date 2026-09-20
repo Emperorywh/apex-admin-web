@@ -1,0 +1,13 @@
+{
+  "task": { "implementation": "implemented", "verification": "partial", "gate": "blocked" },
+  "progress": [
+    "实现+静态门禁+真实只读 15/15（readonly-result.json）+浏览器验收完成",
+    "浏览器验收（IAB Chromium 1920×945/1366×768、浅+深主题、简中+EN）：登录落点 D29、首页告警面板「查看全部告警」入口→/analyze-visual/dashboard-fault 实测（P34→P36 补验核心）、KPI 0 与 -- 区分、图表真实空态、排行标题带日期、更多筛选折叠、筛选提交请求体 {pageNo:1,pageSize:10,alarmCode:\"F\"} 回首页、真实空结果共 0 条、重置回 48 条、级别下拉 FATAL/WARNING 协议值、EN 五语言切换全页重建无残留 html lang 同步、深色主题 data-theme=dark、1366 无横向溢出 KPI 2 列换行、Sign out 登出 auth 清空回 /login",
+    "环境限制登记（P39/P34 同口径）：①表格行渲染/行展开详情未验——IAB ResizeObserver 冻结（canRender 门控 dimensions=0），对照实验：P03 样板页（本轮零改动、历史已验收）同症状且 rAF+RO 双垫片（P39 手法）无效=环境较上轮劣化，非 P36 代码回归；②测试截图缺失——IAB 合成帧管线 screenshot 超时 30s；③旧页签出现 React 更新调度停滞（新建页签恢复），均为会话级环境故障"
+  ],
+  "nextSteps": [
+    "写 P36.md 交接记录 + acceptance.json（矩阵含 deferred）+ P34.md 导航补验登记 + 共享文件登记（Dashboard.tsx/i18n.ts/definitions.tsx/dashboard 分片/MetricHint/RealtimeKpiCard 消费核验）",
+    "提交推送 origin/apple-rxx + end --outcome completed"
+  ],
+  "blocker": null
+}

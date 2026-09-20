@@ -1,0 +1,15 @@
+{
+  "task": { "implementation": "in_progress", "verification": "partial", "gate": "blocked" },
+  "progress": [
+    "P36 实现完成：report-fault 服务（alarmStatistics/pageSystemAlarmRecords，POST 查询语义）+ filterModel/statistics/description 纯函数 + useAggregationQuery（P33 同构：防乱序/取消级联/失败清空+有限退避）+ FaultTrendChart/VehicleFaultRankChart（echarts 按需注册）+ FaultDetailFilter（P03 栅格纪律）+ FaultAlert.tsx 整页（KPI 4 卡复用 RealtimeKpiCard、图表 2、Apex request 明细表+行展开详情+车辆/任务导航 P34 契约）",
+    "i18n：report-fault 四语言分片（旧真译沿用+缺失补译）+ i18n.ts 注册 + 路由解除 pending（meta i18nNamespaces）；Dashboard 首页告警面板「查看全部告警」入口（dashboard-fault:view 权限过滤，P34→P36 导航契约落地）+ dashboard 分片四语言补 key",
+    "静态门禁全绿：oxlint 0/0（503 文件）、tsc -b 通过、check:structure 494 文件、build 1.27s"
+  ],
+  "nextSteps": [
+    "真实只读验证（alarmStatistics/pageSystemAlarmRecords 登录令牌）",
+    "浏览器整页验收（登录/双视口/双主题/五语言/独立失败态/导航）",
+    "P34→P36 首页告警导航补验 + 更新 P34/P36 验收记录",
+    "交接记录 P36.md + acceptance.json + 提交推送 end"
+  ],
+  "blocker": null
+}
