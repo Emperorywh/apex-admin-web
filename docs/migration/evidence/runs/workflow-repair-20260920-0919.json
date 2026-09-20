@@ -1,0 +1,32 @@
+{
+  "runId": "workflow-repair-20260920-0919",
+  "taskId": "P21",
+  "purpose": "maintenance",
+  "owner": "Codex 01a0bc51-8b6b-7c10-9b66-f2a1a13c00f4",
+  "startedAt": "2026-09-20T01:26:38.610363+00:00",
+  "baseHead": "3734a6992f2d6429722f9903146ca3562c6a4671",
+  "initialStatus": "",
+  "progress": [
+    "已修复统一锁、原子检查点、验收矩阵、逐任务复核与交付恢复；保留 48 项队列及 39 项历史实现",
+    "已更新 TASKS / SPEC / AGENTS 和唯一提示词入口；112 张历史截图已持久归档并校验 SHA-256",
+    "已通过 ZCode 界面保存既有自动任务入口，并只读确认保持暂停；未运行自动任务",
+    "pnpm check、build、migration:check 和 10 项控制器集成烟测通过；证据见 docs/migration/evidence/workflow-repair-20260920/README.md",
+    "本轮修复留在当前工作区，未提交或推送；P21 业务代码保持不变"
+  ],
+  "nextSteps": [
+    "自动任务仍暂停；恢复后先按 status 每轮复核一个历史任务，不将待验收当通过",
+    "历史门禁复核后继续 P21，核验既有工艺代码，不跳到 P43",
+    "本轮工作流修复未提交，不得在后续业务轮中夹带提交"
+  ],
+  "blocker": null,
+  "endedAt": "2026-09-20T01:39:54.377Z",
+  "outcome": "completed",
+  "endHead": "3734a6992f2d6429722f9903146ca3562c6a4671",
+  "publish": {
+    "status": "synced",
+    "commit": "3734a6992f2d6429722f9903146ca3562c6a4671",
+    "confirmedRemoteHead": "3734a6992f2d6429722f9903146ca3562c6a4671",
+    "checkedAt": "2026-09-20T01:26:38.610363+00:00",
+    "error": null
+  }
+}

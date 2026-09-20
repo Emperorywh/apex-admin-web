@@ -1,9 +1,9 @@
 # 调度系统迁移 TASKS
 
-> 制定日期：2026-09-17。当前仅完成任务拆解，所有实施任务均未开始。
+> 制定日期：2026-09-17；执行机制修订：2026-09-20。已进入实施阶段，使用固定目录的单 Agent 串行自动任务。
 > 唯一规格基线：[调度系统迁移规格说明](docs/SPEC_dispatch_migration_20260917.md)（完整第 1–18 章，含 D01–D34、A01–A24、I01–I08）。
 > 本文件位于目标仓库根目录。用户描述的带反斜杠分段路径实际对应上面的文件名；不创建另一份规格。
-> 本轮不实施迁移，不修改应用、依赖或后端，不自动部署，不验证现场控制命令。
+> 48 项任务及业务验收范围不变。39 项历史实现保留，旧勾选统一转为待复核，当前 P21 代码保留；复选框只表示最终验收全部通过，不能用来判断实施队列。
 
 ## 1. 任务模型与执行边界
 
@@ -21,64 +21,88 @@
 - 不迁入 Umi 运行时、第二套模板后端、中间适配服务器、本地表格源码依赖；不修改/发布表格库。不因 API 存在就增加旧不可达业务。
 - 三个暂缓页面不加载完整业务；地图管理、只读地图和选点仍在范围内。无入口的输送线、旧设备实现、系统动作、重复权限页及历史文件/动作策略只登记，不自动迁移或删除。
 
-## 2. 多 Agent 认领、共享文件与交接
+## 2. 串行执行、状态与交接
 
-### 2.1 独立执行流程
+### 2.1 唯一执行口径
 
-1. 阅读本文件的通用要求、任务卡、完整规格、当前工作区约束和前置任务交接记录；复核本任务实际来源。
-2. 由统筹执行者分配任务 ID、基线提交、工作分支/工作目录和文件归属；同一任务同一时间只有一个负责人。有 Git 时优先每任务独立 worktree，分支如 `codex/migration-p07`。
-3. 在自己的任务记录中登记状态、计划修改文件、消费的共享契约与接口缺口；依赖不满足时先补证据/盘点，不用 mock 继续伪装接入。
-4. 在所属页面范围内完成纵向迁移和通用完成定义；跨任务调整交给对应负责人，先合并兼容契约，再继续消费者。
-5. 提交交接记录及可审阅差异；统筹者串行合并，执行批次门禁后分派下一批。合并后的实际接口/路由联验完成，才更新最终验收状态。
+- 固定目录 `C:\code\apex-admin-web`、分支 `apple-rxx`、远程 `origin/apple-rxx`。每轮只处理一个任务，不派生并行开发 Agent，不创建新 worktree；当前 Agent 同时负责本任务实施与集成。
+- 原“仅交付文档”、多 Agent 分工及每任务 worktree 说明已失效；最新用户决定优先于历史规格措辞，交接记录不得自行改写规格、权限或验收要求。
+- 状态真相源为 `docs/migration/RUN_STATE.json`，交接记录保存逐项依据与证据；TASKS 勾选只是最终验收状态投影。原队列保留全部 48 项，复核不等于重新开发。
+- 新增修改代码须写多行简体中文注释，不主动格式化无关代码，不新增任何单元测试。适用的静态、构建、真实接口和浏览器验证仍需完成。
+- 自动任务完整提示词维护在 [AUTOMATION_PROMPT.md](docs/migration/AUTOMATION_PROMPT.md)，调度器只保存读取此文件并执行的稳定入口；修订规则更新原章节，不继续追加互相冲突的历史条款。
 
-不依赖聊天历史交接。以下文档由后续实施任务创建，本轮不声称它们已存在：
+### 2.2 锁、检查点与中断恢复
 
-| 交付物 | 维护方式 / 必含内容 |
+唯一锁为 `docs/migration/.lock`。通过 `scripts/migration-runner.mjs` 操作，禁止每轮自行实现 mkdir/删锁/状态覆盖。`status` 和 `check` 为只读命令；其他命令须对应持锁身份。脚本无需新增依赖。
+
+```text
+node scripts/migration-runner.mjs status
+node scripts/migration-runner.mjs begin --run <唯一运行ID> --session <实际会话ID> --task <ID> --purpose <audit|implement|acceptance|delivery>
+node scripts/migration-runner.mjs checkpoint --run <运行ID> --revision <读取的revision> --file <仓库内检查点JSON>
+node scripts/migration-runner.mjs sync --run <运行ID>
+node scripts/migration-runner.mjs end --run <运行ID> --outcome <completed|checkpoint|blocked>
+```
+
+`begin` 原子取得锁并保存运行身份、当前任务、起始 HEAD、原有 Git 改动后才允许修改。状态用同目录临时文件刷盘后原子替换；每次更新递增 revision。检查点只允许更新本轮任务和恢复步骤，不得改队列、前置或工作目录。示例检查点：
+
+```json
+{
+  "task": { "implementation": "in_progress", "verification": "partial", "gate": "blocked" },
+  "progress": ["已完成的具体步骤及证据引用"],
+  "nextSteps": ["可直接恢复的下一步"],
+  "blocker": null
+}
+```
+
+锁存在且运行仍活跃或无法核实已结束时，本轮不写项目并结束。心跳、mtime、PID 仅辅助诊断，不能证明 Agent 结束。恢复必须保存包含 `runId/ended=true/kind/reference/checkedAt` 的仓库内 JSON：kind 只能为 `user_confirmation`（实际用户明确确认）或 `runner_terminal_state`（对应会话的真实终态），reference 指向真实依据；然后执行 `recover --run <旧运行ID> --proof <证明JSON>`。脚本保留证明及原锁后才释放路径；禁止自行伪造证明。
+
+正常 `end` 先保存持久结束记录再释放本轮锁。异常终止可能留下锁，不能假设 finally 必然执行；中断恢复先对账，不重放结果未知的业务写入。单文件原子替换不是跨文件事务：若 RUN_STATE 已更新而 TASKS 勾选未同步，核验证据后由持锁者 `sync` 重建投影。
+
+### 2.3 四类状态与调度规则
+
+| 字段 | 值与含义 |
 | --- | --- |
-| `docs/migration/baseline.md` | T00：源路由、API 哈希/规模、依赖版本、现有检查故障、排除历史实现 |
-| `docs/migration/contracts.md` | T00：共享 API、DTO/ID、分页、权限、实体导航、表格、草稿、轮询、传输、地图、i18n、时区契约及 owner |
-| `docs/migration/tasks/<ID>.md` | 每个 Agent 独占：来源/目标、完整操作映射、权限、改动文件、契约版本、状态、缺口、五语言记录、证据、后续事项 |
-| `docs/migration/operations.md` | 统筹者汇总：旧路由/组件/操作 → 新实现 → method/path/operationId（若有）→ 权限 → 状态/证据 |
-| `docs/migration/gaps.md` | 统筹者汇总 G01–G16 与新增缺口，保留影响页面、证据、决定、验证日期、后续负责人 |
-| `docs/migration/i18n-map.md`、`i18n-missing.md`、`terminology.md` | T00 建格式与公共内容；Agent 在自己的记录提供分片；统筹者合并旧 key 映射、缺失翻译与术语 |
-| `docs/migration/acceptance.md` | V01 汇总 A/I 矩阵、跨页验证、自动检查、真实接口证据、主题/语言/终端检查及未验收事项 |
+| implementation | `not_started / in_progress / implemented`；保留真实开发进度 |
+| verification | `not_started / pending_review / partial / passed`；只有 passed 可以勾选 |
+| gate | `blocked / pending_review / ready`；只表示能否放行后续实现 |
+| publish.status | `unverified / pending / synced / blocked`；与业务验收分开 |
 
-状态分开记录，避免“写完代码”等同于“真实验收通过”：
+启动先补交付未确认推送的提交，再处理状态不一致与历史待复核项（每轮一项 audit），复用已有代码和证据，不整页重写。复核结束后恢复 currentTaskId 对应的未完成开发。实现、门禁或推送受阻不得挑选后续任务；本任务可做部分完成后保存检查点退出。已放行但仍待现场/跨页验收的任务保留未勾选，由指定责任任务提供联验依据，再逐任务执行 acceptance 更新自身记录；进入 V01 前先清空前项待验收队列。V01 未通过不能声称整体完成。
 
-- 实施状态：`未开始 / 进行中 / 前端完成 / 受阻 / 已合并`。
-- 验证状态：`未验证 / 部分通过 / 已通过 / 不适用（注明理由）`。
-- 缺口状态沿用规格：`待确认 / 已确认缺失 / 已确认替代 / 已验证可用 / 本期暂缓`。
-- 只有所有适用验收通过才勾选任务。允许单独交付“前端可用部分完成、指定操作待后端补齐”，但任务记录必须列出未完成项，不能把禁用操作写为已接入。
-- 没有账号、后端不可用或缺少专用写操作环境时记录受影响验证；其他不依赖该条件的工作继续。下游只可在所需契约和门禁确实满足时启动。
+仅允许三类有依据的延后验收：本文件明确的跨页补验、规格 D32 的专用环境/现场副作用验收、规格 D02 已确认的接口缺失。逐项写依据、负责人、解除条件、消费者影响；影响消费者时不能放行该消费者。普通缺陷、缺真实只读、浏览器工具失效、样本不足和未经核实的契约不能自行作为放行例外。
 
-### 2.2 修改归属与并行防冲突
+### 2.4 验收证据与共享文件
 
-| 文件/能力 | 初始 owner | 并行期规则 |
-| --- | --- | --- |
-| 依赖与锁文件、Vite/环境配置、全局 token、检查脚本 | T00 | 页面 Agent 不自行升级依赖或改公共构建设置；提出需求，由统筹串行集成 |
-| 请求层、会话/权限、store、路由守卫/投影、页签缓存、表格公共资源（五语言 locale 包/主题映射/分页与行 ID 纯函数/统一状态块，不含表格包装组件）、传输/地图 | T00 | 契约冻结后复用；修复由原 owner 或指定接任者处理，记录影响消费者 |
-| `src/router/definitions.tsx`、语言加载器/公共命名空间 | T00；之后统筹者 | T00 预留元数据和命名空间；页面 Agent 提交必要差异，统筹串行应用，保持路由单一真相源 |
-| 页面入口、页面私有 features/services/types、样式及语言分片 | 对应 P/H 任务 | 任务卡目标路径为已存在入口；共用父目录不等于可以改其他页面 |
-| 现有 `services/order-record` / `features/order-record` | P03 | P38 可消费；详情新增独立文件，修改列表公共导出时先交接 |
-| 现有 `services/dashboard` / `features/dashboard` | P34 | 承接首页与旧实时页合并，不允许其他页面复制 mock |
-| 现有 `services/system/user`、`features/system/user`、`pages/system/user` | P31 | 统一调度用户 DTO；P43 只做引用/入口收口 |
-| 现有 `services/system/role`、`features/system/role`、`pages/system/role` | P32 | 与用户/权限树使用同一已确认契约 |
-| `services/profile`、模板菜单服务/features/pages | P43 | 不新增无依据 CRUD；避免与 P31/P32 同时修改 |
-| `TASKS.md` 与汇总台账 | 统筹者 | 页面 Agent 只更新自己的任务记录，防止多个分支改同一汇总表 |
+每个任务继续维护 `docs/migration/tasks/<ID>.md`，逐操作映射旧来源→新实现→operation→权限→验证结果。共享契约更新 `contracts.md`，操作映射更新 `operations.md`，缺口更新 `gaps.md`；五语言仍维护 i18n-map/i18n-missing/terminology。当前 Agent 可修改本任务必要公共文件，记录受影响消费者并验证；不得借机实现后续页面。
 
-新页面私有模块默认放在 `src/features/<任务模块名>/`、`src/services/<任务模块名>/`、`src/types/<任务模块名>/`；遵循现有结构检查，T00 可以统一确定业务域/子域结构并记录**精确文件归属**。P03/P31/P32/P34 优先沿用现有目录，不制造平行重复实现。服务沿用 `*.service.ts`、`*.service.types.ts`，使用具名函数、明确 DTO、可选 RequestOptions 和 AbortSignal。
+证据及不含凭据的验证脚本保存到 `docs/migration/evidence/<ID>/<runId>/`。测试截图放在该目录下的 `screenshots/`，仅本地留存并由 .gitignore 排除，不提交 Git，也不强制添加、打包或内嵌图片绕过。可提交文字记录、验证脚本及注明 `local_only`、相对路径和 SHA-256 的证据索引；其他环境缺少本地截图时须如实说明不可复核，不据索引冒充已查看原图。不得将唯一证据放入临时 .run-lock，不在验后删除可复核脚本。旧截图已本地归档到 `evidence/legacy-20260920`，仅作历史待复核资料，不能据归档宣称重新验收。密码、完整 token、Cookie、Authorization 不入文档或 Git；凭据仅从本机授权来源读取。
 
-所有跨页只读选项由 T00 登记唯一 owner 和 operation：例如地图/节点、车辆、分组、载具、动作、工艺模板、驱动、电梯、角色、品牌。查选项不必等管理页面完成；不能由每页复制一套请求。页面详细查询/写操作仍归页面任务。同一个 operation 同时用于选项与完整业务时，复用底层服务，只在上层选择/转换字段。
+gate=ready 或 verification=passed 前，任务必须提供 acceptanceRecord 路径，指向 JSON：
 
-页面私有语言按模块分片保存于 `src/i18n/locales/<语言>/<命名空间>.ts` 或 T00 确定的等价结构；五语言目录均有明确归属。共享 `common/menu/auth/error` 由统筹者维护，不为并行方便复制相互竞争的公共译文。
+- `taskId`、`codeCommit`（真实完整提交哈希）、`codeFiles`（受检代码及公共依赖的 `{path,sha256}`，不得仅列一份无关文件）。未提交改动由文件哈希明确绑定，不能声称原提交已包含该改动。
+- `releaseChecks` 中 `scope/static/readOnly/ui/sharedConsumers` 为 passed；不适用须为 not_applicable 并在 `releaseReasons` 中解释。安全可执行范围内的页面 UI 仍须真实验证。
+- `items` 必须逐项覆盖 TASK、DoD1–DoD16、A01–A24、I01–I08，各项含 `id/status/reason/evidence`（持久文件路径数组）。状态只能 passed/not_applicable/deferred；不适用必须按真实范围解释。
+- deferred 另含 `category`（cross_page/site_acceptance/confirmed_api_gap）、`basis`、`owner`、`resumeCondition`。有 deferred 只可部分验收，不能 verification=passed。已确认缺失 operation 不能标记已接入。
+- 记录环境、数据规模、角色、视口、主题、语言和预期/实际。垫片、合成事件、直写存储明确边界；未覆盖自然交互、操作系统或浏览器不能推断通过。
 
-### 2.3 可直接分派的任务指令
+受检公共代码变更使旧文件哈希不符时，status 转入对应任务复核，不能继续沿用旧证据。脚本只校验结构、文件存在与指纹，Agent 仍须审查证据是否真正支持结论。
 
-> 执行 TASKS.md 的 `<任务ID>`。先阅读通用完成定义、完整迁移规格及前置任务记录，核对旧路由可达实现和最新 OpenAPI。仅修改任务归属文件，复用公共契约；公共文件变更先登记交由统筹集成。完成该页面全部业务操作、权限、Apex 表格、五语言、错误/草稿/传输生命周期和验证证据。禁止前端 mock，不自动试发现场写命令。将结果、未验收项和下一位 Agent 所需信息写入 `docs/migration/tasks/<任务ID>.md`。新增/修改代码写多行简体中文注释，不格式化无关代码。
+### 2.5 Git 交付与轻量阻塞轮
+
+本任务放行或完成后，审阅变更并逐文件/逐块暂存，仅提交本任务授权改动；开局已有无关修改不得覆盖、丢弃或夹带。明确授权提交并推送 `origin/apple-rxx`，不强推、不 reset、不自动合并分叉、不部署或操作后端。
+
+```text
+node scripts/migration-runner.mjs verify-remote --run <运行ID>
+node scripts/migration-runner.mjs push --run <运行ID> --commit <已审阅HEAD完整哈希>
+```
+
+先查询远端，再决定补推，最后核对远端真实提交。失败单列 publish=blocked，下一轮先用 delivery 恢复交付，不领取后续开发。推送成功后的 RUN_STATE 回执允许作为下轮已知文档改动，不为“把提交哈希写入自身提交”无限追加提交。禁止仅凭旧的“待推送”文字或本地远程跟踪引用推断远端状态。
+
+阻塞未变化只做最小只读探测，不重复全量检查、写同样记录或试发副作用请求；有代码、环境或契约变化才重跑受影响门禁。仅在实际进展、完成、新阻塞或需要用户行动时通知。
 
 ## 3. 分批执行与放行门禁
 
-批次表示可调度顺序，同一批内依赖满足且文件归属不冲突的任务可以交给不同 Agent；不是要求一次启动整批。编号不是严格串行顺序。每批合并后进行受影响页面的检查和必要联验，不将日常质量问题全部留给 V01。
+批次表示依赖顺序，实际按 RUN_STATE 的稳定队列串行执行；不并行启动同批任务。编号不是执行顺序。每项检查受影响消费者，不将已知普通缺陷推迟到 V01。
 
 | 批次 | 任务 | 前置条件与退出要求 |
 | --- | --- | --- |
@@ -90,7 +114,7 @@
 | B4a | P19、P24 | B2 门禁及 P11 / P23 分别完成，验证点边组合→交管、动作→分组 |
 | B4b | P20 | B2 门禁及 P23、P24 完成，验证动作/分组→工艺模板 |
 | B5 | P21、P43 | 分别依赖 P20，以及 P31/P32；完成主子工艺与模板公共入口收口 |
-| B6 | P33、P34、P36、P37、P40 | B2 门禁通过后可与无冲突的 B3–B5 页面并行；共享公式明确文件 owner |
+| B6 | P33、P34、P36、P37、P40 | 按稳定队列在 B5 后串行实施；共享公式明确 owner；P34→P36 的告警导航在 P36 实现后由 P36 补验 |
 | B6b | P35 | P33/P37 计算与统计契约就绪，完成报表与相同口径明细 |
 | B7 | V01 | 所有前端实现/已知缺口说明已合并；逐项验收，不能因排期结束判整体通过 |
 
@@ -107,7 +131,7 @@
 3. **权限与状态区分**：菜单、直访、按钮、独立窗口一致；普通用户与真实 root/administrator 规则一致。无权限动作通常隐藏，只读值可读；缺口对有权限用户禁用说明。无权限、暂缓、缺口、离线、真实空结果分开，后端拒绝不能当成功。
 4. **所有表格统一**：主表、编辑表、弹窗表、子表、报表明细和文件列表均用官方 npm ApexTableReact；无 antd Table/ProTable/EditableProTable 或自绘 HTML table 替代。页面直接消费包公开 API，**禁止二次封装表格组件**（无包装/转发/统一入口组件）；公共设施仅限五语言 locale 包、主题变量映射、分页换算/行 ID 纯函数与不包裹表格的独立状态块，不再造引擎，能力不足用表格加抽屉保留业务。
 5. **表格语义**：零基 pageIndex→后端 pageNo、data/rowCount 明确；真实完整小集合/草稿可用 data 模式。稳定行 ID，当前页选择，翻页/筛选/失权清无效选择；筛选回首页，删末页末行回有效页，未知总数不填 0。排序仅支持真实能力。列偏好按服务实例/用户/tableId/版本隔离且可重置；筛选分页/展开仅当前页签保存，不默认跨重启持久化。
-6. **取消与失败**：条件切换、翻页、语言变化和关闭防乱序；主动取消不报错/判离线。真正失败立即清空该请求对应远端区域，显示错误重试并禁用依赖操作；保留筛选和草稿。不同请求区域独立展示，禁止空数组/零对象或旧数据冒充成功。
+6. **取消与失败**：条件切换、翻页、语言变化和关闭防乱序；主动取消不报错/判离线。真正失败立即清空该请求对应远端区域，显示错误并禁用依赖操作；表格提供内建重试，其他区域通过可见自动重查恢复。保留筛选和草稿，不同请求区域独立展示，禁止空数组/零对象或旧数据冒充成功。
 7. **草稿与生命周期**：切页保留内存草稿，LRU 不淘汰脏页；关闭、刷新、关闭其他/全部统一检查；浏览器离开提示依平台能力，非正常终止不承诺恢复。退出/过期清会话数据。实时页只在页签激活且文档可见时约 5 秒串行刷新、恢复即查、失败有限退避；普通 CRUD 不默认轮询。
 8. **写入与批量**：普通保存直接提交；控制/删除/覆盖/发布/重启等分级确认对象和影响、防重复，写操作不自动重试。命令接受≠完成；超时/断连显示未知，核实状态后再由用户决定重试，无查询能力说明无法确认。整批响应不编造逐项成功；多步优先真实批量接口，检查保存基线，保留冲突/部分提交，不承诺后端没有的事务。
 9. **文件**：独立于 Activity 页 effect；切页继续，关页提示，可真实取消才提供取消，Abort 不代表服务器回滚。已知总字节才显示百分比，否则不确定进度；传输 100% 后可仍在处理。识别 Blob 内 JSON/文本错误，安全文件名、释放 URL；核实媒体类型/字段/限制，不假装续传。导出范围真实，不冒充全量或擅拉全部分页；大文件规模/性能无环境注明。
@@ -116,15 +140,15 @@
 12. **语言边界**：不猜译用户名称、日志、原始标识和后端原文；提交原始枚举/权限码。统一已证实 Accept-Language（含上传），服务端语言相关只读可重查且防旧语言覆盖；传输继续。后端错误/导出内部语言支持单独登记，不伪称前端已全部翻译。
 13. **外观与终端**：保留 Dock/顶栏/页签/玻璃效果/token/深浅主题和减少动画支持；紧凑工具栏。简单表单 Modal，长表单/快览 Drawer，复杂工艺工作区页签。Windows/macOS 常用稳定 Chrome/Edge、1366×768 及更大桌面检查；长译文可读、按钮可达，隐藏恢复/固定列/虚拟展开不异常；不扩大为完整移动端/Safari 验收。渲染验收以真实登录、真实数据的整页形态为准：布局容器（工作区/页签宿主）不得被页内超宽内容撑破，横向溢出收敛为页面内部滚动，统计、筛选、表格与分页器在同一视口完整可达；表格列对照旧页逐列核对列序、列宽、对齐、时间/数值格式与空值占位，枚举无既定语义时显示原值，不臆造映射文案。工程门禁与局部截图不能替代整页渲染验收。
 14. **统计与时间**：真实数据和已确认公式/单位/分母/区间，图表明细共用计算；0≠null/缺失/未知，除零不可计算，异常/重复记录不猜修复。部署时区优先、缺省 Asia/Shanghai，不随浏览器语言/时区漂移；保留偏移语义、确认无时区字符串和起止边界。图表按需注册/释放，不能引入旧 mock repository。
-15. **验证与证据**：有效 lint/typecheck/结构检查/build；真实只读联调（查询性质 POST 按业务分类）。必要映射/计算可测试，不能用 mock server/合成记录证明接入。创建/删除/激活/控制/推送/重启/回滚仅在专用测试环境或现场人员执行，留证据；规格不授权默认现场自动试发。无环境注明“接口未验证”。证据不存密码/完整 token。
+15. **验证与证据**：有效 lint/typecheck/结构检查/build；真实只读联调（查询性质 POST 按业务分类）。必要映射/计算可通过静态审查和真实数据验证，不新增单元测试，不用 mock server/合成记录证明接入。创建/删除/激活/控制/推送/重启/回滚仅在专用测试环境或现场人员执行，留证据；规格不授权默认现场自动试发。无环境注明“接口未验证”。证据不存密码/完整 token。
 16. **交接收尾**：清除本页运行 mock、Umi、假进度、随机统计、错误 fallback；保留合法真实 mockDispatch。列剩余缺口、未验证项、共享契约改动、依赖消费者和适用 A/I 编号。
 
 ## 5. T00：基础设施（单独任务）
 
-- [x] **T00 基线、请求/会话/权限、表格、页签与五语言公共基础设施**
+- [ ] **T00 基线、请求/会话/权限、表格、页签与五语言公共基础设施**
 - **批次/依赖**：B0；无实施前置。一个负责人持有公共文件，可跨多轮执行；以下是同一任务内部里程碑，不拆成抢改公共文件的并行任务。
 - **必读**：完整规格；旧路由、权限/访问控制、登录/授权、请求和五语言资源；目标 request/auth/router/store/i18n/layouts；安装包公开声明。
-- **范围**：第 2.2 节公共文件与机制。完成最小真实纵向接入，P01/P02 补齐页面闭环，P03/P05 建立完整业务样板。
+- **范围**：下列 T00.1–T00.9 的公共文件与机制。完成最小真实纵向接入，P01/P02 补齐页面闭环，P03/P05 建立完整业务样板。
 
 | 里程碑 | 必须交付 | 放行证据 |
 | --- | --- | --- |
@@ -144,12 +168,12 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ## 6. 页面任务卡
 
-每张卡的模块名确定默认私有文件/语言分片归属，详见第 2.2 节；全部继承第 4 节 DoD。旧来源相对 `C:\code\dd\src\pages`（特别注明除外），目标入口相对 `src/pages` 并带 `.tsx`。来源为目录时继续定位入口与可达子组件。API 须逐 operation 核对。
+每张卡的模块名确定默认私有文件/语言分片归属，共享文件遵循第 2.4 节；全部继承第 4 节 DoD。旧来源相对 `C:\code\dd\src\pages`（特别注明除外），目标入口相对 `src/pages` 并带 `.tsx`。来源为目录时继续定位入口与可达子组件。API 须逐 operation 核对。
 
 
 ### P01 登录
 
-- [x] **P01 登录**
+- [ ] **P01 登录**
 - **批次 / 前置**：B1 / T00。
 - **入口**：`/login`；**旧来源**：`Login`；**目标**：`src/pages/auth/Login/Login.tsx`。
 - **私有模块 / 语言分片**：`auth-login`；**接口依据**：auth/authorize/login、systemLogos。
@@ -159,7 +183,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P02 软件授权
 
-- [x] **P02 软件授权**
+- [ ] **P02 软件授权**
 - **批次 / 前置**：B1 / P01。
 - **入口**：`/authorize-ingress`；**旧来源**：`AuthorizeIngress`；**目标**：`src/pages/authorize-ingress/AuthorizeIngress/AuthorizeIngress.tsx`。
 - **私有模块 / 语言分片**：`license-activation`；**接口依据**：auth/license/getHardwareInfo、softwareActivation。
@@ -169,7 +193,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P03 任务管理（表格样板）
 
-- [x] **P03 任务管理（表格样板）**
+- [ ] **P03 任务管理（表格样板）**
 - **批次 / 前置**：B2a / P01。
 - **入口**：`/order-record`；**旧来源**：`OrderRecord`；**目标**：`src/pages/order-record/OrderRecord/OrderRecord.tsx`。
 - **私有模块 / 语言分片**：`order-record`；**接口依据**：dispatcher/orderRecord、orderTask、orderTemplate。
@@ -179,7 +203,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P04 车辆分组
 
-- [x] **P04 车辆分组**
+- [ ] **P04 车辆分组**
 - **批次 / 前置**：B3 / B2 样板门禁。
 - **入口**：`/vehicle-deploy/vehicle-group`；**旧来源**：`VehicleDeploy/VehicleGroup`；**目标**：`src/pages/vehicle-deploy/VehicleGroup/VehicleGroup.tsx`。
 - **私有模块 / 语言分片**：`vehicle-group`；**接口依据**：dispatcher/vehicleGroup、vehicle/getSimpleVehicles。
@@ -189,7 +213,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P05 车辆列表（控制样板）
 
-- [x] **P05 车辆列表（控制样板）**
+- [ ] **P05 车辆列表（控制样板）**
 - **批次 / 前置**：B2a / P01。
 - **入口**：`/vehicle-deploy/vehicle-diplay`；**旧来源**：`VehicleDeploy/VehicleDisplay`；**目标**：`src/pages/vehicle-deploy/VehicleDisplay/VehicleDisplay.tsx`。
 - **私有模块 / 语言分片**：`vehicle-list`；**接口依据**：dispatcher/vehicle。
@@ -199,7 +223,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P06 载具类型
 
-- [x] **P06 载具类型**
+- [ ] **P06 载具类型**
 - **批次 / 前置**：B3 / B2 样板门禁。
 - **入口**：`/vehicle-deploy/vehicle-type`；**旧来源**：`VehicleDeploy/VehicleType`；**目标**：`src/pages/vehicle-deploy/VehicleType/VehicleType.tsx`。
 - **私有模块 / 语言分片**：`carrier-type`；**接口依据**：dispatcher/carrier。
@@ -209,7 +233,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P07 节点映射
 
-- [x] **P07 节点映射**
+- [ ] **P07 节点映射**
 - **批次 / 前置**：B3 / B2 样板门禁。
 - **入口**：`/vehicle-deploy/node-mapping`；**旧来源**：`VehicleDeploy/NodeMapping`；**目标**：`src/pages/vehicle-deploy/NodeMapping/NodeMapping.tsx`。
 - **私有模块 / 语言分片**：`node-mapping`；**接口依据**：dispatcher/agvNodeMapping、map/getMapInfo。
@@ -219,7 +243,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P08 告警码管理
 
-- [x] **P08 告警码管理**
+- [ ] **P08 告警码管理**
 - **批次 / 前置**：B3 / B2 样板门禁。
 - **入口**：`/vehicle-deploy/alarm-code-management`；**旧来源**：`SystemInvolve/AlarmCodeManagement`；**目标**：`src/pages/system-involve/AlarmCodeManagement/AlarmCodeManagement.tsx`。
 - **私有模块 / 语言分片**：`vehicle-alarm-code`；**接口依据**：dispatcher/vehicleAlarmCode。
@@ -229,7 +253,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P09 地图列表
 
-- [x] **P09 地图列表**
+- [ ] **P09 地图列表**
 - **批次 / 前置**：B3 / B2 样板门禁。
 - **入口**：`/map-through/map-list`；**旧来源**：`MapThrough/MapList`；**目标**：`src/pages/map-through/MapList/MapList.tsx`。
 - **私有模块 / 语言分片**：`map-list`；**接口依据**：dispatcher/map、mapVersion。
@@ -239,7 +263,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P10 地图关联
 
-- [x] **P10 地图关联**
+- [ ] **P10 地图关联**
 - **批次 / 前置**：B3 / B2 样板门禁。
 - **入口**：`/map-through/cross-maps`；**旧来源**：`MapThrough/CrossMaps`；**目标**：`src/pages/map-through/CrossMaps/CrossMaps.tsx`。
 - **私有模块 / 语言分片**：`cross-map`；**接口依据**：dispatcher/crossMap、地图/电梯真实选项 operation。
@@ -249,7 +273,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P11 多地图点边组合
 
-- [x] **P11 多地图点边组合**
+- [ ] **P11 多地图点边组合**
 - **批次 / 前置**：B3 / B2 样板门禁。
 - **入口**：`/map-through/point-edge-combination`；**旧来源**：`MapThrough/PointEdgeCombination`；**目标**：`src/pages/map-through/PointEdgeCombination/PointEdgeCombination.tsx`。
 - **私有模块 / 语言分片**：`node-edge-group`；**接口依据**：dispatcher/systemNodeEdgeGroup。
@@ -259,7 +283,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P12 地图推送记录
 
-- [x] **P12 地图推送记录**
+- [ ] **P12 地图推送记录**
 - **批次 / 前置**：B3 / B2 样板门禁。
 - **入口**：`/map-through/map-push-records`；**旧来源**：`MapThrough/MapPushNotificationRecords`；**目标**：`src/pages/map-through/MapPushNotificationRecords/MapPushNotificationRecords.tsx`。
 - **私有模块 / 语言分片**：`map-push-record`；**接口依据**：dispatcher/mapPushRecord。
@@ -269,7 +293,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P13 调度中心
 
-- [x] **P13 调度中心**
+- [ ] **P13 调度中心**
 - **批次 / 前置**：B3 / B2 样板门禁。
 - **入口**：`/dispatch-hub`；**旧来源**：`DispatchHub`；**目标**：`src/pages/dispatch-hub/DispatchHub/DispatchHub.tsx`。
 - **私有模块 / 语言分片**：`dispatch-config`；**接口依据**：dispatcher/taskConfig/getTaskConfigs、batchEditConfigs。
@@ -279,7 +303,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P14 电梯
 
-- [x] **P14 电梯**
+- [ ] **P14 电梯**
 - **批次 / 前置**：B3 / B2 样板门禁。
 - **入口**：`/tri-resource/tri-device/elevator`；**旧来源**：`TriDevice/Elevator_back`；**目标**：`src/pages/tri-device/Elevator/Elevator.tsx`。
 - **私有模块 / 语言分片**：`device-elevator`；**接口依据**：device/elevator。
@@ -289,7 +313,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P15 自动门
 
-- [x] **P15 自动门**
+- [ ] **P15 自动门**
 - **批次 / 前置**：B3 / B2 样板门禁。
 - **入口**：`/tri-resource/tri-device/auto-door`；**旧来源**：`TriDevice/AutoDoor_back`；**目标**：`src/pages/tri-device/AutoDoor/AutoDoor.tsx`。
 - **私有模块 / 语言分片**：`device-auto-door`；**接口依据**：device/autoDoor。
@@ -299,7 +323,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P16 充电桩
 
-- [x] **P16 充电桩**
+- [ ] **P16 充电桩**
 - **批次 / 前置**：B3 / B2 样板门禁。
 - **入口**：`/tri-resource/tri-device/charge-pie`；**旧来源**：`TriDevice/ChargePile/ModbusChargePile`；**目标**：`src/pages/tri-device/ModbusChargePile/ModbusChargePile.tsx`。
 - **私有模块 / 语言分片**：`device-charge-pile`；**接口依据**：device/chargePile。
@@ -309,7 +333,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P17 交通灯
 
-- [x] **P17 交通灯**
+- [ ] **P17 交通灯**
 - **批次 / 前置**：B3 / B2 样板门禁。
 - **入口**：`/tri-resource/tri-device/traffic-lights`；**旧来源**：`TriResource/TrafficLights`；**目标**：`src/pages/tri-device/TrafficLights/TrafficLights.tsx`。
 - **私有模块 / 语言分片**：`device-traffic-light`；**接口依据**：device/trafficLight。
@@ -319,7 +343,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P18 风淋门
 
-- [x] **P18 风淋门**
+- [ ] **P18 风淋门**
 - **批次 / 前置**：B3 / B2 样板门禁。
 - **入口**：`/tri-resource/tri-device/air-shower-door`；**旧来源**：`TriDevice/AirShowerDoor_back`；**目标**：`src/pages/tri-device/AirShowerDoor/AirShowerDoor.tsx`。
 - **私有模块 / 语言分片**：`device-air-shower`；**接口依据**：device/airShowerDoor。
@@ -329,7 +353,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P19 三方交管
 
-- [x] **P19 三方交管**
+- [ ] **P19 三方交管**
 - **批次 / 前置**：B4a / B2 样板门禁、P11。
 - **入口**：`/tri-resource/tri-traffic`；**旧来源**：`TriTraffic`；**目标**：`src/pages/tri-traffic/TriTraffic/TriTraffic.tsx`。
 - **私有模块 / 语言分片**：`tripartite-traffic`；**接口依据**：dispatcher/tripartiteTraffic。
@@ -339,7 +363,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P20 任务工艺
 
-- [x] **P20 任务工艺**（2026-09-20 勾选：带令牌联验通过——Apex request GET 平铺/4 列逐列核对+双层展开子表均 Apex data 模式/三层嵌套弹窗（创建/编辑/复制三态：互斥车辆分组+站点按 mapId 缓存+动作参数 value 守恒）/删除 confirmCommand 自清理终态空态/必填两条零请求/搜索三态/列偏好四步/五语言/双主题双宽度；API 层 27/27+终态零残留；权限码历史交叉实证=本页挂 mission-flow:* 族；后端允许模板重名契约发现）
+- [ ] **P20 任务工艺**
 - **批次 / 前置**：B4b / B2 样板门禁、P23、P24。
 - **入口**：`/mission-cluster/mission-create`；**旧来源**：`MissionCluster/MissionCreate`；**目标**：`src/pages/mission-cluster/MissionCreate/MissionCreate.tsx`。
 - **私有模块 / 语言分片**：`order-template`；**接口依据**：dispatcher/orderTemplate、动作/地图/站点/车辆/分组选项。
@@ -359,7 +383,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P22 避障模板
 
-- [x] **P22 避障模板**
+- [ ] **P22 避障模板**
 - **批次 / 前置**：B3 / B2 样板门禁。
 - **入口**：`/mission-cluster/obstacle-avoidance`；**旧来源**：`ObstacleAvoidance`；**目标**：`src/pages/obstacle-avoidance/ObstacleAvoidance/ObstacleAvoidance.tsx`。
 - **私有模块 / 语言分片**：`obstacle-template`；**接口依据**：dispatcher/obstacleAvoidance。
@@ -369,7 +393,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P23 车辆动作
 
-- [x] **P23 车辆动作**
+- [ ] **P23 车辆动作**
 - **批次 / 前置**：B3 / B2 样板门禁。
 - **入口**：`/mission-cluster/action-control/agv-action`；**旧来源**：`ActionControl/AGVAction`；**目标**：`src/pages/action-control/AGVAction/AGVAction.tsx`。
 - **私有模块 / 语言分片**：`agv-action`；**接口依据**：action/agvAction。
@@ -379,7 +403,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P24 动作分组
 
-- [x] **P24 动作分组**
+- [ ] **P24 动作分组**
 - **批次 / 前置**：B4a / B2 样板门禁、P23。
 - **入口**：`/mission-cluster/action-control/agv-action-group`；**旧来源**：`ActionControl/AGVActionGroup`；**目标**：`src/pages/action-control/AGVActionGroup/AGVActionGroup.tsx`。
 - **私有模块 / 语言分片**：`agv-action-group`；**接口依据**：action/agvActionGroup、agvAction/getAGVActions。
@@ -389,7 +413,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P25 版本管理
 
-- [x] **P25 版本管理**
+- [ ] **P25 版本管理**
 - **批次 / 前置**：B3 / B2 样板门禁。
 - **入口**：`/system-involve/version-control`；**旧来源**：`SystemInvolve/VersionControl`；**目标**：`src/pages/system-involve/VersionControl/VersionControl.tsx`。
 - **私有模块 / 语言分片**：`system-version`；**接口依据**：systemVersion。
@@ -399,7 +423,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P26 系统日志
 
-- [x] **P26 系统日志**
+- [ ] **P26 系统日志**
 - **批次 / 前置**：B3 / B2 样板门禁。
 - **入口**：`/system-involve/system-log`；**旧来源**：`SystemInvolve/SystemLog`；**目标**：`src/pages/system-involve/SystemLog/SystemLog.tsx`。
 - **私有模块 / 语言分片**：`system-log`；**接口依据**：systemLog。
@@ -409,7 +433,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P27 系统设置
 
-- [x] **P27 系统设置**
+- [ ] **P27 系统设置**
 - **批次 / 前置**：B3 / B2 样板门禁。
 - **入口**：`/system-involve/system-setting`；**旧来源**：`SystemInvolve/SystemSetting`；**目标**：`src/pages/system-involve/SystemSetting/SystemSetting.tsx`。
 - **私有模块 / 语言分片**：`system-branding`；**接口依据**：systemLogos。
@@ -419,7 +443,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P28 操作日志
 
-- [x] **P28 操作日志**
+- [ ] **P28 操作日志**
 - **批次 / 前置**：B3 / B2 样板门禁。
 - **入口**：`/system-involve/operation-log`；**旧来源**：`SystemInvolve/OperationLog`；**目标**：`src/pages/system-involve/OperationLog/OperationLog.tsx`。
 - **私有模块 / 语言分片**：`operation-log`；**接口依据**：common/sysLog/pageSysLogs。
@@ -429,7 +453,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P29 软件信息
 
-- [x] **P29 软件信息**
+- [ ] **P29 软件信息**
 - **批次 / 前置**：B3 / B2 样板门禁、P02。
 - **入口**：`/system-involve/software-information`；**旧来源**：`SystemInvolve/SoftwareInformation`；**目标**：`src/pages/system-involve/SoftwareInformation/SoftwareInformation.tsx`。
 - **私有模块 / 语言分片**：`software-license`；**接口依据**：auth/license/getLicense、softwareActivation。
@@ -439,7 +463,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P30 数据库备份
 
-- [x] **P30 数据库备份**（2026-09-20 勾选：带令牌联验通过——权限收敛（旧路由漏 access 但权限清单有 view 码，挂守卫）/库列表/备份文件列表 Apex/下载（小文件完成反馈+大文件走马灯取消中止+PGDM 魔数）/列偏好闭环/五语言/双主题双宽度；7.63GB 完整落盘留现场环境；下载端点无令牌直达业务码登记安全观察项）
+- [ ] **P30 数据库备份**
 - **批次 / 前置**：B3 / B2 样板门禁。
 - **入口**：`/system-involve/database-backup`；**旧来源**：`SystemInvolve/DatabaseBackupManagement`；**目标**：`src/pages/system-involve/DatabaseBackupManagement/DatabaseBackupManagement.tsx`。
 - **私有模块 / 语言分片**：`database-backup`；**接口依据**：dataBase。
@@ -449,7 +473,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P31 用户管理（合并模板实现）
 
-- [x] **P31 用户管理（合并模板实现）**（2026-09-20 勾选：带令牌联验通过——Apex request GET 平铺分页/搜索/新增（三字段 MD5 抓包+必填拦截零请求）/状态切换乐观+落库复核/重置密码/分配角色弹窗双查（空角色环境形态+空数组受理）/删除确认五要素自清理/root 行只读收敛/列偏好四步/五语言/双主题双宽度；模板 REST /users 链全删零残留；assignRoles 勾选回归待 P32 联验环境角色数据）
+- [ ] **P31 用户管理（合并模板实现）**
 - **批次 / 前置**：B3 / B2 样板门禁。
 - **入口**：`/access-management/user-management`；**旧来源**：`AccessManagement/UserManagement`；**目标**：`src/pages/access-management/UserManagement/UserManagement.tsx`。
 - **私有模块 / 语言分片**：`access-user`；**接口依据**：auth/user、auth/role/getRoles。
@@ -459,7 +483,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P32 角色管理（合并模板实现）
 
-- [x] **P32 角色管理（合并模板实现）**（2026-09-20 勾选：带令牌联验通过——Apex request GET 平铺分页/搜索/新增编辑三字段（必填拦截零请求+落库复核）/删除 confirmCommand 五要素自清理/**分配权限三态持久半选 SPEC D1–D12 完整等价迁移**（三态九用例+空半选提交仅父级 id=D1+重开回显两形态）/回显契约对照实验（须含祖先+空半选父节点原样返回=SPEC R3 关闭）/列偏好四步/五语言/双主题双宽度；模板 REST /roles 链整删零残留；时间列 150 截断联验修复）
+- [ ] **P32 角色管理（合并模板实现）**
 - **批次 / 前置**：B3 / B2 样板门禁。
 - **入口**：`/access-management/role-management`；**旧来源**：`AccessManagement/RoleManagement`；**目标**：`src/pages/access-management/RoleManagement/RoleManagement.tsx`。
 - **私有模块 / 语言分片**：`access-role`；**接口依据**：auth/role、auth/permission/getPermissions。
@@ -484,7 +508,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 - **入口**：`/analyze-visual/dashboard-realtime`；**旧来源**：`AnalyzeVisual/RealtimeDashboard`；**目标**：`src/pages/dashboard/Dashboard/Dashboard.tsx`。
 - **私有模块 / 语言分片**：`dashboard`；**接口依据**：dispatcher/dashboard/board。
 - **业务交付**：将模板仪表盘与实时看板合并到 /dashboard，旧路由兼容重定向到同一实例；迁移真实 KPI、趋势和可达明细。移除 dashboard.mock.ts 及其引用，参考旧 SPEC_dashboard_stats.md。
-- **专项验收**：同一首页只有一份数据和可见轮询；约 5 秒串行，隐藏暂停，恢复即查，失败退避并清空受影响区域；无首页权限遵守 P01 落点规则。跳转 P03/P38/P39/P36 的实际链路分别核验。
+- **专项验收**：同一首页只有一份数据和可见轮询；约 5 秒串行，隐藏暂停，恢复即查，失败退避并清空受影响区域；无首页权限遵守 P01 落点规则。跳转 P03/P38/P39 的实际链路本任务核验；P36 尚未实施时只登记导航契约，完整告警跳转由 P36 完成后补验，不据此勾选 P34。
 - **追踪**：A11–A12、A19–A22、A24；G15；通用 DoD 和适用的 I01–I08 必须同时满足。交接记录：`docs/migration/tasks/P34.md`。
 
 ### P35 任务统计报表
@@ -504,7 +528,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 - **入口**：`/analyze-visual/dashboard-fault`；**旧来源**：`AnalyzeVisual/FaultAlert`；**目标**：`src/pages/analyze-visual/FaultAlert/FaultAlert.tsx`。
 - **私有模块 / 语言分片**：`report-fault`；**接口依据**：report/systemAlarmRecord。
 - **业务交付**：迁移聚合统计、告警分页、筛选、详情及关联任务/车辆导航；共享实体导航契约。
-- **专项验收**：聚合与列表独立失败时分别显示真实状态；查询失败不能显示无告警；未知等级有文字和原值；关联目标无权限/不存在/参数缺失分别反馈。
+- **专项验收**：聚合与列表独立失败时分别显示真实状态；查询失败不能显示无告警；未知等级有文字和原值；关联目标无权限/不存在/参数缺失分别反馈；完成后补验 P34→P36 的首页告警导航并更新两项验收记录。
 - **追踪**：A07–A12、A19–A20、A22；通用 DoD 和适用的 I01–I08 必须同时满足。交接记录：`docs/migration/tasks/P36.md`。
 
 ### P37 车辆状态统计
@@ -519,7 +543,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P38 完整任务详情
 
-- [x] **P38 完整任务详情**
+- [ ] **P38 完整任务详情**
 - **批次 / 前置**：B2b / P03。
 - **入口**：`/order-info`；**旧来源**：`OrderInfo`；**目标**：`src/pages/order-info/OrderInfo/OrderInfo.tsx`。
 - **私有模块 / 语言分片**：`order-detail`；**接口依据**：orderRecord/getOrderRecordDetail 等已声明查询。
@@ -529,7 +553,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P39 完整车辆详情
 
-- [x] **P39 完整车辆详情**
+- [ ] **P39 完整车辆详情**
 - **批次 / 前置**：B2b / P05。
 - **入口**：`/vehicle-info`；**旧来源**：`VehicleInfo`；**目标**：`src/pages/vehicle-info/VehicleInfo/VehicleInfo.tsx`。
 - **私有模块 / 语言分片**：`vehicle-detail`；**接口依据**：vehicle/getVehicleState 等已声明查询。
@@ -549,7 +573,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P41 无权限页
 
-- [x] **P41 无权限页**
+- [ ] **P41 无权限页**
 - **批次 / 前置**：B1 / T00。
 - **入口**：`/no-permission`；**旧来源**：`UnAccess`；**目标**：`src/pages/un-access/UnAccess/UnAccess.tsx`。
 - **私有模块 / 语言分片**：`access-denied`；**接口依据**：无业务接口。
@@ -559,7 +583,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### P42 兜底错误页
 
-- [x] **P42 兜底错误页**
+- [ ] **P42 兜底错误页**
 - **批次 / 前置**：B1 / T00。
 - **入口**：`/*`；**旧来源**：`@/pages/NotFound`；**目标**：`src/pages/error/NotFound/NotFound.tsx`。
 - **私有模块 / 语言分片**：`error-pages`；**接口依据**：无业务接口。
@@ -583,7 +607,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### H01 调度监控暂缓说明
 
-- [x] **H01 调度监控入口**
+- [ ] **H01 调度监控入口**
 - **批次/依赖**：B1 / T00。
 - **路径**：`/over-look`；旧来源 `Overlook`；目标 `src/pages/overlook/Overlook/Overlook.tsx`。
 - **交付**：对有权限用户保留菜单/直访，显示统一“本期暂未迁移”；保留合法目标标识/查询上下文，既不死链也不自动跳旧系统。
@@ -591,7 +615,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### H02 地图编辑暂缓说明
 
-- [x] **H02 地图编辑入口**
+- [ ] **H02 地图编辑入口**
 - **批次/依赖**：B1 / T00。
 - **路径**：`/map-through/map-nest-modify`；旧来源 `MapThrough/MapNestModify`；目标 `src/pages/map-through/MapNestModify/MapNestModify.tsx`。
 - **交付**：菜单、地图列表等关联入口进入统一说明，保留合法地图上下文，按原权限控制。
@@ -599,7 +623,7 @@ T00 处理 G01–G05、G09–G16 的公共部分；G06/G07 的具体禁用入口
 
 ### H03 录制回放暂缓说明
 
-- [x] **H03 录制回放入口**
+- [ ] **H03 录制回放入口**
 - **批次/依赖**：B1 / T00。
 - **路径**：`/analyze-visual/record-playback`；旧来源 `RecordPlayback`；目标 `src/pages/record-playback/RecordPlayback/RecordPlayback.tsx`。
 - **交付**：原权限下保留菜单/直访与合法上下文，使用统一五语言说明。

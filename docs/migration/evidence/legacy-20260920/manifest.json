@@ -1,0 +1,793 @@
+{
+  "archivedAt": "2026-09-20T01:26:38.610363+00:00",
+  "storage": "local_only",
+  "storageNote": "测试截图仅本地留存，不提交 Git；索引可入库，缺少原图时不得声称已复核。",
+  "status": "待复核，仅持久保存原始历史截图，未重新验收；部分采用 IAB 垫片。",
+  "assets": [
+    {
+      "source": ".run-lock/shots-p06/dark-1366.png",
+      "path": "screenshots/shots-p06/dark-1366.png",
+      "sha256": "4b250029a11f132fc6c68c8e8925541400f2be9218953b85a77018e943db052d",
+      "bytes": 106889,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p06/dark-1920.png",
+      "path": "screenshots/shots-p06/dark-1920.png",
+      "sha256": "7709fcba0bb883589841425a02cac4933b64347e08aacfb43b4e0a243d751d8c",
+      "bytes": 123530,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p06/light-1366.png",
+      "path": "screenshots/shots-p06/light-1366.png",
+      "sha256": "7a6b78f4e056ad0a3f27d2d9747f3c365352a233720e3e9f7d835d69142b2fa5",
+      "bytes": 107550,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p06/light-1920.png",
+      "path": "screenshots/shots-p06/light-1920.png",
+      "sha256": "00a94e7441c899f819c316da93a38e15d33bd3cc9c464bced68e7dcbaf396ec6",
+      "bytes": 121989,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p07/dark-1366.png",
+      "path": "screenshots/shots-p07/dark-1366.png",
+      "sha256": "a14a3cdeb922f0db1fa410dabb4a2541b3876881e9b75813b44ce422370bef74",
+      "bytes": 122884,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p07/dark-1920.png",
+      "path": "screenshots/shots-p07/dark-1920.png",
+      "sha256": "95685831d46914052661f6bd69562343a5b97deab3014202e5db874f91cccdae",
+      "bytes": 139147,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p07/light-1366.png",
+      "path": "screenshots/shots-p07/light-1366.png",
+      "sha256": "eb1df99a50cec9216e5bec43880ce1509c7ce13b04915d6665f368844ffe0622",
+      "bytes": 123695,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p07/light-1920.png",
+      "path": "screenshots/shots-p07/light-1920.png",
+      "sha256": "b4cc9b86fac99b9cf8880eb7b374a204d10abc91352d2e405442248012308adf",
+      "bytes": 138213,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p08/p08-1366-dark.png",
+      "path": "screenshots/shots-p08/p08-1366-dark.png",
+      "sha256": "07816e7639db88401d222594a57d07e92f62219617fa25a32ca74ac5ec250ab2",
+      "bytes": 203230,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p08/p08-1366-light.png",
+      "path": "screenshots/shots-p08/p08-1366-light.png",
+      "sha256": "6fa6d49bb69cedaa511f9f595f05e7a4eda359131d41b0044590da91b1d1f39c",
+      "bytes": 201091,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p08/p08-1920-dark.png",
+      "path": "screenshots/shots-p08/p08-1920-dark.png",
+      "sha256": "0b67ce4512aa1ad24a6c7b2988f6dda9b90c1510710ab703e71738986583a063",
+      "bytes": 222515,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p08/p08-1920-light.png",
+      "path": "screenshots/shots-p08/p08-1920-light.png",
+      "sha256": "fb9358f205746d50b6375364db64f976a51604bcb1ac1e43cf893e03256b9b23",
+      "bytes": 219583,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p09/map-list-1366-dark.png",
+      "path": "screenshots/shots-p09/map-list-1366-dark.png",
+      "sha256": "a16945950dc24dff2d8f9312cc631fe90215de66705785ca4f5311d248fcc432",
+      "bytes": 216783,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p09/map-list-1366-light.png",
+      "path": "screenshots/shots-p09/map-list-1366-light.png",
+      "sha256": "d4f4a7cd57d53da37158fde2e1c19ebfe3fe04c4100b7f9b99fcc904cb98e393",
+      "bytes": 215553,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p09/map-list-1920-dark.png",
+      "path": "screenshots/shots-p09/map-list-1920-dark.png",
+      "sha256": "7c0fd8f9df99354b76a59f2ef2bcb9a6cafbe4acded1a31d3d02b058920bc31f",
+      "bytes": 238425,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p09/map-list-1920-light.png",
+      "path": "screenshots/shots-p09/map-list-1920-light.png",
+      "sha256": "528ffebee30547260c3d3c2911be785bf35ce57c2232b41fa34e809db3bf2251",
+      "bytes": 235003,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p09/p09-1366-dark.png",
+      "path": "screenshots/shots-p09/p09-1366-dark.png",
+      "sha256": "c4129fc88f307e25896051362076b1e49b0ab900db0c980fcabf2743ed6e8293",
+      "bytes": 213008,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p09/p09-1366-light.png",
+      "path": "screenshots/shots-p09/p09-1366-light.png",
+      "sha256": "e347d24afdc008bb7fbf45f641b6f845b0214435d8d388f99e3f8e9983844ece",
+      "bytes": 217269,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p09/p09-1920-dark.png",
+      "path": "screenshots/shots-p09/p09-1920-dark.png",
+      "sha256": "c2056077ad7a4c9ef795e5bbadfc0a82d3dfb7cbcdd440deb06f84f4ec29b9ea",
+      "bytes": 236328,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p09/p09-1920-light.png",
+      "path": "screenshots/shots-p09/p09-1920-light.png",
+      "sha256": "c31d1f62fd97f9d8c635b66bd59971bbef3369f591895d801bd6f2a0a612d7dc",
+      "bytes": 232777,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p10/dark-1366.png",
+      "path": "screenshots/shots-p10/dark-1366.png",
+      "sha256": "7ef06ef6afecd1f62c94768b3e86b6e53e243f2c117153f0b69e1ba0697bbc9b",
+      "bytes": 122004,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p10/dark-1920.png",
+      "path": "screenshots/shots-p10/dark-1920.png",
+      "sha256": "cce3e372dc61e1b78c8294e11e0b6ef748817639abbec7de2318fd3ecec1b2c0",
+      "bytes": 138062,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p10/light-1366.png",
+      "path": "screenshots/shots-p10/light-1366.png",
+      "sha256": "858f43fb3ae928a730ce77f18df23604766cb8394eb8ede0a6e67ea292419731",
+      "bytes": 122938,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p10/light-1920.png",
+      "path": "screenshots/shots-p10/light-1920.png",
+      "sha256": "31376d3d2afa17880efa00615f9264cd6d2969743c2a8f086d16f72e03ac6c7b",
+      "bytes": 139920,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p11/1366-dark.png",
+      "path": "screenshots/shots-p11/1366-dark.png",
+      "sha256": "23316dcc55e5a94b8ac0d25ba5370f8df117e0167c762ad545eed22e96fc3874",
+      "bytes": 117628,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p11/1366-light.png",
+      "path": "screenshots/shots-p11/1366-light.png",
+      "sha256": "284350aa5a76fe4be4098cdb9fbe12a22ea976a0e2db4d7060453c9d8fcdc7ee",
+      "bytes": 119034,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p11/1920-dark.png",
+      "path": "screenshots/shots-p11/1920-dark.png",
+      "sha256": "5ac89c493cbaf6096c95cb7c1674baf2cbe2be9b2fbd9f073d3c7cd1a92ac245",
+      "bytes": 134648,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p11/1920-light.png",
+      "path": "screenshots/shots-p11/1920-light.png",
+      "sha256": "7ce29bb35fbd16d6f434236c417534b91175804f4330f546c5ca94a6a7107aad",
+      "bytes": 134153,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p12/p12-1366-dark.png",
+      "path": "screenshots/shots-p12/p12-1366-dark.png",
+      "sha256": "93ec255e902fc710565d3f1121e64db8a196555f5e5797893bfee5a8d862a342",
+      "bytes": 81299,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p12/p12-1366-light.png",
+      "path": "screenshots/shots-p12/p12-1366-light.png",
+      "sha256": "981c58a6828c3562642478f9d9503d7c362ef4f985e3f46161df5461f2a7dc08",
+      "bytes": 82689,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p12/p12-1920-dark.png",
+      "path": "screenshots/shots-p12/p12-1920-dark.png",
+      "sha256": "9c3e256c1ffd07a747bf37cd483d6c4c5811a7309d7286e5c1ffee84e26d252c",
+      "bytes": 85669,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p12/p12-1920-light.png",
+      "path": "screenshots/shots-p12/p12-1920-light.png",
+      "sha256": "f866e4446628addd82b03a7a3388109418047a655496ae5b7372b5a55c498f67",
+      "bytes": 89379,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p13/1366-dark.png",
+      "path": "screenshots/shots-p13/1366-dark.png",
+      "sha256": "4d08dab676b465107f44fa313a21a83c7a367025f0da8bf7ddb1d0016d391712",
+      "bytes": 184186,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p13/1366-light.png",
+      "path": "screenshots/shots-p13/1366-light.png",
+      "sha256": "ef8edbb93393531bf042b0643f321132f8900c68905a8b8cc324c9bf6e56c081",
+      "bytes": 185078,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p13/1920-dark.png",
+      "path": "screenshots/shots-p13/1920-dark.png",
+      "sha256": "42132dbd9a8880a95593b4465c10587af1bbd547c104b024be623abd8c998968",
+      "bytes": 220490,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p13/1920-light.png",
+      "path": "screenshots/shots-p13/1920-light.png",
+      "sha256": "3626b24ac3ff62a4654803f91314f2add8311d698ce1493874b95ca3442d6c4e",
+      "bytes": 220800,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p14/1366-dark.png",
+      "path": "screenshots/shots-p14/1366-dark.png",
+      "sha256": "c7390ddf9cb0f5e2c0d13573b10b01a0c77af7b0b32dd0bb5ea35b0e9cd03305",
+      "bytes": 110702,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p14/1366-light.png",
+      "path": "screenshots/shots-p14/1366-light.png",
+      "sha256": "ef093c0ad164de9c02f3f0a8530c2b244021c005e40e86e2df05e500f8470397",
+      "bytes": 112281,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p14/1920-dark.png",
+      "path": "screenshots/shots-p14/1920-dark.png",
+      "sha256": "f011ca643eaf157023055da4d9ee3379f6aa7fdfa939e35d057862f4cc67ffe8",
+      "bytes": 136869,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p14/1920-light.png",
+      "path": "screenshots/shots-p14/1920-light.png",
+      "sha256": "7e0b3ea79b21d98c89ab4d35f54fb82d687ecb9d385d461347d556c5e4669334",
+      "bytes": 136021,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p15/1366-dark.png",
+      "path": "screenshots/shots-p15/1366-dark.png",
+      "sha256": "9fe40e7fc9d35b8ee25221f5306e4a7b7634ed188af91c0b2855fd7c22f15532",
+      "bytes": 112483,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p15/1366-light.png",
+      "path": "screenshots/shots-p15/1366-light.png",
+      "sha256": "a4874541e107f24183bbcf0c524011340bea8a6ef34d3ba04c0848501d516a1c",
+      "bytes": 113685,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p15/1920-dark.png",
+      "path": "screenshots/shots-p15/1920-dark.png",
+      "sha256": "e0bfe3222130abba7235bb10b2b86b241c803f794b935a06bf05922dc950f2ec",
+      "bytes": 133584,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p15/1920-light.png",
+      "path": "screenshots/shots-p15/1920-light.png",
+      "sha256": "05a7f17f55ae71c1be3e0943f26c1157e15c0eafbdf7fdbc2d4d548ec64767c1",
+      "bytes": 132496,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p16/1366-dark.png",
+      "path": "screenshots/shots-p16/1366-dark.png",
+      "sha256": "388db270a85d259d6c0183b98148f79237aed204ccfc7499b60e874d21a46bf9",
+      "bytes": 117514,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p16/1366-light.png",
+      "path": "screenshots/shots-p16/1366-light.png",
+      "sha256": "b04a05338196afa52de549835becce9c48440686888e04201d4fad219b486e31",
+      "bytes": 118891,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p16/1920-dark.png",
+      "path": "screenshots/shots-p16/1920-dark.png",
+      "sha256": "d4629941d3220a7bee9ce8f4131390821845646d7f4bb72db9f5c4ded96f3c94",
+      "bytes": 131475,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p16/1920-light.png",
+      "path": "screenshots/shots-p16/1920-light.png",
+      "sha256": "87b0b0e366e13a8020e08a7c8a393459c0335b5372ce7fd427275f38322c5848",
+      "bytes": 131398,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p17/dark-1366.png",
+      "path": "screenshots/shots-p17/dark-1366.png",
+      "sha256": "ea4ab3a483ccf5d9a6619b3b98339bc490593e6c863b191215ddcfc9a6aaed5d",
+      "bytes": 116129,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p17/dark-1920.png",
+      "path": "screenshots/shots-p17/dark-1920.png",
+      "sha256": "c1f896235e2733c53eacf6386cd0618e1553a2f7f97294a16d4fda744e12d75d",
+      "bytes": 137960,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p17/light-1366.png",
+      "path": "screenshots/shots-p17/light-1366.png",
+      "sha256": "29caca143fe89eeb7a1922a92fced423e22ff7fd9979e2ce7bd5cb36cc6bebda",
+      "bytes": 117033,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p17/light-1920.png",
+      "path": "screenshots/shots-p17/light-1920.png",
+      "sha256": "f3b94c697cb0afc8ee527bb09f7771d90ecf0096fb0141da2e79cae7b0f04ab1",
+      "bytes": 137306,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p18/dark-1366.png",
+      "path": "screenshots/shots-p18/dark-1366.png",
+      "sha256": "4461e91d6db568f00ba2f3802cc1792ed7f4bd5e826c2631c3a8ab54cb3798b5",
+      "bytes": 111854,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p18/dark-1920.png",
+      "path": "screenshots/shots-p18/dark-1920.png",
+      "sha256": "0ef9e5a7d38ffec3e8170a2b1012398f2059b787c64a694300d5b9aff35a1296",
+      "bytes": 133174,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p18/light-1366.png",
+      "path": "screenshots/shots-p18/light-1366.png",
+      "sha256": "dcffd88ec65e7d0550fb57c58d56a98600791119afe0263ed36f745b692ac6eb",
+      "bytes": 112640,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p18/light-1920.png",
+      "path": "screenshots/shots-p18/light-1920.png",
+      "sha256": "5c952b399a373dfff4f5b2e0c923f03f55c1fe5518054afc8337d47469606dc6",
+      "bytes": 132356,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p19/dark-1366.png",
+      "path": "screenshots/shots-p19/dark-1366.png",
+      "sha256": "34719789ead55902823ddf083efafaea4185f81eab0c544fe829c2e9b42da804",
+      "bytes": 98737,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p19/dark-1920.png",
+      "path": "screenshots/shots-p19/dark-1920.png",
+      "sha256": "58397274afcdb3fcff183b99089a44bdd73fbeb345f31d54c8f0415a16e042ce",
+      "bytes": 113890,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p19/light-1366.png",
+      "path": "screenshots/shots-p19/light-1366.png",
+      "sha256": "7be694d752a1603a460a1e6b985cf8c3db5593874b77ae31373a65a4c0c453b2",
+      "bytes": 100132,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p19/light-1920.png",
+      "path": "screenshots/shots-p19/light-1920.png",
+      "sha256": "91da6a15f9b0bd2b9e84826bbb7f3ddf7e5dcfccc07ce09de4a6638cf5c72d11",
+      "bytes": 112556,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p20/dark-1366.png",
+      "path": "screenshots/shots-p20/dark-1366.png",
+      "sha256": "53b883cf933c37f1f8a48c93af7cc139a0320174e19c6b55a17243398859aa31",
+      "bytes": 99603,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p20/dark-1920.png",
+      "path": "screenshots/shots-p20/dark-1920.png",
+      "sha256": "fde03c715fdeec175735257f8c2e02a31209c5de0e88913c4b29a496898b65ac",
+      "bytes": 121445,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p20/light-1366.png",
+      "path": "screenshots/shots-p20/light-1366.png",
+      "sha256": "d27ad3a72c7562f0570459422735db715d4635614dd065cedd0af3de60a8250d",
+      "bytes": 104693,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p20/light-1920.png",
+      "path": "screenshots/shots-p20/light-1920.png",
+      "sha256": "90b0950d42824157073d799882f391566a1b7b06c096a643d5219ee2685938a0",
+      "bytes": 120074,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p22/dark-1366.png",
+      "path": "screenshots/shots-p22/dark-1366.png",
+      "sha256": "23dcd3a657ef6fc49028eaef78b38f85779f899b6a391d9ee7b625e58c2c9299",
+      "bytes": 119996,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p22/dark-1920.png",
+      "path": "screenshots/shots-p22/dark-1920.png",
+      "sha256": "2c28ec0793e0e34a8d30fbdbaf6e33798728f4f699bdc9bea61fbbab0f8097a3",
+      "bytes": 131862,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p22/light-1366.png",
+      "path": "screenshots/shots-p22/light-1366.png",
+      "sha256": "28a3943cd3f4e763fdb967e0e93ae9adb49b90fa412ad2604e99fbfaee2c5cde",
+      "bytes": 121119,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p22/light-1920.png",
+      "path": "screenshots/shots-p22/light-1920.png",
+      "sha256": "6fbe46c5fa1e4d08b141dd392d34bf623fda56bc2fb6c2fae0f36ceae9d20f79",
+      "bytes": 132036,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p23/dark-1366.png",
+      "path": "screenshots/shots-p23/dark-1366.png",
+      "sha256": "e00c235e6d65821eef3cce6bd672ea3eac589b71308b1b1e93aeded93888ecb6",
+      "bytes": 107299,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p23/dark-1920.png",
+      "path": "screenshots/shots-p23/dark-1920.png",
+      "sha256": "3f562b5aa6777c0a2e2470bb9c3b9fd039d8b76f662b3f3d59f2b8ff2c244557",
+      "bytes": 124409,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p23/light-1366.png",
+      "path": "screenshots/shots-p23/light-1366.png",
+      "sha256": "585dbef144ee5bd87c5119030ea8b858987699f0babbc73689b6ede3f3fd8358",
+      "bytes": 107508,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p23/light-1920.png",
+      "path": "screenshots/shots-p23/light-1920.png",
+      "sha256": "f23aa103db56c33601992fe1637bb7bbcb2c69b6f2e00d73393b06718e716fac",
+      "bytes": 122638,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p24/dark-1366.png",
+      "path": "screenshots/shots-p24/dark-1366.png",
+      "sha256": "e48570753cae3327ea6e23c0122235449098a15fd6c0a790880fc4d581706b35",
+      "bytes": 96884,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p24/dark-1920.png",
+      "path": "screenshots/shots-p24/dark-1920.png",
+      "sha256": "253a3a877b76c7102d20e7b8c67bd99286696b94e0c3d351636ba7434b541928",
+      "bytes": 110945,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p24/light-1366.png",
+      "path": "screenshots/shots-p24/light-1366.png",
+      "sha256": "847259896a1d548525d695f3d0ba69e9f750908542bb9270d28bb4d2d64f6d59",
+      "bytes": 98079,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p24/light-1920.png",
+      "path": "screenshots/shots-p24/light-1920.png",
+      "sha256": "a7e42509f113519404ffc224a19511154b272ef4ced0ca03fb79cd1852150f2e",
+      "bytes": 110349,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p25/dark-1366.png",
+      "path": "screenshots/shots-p25/dark-1366.png",
+      "sha256": "948d97a9512eed9e444ea78e1aa6944f7b91846369f4d47d8e47e15722797d7e",
+      "bytes": 261987,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p25/dark-1920.png",
+      "path": "screenshots/shots-p25/dark-1920.png",
+      "sha256": "35aa4db977f306b17b18a306de2febed35c8e44b30b289217948d41e049d5d57",
+      "bytes": 335795,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p25/light-1366.png",
+      "path": "screenshots/shots-p25/light-1366.png",
+      "sha256": "7dea0e9483b8481000249c1fc711e829a46e1db1b2001c2d8863e244cb4ae559",
+      "bytes": 236508,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p25/light-1920.png",
+      "path": "screenshots/shots-p25/light-1920.png",
+      "sha256": "0ea56786f3648ae024726a0fca2b4390df0f21656ba6a02a0928901023788b2e",
+      "bytes": 309069,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p26/dark-1366.png",
+      "path": "screenshots/shots-p26/dark-1366.png",
+      "sha256": "ae50d605a85b2c07cac9db27702ae05667b20f7f990f5fec05627092552513d8",
+      "bytes": 197039,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p26/dark-1920.png",
+      "path": "screenshots/shots-p26/dark-1920.png",
+      "sha256": "90d0bd4010a47d0b743c513f71b1c62835af265ab5906405d9f8fc4ff734aea9",
+      "bytes": 257309,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p26/light-1366.png",
+      "path": "screenshots/shots-p26/light-1366.png",
+      "sha256": "08a4eb58b40c2a4b181aabdc47bfbf217131d0bf499226ea9e95a9fa51c35df6",
+      "bytes": 202877,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p26/light-1920.png",
+      "path": "screenshots/shots-p26/light-1920.png",
+      "sha256": "9cc86c2c4d16a87898cc91bff783d59ad8bee3dc7bad33823349678f084351fa",
+      "bytes": 254262,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p27/dark-1366.png",
+      "path": "screenshots/shots-p27/dark-1366.png",
+      "sha256": "21bd3f6eab9b2b1e3687cc4d6e5896085d05520f1ab499909b0a862a6d68bcfa",
+      "bytes": 161699,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p27/dark-1920.png",
+      "path": "screenshots/shots-p27/dark-1920.png",
+      "sha256": "e000e1a66ca67650ecdfd5fe481cd913d23c4c814de337a31080859f6550936e",
+      "bytes": 225778,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p27/light-1366.png",
+      "path": "screenshots/shots-p27/light-1366.png",
+      "sha256": "9b4510309888c8846fcc583f2dd83c5414f50cd08b2ddf16f01dbff94a91f275",
+      "bytes": 159314,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p27/light-1920.png",
+      "path": "screenshots/shots-p27/light-1920.png",
+      "sha256": "c8a0ea6e556541ede9028921669a2d0c0d78d874945f1b39b6626c6a28b010ad",
+      "bytes": 224452,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p28/dark-1366.png",
+      "path": "screenshots/shots-p28/dark-1366.png",
+      "sha256": "da61e4b54c06918ad48b72c4dba708d07938f86f64b7040dbf2caed33b264d98",
+      "bytes": 289864,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p28/dark-1920.png",
+      "path": "screenshots/shots-p28/dark-1920.png",
+      "sha256": "ee5583c2c595c8e196a5204775ded852676f55cc39b85bf67d2b3c9b0871835c",
+      "bytes": 390977,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p28/light-1366.png",
+      "path": "screenshots/shots-p28/light-1366.png",
+      "sha256": "28c7638413a5491325ed598543b8658b3c3c04fbb325b26f87998daf052fefc4",
+      "bytes": 289887,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p28/light-1920.png",
+      "path": "screenshots/shots-p28/light-1920.png",
+      "sha256": "73ae0743b53ab7b9e5cf98d11a7ae5c6cffe2209cc4afb003c8090da1ef9ca0e",
+      "bytes": 385134,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p29/dark-1366.png",
+      "path": "screenshots/shots-p29/dark-1366.png",
+      "sha256": "f4fcb65532a8d11d3566bf60498583d735c22dcf41fec848627f411b124095c9",
+      "bytes": 112521,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p29/dark-1920.png",
+      "path": "screenshots/shots-p29/dark-1920.png",
+      "sha256": "ec5560be08a6e4f48477e5cb9873fa65cc99161303c65a56c1982b0e201a4421",
+      "bytes": 159987,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p29/light-1366.png",
+      "path": "screenshots/shots-p29/light-1366.png",
+      "sha256": "28aaa37b03cd022acdf96ca432abf2ad3e04fc2ed48738438d2d41586bc350ee",
+      "bytes": 115130,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p29/light-1920.png",
+      "path": "screenshots/shots-p29/light-1920.png",
+      "sha256": "7d375c2922df5e36258e6cb67c33b61b2d71c0525c3dee20abc2868c35dccbec",
+      "bytes": 162836,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p30/dark-1366.png",
+      "path": "screenshots/shots-p30/dark-1366.png",
+      "sha256": "2e19ac52b43153784eef7445bc333fe44fd57166ed81f8d09685cbece6d7dcef",
+      "bytes": 264065,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p30/dark-1920.png",
+      "path": "screenshots/shots-p30/dark-1920.png",
+      "sha256": "f64e692694b3e4dc415ecf7b55a4464a9a28861c536391ea69c581506a900216",
+      "bytes": 97859,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p30/light-1366.png",
+      "path": "screenshots/shots-p30/light-1366.png",
+      "sha256": "abf1c8c13bdbba7b338c52914e27256b5c91fbc5eb50518e7477cd9f82e528cd",
+      "bytes": 5775,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p30/light-1920.png",
+      "path": "screenshots/shots-p30/light-1920.png",
+      "sha256": "d30a73b19e3b95b16d63f6e08b3d1aef865bb78e61403ec8ea7773dc719923ee",
+      "bytes": 260629,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p31/dark-1366.png",
+      "path": "screenshots/shots-p31/dark-1366.png",
+      "sha256": "fc574dbb812aeb53831c4f48b28a2ef6ab146c29ab636b331454206c8b4f4b17",
+      "bytes": 126336,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p31/dark-1920.png",
+      "path": "screenshots/shots-p31/dark-1920.png",
+      "sha256": "24b3d3fcf88320b1e483cb8e3b5b9ff5dda0ad827141ab4631cd86a76c94865c",
+      "bytes": 138894,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p31/light-1366.png",
+      "path": "screenshots/shots-p31/light-1366.png",
+      "sha256": "cd7b03ff77ecc8ab3cf7ccf5b1e6769fa93e08b5ed24b2799f8c1539e597911d",
+      "bytes": 125641,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p31/light-1920.png",
+      "path": "screenshots/shots-p31/light-1920.png",
+      "sha256": "32696f6fd73e335900be623f2966015fb6d9fd3123e4135da03a7964b0007eb5",
+      "bytes": 137756,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p32/dark-1366.png",
+      "path": "screenshots/shots-p32/dark-1366.png",
+      "sha256": "c1cfe0237faaaafc3b14c58c82c83b7d855842cf214bc190064afa95c4a69559",
+      "bytes": 103597,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p32/dark-1920.png",
+      "path": "screenshots/shots-p32/dark-1920.png",
+      "sha256": "0482cf8de889b0c01dc39816a443617a9ef957bce266ffbd3a75867116b321cb",
+      "bytes": 121483,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p32/light-1366.png",
+      "path": "screenshots/shots-p32/light-1366.png",
+      "sha256": "a830ec4620ecae28d6987f941a9742cb68738bb0064aa88eb97fb2d047b6be45",
+      "bytes": 104925,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p32/light-1920.png",
+      "path": "screenshots/shots-p32/light-1920.png",
+      "sha256": "2627ea8075788e9edff383c37191e4d85964705b497fcd0e1543478e85a01c97",
+      "bytes": 120009,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p39/vehicle-info-1366-dark.png",
+      "path": "screenshots/shots-p39/vehicle-info-1366-dark.png",
+      "sha256": "b674072fbcf0f1d50fd523445ca045f50429de03fb0dacdb3111aafde36af689",
+      "bytes": 251852,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p39/vehicle-info-1366-light.png",
+      "path": "screenshots/shots-p39/vehicle-info-1366-light.png",
+      "sha256": "c2e1b79b261462b0817362682a210686e86898c840f81fc5ce3e9c4518248af3",
+      "bytes": 263976,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p39/vehicle-info-1920-dark.png",
+      "path": "screenshots/shots-p39/vehicle-info-1920-dark.png",
+      "sha256": "1cc3ece83ab94dfffb4b212c9e094455ebe7a48b2f401a78a48fc452ae372946",
+      "bytes": 312781,
+      "classification": "historical_unreviewed"
+    },
+    {
+      "source": ".run-lock/shots-p39/vehicle-info-1920-light.png",
+      "path": "screenshots/shots-p39/vehicle-info-1920-light.png",
+      "sha256": "992a9a80581c020b3cba171af9a17c4ed2a3d754df4736cfa1f4c962958cd7ab",
+      "bytes": 316594,
+      "classification": "historical_unreviewed"
+    }
+  ],
+  "missing": "已删除的历史验证脚本无法从本机恢复，不伪造补建；任务记录中的通过数字仍须复核。"
+}

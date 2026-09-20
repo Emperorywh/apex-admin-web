@@ -23,9 +23,23 @@ dist-ssr
 *.sln
 *.sw?
 
-# 迁移串行调度跨运行执行锁（目录锁，运行期临时产物）
+# 迁移唯一执行锁：仅运行元数据与短命令互斥文件，不入库。
+# 持久验收证据必须放在 docs/migration/evidence，不能放在以下临时目录。
 docs/migration/.lock/
 
-# 迁移调度串行锁（定时任务运行态，不入库；RUN_STATE.json 登记）
+# 历史临时目录继续忽略，但不再作为新的锁路径或唯一证据位置。
 .migration_lock/
 .run-lock/
+
+# 测试截图仅在本机留存，Git 只保存文字记录、验证脚本和证据索引。
+# 规则限定在迁移证据目录，不影响业务图片资源；禁止强制添加截图。
+/docs/migration/evidence/**/screenshots/
+/docs/migration/evidence/**/*.[pP][nN][gG]
+/docs/migration/evidence/**/*.[jJ][pP][gG]
+/docs/migration/evidence/**/*.[jJ][pP][eE][gG]
+/docs/migration/evidence/**/*.[wW][eE][bB][pP]
+/docs/migration/evidence/**/*.[gG][iI][fF]
+/docs/migration/evidence/**/*.[bB][mM][pP]
+/docs/migration/evidence/**/*.[aA][vV][iI][fF]
+/docs/migration/evidence/**/*.[tT][iI][fF]
+/docs/migration/evidence/**/*.[tT][iI][fF][fF]

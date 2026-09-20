@@ -1,0 +1,11 @@
+{
+  "runId": "run-20260920-p21-080524",
+  "ended": true,
+  "kind": "user_confirmation",
+  "reference": "当前 Codex 会话用户回复：P21 当前执行已经停止。",
+  "checkedAt": "2026-09-20T01:26:38.610363+00:00",
+  "automation": "automation-4c58cefd-88c2-4b25-b14d-53904b310c3e",
+  "automationStatus": "ZCode 已暂停，保持暂停；旧会话数据库 running 标记不作为继续执行的证据。",
+  "previousLockArchive": ".run-lock/legacy-lock-run-20260920-p21-080524/lock.json",
+  "codeHead": "3734a6992f2d6429722f9903146ca3562c6a4671"
+}

@@ -1,0 +1,48 @@
+{
+  "scope": "控制器命令行集成烟测，不是业务验收或单元测试",
+  "checkedAt": "2026-09-20T01:39:01.982594+00:00",
+  "runnerSha256": "2c1ddcb36ce3fcb24da85ef96a72e71985344d0b747b369b4f9c54f88eca65e3",
+  "passedCases": 10,
+  "results": [
+    {
+      "case": "48 项队列与复选框投影校验",
+      "status": "passed"
+    },
+    {
+      "case": "两个独立 Node 进程争锁仅一个成功",
+      "status": "passed"
+    },
+    {
+      "case": "错误运行不能释放别人的锁",
+      "status": "passed"
+    },
+    {
+      "case": "过期修订号拒绝；有效检查点原子保存",
+      "status": "passed"
+    },
+    {
+      "case": "缺少验收记录不能勾选或放行",
+      "status": "passed"
+    },
+    {
+      "case": "结束记录先落盘，再释放本轮锁",
+      "status": "passed"
+    },
+    {
+      "case": "不匹配证明拒绝；对应终态证明归档后恢复",
+      "status": "passed"
+    },
+    {
+      "case": "提交后中断优先交付；本地推送及重复核验幂等；交付轮禁止改业务状态",
+      "status": "passed"
+    },
+    {
+      "case": "49 条完整矩阵可投影；受检文件变化转复核且 check 拒绝旧证据",
+      "status": "passed"
+    },
+    {
+      "case": "V01 前先逐任务补验，避免总验收阶段串行死锁",
+      "status": "passed"
+    }
+  ]
+}
