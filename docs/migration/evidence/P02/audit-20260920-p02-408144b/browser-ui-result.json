@@ -1,0 +1,104 @@
+{
+  "generatedAt": "2026-09-20",
+  "run": "audit-20260920-p02-408144b",
+  "task": "P02 软件授权",
+  "channel": "Vite dev server 同源代理 http://localhost:5173（用户既有运行，未接管）→ APEX_DEV_LEGACY_TARGET",
+  "steps": [
+    {
+      "id": "guard-unauthenticated",
+      "action": "未登录新页签直访 /authorize-ingress",
+      "expected": "认证守卫送回登录页并保留站内回跳参数",
+      "actual": "跳转 /login?redirect=%2Fauthorize-ingress",
+      "result": "pass"
+    },
+    {
+      "id": "language-switch-en",
+      "action": "登录页语言菜单（真实指针打开，五项自名：简体中文/繁體中文/English/日本語/한국어）点击 English",
+      "expected": "SPA 切换不整页刷新，html lang 与持久化同步",
+      "actual": "html lang=en-US；localStorage apex-admin:lang=en-US；按钮文案 Sign in",
+      "result": "pass"
+    },
+    {
+      "id": "login-backjump",
+      "action": "真实指针输入凭据（cua 键入，密码框圆点回显核对长度）→ Sign in",
+      "expected": "登录成功后按 redirect 参数合法回跳授权页（授权入口≠免鉴权、站内目标放行）",
+      "actual": "落 /authorize-ingress；Login successful toast 在真实返回后出现",
+      "result": "pass"
+    },
+    {
+      "id": "authorize-page-en",
+      "action": "读取授权页英文渲染",
+      "expected": "heading/副标题/硬件码/复制/表单/按钮全部 en-US，硬件码为真实值",
+      "actual": "Software License / System not activated. Send the hardware ID... / Hardware ID / Copy / Please enter activation code / Back to Login / Activate License(空输入禁用)；真实硬件码 72 字符渲染（值不入档）；0/2000 计数器",
+      "result": "pass"
+    },
+    {
+      "id": "copy-clipboard",
+      "action": "真实指针点击 Copy，navigator.clipboard.readText 读回",
+      "expected": "复制成功提示 + 剪贴板内容=硬件码",
+      "actual": "Copied toast 实见；剪贴板读回 72 字符与页面硬件码前缀一致（值不入档）",
+      "result": "pass"
+    },
+    {
+      "id": "activation-failure-branch",
+      "action": "诊断注入：XHR 层拦截 softwareActivation 在本机直接失败（请求零网络发出），真实指针输入测试码并点击 Activate License",
+      "expected": "错误提示 + 输入保留 + 按钮恢复；零后端接触",
+      "actual": "toast「Activation error：Network unreachable. Check your connection or the backend service.」；textarea 保留 AUDIT-TEST-CODE-20260920（测后 reload 清除）；按钮恢复；performance 资源条目证实无 softwareActivation 请求（零写接触）",
+      "boundary": "网络失败为客户端注入（与 2026-09-18 交付轮同技术），不证明真实断网；提交的测试激活码未离开本机",
+      "result": "pass"
+    },
+    {
+      "id": "refresh-recovery",
+      "action": "授权页 reload",
+      "expected": "会话持久化恢复，仍落授权页",
+      "actual": "reload 后仍在 /authorize-ingress，硬件码重新加载成功；诊断注入与测试输入随重载清除",
+      "result": "pass"
+    },
+    {
+      "id": "lang-zhTW-cycle",
+      "action": "Back to Login → 语言菜单切繁體中文 → 登录 → 直访授权页",
+      "expected": "登录落点规则生效；授权页繁中渲染",
+      "actual": "无 redirect 参数时落 /order-record（首个可用业务页，/dashboard 迁移完成前不作落点）；授权页：軟體授權/硬體碼/複製/返回登入/啟用授權，html lang=zh-TW，硬件码 72 字符",
+      "result": "pass"
+    },
+    {
+      "id": "lang-jaJP-cycle",
+      "action": "同上切日本語",
+      "expected": "授权页日文渲染",
+      "actual": "ソフトウェア認証/コピー/ログインに戻る/ライセンスを有効化/アクティベーションコードを入力してください，html lang=ja-JP",
+      "result": "pass"
+    },
+    {
+      "id": "lang-koKR-cycle",
+      "action": "同上切한국어",
+      "expected": "授权页韩文渲染",
+      "actual": "소프트웨어 인증/복사/로그인으로 돌아가기/라이선스 활성화/활성화 코드를 입력하세요，html lang=ko-KR",
+      "result": "pass"
+    },
+    {
+      "id": "lang-restore-zhCN-1920",
+      "action": "切回简体中文 → 登录 → 授权页 1920×1080 整页截图",
+      "expected": "语言偏好还原 zh-CN；大视口布局完整",
+      "actual": "html lang=zh-CN；1920 下卡片居中（480×607）、深蓝科技风完整、软件授权/硬件码/请输入激活码/返回登录/激活授权(禁用态)；截图 authorize-1920-zh.png",
+      "boundary": "首张 1920 截图为 IAB 旧合成帧（DOM 核实卡片已渲染 480×607），强制重绘后重截证实",
+      "result": "pass"
+    },
+    {
+      "id": "logout-cleanup",
+      "action": "顶栏用户菜单 → 退出登录（触发为诊断性 DOM click，见 boundary）→ 核验持久化会话",
+      "expected": "会话清理、语言偏好保留、回登录页",
+      "actual": "直接跳 /login（无脏页签/在途传输，统一动作守卫按 T00.6 设计不弹确认）；persist:apex-admin:auth 中 token/user/permissions 全清空、isAuthenticated 空；apex-admin:lang=zh-CN 保留",
+      "boundary": "登出菜单项触发为合成 click（IAB 对该 portal 菜单坐标/键盘/locator 路径均无法穿透，已登记）；守卫确认与后续流程为真实应用行为；登出链路本身属 P01/T00 已验范围，非 P02 验收项",
+      "result": "pass"
+    }
+  ],
+  "environment": {
+    "browser": "ZCode IAB（Chromium 内核，Windows 11）",
+    "viewports": ["1366×768", "1920×1080"],
+    "backend": "192.168.0.158:8888（已激活联调后端，经 dev 同源代理）",
+    "account": "root（.env.local 本机测试凭据，值不入档）",
+    "languages": "zh-CN/en-US/zh-TW/ja-JP/ko-KR 五语言授权页全页证据",
+    "screenshots": "screenshots/authorize-1366-en.png、authorize-1920-zh.png（仅本地留存，git 排除）",
+    "inputPipelineNotes": "IAB 已知现象两处复现并按既有处置：① reload/goto 后首击被吞（新开页签或二次点击恢复）；② 截图旧合成帧与 DOM 矛盾（强制重绘后复核）。全部交互优先真实指针路径，两处合成路径已逐项登记边界"
+  }
+}

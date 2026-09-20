@@ -1,0 +1,565 @@
+{
+  "taskId": "P02",
+  "codeCommit": "408144b8d7b47fe93eb09d8c460681c978ac831c",
+  "releaseChecks": {
+    "scope": "passed",
+    "static": "passed",
+    "readOnly": "passed",
+    "ui": "passed",
+    "sharedConsumers": "passed"
+  },
+  "releaseReasons": [
+    "static：本轮未重复全量检查——基线 a9a3cc0 的 pnpm check/build 于同日 T00 audit 复绿，其后仅 44fc5e6/408144b 两个 docs 提交（git diff a9a3cc0..HEAD 证实 src/、package.json、pnpm-lock.yaml、vite.config.ts 零变化），结果直接适用",
+    "ui：真实浏览器验收于本机 dev server 同源代理（5173 用户既有运行未接管）→ 192.168.0.158:8888 已激活后端；激活提交失败分支为客户端注入（零网络接触，performance 资源条目证实），真实激活成功链路按 D32 deferred",
+    "sharedConsumers：license-activation 服务与 ActivationForm 的消费者 P29 已于 P29 轮（2026-09-20）带令牌联验复用契约；request.ts 1001000 收敛/authSlice/definitions.tsx/App.tsx 全局消费在 T00 audit 同基线复核，此后公共文件零变化"
+  ],
+  "releaseNotes": "audit 复核轮：保留历史实现，补齐真实只读（getHardwareInfo 无令牌/直连对照 2/2）、浏览器整页（守卫回跳/登录回跳/复制/失败留稿/五语言全页/双视口/登出清理）与 10.11.2.67 激活态探测（不可达）新鲜证据；verification=partial（A14 激活副作用、A04/I06 同 T00/P01 口径 deferred），gate=ready 维持 B1/P29 放行，不勾选 TASKS",
+  "items": [
+    {
+      "id": "TASK",
+      "status": "passed",
+      "reason": "P02 专项逐项复核成立：未登录/会话过期/软件未激活/授权失效四态分流——未登录守卫实测（/login?redirect=%2Fauthorize-ingress）、未激活由页面自身定位呈现+1001000 收敛接线机制实证（G17 有真实业务码观察）、会话过期走请求层 1000000 单飞（T00 实证）、授权失效到期码随 P29 getLicense 复核（contracts 登记）；独立授权入口≠免鉴权实测（守卫拦截+登录后合法回跳）；激活副作用按 D32 专用环境 deferred（A14），激活成功导航走 resolveLandingPath 不复刻旧硬编码 /over-look（规格优先级差异已登记）。",
+      "evidence": [
+        "docs/migration/tasks/P02.md",
+        "docs/migration/evidence/P02/audit-20260920-p02-408144b/browser-ui-result.json",
+        "docs/migration/evidence/P02/audit-20260920-p02-408144b/p02-readonly-result.json"
+      ]
+    },
+    {
+      "id": "DoD1",
+      "status": "passed",
+      "reason": "旧页可达业务清点完整（递归复核 C:\\code\\dd\\src\\pages\\AuthorizeIngress 仅 index.tsx+index.less 两文件，无其他可达子组件）：硬件码展示、一键复制、激活码输入提交、返回登录、成功后导航。新实现一一对应，无遗漏无扩张；操作映射见交接记录与 operations.md。",
+      "evidence": [
+        "docs/migration/tasks/P02.md",
+        "docs/migration/operations.md"
+      ]
+    },
+    {
+      "id": "DoD2",
+      "status": "passed",
+      "reason": "页面零 axios/零拼 URL：license.service 单点 GET /auth/license/getHardwareInfo（ResultString，本轮实测 HTTP 200+code=200）、POST /auth/license/softwareActivation（ResultVoid，写不自动重试）；GET 对象序列化不涉及（无参 GET）；成功判定仅业务 code=200（比旧实现去除 message==='success' 英文串依赖，规格 4.2）；OpenAPI security None、认证头由请求层统一携带。",
+      "evidence": [
+        "src/services/license-activation/license.service.ts",
+        "docs/migration/evidence/P02/audit-20260920-p02-408144b/p02-readonly-result.json"
+      ]
+    },
+    {
+      "id": "DoD3",
+      "status": "passed",
+      "reason": "状态区分：未登录（守卫实测）、未激活（页面呈现未激活引导+请求层 1001000 单飞接线，授权页自身抑制防循环）、会话过期（1000000 单飞清会话，T00 实证）、无权限（落无权限页）四态分离；页面非公开受认证守卫（规格 5.6 授权入口≠免鉴权）实测成立。activated=false 登录落点授权页与 1001000 真实业务触发需未激活后端环境：10.11.2.67 本轮探测网络不可达，连同 G17 历史真实观察登记 pendingItem 归 V01（不阻塞：机制两端各自实证——落点分支 T00.4 实证、事件引导生产构建实证）。",
+      "evidence": [
+        "src/services/request/request.ts",
+        "src/router/routeAccess.ts",
+        "docs/migration/evidence/P02/audit-20260920-p02-408144b/browser-ui-result.json",
+        "docs/migration/gaps.md"
+      ]
+    },
+    {
+      "id": "DoD4",
+      "status": "not_applicable",
+      "reason": "授权页无任何表格（主表/编辑表/弹窗表均不涉及），Apex 统一要求不适用。",
+      "evidence": [
+        "docs/migration/tasks/P02.md"
+      ]
+    },
+    {
+      "id": "DoD5",
+      "status": "not_applicable",
+      "reason": "无表格分页/选择/列偏好语义。",
+      "evidence": [
+        "docs/migration/tasks/P02.md"
+      ]
+    },
+    {
+      "id": "DoD6",
+      "status": "passed",
+      "reason": "useHardwareInfo 三态（加载/失败/成功）+卸载取消+重试防乱序，失败不以空串冒充成功（hardwareId 保持空由 error 区分）；失败分支本轮以客户端注入网络失败新鲜实测（错误文案+零假成功）；重试按钮为 StateBlock offline+onRetry 既定模式（ReadOnlyMap/DispatchHub 同款：无轮询独立数据块唯一自愈路径），不属「手动刷新」禁令范围；主动取消静默不报错。",
+      "evidence": [
+        "src/features/license-activation/hooks/useHardwareInfo.ts",
+        "docs/migration/evidence/P02/audit-20260920-p02-408144b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "DoD7",
+      "status": "passed",
+      "reason": "激活码输入草稿失败保留实测（注入失败后 textarea 原值保留）；页面刷新恢复实测（reload 后会话保持、硬件码重载）；非实时页无轮询；会话数据登出即清（本轮实测 persist:apex-admin:auth 全清）；浏览器非正常终止不承诺草稿恢复（内存草稿设计如实）。",
+      "evidence": [
+        "docs/migration/evidence/P02/audit-20260920-p02-408144b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "DoD8",
+      "status": "passed",
+      "reason": "激活写入：submitting loading 防连点（实测 loading 态出现）；写请求不自动重放（请求层纪律）；失败如实反馈保留输入可重试（实测）；成功仅以后端 code=200 判定（前端不做格式改写、后端唯一校验方）。真实激活成功链路（副作用）按 D32 专用环境 deferred，登记于 A14。",
+      "evidence": [
+        "src/features/license-activation/components/ActivationForm/ActivationForm.tsx",
+        "docs/migration/evidence/P02/audit-20260920-p02-408144b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "DoD9",
+      "status": "not_applicable",
+      "reason": "授权页无文件传输任务（硬件码/激活码为文本输入输出，非 Blob/流）。",
+      "evidence": [
+        "docs/migration/tasks/P02.md"
+      ]
+    },
+    {
+      "id": "DoD10",
+      "status": "not_applicable",
+      "reason": "无地图/关联选择。",
+      "evidence": [
+        "docs/migration/tasks/P02.md"
+      ]
+    },
+    {
+      "id": "DoD11",
+      "status": "passed",
+      "reason": "五语言随页交付并全页实测（超出上轮 en/繁全页+日韩标题范围）：en-US/zh-TW/ja-JP/ko-KR 授权页整页翻译（标题/副标题/硬件码/复制/占位符/按钮）+zh-CN 键即文案；html lang 逐语言同步；license-activation 命名空间四语言分片 12 键（旧 10 键全保留+激活成功/重试新增登记）；切换经登录页真实菜单（五项自名不译）。",
+      "evidence": [
+        "src/i18n/locales/en-US/license-activation.ts",
+        "docs/migration/evidence/P02/audit-20260920-p02-408144b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "DoD12",
+      "status": "passed",
+      "reason": "语言边界：语言菜单自名不译；无用户内容/日志/原始标识翻译场景；激活码原样提交（trim 仅输入卫生，不改写内容）；Accept-Language 由请求层统一发送（P01/T00 实证，本页无服务端语言相关只读内容）；后端错误经 apiErrorMessage 保留原文路径（P01 错误凭据同路径实证）。",
+      "evidence": [
+        "src/features/license-activation/components/ActivationForm/ActivationForm.tsx",
+        "docs/migration/evidence/P01/audit-20260920-p01-44fc5e6/acceptance.json"
+      ]
+    },
+    {
+      "id": "DoD13",
+      "status": "passed",
+      "reason": "1366×768（en）与 1920×1080（zh）整页截图：深蓝科技风完整还原（网格/扫描线/四角边框/水印/辉光标题，含 prefers-reduced-motion），卡片居中按钮可达无溢出；独立页固定深色为与旧系统一致的设计行为（不随外壳主题变化，静态审查证实不读 data-theme）；1920 首帧为 IAB 旧合成帧伪影，DOM 核实（480×607 居中）+重绘后重截证实。IAB Chromium/Windows 边界如实保留，macOS/实体 Chrome/Edge 归 V01。",
+      "evidence": [
+        "docs/migration/evidence/P02/audit-20260920-p02-408144b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "DoD14",
+      "status": "not_applicable",
+      "reason": "无统计/时间业务（硬件码为标识符非时间值；部署时区不涉及）。",
+      "evidence": [
+        "docs/migration/tasks/P02.md"
+      ]
+    },
+    {
+      "id": "DoD15",
+      "status": "passed",
+      "reason": "静态门禁复用 T00 audit 同代码基线复绿结果（a9a3cc0 pnpm check 全绿+build 通过；其后仅 docs 提交，git diff 证实零代码变化）；本轮补真实只读复测 2/2（无令牌 getHardwareInfo 经代理与直连一致）与浏览器 UI 验收；激活写副作用按规格仅专用环境（deferred 登记于 A14，不对共享环境提交无效激活码写尝试）；未新增单元测试。",
+      "evidence": [
+        "docs/migration/evidence/T00/audit-20260920-t00-a9a3cc0/acceptance.json",
+        "docs/migration/evidence/P02/audit-20260920-p02-408144b/p02-readonly-result.json",
+        "docs/migration/evidence/P02/audit-20260920-p02-408144b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "DoD16",
+      "status": "passed",
+      "reason": "P02 范围（pages/authorize-ingress、services/license-activation、features/license-activation）grep 零 mock/console/debugger/fakeAdmin 残留；交接记录已按 audit 口径更新；缺口/限制/deferred 如实登记于本记录与 pendingItems。",
+      "evidence": [
+        "docs/migration/tasks/P02.md",
+        "docs/migration/evidence/P02/audit-20260920-p02-408144b/code-files.json"
+      ]
+    },
+    {
+      "id": "A01",
+      "status": "not_applicable",
+      "reason": "45 叶子全项目映射主责 T00/V01；P02 入口 /authorize-ingress 已在路由定义（definitions.tsx 摘除 migrationPending）、i18n-map、operations.md 映射。",
+      "evidence": [
+        "src/router/definitions.tsx",
+        "docs/migration/operations.md"
+      ]
+    },
+    {
+      "id": "A02",
+      "status": "not_applicable",
+      "reason": "暂缓页边界主责 H01–H03；授权页不涉及。",
+      "evidence": [
+        "docs/migration/tasks/P02.md"
+      ]
+    },
+    {
+      "id": "A03",
+      "status": "passed",
+      "reason": "真登录为 P01 owner（同轮已复核 passed）；P02 消费同一会话：登录成功反馈在真实返回后出现（Login successful toast 实测）、无伪管理员（P01 轮 grep+代码审查）。",
+      "evidence": [
+        "docs/migration/evidence/P01/audit-20260920-p01-44fc5e6/acceptance.json",
+        "docs/migration/evidence/P02/audit-20260920-p02-408144b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A04",
+      "status": "deferred",
+      "reason": "机制级本轮再添实证：持久化恢复（授权页 reload 后会话保持）、登出清理（persist auth 切片 token/user/permissions 全清、语言偏好按设计保留）。真实 token 过期收敛与双窗口退出同步需长会话/双窗口环境，与 T00/P01 audit 同口径登记。",
+      "evidence": [
+        "docs/migration/evidence/P02/audit-20260920-p02-408144b/browser-ui-result.json",
+        "docs/migration/evidence/T00/audit-20260920-t00-a9a3cc0/acceptance.json"
+      ],
+      "category": "site_acceptance",
+      "basis": "复现需真实长会话 token 过期与双窗口环境，IAB 单页签自动化环境无法构造；T00/P01 audit 已同口径 deferred",
+      "owner": "V01",
+      "resumeCondition": "V01 统一验收在长会话环境复测 token 过期收敛与双窗口 storage 同步退出"
+    },
+    {
+      "id": "A05",
+      "status": "passed",
+      "reason": "P02 适用面：独立授权页受认证守卫实测（未登录拦截，≠免鉴权——本任务专项核心）；登录后站内合法回跳放行（redirect=%2Fauthorize-ingress 实测）；无 redirect 时落点规则生效（/order-record 首个可用业务页）；落点/守卫消费 routeAccess（T00.4 十七场景实证基线）。普通用户细分权限矩阵主责 P31/P32/V01（root 单账号环境限制，同 T00 口径）。",
+      "evidence": [
+        "src/router/routeAccess.ts",
+        "docs/migration/evidence/P02/audit-20260920-p02-408144b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A06",
+      "status": "passed",
+      "reason": "协议：GET /fms/v1/auth/license/getHardwareInfo 本轮无令牌实测 HTTP 200+code=200（经代理与直连一致）；POST softwareActivation 按 OpenAPI（SoftwareActivationCode→ResultVoid）；业务码判定不依赖英文 success 文案（改进点已登记）；Bearer/MD5 认证契约 G03 已关闭（2026-09-18）。",
+      "evidence": [
+        "docs/migration/evidence/P02/audit-20260920-p02-408144b/p02-readonly-result.json",
+        "src/services/license-activation/license.service.ts",
+        "docs/migration/gaps.md"
+      ]
+    },
+    {
+      "id": "A07",
+      "status": "not_applicable",
+      "reason": "无表格。",
+      "evidence": [
+        "docs/migration/tasks/P02.md"
+      ]
+    },
+    {
+      "id": "A08",
+      "status": "not_applicable",
+      "reason": "无表格数据语义。",
+      "evidence": [
+        "docs/migration/tasks/P02.md"
+      ]
+    },
+    {
+      "id": "A09",
+      "status": "not_applicable",
+      "reason": "无表格状态/列偏好。",
+      "evidence": [
+        "docs/migration/tasks/P02.md"
+      ]
+    },
+    {
+      "id": "A10",
+      "status": "passed",
+      "reason": "P02 请求面：useHardwareInfo 每次加载换新 AbortController 防旧响应乱序覆盖、卸载取消；submitting 防重复提交；语言切换为 SPA 状态切换不重发任何请求（页面请求仅挂载时硬件码一次，实测资源条目）。",
+      "evidence": [
+        "src/features/license-activation/hooks/useHardwareInfo.ts",
+        "docs/migration/evidence/P02/audit-20260920-p02-408144b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A11",
+      "status": "passed",
+      "reason": "查询失败真实反馈：硬件码加载失败显示错误文案+重试、不以占位符冒充成功（旧实现为 message toast+「—」占位，新实现按 DoD6 改进）；本轮以注入失败新鲜实测错误分支（历史 2026-09-18 同技术证据作对照）；无假空成功。",
+      "evidence": [
+        "docs/migration/evidence/P02/audit-20260920-p02-408144b/browser-ui-result.json",
+        "src/pages/authorize-ingress/AuthorizeIngress/AuthorizeIngress.tsx"
+      ]
+    },
+    {
+      "id": "A12",
+      "status": "not_applicable",
+      "reason": "授权页非实时页，无轮询。",
+      "evidence": [
+        "docs/migration/tasks/P02.md"
+      ]
+    },
+    {
+      "id": "A13",
+      "status": "passed",
+      "reason": "P02 草稿面=激活码输入：失败保留实测（注入失败后原值保留）；登录页语言切换保留输入由 P01 同轮实测覆盖（I04）；页面无长表单/多页签草稿场景。",
+      "evidence": [
+        "docs/migration/evidence/P02/audit-20260920-p02-408144b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A14",
+      "status": "deferred",
+      "reason": "激活写入机制级已实证：loading 防连点、失败留稿、不自动重放、code=200 唯一成功判定、成功后 activationConfirmed+落点导航接线；失败分支零后端接触实测。真实激活成功链路（提交有效激活码→activated 更新→落点）需专用未激活环境执行有效写操作——当前可用后端均已激活，不对共享环境提交写尝试。",
+      "evidence": [
+        "docs/migration/evidence/P02/audit-20260920-p02-408144b/browser-ui-result.json",
+        "docs/migration/tasks/P02.md"
+      ],
+      "category": "site_acceptance",
+      "basis": "D32：激活为系统级写副作用，规格明文要求专用环境或现场执行；激活态变更不可在已激活共享环境演练",
+      "owner": "V01（P02/P29 共用 ActivationForm，激活链路随 P29 getLicense 到期语义一并复核）",
+      "resumeCondition": "用户提供未激活专用环境或现场执行真实激活，复核成功提示/activated 更新/落点导航与 P29 授权信息刷新"
+    },
+    {
+      "id": "A15",
+      "status": "not_applicable",
+      "reason": "无批量/冲突场景（单字段写操作）。",
+      "evidence": [
+        "docs/migration/tasks/P02.md"
+      ]
+    },
+    {
+      "id": "A16",
+      "status": "not_applicable",
+      "reason": "无文件传输（文本输入输出，无 Blob/进度/取消语义）。",
+      "evidence": [
+        "docs/migration/tasks/P02.md"
+      ]
+    },
+    {
+      "id": "A17",
+      "status": "not_applicable",
+      "reason": "无地图/关联。",
+      "evidence": [
+        "docs/migration/tasks/P02.md"
+      ]
+    },
+    {
+      "id": "A18",
+      "status": "not_applicable",
+      "reason": "无工艺。",
+      "evidence": [
+        "docs/migration/tasks/P02.md"
+      ]
+    },
+    {
+      "id": "A19",
+      "status": "not_applicable",
+      "reason": "无统计。",
+      "evidence": [
+        "docs/migration/tasks/P02.md"
+      ]
+    },
+    {
+      "id": "A20",
+      "status": "passed",
+      "reason": "五语言全页实测（en/繁/日/韩+简中，含长句副标题布局无截断）；1366/1920 双视口截图；固定深色设计行为登记；IAB Chromium@Windows 边界如实保留（macOS/实体浏览器归 V01 全项目）。",
+      "evidence": [
+        "docs/migration/evidence/P02/audit-20260920-p02-408144b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A21",
+      "status": "passed",
+      "reason": "P02 范围零 mock（grep 零命中）；旧实现迁移无 mock/假进度引入；合法真实仿真接口 mockDispatch 属 P03 域不受影响；全项目 mock 审计归 T00（已核）/V01。",
+      "evidence": [
+        "docs/migration/evidence/P02/audit-20260920-p02-408144b/code-files.json",
+        "docs/migration/evidence/T00/audit-20260920-t00-a9a3cc0/acceptance.json"
+      ]
+    },
+    {
+      "id": "A22",
+      "status": "passed",
+      "reason": "授权页为合法站内回跳落点实测（redirect 参数守卫放行）；/authorize-ingress 地址无历史拼写变体；1001000 引导 SPA 导航不经整页重载（生产构建接线实证+授权页自身抑制）；登录落点规则联测一致（/order-record）。",
+      "evidence": [
+        "docs/migration/evidence/P02/audit-20260920-p02-408144b/browser-ui-result.json",
+        "src/features/license-activation/components/ActivationRedirectListener/ActivationRedirectListener.tsx"
+      ]
+    },
+    {
+      "id": "A23",
+      "status": "passed",
+      "reason": "依赖与门禁：a9a3cc0 基线 pnpm check+build 复绿（T00 audit 实测）；基线后零代码变化（git diff 证实）；官方 npm 依赖与锁文件未动；本轮零代码修改（纯复核+证据）。",
+      "evidence": [
+        "docs/migration/evidence/T00/audit-20260920-t00-a9a3cc0/acceptance.json"
+      ]
+    },
+    {
+      "id": "A24",
+      "status": "not_applicable",
+      "reason": "授权页无长时资源（图表/虚拟表/传输）；多页签长时稳定性归 V01 全项目观测。",
+      "evidence": [
+        "docs/migration/tasks/P02.md"
+      ]
+    },
+    {
+      "id": "I01",
+      "status": "passed",
+      "reason": "五语言入口在登录页（P01 owner，本轮实测菜单五项自名）；授权页随持久化偏好渲染并逐语言实测（zh-TW/ja-JP/ko-KR 精确保留不误映射）；html lang 同步+apex-admin:lang 持久化逐语言核对。",
+      "evidence": [
+        "docs/migration/evidence/P02/audit-20260920-p02-408144b/browser-ui-result.json",
+        "docs/migration/evidence/P01/audit-20260920-p01-44fc5e6/acceptance.json"
+      ]
+    },
+    {
+      "id": "I02",
+      "status": "passed",
+      "reason": "license-activation 命名空间旧资源映射完整：旧 10 键全保留（en-US 沿用旧系统真译）、新增「激活成功/重试」两键登记（DoD6 失败三态改进）；i18n-map 冻结表已按 license-activation 命名修正登记；旧系统该页繁/日/韩为简中回退，B1 基线补真实译文非译文丢失（交接记录显式说明）；全项目 I02 收口归 V01。",
+      "evidence": [
+        "src/i18n/locales/en-US/license-activation.ts",
+        "docs/migration/i18n-map.md",
+        "docs/migration/tasks/P02.md"
+      ]
+    },
+    {
+      "id": "I03",
+      "status": "not_applicable",
+      "reason": "授权页文案无插值/ICU/富文本（12 键均为静态文案）。",
+      "evidence": [
+        "src/i18n/locales/en-US/license-activation.ts"
+      ]
+    },
+    {
+      "id": "I04",
+      "status": "passed",
+      "reason": "语言切换为 SPA 状态切换：无整页刷新（html lang 同步实测）、不丢页签/草稿（激活输入保留实测）、写请求不重发（页面请求仅挂载硬件码一次）；授权页自身无切换入口与旧系统同构（跟随持久化偏好）。",
+      "evidence": [
+        "docs/migration/evidence/P02/audit-20260920-p02-408144b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "I05",
+      "status": "passed",
+      "reason": "第三方与辅助文案：antd 控件（TextArea 占位/计数器/按钮 loading/toast）随语言更新实测（Sign in/登 入/ログイン/로그인）；复制按钮 role=button 可键盘到达（aria）；Apex/dayjs 不涉及（无表格/时钟）。",
+      "evidence": [
+        "docs/migration/evidence/P02/audit-20260920-p02-408144b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "I06",
+      "status": "deferred",
+      "reason": "P02 范围内资源完整性已实证：license-activation 四语言 12 键全齐无缺失回退；资源正常加载路径五语言实测。真实网络级语言资源加载失败不白屏场景与 T00/P01 同口径受 IAB 环境限制。",
+      "evidence": [
+        "docs/migration/evidence/P02/audit-20260920-p02-408144b/browser-ui-result.json",
+        "docs/migration/evidence/T00/audit-20260920-t00-a9a3cc0/acceptance.json"
+      ],
+      "category": "site_acceptance",
+      "basis": "真实资源加载失败需构造网络故障环境；P02 五语言分片完整、无缺失回退登记",
+      "owner": "V01",
+      "resumeCondition": "V01 统一验收构造资源加载失败场景复核不白屏与可恢复"
+    },
+    {
+      "id": "I07",
+      "status": "passed",
+      "reason": "后端协同：Accept-Language 由请求层统一发送（P01 脚本头证据，含上传通道 T00 契约）；授权页无服务端语言相关只读内容；后端错误原文经 apiErrorMessage 保留路径实证；后端其他语言消息/导出能力边界归 V01 全局登记。",
+      "evidence": [
+        "docs/migration/evidence/P01/audit-20260920-p01-44fc5e6/p01-readonly-result.json",
+        "docs/migration/contracts.md"
+      ]
+    },
+    {
+      "id": "I08",
+      "status": "passed",
+      "reason": "语言切换不改业务值/时区/枚举（授权页无业务数据，激活码提交原样）；1366 长译文（英文副标题两行/日韩标题）与 1920 布局实测截图无截断遮挡；固定深色设计下五语言可读。",
+      "evidence": [
+        "docs/migration/evidence/P02/audit-20260920-p02-408144b/browser-ui-result.json"
+      ]
+    }
+  ],
+  "verification": "partial",
+  "verificationNote": "3 项 deferred：A14 激活成功副作用（D32 专用环境）、A04 长会话 token 过期/多窗口退出、I06 真实资源加载失败（后两项与 T00/P01 audit 同口径归 V01）；P02 任务范围内全部适用项 passed，零新缺陷",
+  "environment": {
+    "codeCommit": "408144b8d7b47fe93eb09d8c460681c978ac831c（src 与 a9a3cc0 一致，本轮零代码修改）",
+    "channel": "Vite dev server 同源代理 http://localhost:5173（用户既有运行，未接管）→ APEX_DEV_LEGACY_TARGET",
+    "backend": "192.168.0.158:8888（已激活联调后端）；10.11.2.67:8888 激活态探测本轮网络不可达（连接超时，结果见 p02-readonly-result.json）",
+    "credentials": "本机 .env.local（APEX_TEST_USERNAME/APEX_TEST_PASSWORD，来源名称记录、值不入档）；硬件码 72 字符真实值不入档",
+    "browser": "ZCode IAB（Chromium 内核，Windows 11），视口 1366×768 与 1920×1080",
+    "roles": "root（已激活后端）；普通用户/未激活分支受环境限制同 T00 登记",
+    "languages": "zh-CN/en-US/zh-TW/ja-JP/ko-KR 五语言授权页全页实测（超出历史轮 en/繁全页+日韩标题范围）",
+    "themes": "独立页固定深色为与旧系统一致的设计行为（静态审查证实不读外壳 data-theme）；外壳双主题归 P01/全局验收",
+    "sideEffects": "零业务写接触：激活失败分支为客户端注入（performance 资源条目证实 softwareActivation 请求零发出）；测试激活码 AUDIT-TEST-CODE-20260920 未离开本机且测后重载清除；登出为认证交换，测试会话已清理",
+    "syntheticPathNotes": "诊断边界逐项登记于 browser-ui-result.json：① 激活失败为 XHR 层注入（真实指针交互）；② 登出菜单项触发为 DOM click 合成事件（portal 菜单坐标/键盘/locator 均无法穿透；登出链路属 P01/T00 已验范围，此处仅会话清理）；③ 1920 首帧旧合成帧伪影经 DOM 核实+重绘重截排除"
+  },
+  "codeFiles": [
+    {
+      "sha256": "e7bd6852a751f3889685441974272e9303135e62ab1455aaf4c175620b5c4454",
+      "path": "src/pages/authorize-ingress/AuthorizeIngress/AuthorizeIngress.tsx"
+    },
+    {
+      "sha256": "88005e1fc3cdfdc25d590421607d8045997fcd853569a65e3c6b683913ca36bb",
+      "path": "src/pages/authorize-ingress/AuthorizeIngress/AuthorizeIngress.module.css"
+    },
+    {
+      "sha256": "c0d34eac883ece43579159dd2a12998a5274f15bbac97db442d42de774f425d8",
+      "path": "src/services/license-activation/license.service.ts"
+    },
+    {
+      "sha256": "5d68f722ad35f87243ff5655001e3a6e5baa345aa63f161bb5528ce4ef852489",
+      "path": "src/services/license-activation/license.service.types.ts"
+    },
+    {
+      "sha256": "4b2fecf223b495fec06a5f80c6f0ebc0be4d298d7125db2f9ecced65c549f9ae",
+      "path": "src/features/license-activation/components/ActivationForm/ActivationForm.tsx"
+    },
+    {
+      "sha256": "34179a581049eff6c5c1c0479a7dd4579dff804ccf4c6c03955edbbce38077e4",
+      "path": "src/features/license-activation/components/ActivationForm/ActivationForm.module.css"
+    },
+    {
+      "sha256": "d74393ca7e6606aeda023db293e287f687a5f0b684ff6f2b4e744c9ca1af36ad",
+      "path": "src/features/license-activation/components/ActivationRedirectListener/ActivationRedirectListener.tsx"
+    },
+    {
+      "sha256": "0c04b28b123171b8f47e63f6f644ee246d51cb666793c148704670ba80803784",
+      "path": "src/features/license-activation/hooks/useHardwareInfo.ts"
+    },
+    {
+      "sha256": "23f9b0a930d0ec114882ab3c78340b62b456e8856b307d12926ee9eafcda8a06",
+      "path": "src/features/license-activation/utils/copyText.ts"
+    },
+    {
+      "sha256": "3261f035121ff3067a5c86cb5d523512a98e6091f639e54a14b1ad874b248d0a",
+      "path": "src/i18n/locales/en-US/license-activation.ts"
+    },
+    {
+      "sha256": "ae4b7109bf243f5c2958231ac5bdc9a07c99c8eb3678b8950c4c4f6ddd768184",
+      "path": "src/i18n/locales/zh-TW/license-activation.ts"
+    },
+    {
+      "sha256": "4c1cb64dcff664c3c591a67ed7504a405febe4175203aa7d0da5ec56ffbd824d",
+      "path": "src/i18n/locales/ja-JP/license-activation.ts"
+    },
+    {
+      "sha256": "ed5a4ab663a33843b0b9f2c8449034508cad62028994919698c843e07759120f",
+      "path": "src/i18n/locales/ko-KR/license-activation.ts"
+    },
+    {
+      "sha256": "0ddaa21067f7c25dc077ca2cdaabcb00e7eb4c1a0548174b0213b5244d35484f",
+      "path": "src/i18n/locales/en-US/common.ts"
+    },
+    {
+      "sha256": "88fd4e88b3618cb365caceebb21cda3776ce5820a1beb466bdef2ef07234dca1",
+      "path": "src/i18n/locales/zh-TW/common.ts"
+    },
+    {
+      "sha256": "6797fa4be85778bd08982ec9e27c44d8df50ceb3f496652a32bb3c6ac284d67d",
+      "path": "src/i18n/locales/ja-JP/common.ts"
+    },
+    {
+      "sha256": "ca75fc05ac3ddde06ec5e77eb0202ae702a572d332b6266750136785a6d5b1a4",
+      "path": "src/i18n/locales/ko-KR/common.ts"
+    },
+    {
+      "sha256": "86cacd6c84b42b9910b7a1b83f7bcd5b3a9916024a82478c907ef0b9b8c85196",
+      "path": "src/services/request/request.ts"
+    },
+    {
+      "sha256": "b9ca9fa74272ab2ea49380a7294fc97029ea7c252920526df6f5b5669d37095b",
+      "path": "src/services/request/request.constants.ts"
+    },
+    {
+      "sha256": "1fd2576d835ac08559eb304d14b8a8442dd7b46e4570898d9993b4505d0b706f",
+      "path": "src/store/slices/authSlice.ts"
+    },
+    {
+      "sha256": "a5c13a008a8c30ea19940b31fa60d466e9abf8f133be2568809398cf0b96bb9e",
+      "path": "src/router/definitions.tsx"
+    },
+    {
+      "sha256": "1fff603b9678023c6abc4b757a548c6953aee087bee59b496158f48d85d62e92",
+      "path": "src/router/routeAccess.ts"
+    },
+    {
+      "sha256": "1a723632829b40ff213346a2e843aee05ac36ba393a3237cbd4b998f7600bcf6",
+      "path": "src/i18n/i18n.ts"
+    },
+    {
+      "sha256": "7cee1ffaeb634905ea2076ea5144115020abf81bef4a620430a980494042986d",
+      "path": "src/App/App.tsx"
+    }
+  ]
+}

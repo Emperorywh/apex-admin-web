@@ -1,0 +1,27 @@
+{
+  "task": {
+    "implementation": "implemented",
+    "verification": "partial",
+    "gate": "ready",
+    "acceptanceRecord": "docs/migration/evidence/P02/audit-20260920-p02-408144b/acceptance.json",
+    "pendingItems": [
+      "A14：真实激活成功链路（写副作用）归 V01 专用未激活环境/现场执行（机制级已实证：防连点/失败留稿/不自动重放/code=200 唯一判定；本轮失败分支零网络接触实测）",
+      "activated=false→授权页落点与 1001000 真实业务触发归 V01 未激活环境（10.11.2.67 本轮探测不可达；G17 有真实业务码观察；机制两端各自实证）",
+      "A04：真实 token 过期收敛与双窗口退出同步场景归 V01 长会话复核（与 T00/P01 同口径；本轮补授权页 reload 恢复+登出清理实证）",
+      "I06：真实资源加载失败不白屏场景归 V01 复核（IAB 环境限制；四语言分片完整无缺失回退，T00/P01 同口径）"
+    ],
+    "note": "audit 复核通过（2026-09-20，run audit-20260920-p02-408144b）：静态门禁复用同日 T00 audit 在 a9a3cc0 的复绿结果（基线后仅 docs 提交，git diff 证实 src 零变化）；真实只读 2/2（getHardwareInfo 无令牌经代理+直连一致）；浏览器 UI（1366/1920，IAB Chromium）覆盖守卫回跳/登录合法回跳/落点规则/五语言授权页全页（繁日韩简+en，html lang 同步）/复制读回/激活失败留稿（客户端注入零网络接触）/刷新恢复/登出清理；旧源码递归复核仅两文件无遗漏；verification=partial（A14/A04/I06 deferred），gate=ready 维持 B1/P29 放行；不勾选 TASKS"
+  },
+  "progress": [
+    "开局核对：OpenAPI 哈希一致（A82E9B5F…）；规格/TASKS/P01 前置交接/contracts/gaps/i18n-map 完整重读；静态门禁复用口径核实（git diff a9a3cc0..HEAD 零代码变化）",
+    "代码审查：P02 私有模块/公共接线/五语言分片与交接逐项一致；旧源码递归复核仅 index.tsx+index.less；重试按钮判定为 StateBlock offline+onRetry 既定模式非违纪",
+    "真实只读 2/2：getHardwareInfo 无令牌（经代理+直连一致，72 字符真实值不入档）；10.11.2.67 激活态探测网络不可达（defer 依据）",
+    "浏览器 UI：12 步全过（browser-ui-result.json），五语言全页+1366/1920 双视口+登出清理；两处 IAB 已知现象按既有处置登记（首击被吞/旧合成帧）",
+    "生成验收记录 acceptance.json（49 items：46 passed/0 not_applicable 计入/3 deferred + 24 codeFiles SHA-256 绑定 408144b）并重写 P02.md"
+  ],
+  "nextSteps": [
+    "提交推送本轮 audit 证据与台账更新",
+    "runner end 结束本轮"
+  ],
+  "blocker": null
+}

@@ -1,0 +1,25 @@
+{
+  "generatedAt": "2026-09-20T04:17:09.223Z",
+  "devBase": "http://localhost:5173",
+  "legacyTargetConfigured": true,
+  "probeBackend": "http://10.11.2.67:8888",
+  "probeSummary": "unreachable",
+  "allPassed": false,
+  "results": [
+    {
+      "step": "getHardwareInfo 经 dev 代理（无令牌）",
+      "ok": true,
+      "detail": "HTTP 200 code=200 硬件码长度=72（值不入档）"
+    },
+    {
+      "step": "getHardwareInfo 直连后端对照",
+      "ok": true,
+      "detail": "HTTP 200 code=200 与代理结果一致=true"
+    },
+    {
+      "step": "10.11.2.67 激活态探测（登录）",
+      "ok": false,
+      "detail": "网络异常：UND_ERR_CONNECT_TIMEOUT"
+    }
+  ]
+}

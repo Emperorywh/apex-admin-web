@@ -1,0 +1,31 @@
+{
+  "runId": "audit-20260920-p01-44fc5e6",
+  "taskId": "P01",
+  "purpose": "audit",
+  "owner": "zcode-p01-audit-20260920",
+  "startedAt": "2026-09-20T03:05:50.012Z",
+  "baseHead": "44fc5e6d20b1874d3bf5775b3d3dd2b1f5964492",
+  "initialStatus": "M docs/migration/RUN_STATE.json\n?? docs/migration/evidence/runs/audit-20260920-t00-a9a3cc0.json",
+  "progress": [
+    "开局核对：OpenAPI 哈希一致（A82E9B5F…）、规格/TASKS/规格交接完整重读、legacy 归档确认无 P01 资产（历史截图未持久化，本轮补新鲜证据）",
+    "代码审查：Login/LoginForm/LoginLanguageSwitch/brand.service/auth.service/routeAccess 与交接一致，无伪管理员/直通登录残留",
+    "真实只读复测 5/5：run-p01-audit-readonly.mjs（错误凭据 1000010/正确凭据 155 权限码/品牌列表/背景 404/登出）",
+    "浏览器 UI 验收 13 步全过：browser-ui-result.json（含 IAB 输入管线冻结边界登记与新页签恢复处置）",
+    "生成验收记录 acceptance.json（49 items：27 passed/20 not_applicable/2 deferred + 24 codeFiles SHA-256 绑定 44fc5e6）并重写 P01.md"
+  ],
+  "nextSteps": [
+    "提交推送本轮 audit 证据与台账更新",
+    "runner end 结束本轮"
+  ],
+  "blocker": null,
+  "endedAt": "2026-09-20T03:41:00.819Z",
+  "outcome": "completed",
+  "endHead": "408144b8d7b47fe93eb09d8c460681c978ac831c",
+  "publish": {
+    "status": "synced",
+    "commit": "408144b8d7b47fe93eb09d8c460681c978ac831c",
+    "confirmedRemoteHead": "408144b8d7b47fe93eb09d8c460681c978ac831c",
+    "checkedAt": "2026-09-20T03:40:56.208Z",
+    "error": null
+  }
+}

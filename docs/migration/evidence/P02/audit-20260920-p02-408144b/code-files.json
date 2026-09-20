@@ -1,0 +1,98 @@
+[
+  {
+    "sha256": "e7bd6852a751f3889685441974272e9303135e62ab1455aaf4c175620b5c4454",
+    "path": "src/pages/authorize-ingress/AuthorizeIngress/AuthorizeIngress.tsx"
+  },
+  {
+    "sha256": "88005e1fc3cdfdc25d590421607d8045997fcd853569a65e3c6b683913ca36bb",
+    "path": "src/pages/authorize-ingress/AuthorizeIngress/AuthorizeIngress.module.css"
+  },
+  {
+    "sha256": "c0d34eac883ece43579159dd2a12998a5274f15bbac97db442d42de774f425d8",
+    "path": "src/services/license-activation/license.service.ts"
+  },
+  {
+    "sha256": "5d68f722ad35f87243ff5655001e3a6e5baa345aa63f161bb5528ce4ef852489",
+    "path": "src/services/license-activation/license.service.types.ts"
+  },
+  {
+    "sha256": "4b2fecf223b495fec06a5f80c6f0ebc0be4d298d7125db2f9ecced65c549f9ae",
+    "path": "src/features/license-activation/components/ActivationForm/ActivationForm.tsx"
+  },
+  {
+    "sha256": "34179a581049eff6c5c1c0479a7dd4579dff804ccf4c6c03955edbbce38077e4",
+    "path": "src/features/license-activation/components/ActivationForm/ActivationForm.module.css"
+  },
+  {
+    "sha256": "d74393ca7e6606aeda023db293e287f687a5f0b684ff6f2b4e744c9ca1af36ad",
+    "path": "src/features/license-activation/components/ActivationRedirectListener/ActivationRedirectListener.tsx"
+  },
+  {
+    "sha256": "0c04b28b123171b8f47e63f6f644ee246d51cb666793c148704670ba80803784",
+    "path": "src/features/license-activation/hooks/useHardwareInfo.ts"
+  },
+  {
+    "sha256": "23f9b0a930d0ec114882ab3c78340b62b456e8856b307d12926ee9eafcda8a06",
+    "path": "src/features/license-activation/utils/copyText.ts"
+  },
+  {
+    "sha256": "3261f035121ff3067a5c86cb5d523512a98e6091f639e54a14b1ad874b248d0a",
+    "path": "src/i18n/locales/en-US/license-activation.ts"
+  },
+  {
+    "sha256": "ae4b7109bf243f5c2958231ac5bdc9a07c99c8eb3678b8950c4c4f6ddd768184",
+    "path": "src/i18n/locales/zh-TW/license-activation.ts"
+  },
+  {
+    "sha256": "4c1cb64dcff664c3c591a67ed7504a405febe4175203aa7d0da5ec56ffbd824d",
+    "path": "src/i18n/locales/ja-JP/license-activation.ts"
+  },
+  {
+    "sha256": "ed5a4ab663a33843b0b9f2c8449034508cad62028994919698c843e07759120f",
+    "path": "src/i18n/locales/ko-KR/license-activation.ts"
+  },
+  {
+    "sha256": "0ddaa21067f7c25dc077ca2cdaabcb00e7eb4c1a0548174b0213b5244d35484f",
+    "path": "src/i18n/locales/en-US/common.ts"
+  },
+  {
+    "sha256": "88fd4e88b3618cb365caceebb21cda3776ce5820a1beb466bdef2ef07234dca1",
+    "path": "src/i18n/locales/zh-TW/common.ts"
+  },
+  {
+    "sha256": "6797fa4be85778bd08982ec9e27c44d8df50ceb3f496652a32bb3c6ac284d67d",
+    "path": "src/i18n/locales/ja-JP/common.ts"
+  },
+  {
+    "sha256": "ca75fc05ac3ddde06ec5e77eb0202ae702a572d332b6266750136785a6d5b1a4",
+    "path": "src/i18n/locales/ko-KR/common.ts"
+  },
+  {
+    "sha256": "86cacd6c84b42b9910b7a1b83f7bcd5b3a9916024a82478c907ef0b9b8c85196",
+    "path": "src/services/request/request.ts"
+  },
+  {
+    "sha256": "b9ca9fa74272ab2ea49380a7294fc97029ea7c252920526df6f5b5669d37095b",
+    "path": "src/services/request/request.constants.ts"
+  },
+  {
+    "sha256": "1fd2576d835ac08559eb304d14b8a8442dd7b46e4570898d9993b4505d0b706f",
+    "path": "src/store/slices/authSlice.ts"
+  },
+  {
+    "sha256": "a5c13a008a8c30ea19940b31fa60d466e9abf8f133be2568809398cf0b96bb9e",
+    "path": "src/router/definitions.tsx"
+  },
+  {
+    "sha256": "1fff603b9678023c6abc4b757a548c6953aee087bee59b496158f48d85d62e92",
+    "path": "src/router/routeAccess.ts"
+  },
+  {
+    "sha256": "1a723632829b40ff213346a2e843aee05ac36ba393a3237cbd4b998f7600bcf6",
+    "path": "src/i18n/i18n.ts"
+  },
+  {
+    "sha256": "7cee1ffaeb634905ea2076ea5144115020abf81bef4a620430a980494042986d",
+    "path": "src/App/App.tsx"
+  }
+]
