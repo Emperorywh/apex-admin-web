@@ -1,0 +1,101 @@
+/* 车辆状态统计页布局（P37）：
+   纵向 = 查询工具栏 → KPI 行 → 堆叠柱图表卡 → 明细卡（flex:1 收纳表格）；
+   页内超宽/超高一律内部滚动消化，不撑破工作区（AGENTS §1 容器纪律）。 */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--app-space-3);
+  height: 100%;
+  min-height: 0;
+}
+
+/* 查询工具栏：时间区间 + 状态多选 + 按小时维度 + 查询/重置 + 已加载计数；窄视口换行 */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--app-space-2);
+}
+
+/* KPI 4 卡：宽视口一行四张，1366 换两行两张（P34/P36 kpiRow 同款栅格） */
+.kpiRow {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--app-space-3);
+}
+
+@media (max-width: 1439px) {
+  .kpiRow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* 图表卡：固定高度不参与弹性收缩（堆叠柱自身 460px + 标题/内边距） */
+.chartCard {
+  background: var(--app-card-bg);
+  border: 1px solid var(--app-card-line);
+  border-radius: var(--app-radius-panel);
+  box-shadow: var(--app-card-shadow);
+  padding: var(--app-space-3) var(--app-space-4);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* 卡片标题（图表/明细共用；MetricHint 图标随行内基线对齐） */
+.cardTitle {
+  margin: 0 0 var(--app-space-2);
+  font-size: var(--app-fs-primary);
+  font-weight: var(--app-fw-bold);
+  color: var(--app-card-title);
+  display: flex;
+  align-items: center;
+  gap: var(--app-space-2);
+  min-width: 0;
+}
+
+/* 图表内容区：高度与堆叠柱容器一致（460px），空态居中呈现 */
+.chartBody {
+  height: 460px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 聚合区失败/首载占位：卡片壳统一最小高度，避免布局跳动 */
+.aggregateCard {
+  background: var(--app-card-bg);
+  border: 1px solid var(--app-card-line);
+  border-radius: var(--app-radius-panel);
+  box-shadow: var(--app-card-shadow);
+  padding: var(--app-space-3) var(--app-space-4);
+}
+
+/* 明细卡占满剩余高度：筛选行自然高，表格容器 flex:1 收纳 Apex（height=100%） */
+.detailCard {
+  background: var(--app-card-bg);
+  border: 1px solid var(--app-card-line);
+  border-radius: var(--app-radius-panel);
+  box-shadow: var(--app-card-shadow);
+  padding: var(--app-space-3) var(--app-space-4);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+  min-height: 320px;
+}
+
+/* 明细表本地筛选行：仅过滤表格数据，不影响上方图表与 KPI（旧实现同语义） */
+.detailFilter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--app-space-2);
+  margin-bottom: var(--app-space-2);
+}
+
+.tableWrap {
+  flex: 1;
+  min-height: 0;
+}

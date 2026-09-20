@@ -690,12 +690,14 @@ export const appRouteDefinitions = defineAppRoutes([
             }),
           },
           {
+            // P37 交付解除 pending：菜单码 vehicle-status:view 挂路由守卫
+            // （与旧 .umirc.ts access 对应）；页面私有命名空间 report-vehicle-state
             id: 'analyze-visual-vehicle-status',
             path: 'vehicle-status',
             loadPage: () => import('@/pages/analyze-visual/VehicleStatus/VehicleStatus'),
             meta: businessMeta('车辆状态统计', PERM.VEHICLE_STATUS_VIEW, {
               icon: ChartColumn,
-              pending: true,
+              i18nNamespaces: ['report-vehicle-state'],
             }),
           },
           {

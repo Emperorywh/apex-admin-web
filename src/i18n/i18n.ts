@@ -136,6 +136,8 @@ const enUsLoaders: NamespaceLoaders = {
   'report-order': () => import('@/i18n/locales/en-US/report-order'),
   // P36 故障告警（analyze-visual/dashboard-fault；页面私有命名空间）
   'report-fault': () => import('@/i18n/locales/en-US/report-fault'),
+  // P37 车辆状态统计（analyze-visual/vehicle-status；页面私有命名空间）
+  'report-vehicle-state': () => import('@/i18n/locales/en-US/report-vehicle-state'),
   // P41 无权限页（un-access；布局外独立页）
   'access-denied': () => import('@/i18n/locales/en-US/access-denied'),
 }
@@ -223,6 +225,8 @@ const zhTwLoaders: NamespaceLoaders = {
   'report-order': () => import('@/i18n/locales/zh-TW/report-order'),
   // P36 故障告警（analyze-visual/dashboard-fault；页面私有命名空间）
   'report-fault': () => import('@/i18n/locales/zh-TW/report-fault'),
+  // P37 车辆状态统计（analyze-visual/vehicle-status；页面私有命名空间）
+  'report-vehicle-state': () => import('@/i18n/locales/zh-TW/report-vehicle-state'),
   // P34 合并业务首页（/dashboard；页面私有命名空间，实时看板重定向同实例共用）
   dashboard: () => import('@/i18n/locales/zh-TW/dashboard'),
   'access-denied': () => import('@/i18n/locales/zh-TW/access-denied'),
@@ -303,6 +307,8 @@ const jaJpLoaders: NamespaceLoaders = {
   'report-order': () => import('@/i18n/locales/ja-JP/report-order'),
   // P36 故障告警（analyze-visual/dashboard-fault；页面私有命名空间）
   'report-fault': () => import('@/i18n/locales/ja-JP/report-fault'),
+  // P37 车辆状态统计（analyze-visual/vehicle-status；页面私有命名空间）
+  'report-vehicle-state': () => import('@/i18n/locales/ja-JP/report-vehicle-state'),
   // P34 合并业务首页（/dashboard；页面私有命名空间，实时看板重定向同实例共用）
   dashboard: () => import('@/i18n/locales/ja-JP/dashboard'),
   'access-denied': () => import('@/i18n/locales/ja-JP/access-denied'),
@@ -383,6 +389,8 @@ const koKrLoaders: NamespaceLoaders = {
   'report-order': () => import('@/i18n/locales/ko-KR/report-order'),
   // P36 故障告警（analyze-visual/dashboard-fault；页面私有命名空间）
   'report-fault': () => import('@/i18n/locales/ko-KR/report-fault'),
+  // P37 车辆状态统计（analyze-visual/vehicle-status；页面私有命名空间）
+  'report-vehicle-state': () => import('@/i18n/locales/ko-KR/report-vehicle-state'),
   // P34 合并业务首页（/dashboard；页面私有命名空间，实时看板重定向同实例共用）
   dashboard: () => import('@/i18n/locales/ko-KR/dashboard'),
   'access-denied': () => import('@/i18n/locales/ko-KR/access-denied'),
