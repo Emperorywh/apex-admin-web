@@ -668,13 +668,16 @@ export const appRouteDefinitions = defineAppRoutes([
             }),
           },
           {
+            // P35 交付解除 pending：菜单码 dashboard-task:view 挂路由守卫
+            // （与旧 .umirc.ts access=PERM.DASHBOARD_TASK_VIEW 一致）；
+            // 页面私有命名空间 report-task（工具栏/KPI/图表/明细文案，页内无按钮码）
             id: 'analyze-visual-dashboard-task',
             path: 'dashboard-task',
             loadPage: () =>
               import('@/pages/analyze-visual/TaskStatisticsReport/TaskStatisticsReport'),
             meta: businessMeta('任务统计报表', PERM.DASHBOARD_TASK_VIEW, {
               icon: ListTodo,
-              pending: true,
+              i18nNamespaces: ['report-task'],
             }),
           },
           {

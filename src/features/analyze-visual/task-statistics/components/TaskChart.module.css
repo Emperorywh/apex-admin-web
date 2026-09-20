@@ -1,0 +1,14 @@
+/* 任务统计报表图表容器（P35）：固定高度为柱体/坐标轴保留完整空间，
+   宽度随面板自适应；利用率排行（可视 10 行 + 滚动）单独使用加高容器。 */
+
+.standardChart {
+  width: 100%;
+  height: 280px;
+  min-width: 0;
+}
+
+.utilizationRankChart {
+  width: 100%;
+  height: 380px;
+  min-width: 0;
+}
