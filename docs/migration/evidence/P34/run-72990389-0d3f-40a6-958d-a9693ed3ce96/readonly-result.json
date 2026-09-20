@@ -1,0 +1,47 @@
+{
+  "ok": true,
+  "checkedAt": "2026-09-20T12:25:38.506Z",
+  "base": "http://localhost:5173",
+  "checks": [
+    {
+      "step": "login",
+      "ok": true,
+      "detail": "HTTP 200 code=200 activated=true"
+    },
+    {
+      "step": "board",
+      "ok": true,
+      "detail": "HTTP 200 code=200 hourlyCounts=45 total=56 online=56"
+    },
+    {
+      "step": "board-five-state-sum",
+      "ok": true,
+      "detail": "五状态之和 56 = totalVehicleCount 56（旧规格 §6.1 口径）"
+    },
+    {
+      "step": "board-hour-keys",
+      "ok": true,
+      "detail": "小时键 45/45 可解析；覆盖日期 [\"2026-09-19\",\"2026-09-20\"]（days=2 预期今天+昨天）"
+    },
+    {
+      "step": "board-today-summary",
+      "ok": true,
+      "detail": "今日(2026-09-20) 创建口径 created=22090、完成口径 succeeded=22088、积压 queueOrderCount=1（供 UI 对照）"
+    },
+    {
+      "step": "open-alerts",
+      "ok": true,
+      "detail": "HTTP 200 code=200 records=0（上限 100）全部未关闭=true"
+    },
+    {
+      "step": "board-no-token",
+      "ok": true,
+      "detail": "HTTP 200 code=1000000 message=用户未登录"
+    },
+    {
+      "step": "logout",
+      "ok": true,
+      "detail": "HTTP 200 code=200"
+    }
+  ]
+}

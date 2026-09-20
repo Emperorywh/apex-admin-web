@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "revision": 44,
-  "updatedAt": "2026-09-20T11:03:47.139Z",
+  "revision": 50,
+  "updatedAt": "2026-09-20T13:02:22.418Z",
   "workspace": {
     "root": "C:\\code\\apex-admin-web",
     "branch": "apple-rxx",
@@ -866,13 +866,19 @@
         "P38",
         "P39"
       ],
-      "implementation": "not_started",
-      "verification": "not_started",
-      "gate": "blocked",
+      "implementation": "implemented",
+      "verification": "partial",
+      "gate": "ready",
       "handoff": "docs/migration/tasks/P34.md",
-      "acceptanceRecord": null,
-      "pendingItems": [],
-      "note": ""
+      "acceptanceRecord": "docs/migration/evidence/P34/run-72990389-0d3f-40a6-958d-a9693ed3ce96/acceptance.json",
+      "pendingItems": [
+        "A04/I06：真实 token 过期收敛、双窗口退出与真实网络级资源加载失败不白屏归 V01 长会话复核（本轮轮询失败退避+双区域独立失败态+登出清理机制级已实证，T00/P01/P02/P21/P33 同口径）",
+        "A24：长时多页签/真实规模稳定性与图表重建资源回收归 V01 统一收口（dispose/重建机制级已实现，本轮约 20 分钟多轮轮询无异常）",
+        "首页告警行车辆/订单链接点击：本环境 0 条未关闭告警（真实空结果）无法点击，渲染分支+权限过滤代码审查实证；P36 交付后按 TASKS 补验首页→告警导航并更新两项验收记录",
+        "真实指针交互复核：本会话 IAB 输入管线故障（事件日志垫片实证零事件到达），登录/主题/语言/导航/登出经合成事件完成，真实指针自然浏览器复核归 V01（P39 RO 垫片同口径环境限制）",
+        "G15：KPI 公式（创建/完成口径、瞬时利用率近似、昨日同时刻基线）后端语义最终核对归 V01 真实数据复核（口径已在页面四语言显式说明，P33 同口径）"
+      ],
+      "note": "P34 交付（2026-09-20，run-72990389）：合并业务首页 /dashboard 整页（board 聚合+5s 可见轮询+实时告警+导航契约）+旧地址重定向同实例+模板 mock 全量退役（c9d7fac）；静态门禁全绿；真实只读 8/8；浏览器整页验收（深浅×双视口×五语言、落点 D29 实测、会话失效双区域独立失败态）；verification=partial（A04/A24/I06 deferred 归 V01+告警链接/真实指针/G15 边界登记），gate=ready；不勾选 TASKS"
     },
     {
       "id": "P36",
@@ -1013,8 +1019,44 @@
       "note": ""
     }
   ],
-  "currentTaskId": "P33",
+  "currentTaskId": "P34",
   "run": {
+    "runId": "run-72990389-0d3f-40a6-958d-a9693ed3ce96",
+    "taskId": "P34",
+    "purpose": "implement",
+    "owner": "sess_8a62c249-c2c1-4424-9381-1ae7031452b4",
+    "runner": {
+      "provider": "zcode",
+      "sessionId": "sess_8a62c249-c2c1-4424-9381-1ae7031452b4",
+      "turnId": "turn_3af3a784-e0e7-47e8-b160-55e150c4135f",
+      "automationRunId": "automation-4c58cefd-88c2-4b25-b14d-53904b310c3e:1789905000000",
+      "identitySource": "running_tool_part",
+      "toolPartId": "part_mu9r8k5x_ec8e2da6-f198-49fe-9ee6-96bfbe1e8bf6",
+      "toolCallId": "call_e10743e9038c4e819981543b",
+      "messageId": "msg_mu9r8e2p_65c0c8a1-11ad-4849-bcc8-7fc62a140f5c"
+    },
+    "startedAt": "2026-09-20T11:50:25.296Z",
+    "baseHead": "d14ee88ea0f7433bf4a834c77b081da83ce7fc25",
+    "initialStatus": "M docs/migration/RUN_STATE.json\n?? docs/migration/evidence/runs/run-3057971e-9304-4217-8018-ebab094591e0.json",
+    "progress": [
+      "P34 全部验证完成：静态门禁复绿（lint 0/0 490 文件/typecheck/structure 481/build 1.15s）；真实只读 8/8（board 45 小时行覆盖今昨+五状态和=56 不变量+告警 0 条真实空+无令牌 1000000+登出清理）；浏览器整页验收（登录落点 /dashboard 实测、8 KPI 实时值+环比、环形图/双折线/告警空态、5s 轮询持续、会话失效真实场景双区域独立失败态、深浅×双视口×五语言动态重建、KPI 卡→/order-record、旧地址重定向、登出清理）",
+      "本轮修复缺陷 2 处（截图实证）：panelBody flex:1 塌陷改内联 height 生效；环图图例泄漏 center 占位改 legend.data 显式五状态",
+      "文档：tasks/P34.md、contracts.md（合并首页契约+落点行+变更日志）、operations.md 3 行、i18n-map.md、i18n-missing.md 移除 dashboard 登记；acceptance.json 49 项矩阵（deferred：A04/A24/I06）"
+    ],
+    "nextSteps": [
+      "文档提交 + push --commit 核对远端 + end --outcome completed"
+    ],
+    "blocker": null
+  },
+  "publish": {
+    "status": "synced",
+    "taskId": "P33",
+    "commit": "d14ee88ea0f7433bf4a834c77b081da83ce7fc25",
+    "confirmedRemoteHead": "d14ee88ea0f7433bf4a834c77b081da83ce7fc25",
+    "checkedAt": "2026-09-20T11:05:05.560Z",
+    "error": null
+  },
+  "lastRun": {
     "runId": "run-3057971e-9304-4217-8018-ebab094591e0",
     "taskId": "P33",
     "purpose": "implement",
@@ -1043,53 +1085,16 @@
     "nextSteps": [
       "推送 origin/apple-rxx（代码 2deac9c + 文档提交），push --commit 核对远端，end --outcome completed。"
     ],
-    "blocker": null
-  },
-  "publish": {
-    "status": "synced",
-    "taskId": "P43",
-    "commit": "14d567db1d14c2cfacebd28aeaf98300bc4d5052",
-    "confirmedRemoteHead": "14d567db1d14c2cfacebd28aeaf98300bc4d5052",
-    "checkedAt": "2026-09-20T09:40:02.352Z",
-    "error": null
-  },
-  "lastRun": {
-    "runId": "run-94e66b2a-1c48-4651-adde-ae4a9513e6a7",
-    "taskId": "P43",
-    "purpose": "implement",
-    "owner": "sess_4670b3d8-9060-4002-9b5b-01febd9c96be",
-    "runner": {
-      "provider": "zcode",
-      "sessionId": "sess_4670b3d8-9060-4002-9b5b-01febd9c96be",
-      "turnId": "turn_9c25de46-20f6-432a-8dfa-0344bddbbafe",
-      "automationRunId": "automation-4c58cefd-88c2-4b25-b14d-53904b310c3e:1789894200000",
-      "identitySource": "running_tool_part",
-      "toolPartId": "part_mu9kyzcb_ed04d7a9-40d4-4ede-abd6-40ac07c162d4",
-      "toolCallId": "call_e9290992ebc240d7b307c7ce",
-      "messageId": "msg_mu9kyskb_e5590b56-a4e2-4162-9e18-24b79e617831"
-    },
-    "startedAt": "2026-09-20T08:55:01.880Z",
-    "baseHead": "02923b315c87a1ae0d9f772edf07c698f32ef291",
-    "initialStatus": "M docs/migration/RUN_STATE.json\n?? docs/migration/evidence/runs/run-6a494b98-6cb3-4f57-9649-169e4b5ebda1.json",
-    "progress": [
-      "P43 清理收口完成：menu 死链 7 文件删除（虚构 REST /menus 全链+en-US/system.ts），Profile 页纪律收敛（状态枚举原值/roles 留白），profile 繁日韩三语言分片补齐并注册，G12 前端侧收口登记。",
-      "静态门禁四项全绿（lint 477 文件 0/0、typecheck、structure 470、build 1.21s）；代码提交 e8fbd5f2fe3051076031ce81184ec7aed5c4f56b。",
-      "浏览器整页验收全过：未登录守卫回跳/登录落点 redirect/Header 入口导航/零业务请求（XHR 计数=0）/五语言/双主题双视口 4 图/reload 持久化恢复/真实登出清理；acceptance.json 41 项矩阵（deferred：A04/A24/I06 cross_page 归 V01 与既有口径一致）。",
-      "交接记录 docs/migration/tasks/P43.md 交付；i18n-missing/i18n-map/gaps 登记同步更新。"
-    ],
-    "nextSteps": [
-      "提交 acceptance.json 与检查点，push --commit 到 origin/apple-rxx，end --outcome completed。"
-    ],
     "blocker": null,
-    "endedAt": "2026-09-20T09:40:14.084Z",
+    "endedAt": "2026-09-20T11:05:14.705Z",
     "outcome": "completed",
-    "endHead": "14d567db1d14c2cfacebd28aeaf98300bc4d5052",
+    "endHead": "d14ee88ea0f7433bf4a834c77b081da83ce7fc25",
     "publish": {
       "status": "synced",
-      "taskId": "P43",
-      "commit": "14d567db1d14c2cfacebd28aeaf98300bc4d5052",
-      "confirmedRemoteHead": "14d567db1d14c2cfacebd28aeaf98300bc4d5052",
-      "checkedAt": "2026-09-20T09:40:02.352Z",
+      "taskId": "P33",
+      "commit": "d14ee88ea0f7433bf4a834c77b081da83ce7fc25",
+      "confirmedRemoteHead": "d14ee88ea0f7433bf4a834c77b081da83ce7fc25",
+      "checkedAt": "2026-09-20T11:05:05.560Z",
       "error": null
     }
   },

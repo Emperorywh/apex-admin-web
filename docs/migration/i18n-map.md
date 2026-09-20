@@ -17,7 +17,7 @@
 | common / menu / auth / error | T00 统筹 | T00.8 全量交付 |
 | map | T00（共享地图能力） | T00.8 全量交付 |
 | apexTable（非 i18next ns） | T00.5 | T00.5 全量交付（locale 包） |
-| 页面私有（profile/orderRecord/dashboard 等） | 对应页面任务 | orderRecord 已随 P03 交付四语言（zh-CN 无需分片）；profile 已随 P43 交付四语言；dashboard 待 P34（未交付时懒加载表查无返回空资源自动回退简中，i18n-missing.md 登记）。模板遗留 system 命名空间已随 P43 连同菜单管理死代码一并删除 |
+| 页面私有（profile/orderRecord/dashboard 等） | 对应页面任务 | orderRecord 已随 P03 交付四语言（zh-CN 无需分片）；profile 已随 P43 交付四语言；dashboard 已随 P34 交付四语言（en 旧真译沿用、繁日韩 B1 基线补译）。模板遗留 system 命名空间已随 P43 连同菜单管理死代码一并删除 |
 
 ## 各页命名空间/文件归属终版（T00.9 冻结）
 
@@ -88,7 +88,7 @@
 | P31 用户管理 | user-management | userManagement | 沿用 pages/system/user + services/system/user |
 | P32 角色管理 | role-management | roleManagement | 重写 pages/access-management/RoleManagement + services/access-role（模板 system/role 链已删除，en 旧真译沿用 access-role 分片） |
 | P33 任务统计 | order-statistics | orderStatistics | orderStatistics |
-| P34 合并首页/实时看板 | /dashboard（+旧 dashboard-realtime 重定向） | dashboard（已声明） | 沿用 pages/dashboard + features/dashboard + services/dashboard + types/dashboard |
+| P34 合并首页/实时看板 | /dashboard（+旧 dashboard-realtime 重定向） | dashboard（已交付四语言分片 36 key 同构：KPI 标签/面板标题/级别/空态 en 旧真译逐条沿用，11 条口径说明按 P34 单段 key 重组沿用旧译语义；状态词繁日韩旧资源为简体复制词条按 B1 基线补译并与 vehicleInfo 分片对齐——空闲=空閒/アイドル/대기、离线=離線/オフライン/오프라인；模板仪表盘遗留 key 随 mock 一并退役；nsSeparator=false 下 t() 不带「ns:」前缀） | 重写 pages/dashboard + features/dashboard + services/dashboard（模板 types/dashboard 已删除，DTO 在 service.types） |
 | P35 任务统计报表 | dashboard-task | **taskReport**（避免与 P34 dashboard 命名空间混淆，按业务命名） | taskReport |
 | P36 故障告警 | dashboard-fault | **faultAlarm**（同上） | faultAlarm |
 | P37 车辆状态统计 | vehicle-status | vehicleStatus | vehicleStatus |

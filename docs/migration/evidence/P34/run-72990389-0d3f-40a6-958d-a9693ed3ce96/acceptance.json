@@ -1,0 +1,550 @@
+{
+  "taskId": "P34",
+  "codeCommit": "c9d7fac36b3f8df4ae424c766260db75f5587740",
+  "codeFiles": [
+    {
+      "path": "src/services/dashboard/dashboard.service.ts",
+      "sha256": "3711fe10c8fcfa5e6de380625e964989d2a1fa91e11771052fc59a929bb5ed06"
+    },
+    {
+      "path": "src/services/dashboard/dashboard.service.types.ts",
+      "sha256": "13d2e933497c5534da98550a9d60f26ac4ae976e2b9295663350b826e458817e"
+    },
+    {
+      "path": "src/features/dashboard/realtime.ts",
+      "sha256": "3b98bfec898e92275a186a80954a0dc2027caa475f19bbafa97cd447dae25008"
+    },
+    {
+      "path": "src/features/dashboard/kpiViewModel.ts",
+      "sha256": "b8f84249316e680bad5c81b97f1d815c4c8b4bec7d524c5e685aeb92c19e4f51"
+    },
+    {
+      "path": "src/features/dashboard/hooks/useRealtimeDashboard.ts",
+      "sha256": "61c4863c6a13ae3b26b7572f515e97e47e19a6a7db6fc26dbe4ff535342d97d1"
+    },
+    {
+      "path": "src/features/dashboard/components/RealtimeKpiCard.tsx",
+      "sha256": "cce3974211cee42066bb201d3697b2f7f1aa757f214ae30f73f90eed6943c8d0"
+    },
+    {
+      "path": "src/features/dashboard/components/RealtimeKpiCard.module.css",
+      "sha256": "6240bbfdb2194e769cccd9d0d145391ad2dca39b8d0ae741a53b4ac6ab708e50"
+    },
+    {
+      "path": "src/features/dashboard/components/VehicleStatusDonut.tsx",
+      "sha256": "5b311a85dbd881073026beada232898f7d3033ce8f2ec86d9adc17e7112cc1e0"
+    },
+    {
+      "path": "src/features/dashboard/components/TodayTrendLine.tsx",
+      "sha256": "a360c8e24312f1b304fefd74d209aa00d9951a538ca425f3e631605baf47daac"
+    },
+    {
+      "path": "src/features/dashboard/components/OpenAlertList.tsx",
+      "sha256": "922a34237e749c27d6f85a00799670846b7ce15f1df2a5b45374fcd544dd3636"
+    },
+    {
+      "path": "src/features/dashboard/components/OpenAlertList.module.css",
+      "sha256": "ab3da9e92d8c52100555d312b34588b039a994b9b76882eb92865c968b7327a7"
+    },
+    {
+      "path": "src/features/dashboard/components/chart.module.css",
+      "sha256": "30343393f257a6f8ac1a049e01be9c1cc34a7195575ae2d302bea9e3c47dd729"
+    },
+    {
+      "path": "src/pages/dashboard/Dashboard/Dashboard.tsx",
+      "sha256": "2587b97ab61ea04de857e2410bbee7d7d3322067d8b9f5cb335f388074c44add"
+    },
+    {
+      "path": "src/pages/dashboard/Dashboard/Dashboard.module.css",
+      "sha256": "fdaf7423632b43807d8db297abe895369f4a4f3f4aa4924ec9049aecf77738fe"
+    },
+    {
+      "path": "src/router/definitions.tsx",
+      "sha256": "a6042a5de61f4bede8fd17e82b32546c3869190cdd3d144942e0d49ae053fd44"
+    },
+    {
+      "path": "src/i18n/i18n.ts",
+      "sha256": "dcab30c877866eb5cc54106466b3dd86d79f5b1c27d0b6a33122e631bea2eb69"
+    },
+    {
+      "path": "src/i18n/locales/en-US/dashboard.ts",
+      "sha256": "b30db64eff8e3843c79ee7c8f3cecb241ebbfece2508a36b98e97a155097929d"
+    },
+    {
+      "path": "src/i18n/locales/zh-TW/dashboard.ts",
+      "sha256": "ef23f3c2906cccb85e1b016f0e4150f7f2e78457af6a4bd5041f30597a60d5c2"
+    },
+    {
+      "path": "src/i18n/locales/ja-JP/dashboard.ts",
+      "sha256": "8b355187648947f8a415e1d4bfc0f75b6ac7637bb5fb8361a72d587bd2414289"
+    },
+    {
+      "path": "src/i18n/locales/ko-KR/dashboard.ts",
+      "sha256": "e8e48e950506a1670db13d8d4ff6ba8a845bfe43431aa56768ac1a0c0d59919f"
+    }
+  ],
+  "releaseChecks": {
+    "scope": "passed",
+    "static": "passed",
+    "readOnly": "passed",
+    "ui": "passed",
+    "sharedConsumers": "passed"
+  },
+  "releaseReasons": [
+    "ui=passed 基于合成事件路径（IAB 真实指针注入管线故障，事件日志垫片实证）；真实指针复核 deferred 归 V01（items 单列），不构成 ui 缺口",
+    "sharedConsumers：i18n.ts 三语言表 +1 行、definitions.tsx 两处（本页 pending 解除+重定向）、resolveLandingPath 落点候选变化；typecheck/build 全绿且消费者仅路由/i18n 基座（已核对）"
+  ],
+  "items": [
+    {
+      "id": "TASK",
+      "status": "passed",
+      "reason": "任务卡专项全过：合并首页单一实例（D29）+旧地址重定向；真实 KPI/趋势/告警迁移（8 KPI+环形图+双折线+未关闭告警列表）；5s 可见轮询隐藏暂停恢复即查失败退避（useVisiblePolling）；无首页权限落点守卫既有机制实测；P03 卡片导航实测；P38/P39 权限过滤链接（代码审查+0 告警环境限制登记）；P36 导航契约登记不实现（TASKS 既定）；dashboard.mock 及模板组件树全量移除",
+      "evidence": [
+        "docs/migration/tasks/P34.md",
+        "docs/migration/evidence/P34/run-72990389-0d3f-40a6-958d-a9693ed3ce96/readonly-result.json"
+      ]
+    },
+    {
+      "id": "DoD1",
+      "status": "passed",
+      "reason": "递归清点旧 RealtimeDashboard 6 文件+DashboardShared 可达依赖（HttpDashboardRepository/policy/businessTime/formatters/kpiViewModel/enumLabels/KpiCard/ChartPanel）；RecentTaskList 旧实现从未渲染（恒空不可达）按 D24 不迁移登记；无弹窗/子表/文件操作；操作映射逐项登记",
+      "evidence": [
+        "docs/migration/tasks/P34.md"
+      ]
+    },
+    {
+      "id": "DoD2",
+      "status": "passed",
+      "reason": "页面不导入 axios 不拼 URL；严格 /fms/v1 路径与 OpenAPI schema（DashboardParam/DashboardBoardVO/HourlyCount/VehicleStatistics/SystemAlarmRecordPageParam/PageSystemAlarmRecord）逐字段一致；HTTP 200+code=200 判定由请求层统一；int64 JSON number 承载（G10 同口径）；无虚构 REST",
+      "evidence": [
+        "docs/migration/evidence/P34/run-72990389-0d3f-40a6-958d-a9693ed3ce96/readonly-result.json",
+        "docs/migration/evidence/P34/run-72990389-0d3f-40a6-958d-a9693ed3ce96/run-p34-readonly.mjs"
+      ]
+    },
+    {
+      "id": "DoD3",
+      "status": "passed",
+      "reason": "菜单/直访同码 dashboard-realtime:view 守卫；导航链接按目标菜单码权限过滤（buildAccessContext/hasMenuAccess 与守卫同一解析，无权限不渲染入口）；真实空结果/查询失败/无权限三分（StateBlock 变体+空态区分）",
+      "evidence": [
+        "docs/migration/tasks/P34.md"
+      ]
+    },
+    {
+      "id": "DoD4",
+      "status": "not_applicable",
+      "reason": "本页无业务表格（KPI 卡+echarts 图表+告警滚动列表；旧实时看板同形态，告警列表非 ApexTable 分页场景，规格 6.1 允许非表格键值/列表用普通布局）",
+      "evidence": [
+        "docs/migration/tasks/P34.md"
+      ]
+    },
+    {
+      "id": "DoD5",
+      "status": "not_applicable",
+      "reason": "本页无服务端分页表格；告警列表固定第一页 100 条上限（旧实现等价），无分页/筛选/列偏好语义",
+      "evidence": [
+        "docs/migration/tasks/P34.md"
+      ]
+    },
+    {
+      "id": "DoD6",
+      "status": "passed",
+      "reason": "防乱序：串行轮询天然不并发+scope 取消级联；主动取消静默（signal.aborted 检查）；真正失败双区域独立清空（board 区/告警面板各自 StateBlock，不以空数组/零 KPI/「无告警」冒充成功）；会话失效真实场景实测",
+      "evidence": [
+        "docs/migration/tasks/P34.md",
+        "docs/migration/evidence/P34/run-72990389-0d3f-40a6-958d-a9693ed3ce96/screenshots/session-kicked-error-state-1920.png"
+      ]
+    },
+    {
+      "id": "DoD7",
+      "status": "passed",
+      "reason": "5s 可见串行轮询（useVisiblePolling：页签激活+文档可见才刷新、隐藏暂停保留快照、恢复即查、失败倍率退避上限 60s）；无手动刷新按钮（按钮纪律）；多轮请求计数实证 +1/周期",
+      "evidence": [
+        "docs/migration/tasks/P34.md"
+      ]
+    },
+    {
+      "id": "DoD8",
+      "status": "passed",
+      "reason": "not_applicable：本页零写操作（board/告警均为只读查询 POST）",
+      "evidence": [
+        "docs/migration/tasks/P34.md"
+      ]
+    },
+    {
+      "id": "DoD9",
+      "status": "passed",
+      "reason": "not_applicable：无文件传输",
+      "evidence": [
+        "docs/migration/tasks/P34.md"
+      ]
+    },
+    {
+      "id": "DoD10",
+      "status": "passed",
+      "reason": "not_applicable：无地图/关联选择",
+      "evidence": [
+        "docs/migration/tasks/P34.md"
+      ]
+    },
+    {
+      "id": "DoD11",
+      "status": "passed",
+      "reason": "dashboard 命名空间四语言分片 36 key 同构；语言切换图表/枚举/KPI 动态重建不刷新整页（浏览器五语言实测 html lang 同步）；中文 key 即文案；口径长文案以完整简中文案为 key",
+      "evidence": [
+        "docs/migration/tasks/P34.md"
+      ]
+    },
+    {
+      "id": "DoD12",
+      "status": "passed",
+      "reason": "服务端数据为数值+多语言译文（客户端 resolveAlertDescription 回退链 当前语言→zh_CN→en_US→原文），语言切换无需重查不发写请求；不猜测后端原文；告警级别未知值按协议原值展示",
+      "evidence": [
+        "docs/migration/tasks/P34.md"
+      ]
+    },
+    {
+      "id": "DoD13",
+      "status": "passed",
+      "reason": "整页渲染验收：深浅×1920/1366×五语言；KPI 1366 自动 2 列换行；图表面板高度修复后 1920/1366 完整可达；工作区未被撑破（容器 minmax(0,1fr) 纪律）；主题切换图表重建",
+      "evidence": [
+        "docs/migration/tasks/P34.md"
+      ]
+    },
+    {
+      "id": "DoD14",
+      "status": "passed",
+      "reason": "口径单一定义点 realtime.ts（图表/KPI 卡共用一份快照）；0=有效值、分母 0/缺失→null 展示「--」不补 0、除零 null、快照指标无基线不伪造环比；部署时区墙钟（DEPLOY_TIMEZONE 单点）；echarts 按需注册+dispose 重建",
+      "evidence": [
+        "docs/migration/tasks/P34.md",
+        "docs/migration/evidence/P34/run-72990389-0d3f-40a6-958d-a9693ed3ce96/readonly-result.json"
+      ]
+    },
+    {
+      "id": "DoD15",
+      "status": "passed",
+      "reason": "静态门禁 pnpm check（lint 0/0 490 文件+typecheck+structure 481）+build 1.15s；真实只读 8/8（登录/board/告警/无令牌对照/登出）；无 mock 证明接入",
+      "evidence": [
+        "docs/migration/evidence/P34/run-72990389-0d3f-40a6-958d-a9693ed3ce96/readonly-result.json",
+        "docs/migration/evidence/P34/run-72990389-0d3f-40a6-958d-a9693ed3ce96/run-p34-readonly.mjs"
+      ]
+    },
+    {
+      "id": "DoD16",
+      "status": "passed",
+      "reason": "dashboard.mock.ts 与模板组件树/types/旧占位页全量删除（git rm，grep 零残留引用）；剩余缺口/未验证项/共享契约改动/消费者影响/适用 A/I 登记交接记录与本文",
+      "evidence": [
+        "docs/migration/tasks/P34.md",
+        "docs/migration/contracts.md"
+      ]
+    },
+    {
+      "id": "A01",
+      "status": "passed",
+      "reason": "旧 /analyze-visual/dashboard-realtime 叶子映射到合并首页 /dashboard 同一实例（D29，菜单/直访/重定向三形态实测）；弹窗/子表/文件操作旧页不存在；不可达 RecentTaskList 按 D24 登记不迁移",
+      "evidence": [
+        "docs/migration/tasks/P34.md"
+      ]
+    },
+    {
+      "id": "A02",
+      "status": "passed",
+      "reason": "not_applicable 于本页为暂缓页的判定：本页非暂缓页且不加载三个暂缓页业务；P36 告警导航仅登记契约不产生死链",
+      "evidence": [
+        "docs/migration/tasks/P34.md"
+      ]
+    },
+    {
+      "id": "A03",
+      "status": "passed",
+      "reason": "真实登录为本轮浏览器验收前置（真实凭据+真实登录请求落 /dashboard）；伪登录/伪管理员为 T00/P01 owner 交付项，本页未触碰认证代码",
+      "evidence": [
+        "docs/migration/tasks/P34.md"
+      ]
+    },
+    {
+      "id": "A04",
+      "status": "deferred",
+      "reason": "真实 token 过期收敛与双窗口退出同步：与 T00/P01/P02/P21/P33/P43 同口径；本轮轮询失败退避+失败态呈现+登出清理机制级实证",
+      "category": "cross_page",
+      "basis": "IAB 环境无法安全构造真实过期场景；机制级代码审查+登出实测",
+      "owner": "V01",
+      "resumeCondition": "V01 长会话复核（与其他页面同口径批量收口）",
+      "evidence": [
+        "docs/migration/tasks/P34.md"
+      ]
+    },
+    {
+      "id": "A05",
+      "status": "passed",
+      "reason": "菜单/直访同码 dashboard-realtime:view 守卫；导航入口按目标菜单码权限过滤（与守卫同一 buildAccessContext 解析）；root 全放行；无权限用户入口不渲染（代码审查+权限解析函数与 P41 守卫同源）",
+      "evidence": [
+        "docs/migration/tasks/P34.md"
+      ]
+    },
+    {
+      "id": "A06",
+      "status": "passed",
+      "reason": "POST /fms/v1/dispatcher/dashboard/board 与 POST /fms/v1/report/systemAlarmRecord/pageSystemAlarmRecords 逐字段对齐 OpenAPI；业务码判定统一请求层；无令牌 1000000 真实对照",
+      "evidence": [
+        "docs/migration/evidence/P34/run-72990389-0d3f-40a6-958d-a9693ed3ce96/readonly-result.json",
+        "docs/migration/evidence/P34/run-72990389-0d3f-40a6-958d-a9693ed3ce96/run-p34-readonly.mjs"
+      ]
+    },
+    {
+      "id": "A07",
+      "status": "passed",
+      "reason": "not_applicable 于表格替换：本页无表格（KPI 卡/图表/滚动列表形态，旧实现一致，规格 6.1 非表格布局允许）",
+      "evidence": [
+        "docs/migration/tasks/P34.md"
+      ]
+    },
+    {
+      "id": "A08",
+      "status": "passed",
+      "reason": "not_applicable：无分页表格语义（告警列表固定第一页 100 条上限与旧一致）",
+      "evidence": [
+        "docs/migration/tasks/P34.md"
+      ]
+    },
+    {
+      "id": "A09",
+      "status": "passed",
+      "reason": "not_applicable：无表格选择/列偏好",
+      "evidence": [
+        "docs/migration/tasks/P34.md"
+      ]
+    },
+    {
+      "id": "A10",
+      "status": "passed",
+      "reason": "串行轮询天然防并发堆积；页签 scope 取消级联（usePageRequest signal）；主动取消静默不清数据不置错误；多区域独立展示互不覆盖",
+      "evidence": [
+        "docs/migration/tasks/P34.md"
+      ]
+    },
+    {
+      "id": "A11",
+      "status": "passed",
+      "reason": "查询失败立即清空对应区域并显示错误（board 区与告警面板独立 StateBlock；真实会话失效场景实测）；草稿概念不适用本页（无表单）",
+      "evidence": [
+        "docs/migration/tasks/P34.md"
+      ]
+    },
+    {
+      "id": "A12",
+      "status": "passed",
+      "reason": "约 5 秒串行刷新（请求完成后计时）、隐藏暂停（useVisiblePolling documentVisible+isActive）、恢复即查、失败倍率退避上限 60s；无重复轮询（单 hook 单循环）；浏览器多轮计数实证",
+      "evidence": [
+        "docs/migration/tasks/P34.md"
+      ]
+    },
+    {
+      "id": "A13",
+      "status": "passed",
+      "reason": "not_applicable：本页无用户输入草稿（纯展示+轮询）；页签生命周期由 Activity 缓存与 useVisiblePolling 暂停/恢复机制覆盖",
+      "evidence": [
+        "docs/migration/tasks/P34.md"
+      ]
+    },
+    {
+      "id": "A14",
+      "status": "passed",
+      "reason": "not_applicable：本页零写操作（board/告警分页均为查询性质 POST，按业务语义归只读）",
+      "evidence": [
+        "docs/migration/tasks/P34.md",
+        "docs/migration/evidence/P34/run-72990389-0d3f-40a6-958d-a9693ed3ce96/run-p34-readonly.mjs"
+      ]
+    },
+    {
+      "id": "A15",
+      "status": "passed",
+      "reason": "not_applicable：无批量操作",
+      "evidence": [
+        "docs/migration/tasks/P34.md"
+      ]
+    },
+    {
+      "id": "A16",
+      "status": "passed",
+      "reason": "not_applicable：无文件传输",
+      "evidence": [
+        "docs/migration/tasks/P34.md"
+      ]
+    },
+    {
+      "id": "A17",
+      "status": "passed",
+      "reason": "not_applicable：无地图/关联选择",
+      "evidence": [
+        "docs/migration/tasks/P34.md"
+      ]
+    },
+    {
+      "id": "A18",
+      "status": "passed",
+      "reason": "not_applicable：无工艺/Cron 业务",
+      "evidence": [
+        "docs/migration/tasks/P34.md"
+      ]
+    },
+    {
+      "id": "A19",
+      "status": "passed",
+      "reason": "真实数据+经证实口径（OpenAPI 字段注释+旧实现逐行核对）：KPI/图表共用 realtime.ts 计算；缺失/除零不可计算展示「--」；图表与 KPI 同源一致；11 条口径说明四语言显式展示",
+      "evidence": [
+        "docs/migration/tasks/P34.md",
+        "docs/migration/evidence/P34/run-72990389-0d3f-40a6-958d-a9693ed3ce96/readonly-result.json"
+      ]
+    },
+    {
+      "id": "A20",
+      "status": "passed",
+      "reason": "五语言（简中/en/繁/日/韩浏览器实测 html lang 同步+图表重建）+深浅主题（图表重建配色）+1366/1920 双视口；合成事件边界与真实指针未覆盖登记于交接记录",
+      "evidence": [
+        "docs/migration/tasks/P34.md"
+      ]
+    },
+    {
+      "id": "A21",
+      "status": "passed",
+      "reason": "dashboard.mock.ts 删除且引用清零；模板 StatCard/TrendAreaChart 等示例数据链全量退役；无随机统计/伪进度/fallback；零 mock 审计：本页唯一含 mock 字样的是 mockDispatch 不涉及本页",
+      "evidence": [
+        "docs/migration/tasks/P34.md"
+      ]
+    },
+    {
+      "id": "A22",
+      "status": "passed",
+      "reason": "单一合并首页：/dashboard 解除 pending 进落点候选（resolveLandingPath）；旧地址 /analyze-visual/dashboard-realtime redirect 同实例（同码守卫，实测）；affixTab 保留",
+      "evidence": [
+        "docs/migration/tasks/P34.md"
+      ]
+    },
+    {
+      "id": "A23",
+      "status": "passed",
+      "reason": "echarts 6.1.0 复用 P33 已装依赖（零新增）；lint/typecheck/structure/build 全绿；多行简体中文注释；无无关格式化",
+      "evidence": [
+        "docs/migration/tasks/P34.md"
+      ]
+    },
+    {
+      "id": "A24",
+      "status": "deferred",
+      "reason": "长时多页签/真实规模稳定性与图表重建资源回收：dispose/重建机制级已实现（Activity 隐藏卸载即释放、ResizeObserver 跟随）；本轮未做长时观测",
+      "category": "cross_page",
+      "basis": "规格 A24 长时稳定性观测需长时间运行环境；本轮单会话约 20 分钟多轮轮询无异常",
+      "owner": "V01",
+      "resumeCondition": "V01 统一收口长时多页签/图表重建/真实规模稳定性观测",
+      "evidence": [
+        "docs/migration/tasks/P34.md"
+      ]
+    },
+    {
+      "id": "I01",
+      "status": "passed",
+      "reason": "五语言入口/规范化为 T00.8 基座；本页分片四语言懒加载注册并浏览器实测五语言切换+html lang 同步",
+      "evidence": [
+        "docs/migration/tasks/P34.md"
+      ]
+    },
+    {
+      "id": "I02",
+      "status": "passed",
+      "reason": "旧实时看板五语言译文迁移：en 真译逐条沿用；繁日韩有真译者沿用、简体复制词条按 B1 基线补真实译（不丢已有有效译文）；模板遗留 key 随 mock 退役登记",
+      "evidence": [
+        "docs/migration/tasks/P34.md"
+      ]
+    },
+    {
+      "id": "I03",
+      "status": "passed",
+      "reason": "本页无插值/ICU 文案（数值走 Intl 格式化，tooltip 单位后缀翻译）；花括号零风险",
+      "evidence": [
+        "docs/migration/tasks/P34.md"
+      ]
+    },
+    {
+      "id": "I04",
+      "status": "passed",
+      "reason": "语言切换：KPI/面板/图表/空态动态重建，无整页刷新（SPA 切换实测）、无草稿概念、无写请求重发（数据为查询轮询）",
+      "evidence": [
+        "docs/migration/tasks/P34.md"
+      ]
+    },
+    {
+      "id": "I05",
+      "status": "passed",
+      "reason": "antd 组件（Tag/Empty/Skeleton/Tooltip）随 ConfigProvider 五语言；echarts 文案为业务传入已翻译 props；lucide 图标 aria-hidden",
+      "evidence": [
+        "docs/migration/tasks/P34.md"
+      ]
+    },
+    {
+      "id": "I06",
+      "status": "deferred",
+      "reason": "真实网络级资源加载失败不白屏：失败态 StateBlock 机制级实证（会话失效场景）；网络级故障 IAB 无法构造",
+      "category": "cross_page",
+      "basis": "IAB 环境限制（同 T00/P01/P02/P21/P33 登记口径）",
+      "owner": "V01",
+      "resumeCondition": "V01 网络故障注入复核",
+      "evidence": [
+        "docs/migration/tasks/P34.md"
+      ]
+    },
+    {
+      "id": "I07",
+      "status": "passed",
+      "reason": "请求层 Accept-Language 统一注入（T00 契约）；本页数据与语言无关（数值+服务端多语言译文客户端回退链），语言切换不重查不重发",
+      "evidence": [
+        "docs/migration/tasks/P34.md"
+      ]
+    },
+    {
+      "id": "I08",
+      "status": "passed",
+      "reason": "五语言不改变部署时区/业务值/枚举（Intl 仅格式化）；深浅主题×1366 最低视口实测（KPI 换行、图表自适应、无遮挡）",
+      "evidence": [
+        "docs/migration/tasks/P34.md"
+      ]
+    }
+  ],
+  "environment": {
+    "backend": "10.11.2.67:8888（Vite 同源代理）",
+    "dataScale": "AGV 56 台（在线 56）、今日创建口径 22,090→22,492（轮询增长）、未关闭告警 0 条",
+    "role": "root（超管全权限）",
+    "viewports": [
+      "1920×945",
+      "1366×768"
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "languages": [
+      "zh-CN",
+      "en-US",
+      "zh-TW",
+      "ja-JP",
+      "ko-KR"
+    ],
+    "browser": "IAB Chromium（合成事件路径，真实指针管线故障已登记）",
+    "verificationDate": "2026-09-20"
+  },
+  "screenshotIndex": {
+    "storage": "local_only",
+    "dir": "docs/migration/evidence/P34/run-72990389-0d3f-40a6-958d-a9693ed3ce96/screenshots/",
+    "files": [
+      "zh-CN-light-1920.png",
+      "zh-CN-dark-1920.png",
+      "zh-CN-light-1366.png",
+      "zh-CN-dark-1366.png",
+      "en-US-dark-1920.png",
+      "zh-TW-light-1920.png",
+      "ja-JP-light-1920.png",
+      "ko-KR-light-1920.png",
+      "session-kicked-error-state-1920.png"
+    ],
+    "note": "九张截图仅本地留存（.gitignore 排除），sha256 不再单列；其他环境缺原图时证据不可复核"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "task": {
+    "implementation": "implemented",
+    "verification": "partial",
+    "gate": "ready",
+    "acceptanceRecord": "docs/migration/evidence/P34/run-72990389-0d3f-40a6-958d-a9693ed3ce96/acceptance.json",
+    "pendingItems": [
+      "A04/I06：真实 token 过期收敛、双窗口退出与真实网络级资源加载失败不白屏归 V01 长会话复核（本轮轮询失败退避+双区域独立失败态+登出清理机制级已实证，T00/P01/P02/P21/P33 同口径）",
+      "A24：长时多页签/真实规模稳定性与图表重建资源回收归 V01 统一收口（dispose/重建机制级已实现，本轮约 20 分钟多轮轮询无异常）",
+      "首页告警行车辆/订单链接点击：本环境 0 条未关闭告警（真实空结果）无法点击，渲染分支+权限过滤代码审查实证；P36 交付后按 TASKS 补验首页→告警导航并更新两项验收记录",
+      "真实指针交互复核：本会话 IAB 输入管线故障（事件日志垫片实证零事件到达），登录/主题/语言/导航/登出经合成事件完成，真实指针自然浏览器复核归 V01（P39 RO 垫片同口径环境限制）",
+      "G15：KPI 公式（创建/完成口径、瞬时利用率近似、昨日同时刻基线）后端语义最终核对归 V01 真实数据复核（口径已在页面四语言显式说明，P33 同口径）"
+    ],
+    "note": "P34 交付（2026-09-20，run-72990389）：合并业务首页 /dashboard 整页（board 聚合+5s 可见轮询+实时告警+导航契约）+旧地址重定向同实例+模板 mock 全量退役（c9d7fac）；静态门禁全绿；真实只读 8/8；浏览器整页验收（深浅×双视口×五语言、落点 D29 实测、会话失效双区域独立失败态）；verification=partial（A04/A24/I06 deferred 归 V01+告警链接/真实指针/G15 边界登记），gate=ready；不勾选 TASKS"
+  },
+  "progress": [
+    "P34 全部验证完成：静态门禁复绿（lint 0/0 490 文件/typecheck/structure 481/build 1.15s）；真实只读 8/8（board 45 小时行覆盖今昨+五状态和=56 不变量+告警 0 条真实空+无令牌 1000000+登出清理）；浏览器整页验收（登录落点 /dashboard 实测、8 KPI 实时值+环比、环形图/双折线/告警空态、5s 轮询持续、会话失效真实场景双区域独立失败态、深浅×双视口×五语言动态重建、KPI 卡→/order-record、旧地址重定向、登出清理）",
+    "本轮修复缺陷 2 处（截图实证）：panelBody flex:1 塌陷改内联 height 生效；环图图例泄漏 center 占位改 legend.data 显式五状态",
+    "文档：tasks/P34.md、contracts.md（合并首页契约+落点行+变更日志）、operations.md 3 行、i18n-map.md、i18n-missing.md 移除 dashboard 登记；acceptance.json 49 项矩阵（deferred：A04/A24/I06）"
+  ],
+  "nextSteps": [
+    "文档提交 + push --commit 核对远端 + end --outcome completed"
+  ],
+  "blocker": null
+}
