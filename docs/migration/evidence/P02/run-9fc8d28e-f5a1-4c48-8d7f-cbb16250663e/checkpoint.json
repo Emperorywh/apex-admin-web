@@ -1,0 +1,25 @@
+{
+  "task": {
+    "implementation": "implemented",
+    "verification": "partial",
+    "gate": "ready",
+    "acceptanceRecord": "docs/migration/evidence/P02/run-9fc8d28e-f5a1-4c48-8d7f-cbb16250663e/acceptance.json",
+    "pendingItems": [
+      "A14：真实激活成功链路（写副作用）归 V01 专用未激活环境/现场执行（机制级已实证：防连点/失败留稿/不自动重放/code=200 唯一判定；本轮失败分支零网络接触实测；10.11.2.67 本轮可达实测已激活，未激活环境依旧不可得）",
+      "activated=false→授权页落点与 1001000 真实业务触发归 V01 未激活环境（两轮探测 10.11.2.67：上轮不可达，本轮可达但 activated=true；G17 有真实业务码观察；机制两端各自实证，resolveLandingPath 落点已随 P34 交付实测 /dashboard）",
+      "A04：真实 token 过期收敛与双窗口退出同步场景归 V01 长会话复核（与 T00/P01 同口径；本轮补登出清理 persist 解析核验+「返回登录」语义核验）",
+      "I06：真实资源加载失败不白屏场景归 V01 复核（IAB 环境限制；四语言分片完整无缺失回退，T00/P01 同口径）"
+    ],
+    "note": "audit 第二次复核通过（2026-09-21，run run-9fc8d28e）：基线 408144b→26c94cc（八个代码交付）后 24 受检文件 22 个哈希零变更、2 个变更公共文件（definitions.tsx/i18n.ts）逐 hunk 审查确认 authorize-ingress 节点与 license-activation 注册零改动（T00 audit 已审授权扩展）；静态门禁复用 T00 audit @ 392e831 复绿结果（392e831..26c94cc 仅 docs）；真实只读 getHardwareInfo 代理+直连 2/2、10.11.2.67 恢复可达认证交换 3/3（activated=true）；浏览器针对性复测 8/8（守卫/回跳/硬件码/复制提示/返回登录语义/落点 /dashboard×2（P34 兑现 D29，上轮 /order-record 结论更新）/登出清理/en 全元素渲染）；IAB 输入管线冻结经合成 pointer 序列垫片（边界登记，真实指针归 V01）；verification=partial（A14/A04/I06 deferred），gate=ready 维持 B1/P29 放行；不勾选 TASKS"
+  },
+  "progress": [
+    "静态核查：24 受检文件 22 个零变更（哈希比对）、definitions.tsx/i18n.ts 逐 hunk 审查（P02 节点/注册零改动）、OpenAPI 哈希 a82e9b5f 一致、git diff 392e831..26c94cc 证实仅 docs",
+    "浏览器针对性复测 8/8（browser-ui-result.json）：守卫拦截/登录回跳+硬件码渲染（页面服务 9ms 与直连一致）/复制成功提示/返回登录语义/落点 /dashboard 两路径/登出清理 persist 解析核验/en-US 全元素渲染+截图（本地留存）",
+    "真实只读：getHardwareInfo 经 dev 代理+直连一致 2/2；10.11.2.67 恢复可达，认证交换 3/3（登录 activated=true/155 权限码→带令牌只读→登出清理）；未激活环境 deferred 依据维持、表述更新",
+    "acceptance.json 写入：49 项矩阵（A14/A04/I06 deferred 归 V01）+24 文件哈希重绑 @ 26c94cc；P02.md 交接记录第二轮复核节更新"
+  ],
+  "nextSteps": [
+    "提交验收记录/交接记录/RUN_STATE/验证脚本 → push --commit HEAD → end --outcome completed"
+  ],
+  "blocker": null
+}

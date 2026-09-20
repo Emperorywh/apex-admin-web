@@ -1,0 +1,82 @@
+{
+  "runId": "run-9fc8d28e-f5a1-4c48-8d7f-cbb16250663e",
+  "taskId": "P02",
+  "purpose": "audit 第二次复核——浏览器针对性复测（基线推进 408144b→26c94cc 后）",
+  "executedAt": "2026-09-21T07:10:00+08:00",
+  "codeCommit": "26c94cc135a33e9921333fd72d4cef7dacb5ce21",
+  "channel": "Vite dev server 同源代理 http://localhost:5173（用户既有运行，未接管）→ APEX_DEV_LEGACY_TARGET 192.168.0.158:8888（已激活联调后端）",
+  "browser": "ZCode IAB（Chromium 内核，Windows 11），视口 1280×720（本轮针对性抽验；上轮已做 1366/1920 双视口整页，本轮不重复）",
+  "credentials": "本机 .env.local（APEX_TEST_USERNAME/APEX_TEST_PASSWORD，来源名称记录、值不入档）",
+  "steps": [
+    {
+      "step": 1,
+      "name": "未登录守卫拦截（独立授权入口≠免鉴权）",
+      "expected": "清空本地会话后直访 /authorize-ingress，守卫拦截并保留站内回跳参数",
+      "actual": "重定向到 /login?redirect=%2Fauthorize-ingress",
+      "result": "passed"
+    },
+    {
+      "step": 2,
+      "name": "登录合法回跳授权页+硬件码真实加载",
+      "expected": "登录成功后按 redirect 参数回跳授权页；getHardwareInfo 经页面服务真实发出并渲染",
+      "actual": "回跳 /authorize-ingress；performance 资源条目证实 GET /fms/v1/auth/license/getHardwareInfo（9ms）；72 字符硬件码渲染，与 curl 直连返回一致；激活按钮空输入禁用（0/2000 计数器）；「登录成功」toast",
+      "result": "passed"
+    },
+    {
+      "step": 3,
+      "name": "硬件码复制成功路径",
+      "expected": "点击复制后组件成功提示",
+      "actual": "「复制成功」message toast 出现（DOM 证实）；剪贴板内容读回在本轮环境不可核验——IAB 合成 pointer 序列不含 transient activation，Clipboard API 写入被系统拒绝（环境限制，非产品缺陷）；组件代码零变更（哈希一致）且上轮已实测读回一致",
+      "result": "passed_with_env_limitation"
+    },
+    {
+      "step": 4,
+      "name": "授权页「返回登录」语义",
+      "expected": "replace 导航回登录页（设计行为：保留会话，源码注释 L14/L57-60 证实返回登录≠登出）",
+      "actual": "URL 变为 /login；会话保留（token/user 仍在）——与设计一致",
+      "result": "passed"
+    },
+    {
+      "step": 5,
+      "name": "已登录直访根路径落点（P34 后）",
+      "expected": "resolveLandingPath 按当前基线路由解析落点；P34 交付解除 /dashboard pending 后应落 /dashboard",
+      "actual": "直访 / → /dashboard（title 仪表盘）；上轮 P02 记录的落点 /order-record 按 D29 更新为 /dashboard（与 P01 第二次复核实测一致）；激活成功导航 handleActivated 消费同一 resolveLandingPath（AuthorizeIngress.tsx L50-55）",
+      "result": "passed"
+    },
+    {
+      "step": 6,
+      "name": "顶栏登出会话清理",
+      "expected": "persist:apex-admin:auth 全清、语言偏好保留",
+      "actual": "顶栏用户菜单（title=root）→ 退出登录 → URL /login?redirect=%2Fdashboard；auth 切片 token=null/user=null/permissions=[]（正确解析后核验）；persist:apex-admin:settings 语言偏好保留",
+      "result": "passed"
+    },
+    {
+      "step": 7,
+      "name": "无 redirect 登录落点（en-US 界面）",
+      "expected": "登录页直访 /login（无 redirect 参数）→ 切 en-US → 登录 → 落点规则生效",
+      "actual": "语言菜单五项自名（简体中文/繁體中文/English/日本語/한국어）；选 English 后 html lang=en-US、按钮 Sign in；登录成功落 /dashboard（无 redirect）",
+      "result": "passed"
+    },
+    {
+      "step": 8,
+      "name": "en-US 授权页全元素渲染",
+      "expected": "授权页随持久化偏好以 en 渲染，资源加载路径正常",
+      "actual": "heading Software License/副标题/Hardware ID/Copy/Please enter activation code 占位符/Back to Login/Activate License[disabled] 全元素 en 译文；html lang=en-US；硬件码同一真实值；截图 authorize-en-1280.png（本地留存）",
+      "result": "passed"
+    }
+  ],
+  "syntheticPathNotes": {
+    "iabInputPipelineFrozen": "本轮 IAB 输入管线冻结复现（与 P01 第二次复核同现象）：playwright locator click 超时（登录按钮、复制按钮）；填写（fill）生效。对策：登录提交/复制/返回登录/用户菜单/语言菜单/登出均经 evaluate 派发 pointerdown→mousedown→pointerup→mouseup→click 合成序列完成。该垫片不能证明真实指针交互正常，真实指针自然浏览器复核归 V01（与 P34/P39/P40/P01 复核同口径登记）",
+    "clipboard": "合成事件无 transient activation，navigator.clipboard 写入被拒；组件成功提示路径已实证，剪贴板实际内容读回不可核验（上轮真实路径已实测一致，本轮受检文件零变更）",
+    "logoutMenu": "顶栏 dropdown portal 菜单项 locator 无法穿透，经 DOM 合成 click 触发（上轮同口径）；登出结果以 persist 存储真实状态核验（token/user/permissions 解析后确认），不凭残留 DOM",
+    "viewport": "本轮 IAB 视口 1280×720；1366/1920 双视口整页验收由上轮完成且布局代码零变更，本轮不重复"
+  },
+  "coverage": {
+    "included": "守卫拦截/合法回跳/硬件码真实加载/复制成功提示/返回登录语义/落点规则×2（已登录直访+无 redirect 登录，P34 后行为）/登出清理/en-US 全元素渲染",
+    "notRepeated": "zh-TW/ja-JP/ko-KR 全页实测、1366/1920 双视口、激活失败分支注入、reload 会话恢复——license-activation 受检文件 13 个全部零变更（哈希一致），上轮证据继续有效",
+    "keyBehaviorChange": "无 redirect 落点 /order-record → /dashboard（P34 交付解除 pending，D29 兑现）——上轮 P02 记录按本轮实测更新"
+  },
+  "screenshots": [
+    { "file": "screenshots/authorize-en-1280.png", "sha256Note": "local_only，git 排除；en-US 授权页 1280×720 全页" }
+  ]
+}

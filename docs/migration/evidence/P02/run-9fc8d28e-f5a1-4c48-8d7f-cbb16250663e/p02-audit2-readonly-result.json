@@ -1,0 +1,28 @@
+{
+  "runId": "run-9fc8d28e-f5a1-4c48-8d7f-cbb16250663e",
+  "taskId": "P02",
+  "purpose": "audit（第二次复核）",
+  "codeCommit": "26c94cc135a33e9921333fd72d4cef7dacb5ce21",
+  "executedAt": "2026-09-20T23:02:28.454Z",
+  "channel": "http://localhost:5173（Vite dev 同源代理）→ http://192.168.0.158:8888；探测目标 http://10.11.2.67:8888",
+  "results": [
+    {
+      "step": "getHardwareInfo 经 dev 代理（无令牌）",
+      "ok": true,
+      "detail": "HTTP 200 code=200 len=72 sha256_8=e5c6aacc"
+    },
+    {
+      "step": "getHardwareInfo 直连后端对照",
+      "ok": true,
+      "detail": "HTTP 200 code=200 与代理一致=true len=72 sha256_8=e5c6aacc"
+    },
+    {
+      "step": "10.11.2.67 激活态探测",
+      "ok": false,
+      "detail": "本轮变为可达：可达：HTTP 200 code=200（26ms）——未激活环境 deferred 依据需要重新评估"
+    }
+  ],
+  "probeSummary": "可达：HTTP 200 code=200（26ms）",
+  "passCount": 2,
+  "totalCount": 3
+}

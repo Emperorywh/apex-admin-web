@@ -1,0 +1,30 @@
+{
+  "runId": "run-9fc8d28e-f5a1-4c48-8d7f-cbb16250663e",
+  "taskId": "P02",
+  "purpose": "audit 补充探测：10.11.2.67 激活态认证交换",
+  "codeCommit": "26c94cc135a33e9921333fd72d4cef7dacb5ce21",
+  "executedAt": "2026-09-20T23:03:16.794Z",
+  "target": "http://10.11.2.67:8888",
+  "activated": true,
+  "permissionCount": 155,
+  "results": [
+    {
+      "step": "登录读取 activated",
+      "ok": true,
+      "detail": "HTTP 200 code=200 activated=true 权限码=155（token 不入档）"
+    },
+    {
+      "step": "getHardwareInfo（带令牌，探测目标）",
+      "ok": true,
+      "detail": "HTTP 200 code=200 硬件码 len=72"
+    },
+    {
+      "step": "登出清理",
+      "ok": true,
+      "detail": "HTTP 200 code=200（探测会话已清理）"
+    }
+  ],
+  "conclusion": "探测目标已激活——未激活环境依旧不可得，deferred 依据维持（网络已恢复）",
+  "passCount": 3,
+  "totalCount": 3
+}
