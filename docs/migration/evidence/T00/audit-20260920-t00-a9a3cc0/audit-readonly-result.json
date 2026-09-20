@@ -1,0 +1,43 @@
+{
+  "ok": true,
+  "proxyTarget": "http://192.168.0.158:8888",
+  "activated": true,
+  "checks": [
+    {
+      "step": "login-md5",
+      "ok": true,
+      "detail": "HTTP 200 code=200 activated=true userFields=4 permCodes=155"
+    },
+    {
+      "step": "page-users-with-token",
+      "ok": true,
+      "detail": "HTTP 200 code=200 records=1 total=3"
+    },
+    {
+      "step": "page-users-anon-contrast",
+      "ok": true,
+      "detail": "HTTP 200 code=1000000"
+    },
+    {
+      "step": "system-logos-public",
+      "ok": true,
+      "detail": "HTTP 200 code=200"
+    },
+    {
+      "step": "logout",
+      "ok": true,
+      "detail": "HTTP 200 code=200"
+    }
+  ],
+  "checkedAt": "2026-09-20T02:14:10.848Z",
+  "note": "输出不含密码与 token；pageUsers 仅 pageSize=1 只读查询。",
+  "environment": {
+    "codeCommit": "a9a3cc040b7577733e70373325e9f7f67a762fa9",
+    "channel": "Vite dev server 同源代理（http://localhost:5173，/fms 直通 APEX_DEV_LEGACY_TARGET）",
+    "devServerNote": "5173 端口为既有运行中的 dev server（本轮自启因 strictPort 冲突退出未接管）；代理目标经响应内容证实指向已激活后端（activated=true 仅 192.168.0.158:8888 返回，旧未激活环境为 1001000）",
+    "backend": "192.168.0.158:8888（用户提供已激活联调后端，.env.local APEX_DEV_LEGACY_TARGET）",
+    "credentials": "本机 .env.local（APEX_TEST_USERNAME/APEX_TEST_PASSWORD，来源名称记录、值不入档）",
+    "languageHeader": "accept-language: zh-CN",
+    "sideEffects": "无写请求；pageUsers 为 pageSize=1 只读查询；logout 清理本轮会话"
+  }
+}

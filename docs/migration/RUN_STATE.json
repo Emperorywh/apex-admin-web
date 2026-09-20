@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "revision": 6,
-  "updatedAt": "2026-09-20T01:53:21.475Z",
+  "revision": 11,
+  "updatedAt": "2026-09-20T02:26:04.466Z",
   "workspace": {
     "root": "C:\\code\\apex-admin-web",
     "branch": "apple-rxx",
@@ -19,14 +19,15 @@
       "batch": "B0",
       "dependencies": [],
       "implementation": "implemented",
-      "verification": "pending_review",
-      "gate": "pending_review",
+      "verification": "partial",
+      "gate": "ready",
       "handoff": "docs/migration/tasks/T00.md",
-      "acceptanceRecord": null,
+      "acceptanceRecord": "docs/migration/evidence/T00/audit-20260920-t00-a9a3cc0/acceptance.json",
       "pendingItems": [
-        "核对完整 DoD / 专项 / A / I 矩阵，补齐缺失证据，禁止把登记例外当最终通过"
+        "A04：真实 token 过期收敛与双窗口退出同步场景归 V01 长会话复核（机制级已实证，P01.md 同口径登记）",
+        "I06：真实资源加载失败不白屏场景归 V01 复核（IAB 环境限制未构造；预加载失败回滚机制经代码审查）"
       ],
-      "note": "历史已交付，保留代码进度；旧勾选不再作为完整验收凭证"
+      "note": "audit 复核通过（2026-09-20，run audit-20260920-t00-a9a3cc0）：当前基线 a9a3cc0 静态门禁复绿 + 真实登录/带令牌只读复测 5/5 + T00 owner 文件后续变更全部为各页登记的授权扩展；verification=partial（2 项跨页 deferred 归 V01），gate=ready 维持 B1 放行；不勾选 TASKS"
     },
     {
       "id": "P01",
@@ -995,33 +996,53 @@
     }
   ],
   "currentTaskId": "P21",
-  "run": null,
+  "run": {
+    "runId": "audit-20260920-t00-a9a3cc0",
+    "taskId": "T00",
+    "purpose": "audit",
+    "owner": "ZCode-audit-20260920",
+    "startedAt": "2026-09-20T02:06:43.990Z",
+    "baseHead": "a9a3cc040b7577733e70373325e9f7f67a762fa9",
+    "initialStatus": "M  docs/migration/RUN_STATE.json\nA  docs/migration/evidence/runs/delivery-20260920-p21-a9a3cc0.json",
+    "progress": [
+      "核对 T00 冻结（65d192e）→HEAD 公共文件全量 diff：均为 P02/P03/P06/P10/P26/P27/P30/P41/P42 交接记录登记的授权扩展或 pending 移除等预期生命周期动作，未发现契约破坏",
+      "复跑 pnpm check（oxlint 477 文件 0/0 + typecheck + structure 474 文件）+ pnpm build 通过",
+      "真实登录+带令牌只读复测 5/5 通过（run-audit-readonly.mjs，经 dev 代理 → 192.168.0.158:8888，MD5 登录 activated=true/155 权限码/pageUsers code=200/无令牌对照 1000000/登出清理）",
+      "跨页衔接项证据核实：表格真实列表（P03/P05）、轮询（P05/P39）、传输通道（P08/P25/P26）、地图选点（P07）、独立窗口（P39）均已消费验证；A04/I06 保留 deferred 归 V01",
+      "生成验收记录 acceptance.json（49 items 覆盖 TASK/DoD1-16/A01-A24/I01-I08 + 52 codeFiles SHA-256 绑定）"
+    ],
+    "nextSteps": [
+      "提交推送本轮 audit 证据与台账更新",
+      "runner end 结束本轮"
+    ],
+    "blocker": null
+  },
   "publish": {
     "status": "synced",
-    "commit": "4cd8214afbae8e284c7b9fd65a37d052ad67307c",
-    "confirmedRemoteHead": "4cd8214afbae8e284c7b9fd65a37d052ad67307c",
-    "checkedAt": "2026-09-20T01:53:15.502Z",
+    "commit": "a9a3cc040b7577733e70373325e9f7f67a762fa9",
+    "confirmedRemoteHead": "a9a3cc040b7577733e70373325e9f7f67a762fa9",
+    "checkedAt": "2026-09-20T02:01:03.277Z",
     "error": null
   },
   "lastRun": {
-    "runId": "delivery-20260920-p21-4cd8214",
+    "runId": "delivery-20260920-p21-a9a3cc0",
     "taskId": "P21",
     "purpose": "delivery",
-    "owner": "ZCode-delivery-20260920a",
-    "startedAt": "2026-09-20T01:53:04.759Z",
-    "baseHead": "4cd8214afbae8e284c7b9fd65a37d052ad67307c",
+    "owner": "ZCode-delivery-20260920b",
+    "startedAt": "2026-09-20T02:00:49.895Z",
+    "baseHead": "a9a3cc040b7577733e70373325e9f7f67a762fa9",
     "initialStatus": "",
     "progress": [],
     "nextSteps": [],
     "blocker": null,
-    "endedAt": "2026-09-20T01:53:21.420Z",
+    "endedAt": "2026-09-20T02:01:15.803Z",
     "outcome": "completed",
-    "endHead": "4cd8214afbae8e284c7b9fd65a37d052ad67307c",
+    "endHead": "a9a3cc040b7577733e70373325e9f7f67a762fa9",
     "publish": {
       "status": "synced",
-      "commit": "4cd8214afbae8e284c7b9fd65a37d052ad67307c",
-      "confirmedRemoteHead": "4cd8214afbae8e284c7b9fd65a37d052ad67307c",
-      "checkedAt": "2026-09-20T01:53:15.502Z",
+      "commit": "a9a3cc040b7577733e70373325e9f7f67a762fa9",
+      "confirmedRemoteHead": "a9a3cc040b7577733e70373325e9f7f67a762fa9",
+      "checkedAt": "2026-09-20T02:01:03.277Z",
       "error": null
     }
   },
