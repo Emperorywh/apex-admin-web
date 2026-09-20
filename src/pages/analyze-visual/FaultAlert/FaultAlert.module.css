@@ -1,0 +1,95 @@
+/* 故障告警页布局（P36）：
+   纵向 = 统计工具栏 → KPI 行 → 图表行 → 明细卡（flex:1 收纳表格）；
+   页内超宽/超高一律内部滚动消化，不撑破工作区（AGENTS §1 容器纪律）。 */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--app-space-3);
+  height: 100%;
+  min-height: 0;
+}
+
+/* 统计工具栏：窗口草稿 + 查询按钮；窄视口允许换行 */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--app-space-2);
+}
+
+/* KPI 4 卡：宽视口一行四张，1366 换两行两张（P34 kpiRow 同款栅格） */
+.kpiRow {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--app-space-3);
+}
+
+@media (max-width: 1439px) {
+  .kpiRow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* 图表行：趋势 2/3 + 排行 1/3；窄视口单列堆叠 */
+.chartRow {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: var(--app-space-3);
+}
+
+@media (max-width: 1279px) {
+  .chartRow {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* 图表/明细卡片壳：主题变量卡（P34 card 同款），内部纵向布局 */
+.chartCard,
+.detailCard {
+  background: var(--app-card-bg);
+  border: 1px solid var(--app-card-line);
+  border-radius: var(--app-radius-panel);
+  box-shadow: var(--app-card-shadow);
+  padding: var(--app-space-3) var(--app-space-4);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.cardTitle {
+  margin: 0 0 var(--app-space-2);
+  font-size: var(--app-fs-primary);
+  font-weight: var(--app-fw-bold);
+  color: var(--app-card-title);
+  display: flex;
+  align-items: center;
+  gap: var(--app-space-2);
+  min-width: 0;
+}
+
+/* 图表内容区：固定高度（排行接口最多 10 行，固定高避免 grid 行塌陷） */
+.chartBody {
+  height: 280px;
+}
+
+/* 聚合区失败/首载占位：卡片壳内统一最小高度，避免布局跳动 */
+.aggregateError,
+.aggregateLoading {
+  background: var(--app-card-bg);
+  border: 1px solid var(--app-card-line);
+  border-radius: var(--app-radius-panel);
+  box-shadow: var(--app-card-shadow);
+  padding: var(--app-space-3) var(--app-space-4);
+}
+
+/* 明细卡占满剩余高度：筛选表单自然高，表格容器 flex:1 收纳 Apex（height=100%） */
+.detailCard {
+  flex: 1;
+  min-height: 320px;
+}
+
+.tableWrap {
+  flex: 1;
+  min-height: 0;
+}

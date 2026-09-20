@@ -1,0 +1,10 @@
+/* 筛选表单容器：操作按钮行与表单项基线对齐 */
+.form :global(.ant-form-item) {
+  margin-bottom: 8px;
+}
+
+/* 操作按钮组占位标签（label=" "）下按钮垂直居中，与同行输入控件对齐 */
+.actions :global(.ant-form-item-control-input-content) {
+  display: flex;
+  align-items: center;
+}

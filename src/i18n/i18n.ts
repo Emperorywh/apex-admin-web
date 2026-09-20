@@ -134,6 +134,8 @@ const enUsLoaders: NamespaceLoaders = {
   // P33 任务统计（analyze-visual/order-statistics；页面私有命名空间，
   // 筛选标签/枚举 label 复用 orderRecord，页面以 fallback 双命名空间取词）
   'report-order': () => import('@/i18n/locales/en-US/report-order'),
+  // P36 故障告警（analyze-visual/dashboard-fault；页面私有命名空间）
+  'report-fault': () => import('@/i18n/locales/en-US/report-fault'),
   // P41 无权限页（un-access；布局外独立页）
   'access-denied': () => import('@/i18n/locales/en-US/access-denied'),
 }
@@ -219,6 +221,8 @@ const zhTwLoaders: NamespaceLoaders = {
   'tripartite-traffic': () => import('@/i18n/locales/zh-TW/tripartite-traffic'),
   // P33 任务统计（analyze-visual/order-statistics；页面私有命名空间）
   'report-order': () => import('@/i18n/locales/zh-TW/report-order'),
+  // P36 故障告警（analyze-visual/dashboard-fault；页面私有命名空间）
+  'report-fault': () => import('@/i18n/locales/zh-TW/report-fault'),
   // P34 合并业务首页（/dashboard；页面私有命名空间，实时看板重定向同实例共用）
   dashboard: () => import('@/i18n/locales/zh-TW/dashboard'),
   'access-denied': () => import('@/i18n/locales/zh-TW/access-denied'),
@@ -297,6 +301,8 @@ const jaJpLoaders: NamespaceLoaders = {
   'tripartite-traffic': () => import('@/i18n/locales/ja-JP/tripartite-traffic'),
   // P33 任务统计（analyze-visual/order-statistics；页面私有命名空间）
   'report-order': () => import('@/i18n/locales/ja-JP/report-order'),
+  // P36 故障告警（analyze-visual/dashboard-fault；页面私有命名空间）
+  'report-fault': () => import('@/i18n/locales/ja-JP/report-fault'),
   // P34 合并业务首页（/dashboard；页面私有命名空间，实时看板重定向同实例共用）
   dashboard: () => import('@/i18n/locales/ja-JP/dashboard'),
   'access-denied': () => import('@/i18n/locales/ja-JP/access-denied'),
@@ -375,6 +381,8 @@ const koKrLoaders: NamespaceLoaders = {
   'tripartite-traffic': () => import('@/i18n/locales/ko-KR/tripartite-traffic'),
   // P33 任务统计（analyze-visual/order-statistics；页面私有命名空间）
   'report-order': () => import('@/i18n/locales/ko-KR/report-order'),
+  // P36 故障告警（analyze-visual/dashboard-fault；页面私有命名空间）
+  'report-fault': () => import('@/i18n/locales/ko-KR/report-fault'),
   // P34 合并业务首页（/dashboard；页面私有命名空间，实时看板重定向同实例共用）
   dashboard: () => import('@/i18n/locales/ko-KR/dashboard'),
   'access-denied': () => import('@/i18n/locales/ko-KR/access-denied'),

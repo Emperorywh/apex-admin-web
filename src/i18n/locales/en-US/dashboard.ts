@@ -60,4 +60,5 @@ export default {
   // 空态
   '暂无数据': 'No data',
   '暂无未关闭告警': 'No open alerts',
+  '查看全部告警': 'View all alerts',
 }

@@ -109,3 +109,9 @@
     grid-column: span 12;
   }
 }
+
+/* 面板标题行动作（如「查看全部告警」入口）：推到标题行右侧 */
+.panelAction {
+  margin-left: auto;
+  font-weight: normal;
+}

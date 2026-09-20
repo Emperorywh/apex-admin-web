@@ -678,12 +678,15 @@ export const appRouteDefinitions = defineAppRoutes([
             }),
           },
           {
+            // P36 交付解除 pending：菜单码 dashboard-fault:view 挂路由守卫
+            // （与旧 .umirc.ts access=PERM.DASHBOARD_FAULT_VIEW 一致）；
+            // 页内无按钮码；车辆/任务导航按目标菜单码过滤（P34 契约同款）
             id: 'analyze-visual-dashboard-fault',
             path: 'dashboard-fault',
             loadPage: () => import('@/pages/analyze-visual/FaultAlert/FaultAlert'),
             meta: businessMeta('故障告警', PERM.DASHBOARD_FAULT_VIEW, {
               icon: TriangleAlert,
-              pending: true,
+              i18nNamespaces: ['report-fault'],
             }),
           },
           {
