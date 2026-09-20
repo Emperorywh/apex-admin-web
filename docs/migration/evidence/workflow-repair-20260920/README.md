@@ -1,9 +1,12 @@
 # 自动任务控制器：当前修复与验证
 
-2026-09-20 补修停滞问题。当前维护轮 `workflow-unblock-20260920` 只修复控制器，不实施 P41/P21 或后续业务页面。固定目录和 `apple-rxx` 分支保持不变。原工作流修复过程保留在 `../runs/workflow-repair-20260920-0919.json`，本页只保留现行机制与验证方法。
+2026-09-20 维护轮 `workflow-identity-20260920` 修复再次领取失败，只修改自动任务机制，不实施 P21 或后续业务页面。固定目录和 `apple-rxx` 分支保持不变。本页只保留现行机制与验证方法。
 
 ## 修复结果
 
+- 本次直接原因是旧身份识别器要求 turn_usage 提前存在 running 记录。失败轮 `sess_1e3b7eef-5a09-4f50-a36c-dc0effaca696` 在执行中查询为零行，结束后才出现 completed；CLI 仍为 0.16.9，不能据此归因于版本升级。上次夹具预先插入 running usage，遗漏了真实落库时序，见 `identity-diagnosis.json`。
+- 当前身份改为独立启动命令对应的实时 running Bash part → 同会话 assistant message.anchor.turnId，再核对 task、automation 和两处工作目录。CLI 本机实现会在执行工具前保存 running part。已完成工具、诊断文本、缺失锚点、错误目录、多重匹配或已终止轮次均拒绝领取；不按时间挑选最新会话，不要求统计提前存在。
+- 领取命令须独立执行，不附加过滤警告的管道、重定向或其他命令。已同步 AUTOMATION_PROMPT 和 TASKS；调度器仍读取仓库内的唯一提示词。锁恢复保留精确终态条件，并额外检查实时工具，避免统计延迟漏掉重新开始的工作。
 - P41 的实际成功 begin 属于 `sess_c27edd63-89ee-45c9-b2ad-13cd1fe3f73e` / `turn_6f4b40a7-d9b9-488e-b230-c2d701471f33`。CLI 记录该轮于 13:15:20 +08 取消，未执行 end；任务索引和自动调度仅给出粗粒度 completed/succeeded。原锁使用自拟 owner，后续轮无法绑定该终态。现已保存精确工具、轮次和调度证明并恢复锁，见 `../recovery/audit-20260920-p41-384240b.json`。
 - 实际远端已经包含 `f787ef8`，旧 publish 回执只确认到 `384240b`，不能据此断言新提交未推送。prepare 在持锁后查询真实远端，已同步则修正回执并在同一轮领取开发任务；真正未同步才进入 delivery。
 - 自动任务使用现有仓库提示词入口；只读核查时仍启用、每小时第 30 分触发。本次未更改调度频率、模型或启停状态。
@@ -20,7 +23,7 @@
 | `pnpm build` | 通过；保留现有大 chunk 提示，未进行无关拆包 |
 | 两个 migration 控制脚本 | Node 语法检查通过；不引入新依赖 |
 | `pnpm migration:check` | 48 项完整，投影一致，文档凭据模式检查通过 |
-| 控制脚本命令行集成烟测 | 16 项通过，见 `smoke-results.json`；可用 `python docs/migration/evidence/workflow-repair-20260920/smoke-runner.py` 复现 |
+| 控制脚本命令行集成烟测 | 21 项通过，见 `smoke-results.json`；覆盖当前轮无 usage、历史滞留 running、多工具歧义、错误身份及重新唤醒工具；可用 `python docs/migration/evidence/workflow-repair-20260920/smoke-runner.py` 复现 |
 | 后端及业务 UI | 本轮未执行，不宣称 P21 或历史业务验收通过 |
 
 烟测在系统临时目录创建独立 Git 仓库、本地裸远端及 SQLite 会话夹具，没有业务后端请求或真实队列修改。`MIGRATION_ZCODE_HOME` 仅将隔离验证指向夹具目录；生产默认只读当前用户的 `.zcode` 数据库，绝不写入。验收矩阵夹具仅验证控制器行为。未新增单元测试。

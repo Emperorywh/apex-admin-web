@@ -172,14 +172,18 @@ try:
     idx = sqlite3.connect(zhome / 'v2/tasks-index.sqlite')
     db = sqlite3.connect(zhome / 'cli/db/db.sqlite')
     idx.executescript('CREATE TABLE tasks(task_id TEXT, task_status TEXT, workspace_path TEXT, updated_at INTEGER); CREATE TABLE automation_runs(run_id TEXT, session_id TEXT, outcome TEXT, updated_at INTEGER, created_at INTEGER);')
-    db.executescript('CREATE TABLE session(id TEXT, directory TEXT); CREATE TABLE part(id TEXT, session_id TEXT, data TEXT); CREATE TABLE turn_usage(session_id TEXT, turn_id TEXT, status TEXT, started_at INTEGER, completed_at INTEGER); CREATE TABLE tool_usage(session_id TEXT, tool_call_id TEXT, turn_id TEXT, status TEXT); CREATE TABLE session_input(session_id TEXT, status TEXT);')
+    db.executescript('CREATE TABLE session(id TEXT, directory TEXT); CREATE TABLE message(id TEXT, session_id TEXT, data TEXT); CREATE TABLE part(id TEXT, session_id TEXT, message_id TEXT, data TEXT); CREATE TABLE turn_usage(session_id TEXT, turn_id TEXT, status TEXT, started_at INTEGER, completed_at INTEGER); CREATE TABLE tool_usage(session_id TEXT, tool_call_id TEXT, turn_id TEXT, status TEXT); CREATE TABLE session_input(session_id TEXT, status TEXT);')
     old_sid = 'sess_00000000-0000-0000-0000-000000000001'
     new_sid = 'sess_00000000-0000-0000-0000-000000000002'
+    new_turn = 'turn_00000000-0000-0000-0000-000000000002'
     for sid, label, task_status, outcome, turn_status in [(old_sid, 'old', 'completed', 'succeeded', 'running'), (new_sid, 'new', 'running', 'running', 'running')]:
         idx.execute('INSERT INTO tasks VALUES(?,?,?,?)', (sid, task_status, str(WORK), 2))
         idx.execute('INSERT INTO automation_runs VALUES(?,?,?,?,?)', (label+'-auto', sid, outcome, 2, 1))
         db.execute('INSERT INTO session VALUES(?,?)', (sid, str(WORK)))
-        db.execute('INSERT INTO turn_usage VALUES(?,?,?,?,?)', (sid, label+'-turn', turn_status, 1, None))
+        db.execute('INSERT INTO turn_usage VALUES(?,?,?,?,?)', (sid, new_turn if sid == new_sid else label+'-turn', turn_status, 1, None))
+    prepare_part = {'type': 'tool', 'tool': 'Bash', 'callID': 'prepare-call', 'state': {'status': 'running', 'input': {'command': 'node scripts/migration-runner.mjs prepare --session auto'}}}
+    db.execute('INSERT INTO message VALUES(?,?,?)', ('prepare-message', new_sid, json.dumps({'role': 'assistant', 'anchor': {'turnId': new_turn}})))
+    db.execute('INSERT INTO part VALUES(?,?,?,?)', ('prepare-part', new_sid, 'prepare-message', json.dumps(prepare_part)))
     idx.commit(); db.commit()
     cli('begin', '--run', 'legacy-cancelled', '--session', SESSION, '--task', 'T00')
     lock = json.loads((WORK / 'docs/migration/.lock/lock.json').read_text(encoding='utf-8'))
@@ -191,7 +195,7 @@ try:
     assert (WORK / 'docs/migration/RUN_STATE.json').read_bytes() == before_probe
     passed('无法绑定真实会话的旧锁保持原样')
     part = {'type': 'tool', 'callID': 'begin-call', 'state': {'status': 'completed', 'input': {'command': 'node scripts/migration-runner.mjs begin --run legacy-cancelled'}, 'output': json.dumps(state()['run'])}}
-    db.execute('INSERT INTO part VALUES(?,?,?)', ('begin-part', old_sid, json.dumps(part)))
+    db.execute('INSERT INTO part VALUES(?,?,?,?)', ('begin-part', old_sid, None, json.dumps(part)))
     db.execute('INSERT INTO tool_usage VALUES(?,?,?,?)', (old_sid, 'begin-call', 'old-turn', 'completed'))
     db.commit()
     assert json.loads(cli('prepare', '--session', 'auto'))['action'] == 'blocked'
@@ -204,7 +208,14 @@ try:
     assert (WORK / 'docs/migration/RUN_STATE.json').read_bytes() == before_probe
     passed('会话看似完成但轮次、工具或排队输入仍活动时拒绝恢复')
     db.execute("UPDATE session_input SET status='cancelled' WHERE session_id=?", (old_sid,)); db.commit()
-    guard = {'runId': 'recovery-fixture', 'runner': {'provider': 'zcode', 'sessionId': new_sid, 'turnId': 'new-turn', 'automationRunId': 'new-auto'}}
+    # 统计已经全部结束仍不代表工具停止：模拟重新唤醒后统计尚未落库。
+    # 实时工具记录活动时必须保持旧锁，不能误把缺失的 usage 当作终态。
+    db.execute('INSERT INTO part VALUES(?,?,?,?)', ('resumed-part', old_sid, None, json.dumps(prepare_part))); db.commit()
+    assert json.loads(cli('prepare', '--session', 'auto'))['action'] == 'blocked'
+    assert (WORK / 'docs/migration/RUN_STATE.json').read_bytes() == before_probe
+    db.execute("DELETE FROM part WHERE id='resumed-part'"); db.commit()
+    passed('重新唤醒但工具统计未落库时，实时工具记录阻止恢复旧锁')
+    guard = {'runId': 'recovery-fixture', 'runner': {'provider': 'zcode', 'sessionId': new_sid, 'turnId': new_turn, 'automationRunId': 'new-auto'}}
     write('docs/migration/.lock/recovery.lock', guard)
     cli('prepare', '--session', 'auto', expected=1)
     cli('sync', '--run', 'legacy-cancelled', expected=1)
@@ -213,13 +224,52 @@ try:
     write('docs/migration/.lock/recovery.lock', guard)
     resumed = json.loads(cli('prepare', '--session', 'auto'))
     assert resumed['taskId'] == 'T00' and resumed['purpose'] == 'implement'
-    assert resumed['runner']['sessionId'] == new_sid and resumed['runner']['turnId'] == 'new-turn'
+    assert resumed['runner']['sessionId'] == new_sid and resumed['runner']['turnId'] == new_turn
     recovered = json.loads((WORK / 'docs/migration/evidence/recovery/legacy-cancelled.json').read_text(encoding='utf-8'))
     assert recovered['proof']['binding']['beginPartId'] == 'begin-part'
     assert recovered['proof']['turn']['status'] == 'cancelled'
     cli('end', '--run', resumed['runId'], '--outcome', 'checkpoint')
     passed('成功 begin 绑定取消轮次；同轮恢复并领取开发任务，保存真实新会话身份')
     passed('活动恢复短锁保持互斥；恢复者已终止后可清理短锁继续恢复')
+
+    # 复现真实故障：当前 turn_usage 零条，另一个历史自动轮滞留 running。
+    # 只能通过正在执行的工具及消息锚点确认本轮，不能依赖统计或最新时间。
+    db.execute('DELETE FROM turn_usage WHERE session_id=?', (new_sid,))
+    idx.execute("UPDATE tasks SET task_status='running' WHERE task_id=?", (old_sid,))
+    idx.execute("UPDATE automation_runs SET outcome='running' WHERE session_id=?", (old_sid,))
+    idx.commit(); db.commit()
+    resumed = json.loads(cli('prepare', '--session', 'auto'))
+    assert resumed['runner']['sessionId'] == new_sid and resumed['runner']['identitySource'] == 'running_tool_part'
+    assert resumed['runner']['toolPartId'] == 'prepare-part' and resumed['runner']['turnId'] == new_turn
+    cli('end', '--run', resumed['runId'], '--outcome', 'checkpoint')
+    passed('当前轮无 usage 且历史自动轮滞留 running，仍按实时工具准确领取')
+
+    before_identity = (WORK / 'docs/migration/RUN_STATE.json').read_bytes()
+    for bad in [dict(prepare_part, state={**prepare_part['state'], 'status': 'completed'}),
+                dict(prepare_part, state={**prepare_part['state'], 'input': {'command': 'echo node scripts/migration-runner.mjs prepare --session auto'}})]:
+        db.execute('UPDATE part SET data=? WHERE id=?', (json.dumps(bad), 'prepare-part')); db.commit()
+        cli('prepare', '--session', 'auto', expected=1)
+        assert (WORK / 'docs/migration/RUN_STATE.json').read_bytes() == before_identity and not (WORK / 'docs/migration/.lock').exists()
+    db.execute('UPDATE part SET data=? WHERE id=?', (json.dumps(prepare_part), 'prepare-part'))
+    db.execute('INSERT INTO turn_usage VALUES(?,?,?,?,?)', (new_sid, new_turn, 'completed', 1, 2)); db.commit()
+    cli('prepare', '--session', 'auto', expected=1)
+    db.execute('DELETE FROM turn_usage WHERE session_id=?', (new_sid,)); db.commit()
+    passed('已完成工具、仅文本提及命令和已结束轮次均不能冒充当前执行')
+
+    db.execute('INSERT INTO message VALUES(?,?,?)', ('ambiguous-message', old_sid, json.dumps({'role': 'assistant', 'anchor': {'turnId': 'turn_00000000-0000-0000-0000-000000000003'}})))
+    db.execute('INSERT INTO part VALUES(?,?,?,?)', ('ambiguous-part', old_sid, 'ambiguous-message', json.dumps(prepare_part))); db.commit()
+    cli('prepare', '--session', 'auto', expected=1)
+    assert (WORK / 'docs/migration/RUN_STATE.json').read_bytes() == before_identity and not (WORK / 'docs/migration/.lock').exists()
+    db.execute("DELETE FROM part WHERE id='ambiguous-part'"); db.commit()
+    passed('两个真实工具同时匹配时拒绝猜最新会话且不写状态')
+
+    db.execute("UPDATE session SET directory='C:/wrong-workspace' WHERE id=?", (new_sid,)); db.commit()
+    cli('prepare', '--session', 'auto', expected=1)
+    db.execute('UPDATE session SET directory=? WHERE id=?', (str(WORK), new_sid))
+    db.execute("UPDATE message SET data='{}' WHERE id='prepare-message'"); db.commit()
+    cli('prepare', '--session', 'auto', expected=1)
+    assert (WORK / 'docs/migration/RUN_STATE.json').read_bytes() == before_identity and not (WORK / 'docs/migration/.lock').exists()
+    passed('会话目录不符或消息缺少真实轮次锚点时拒绝领取')
     idx.close(); db.close()
     fresh['publish'] = {'status': 'synced', 'commit': head}
     fresh['currentTaskId'] = 'V01'
@@ -231,5 +281,5 @@ try:
     cli('end', '--run', reconciled['runId'], '--outcome', 'checkpoint')
     passed('远端已同步的旧回执同轮修正；V01 不抢占未开发页面；持锁不显示可领取 next')
 finally:
-    REPORT.write_text(json.dumps({'scope': '控制器命令行集成烟测，不是业务验收或单元测试', 'checkedAt': datetime.now(timezone.utc).isoformat(), 'runnerSha256': hashlib.sha256((ROOT / 'scripts/migration-runner.mjs').read_bytes()).hexdigest(), 'zcodeAdapterSha256': hashlib.sha256((ROOT / 'scripts/migration-zcode.mjs').read_bytes()).hexdigest(), 'passedCases': len(results), 'expectedCases': 16, 'status': 'passed' if len(results) == 16 else 'failed', 'results': results}, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+    REPORT.write_text(json.dumps({'scope': '控制器命令行集成烟测，不是业务验收或单元测试', 'checkedAt': datetime.now(timezone.utc).isoformat(), 'runnerSha256': hashlib.sha256((ROOT / 'scripts/migration-runner.mjs').read_bytes()).hexdigest(), 'zcodeAdapterSha256': hashlib.sha256((ROOT / 'scripts/migration-zcode.mjs').read_bytes()).hexdigest(), 'passedCases': len(results), 'expectedCases': 21, 'status': 'passed' if len(results) == 21 else 'failed', 'results': results}, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
 print(json.dumps({'passedCases': len(results), 'report': str(REPORT)}, ensure_ascii=True))

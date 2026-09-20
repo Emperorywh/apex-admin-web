@@ -1,0 +1,28 @@
+{
+  "checkedAt": "2026-09-20T07:48:38.734943+00:00",
+  "scope": "只读故障取证，不是业务验收或当前运行身份",
+  "sessionId": "sess_1e3b7eef-5a09-4f50-a36c-dc0effaca696",
+  "cliVersion": "0.16.9",
+  "failedObservation": {
+    "toolPartId": "part_mu9i4ffo_2e12e97a-1af9-4578-a937-6b052d3cf231",
+    "startedAt": 1789889715514,
+    "endedAt": 1789889716037,
+    "turnUsageAtThatTime": []
+  },
+  "usageAfterCompletion": [
+    {
+      "turn_id": "turn_73f6e30b-1ea4-4aba-b314-73b460ee76b3",
+      "status": "completed",
+      "started_at": 1789889415604,
+      "completed_at": 1789889781334
+    }
+  ],
+  "finding": "执行中的诊断确认统计为零行；同轮结束后统计出现 completed。旧识别器依赖 running usage，故在正常执行时拒绝身份。",
+  "runtimeSource": {
+    "path": "C:/Program Files/ZCode/resources/glm/zcode.cjs",
+    "sha256": "8f5cfccf2a899b92e57bc2a5760b949c1a928f739652fffc9e6d07c24f11ba05",
+    "finding": "本机 CLI 的 executeTools/onBatchStart 在执行工具前 await persistPart，写入 running 状态及 input；消息 anchor 保存所属 turnId。"
+  },
+  "replacement": "精确匹配独立启动命令的 running Bash part，关联同 session 的 assistant message.anchor.turnId，核对运行中的 task/automation 与两处工作目录；已有终态 usage 作为否决条件，缺失不作为否决条件。",
+  "releaseBoundary": "缺少精确轮次终态仍不得恢复旧锁；实时 running/pending part 也阻止恢复。"
+}

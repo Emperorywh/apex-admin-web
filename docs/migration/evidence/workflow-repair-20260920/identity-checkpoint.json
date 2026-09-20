@@ -1,0 +1,11 @@
+{
+  "progress": [
+    "修复 prepare 身份识别：实时 running Bash part + message.anchor.turnId，核对自动调度/任务/会话目录；不再要求运行中 turn_usage 已落库。",
+    "锁恢复增加实时工具活动检查；独立 Git/SQLite 集成验证 21/21 通过，pnpm check/build、migration check 通过。",
+    "TASKS、AUTOMATION_PROMPT 和 P21 交接已同步；故障取证见 identity-diagnosis.json；本轮未改业务实现或验收状态。"
+  ],
+  "nextSteps": [
+    "提交并推送本轮修复后 end 释放维护锁；通过现有 ZCode 自动化立即运行一次，观察真实 P21 领取。"
+  ],
+  "blocker": null
+}

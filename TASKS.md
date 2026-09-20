@@ -44,7 +44,7 @@ node scripts/migration-runner.mjs sync --run <运行ID>
 node scripts/migration-runner.mjs end --run <运行ID> --outcome <completed|checkpoint|blocked>
 ```
 
-`prepare` 在同轮完成遗留锁终态核验、恢复、远端回执对账及原子取锁，返回本轮唯一身份。自动任务通过活动调度轮识别真实 session/turn，不接受自拟会话名称；多轮活动或数据库不兼容时停止猜测。`begin` 保留作显式领取入口，也校验真实身份并对账；人工维护可传真实会话 UUID。取锁后保存当前任务、起始 HEAD、原有 Git 改动，再允许修改。状态用同目录临时文件刷盘后原子替换；每次更新递增 revision。检查点只允许更新本轮任务和恢复步骤，不得改队列、前置或工作目录。示例检查点：
+`prepare` 在同轮完成遗留锁终态核验、恢复、远端回执对账及原子取锁，返回本轮唯一身份。自动任务在项目目录以独立 Bash 调用执行启动命令，不加管道、重定向、前后命令或包装器。身份依据为本次 running 工具记录及其 message.anchor.turnId，再交叉核对自动调度、任务和会话目录；turn_usage 可能在轮末才落库，不再用它是否存在判断活动身份。零个或多个匹配、目录不符或数据库不兼容时停止猜测，不接受自拟会话名称。`begin` 保留作显式领取入口，也校验真实身份并对账；人工维护可传真实会话 UUID。取锁后保存当前任务、起始 HEAD、原有 Git 改动，再允许修改。状态用同目录临时文件刷盘后原子替换；每次更新递增 revision。检查点只允许更新本轮任务和恢复步骤，不得改队列、前置或工作目录。示例检查点：
 
 ```json
 {
@@ -55,7 +55,7 @@ node scripts/migration-runner.mjs end --run <运行ID> --outcome <completed|chec
 }
 ```
 
-锁存在时由 prepare 核对精确的 ZCode 轮次、当前会话和自动调度终态，并确认没有活动轮次、工具或排队输入。旧锁可通过实际成功的 begin 工具记录绑定真实会话；聊天提及锁名不构成证据。已结束则自动保存 `runner_terminal_state` 证明、归档旧锁并继续本轮；活动或未知则原样退出。心跳、mtime、PID 仅辅助诊断，不能证明 Agent 结束。仍无法核实的锁只可依据用户明确确认，保存 `runId/ended=true/kind=user_confirmation/reference/checkedAt` 后调用 `recover --run <旧运行ID> --proof <证明JSON> --session <auto或本轮真实会话UUID>`；runner_terminal_state 恢复会重新读取数据库，不信任手填的 ended=true。恢复命令的短互斥锁也记录会话身份，异常中断按同样的终态规则恢复。禁止伪造证明。
+锁存在时由 prepare 核对精确的 ZCode 轮次、当前会话和自动调度终态，并确认没有活动轮次、工具或排队输入。工具同时检查实时 part 与 tool_usage，防止统计延迟漏掉重新唤醒后的活动；缺少终态记录仍不释放。旧锁可通过实际成功的 begin 工具记录绑定真实会话；聊天提及锁名不构成证据。已结束则自动保存 `runner_terminal_state` 证明、归档旧锁并继续本轮；活动或未知则原样退出。心跳、mtime、PID 仅辅助诊断，不能证明 Agent 结束。仍无法核实的锁只可依据用户明确确认，保存 `runId/ended=true/kind=user_confirmation/reference/checkedAt` 后调用 `recover --run <旧运行ID> --proof <证明JSON> --session <auto或本轮真实会话UUID>`；runner_terminal_state 恢复会重新读取数据库，不信任手填的 ended=true。恢复命令的短互斥锁也记录会话身份，异常中断按同样的终态规则恢复。禁止伪造证明。
 
 正常 `end` 先保存持久结束记录再释放本轮锁。异常终止可能留下锁，不能假设 finally 必然执行；中断恢复先对账，不重放结果未知的业务写入。单文件原子替换不是跨文件事务：若 RUN_STATE 已更新而 TASKS 勾选未同步，核验证据后由持锁者 `sync` 重建投影。
 
