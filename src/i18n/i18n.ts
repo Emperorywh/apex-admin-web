@@ -219,6 +219,8 @@ const zhTwLoaders: NamespaceLoaders = {
   'tripartite-traffic': () => import('@/i18n/locales/zh-TW/tripartite-traffic'),
   // P33 任务统计（analyze-visual/order-statistics；页面私有命名空间）
   'report-order': () => import('@/i18n/locales/zh-TW/report-order'),
+  // P34 合并业务首页（/dashboard；页面私有命名空间，实时看板重定向同实例共用）
+  dashboard: () => import('@/i18n/locales/zh-TW/dashboard'),
   'access-denied': () => import('@/i18n/locales/zh-TW/access-denied'),
 }
 const jaJpLoaders: NamespaceLoaders = {
@@ -295,6 +297,8 @@ const jaJpLoaders: NamespaceLoaders = {
   'tripartite-traffic': () => import('@/i18n/locales/ja-JP/tripartite-traffic'),
   // P33 任务统计（analyze-visual/order-statistics；页面私有命名空间）
   'report-order': () => import('@/i18n/locales/ja-JP/report-order'),
+  // P34 合并业务首页（/dashboard；页面私有命名空间，实时看板重定向同实例共用）
+  dashboard: () => import('@/i18n/locales/ja-JP/dashboard'),
   'access-denied': () => import('@/i18n/locales/ja-JP/access-denied'),
 }
 const koKrLoaders: NamespaceLoaders = {
@@ -371,6 +375,8 @@ const koKrLoaders: NamespaceLoaders = {
   'tripartite-traffic': () => import('@/i18n/locales/ko-KR/tripartite-traffic'),
   // P33 任务统计（analyze-visual/order-statistics；页面私有命名空间）
   'report-order': () => import('@/i18n/locales/ko-KR/report-order'),
+  // P34 合并业务首页（/dashboard；页面私有命名空间，实时看板重定向同实例共用）
+  dashboard: () => import('@/i18n/locales/ko-KR/dashboard'),
   'access-denied': () => import('@/i18n/locales/ko-KR/access-denied'),
 }
 

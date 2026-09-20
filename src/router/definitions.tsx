@@ -176,8 +176,9 @@ export const appRouteDefinitions = defineAppRoutes([
         },
       },
       {
-        // 合并业务首页（P34 将合并模板仪表盘与旧实时看板到本实例）：
-        // 与实时看板同码 dashboard-realtime:view；迁移完成前不作落点
+        // 合并业务首页（P34 交付解除 pending，D29）：模板仪表盘与旧实时看板合并为本
+        // 实例（board 聚合 + 5s 可见轮询 + 实时告警）；/analyze-visual/dashboard-realtime
+        // 重定向到本页。守卫 resolveLandingPath：本页有权限即作为登录落点。
         id: 'dashboard',
         path: 'dashboard',
         loadPage: () => import('@/pages/dashboard/Dashboard/Dashboard'),
@@ -185,7 +186,6 @@ export const appRouteDefinitions = defineAppRoutes([
           icon: LayoutDashboard,
           i18nNamespaces: ['dashboard'],
           affixTab: true,
-          pending: true,
         }),
       },
       {
@@ -657,14 +657,14 @@ export const appRouteDefinitions = defineAppRoutes([
             }),
           },
           {
-            // P34 将把本页与 /dashboard 合并为同一实例（D29）；迁移前不作落点
+            // P34 交付：旧实时看板地址兼容重定向到合并首页 /dashboard 同一实例
+            // （D29：一个业务首页一份数据与轮询；同码 dashboard-realtime:view，
+            // 守卫先验权限再跳转，菜单/直访行为与旧地址一致）
             id: 'analyze-visual-dashboard-realtime',
             path: 'dashboard-realtime',
-            loadPage: () =>
-              import('@/pages/analyze-visual/RealtimeDashboard/RealtimeDashboard'),
+            redirect: '/dashboard',
             meta: businessMeta('实时看板', PERM.DASHBOARD_REALTIME_VIEW, {
               icon: Gauge,
-              pending: true,
             }),
           },
           {

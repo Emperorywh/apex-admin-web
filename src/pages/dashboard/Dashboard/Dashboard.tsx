@@ -1,81 +1,104 @@
 /**
- * 仪表盘页：AGV 调度统计总览。
- * 顶部 KPI 指标卡 + 趋势/分布/排行/告警图表面板；
- * 数据由 useDashboardOverview 提供（激活态 30 秒静默轮询）。
+ * 合并业务首页（P34）：模板仪表盘与旧实时看板合并到 /dashboard 的同一实例（D29）。
+ *
+ * 业务形态等价迁移旧 RealtimeDashboard（本轮逐面板核对）：
+ * - 8 个 KPI（今日任务总数/完成率/在线·总 AGV/故障数/平均耗时/平均每小时完成/利用率/积压），
+ *   计算口径集中在 features/dashboard/realtime.ts（图表与卡片共用一份快照）；
+ * - AGV 状态分布环形图（中心在线数）+ 今日任务完成趋势双折线（今日 vs 昨日同时刻）；
+ * - 实时告警滚动列表（未关闭告警 100 条上限，持续时长现算）；
+ * - 旧「最近完成任务」表格从未渲染（恒为空、不可达），按 D24 不迁移（tasks/P34.md 登记）。
+ *
+ * 行为契约：
+ * - 唯一 5 秒可见串行轮询（useRealtimeDashboard → useVisiblePolling）：
+ *   隐藏暂停、恢复即查、失败退避；看板与告警两区域独立成败独立清空（DoD 6）；
+ * - 失败态用 StateBlock（无重试按钮——按钮纪律：恢复依赖可见轮询自动重查）；
+ * - 导航契约（页面宿主组装，features 域隔离）：今日任务总数卡 → 任务管理（P03）、
+ *   告警来源车辆 → /vehicle-info（P39）、关联订单 → /order-info（P38），
+ *   均按目标菜单码做权限过滤（无权限不渲染入口，DoD 3）；
+ *   P36 故障告警页尚未实施，告警面板不提供跳转入口，仅登记契约（tasks/P34.md）。
  */
 
+import { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Button, Skeleton } from 'antd'
+import { useNavigate } from 'react-router'
+import { Empty, Skeleton, Tooltip } from 'antd'
 import {
-  CircleCheckBig,
-  Hourglass,
+  Car,
+  CircleHelp,
+  Clock3,
+  Gauge,
+  Inbox,
   ListTodo,
-  Route,
+  Percent,
   TriangleAlert,
-  Truck,
+  TrendingUp,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
-import { StatCard, type StatCardTone } from '@/features/dashboard/components/StatCard/StatCard'
-import { TrendAreaChart } from '@/features/dashboard/components/TrendAreaChart/TrendAreaChart'
-import { DailyBarChart } from '@/features/dashboard/components/DailyBarChart/DailyBarChart'
-import { StatusDonutChart } from '@/features/dashboard/components/StatusDonutChart/StatusDonutChart'
-import { RankBars, type RankBarItem } from '@/features/dashboard/components/RankBars/RankBars'
-import { RecentAlarmList } from '@/features/dashboard/components/RecentAlarmList/RecentAlarmList'
-import { useDashboardOverview } from '@/features/dashboard/hooks/useDashboardOverview'
-import type { DashboardOrderType, VehicleRuntimeState } from '@/types/dashboard/dashboard.types'
+import { StateBlock } from '@/components/StateBlock/StateBlock'
+import { PERM } from '@/constants/auth/permission.constants'
+import { buildAccessContext, hasMenuAccess } from '@/router/routeAccess'
+import { useAppSelector } from '@/hooks/useAppSelector'
+import { buildOrderInfoPath } from '@/features/order-detail/orderDetailNavigation'
+import { buildVehicleInfoPath } from '@/features/vehicle-detail/vehicleDetailNavigation'
+import { useRealtimeDashboard } from '@/features/dashboard/hooks/useRealtimeDashboard'
+import { buildKpiViewModel, buildScalarKpiViewModel } from '@/features/dashboard/kpiViewModel'
+import type { KpiViewModel } from '@/features/dashboard/kpiViewModel'
+import { RealtimeKpiCard } from '@/features/dashboard/components/RealtimeKpiCard'
+import { VehicleStatusDonut } from '@/features/dashboard/components/VehicleStatusDonut'
+import { TodayTrendLine } from '@/features/dashboard/components/TodayTrendLine'
+import { OpenAlertList } from '@/features/dashboard/components/OpenAlertList'
+import type { VehicleStatusKey } from '@/features/dashboard/realtime'
 import styles from '@/pages/dashboard/Dashboard/Dashboard.module.css'
 
-/** 任务类型 → 译文 key 与条形色 */
-const ORDER_TYPE_META: Record<DashboardOrderType, { label: string; color: string }> = {
-  WORK: { label: '工作', color: 'var(--app-blue)' },
-  PARK: { label: '回桩', color: 'var(--app-green)' },
-  CHARGE: { label: '充电', color: 'var(--app-orange)' },
-  MOVE: { label: '空跑', color: 'var(--app-yellow)' },
-}
-
-/** 车辆运行状态 → 译文 key */
-const VEHICLE_STATE_LABELS: Record<VehicleRuntimeState, string> = {
-  IDLE: '空闲',
-  RUNNING: '运行中',
-  CHARGING: '充电中',
-  ALARM: '告警',
-  OFFLINE: '离线',
-}
-
+/** KPI 卡配置：图标 + 标签 key + 口径说明 key（文案走 dashboard 命名空间，中文 key 即文案） */
 interface KpiCardConfig {
   key: string
   icon: LucideIcon
-  tone: StatCardTone
-  label: string
-  suffix?: string
-  invertDelta?: boolean
+  labelKey: string
+  hintKey: string
 }
 
+/** 8 张 KPI 卡（旧 2×4 布局，响应式栅格自动换行） */
 const KPI_CARDS: KpiCardConfig[] = [
-  { key: 'todayOrders', icon: ListTodo, tone: 'blue', label: '今日任务' },
-  { key: 'processing', icon: Route, tone: 'green', label: '执行中' },
-  { key: 'queued', icon: Hourglass, tone: 'orange', label: '排队中' },
-  { key: 'completionRate', icon: CircleCheckBig, tone: 'green', label: '完成率', suffix: '%' },
-  { key: 'onlineVehicles', icon: Truck, tone: 'blue', label: '在线车辆' },
-  { key: 'activeAlarms', icon: TriangleAlert, tone: 'red', label: '活跃告警', invertDelta: true },
+  { key: 'todayTaskTotal', icon: ListTodo, labelKey: '今日任务总数', hintKey: '今日任务总数·计算方式' },
+  { key: 'todayCompletionRate', icon: Percent, labelKey: '今日任务完成率', hintKey: '今日任务完成率·计算方式' },
+  { key: 'onlineVehicle', icon: Car, labelKey: '在线 AGV / 总 AGV', hintKey: '在线 AGV / 总 AGV·计算方式' },
+  { key: 'faultVehicleCount', icon: TriangleAlert, labelKey: '故障 AGV 数', hintKey: '故障 AGV 数·计算方式' },
+  { key: 'averageCompletedDurationMs', icon: Clock3, labelKey: '今日已完成任务平均耗时', hintKey: '今日已完成任务平均耗时·计算方式' },
+  { key: 'averageHourlyCompletedCount', icon: TrendingUp, labelKey: '今日平均每小时完成任务数', hintKey: '今日平均每小时完成任务数·计算方式' },
+  { key: 'fleetUtilization', icon: Gauge, labelKey: 'AGV 综合利用率', hintKey: 'AGV 综合利用率·计算方式' },
+  { key: 'backlogCount', icon: Inbox, labelKey: '当前任务积压', hintKey: '当前任务积压·计算方式' },
 ]
 
-/** 图表面板壳：玻璃卡片 + 标题行 + 固定高度内容区 */
+/** 口径提示图标（面板标题行内联；Tooltip 键盘可达，KPI 卡同款交互） */
+const HintIcon = CircleHelp
+
+/** 图表面板壳：卡片 + 标题行（含口径提示）+ 固定高度内容区 */
 function DashboardPanel({
   title,
+  hint,
+  hintLabel,
   spanClass,
   bodyHeight,
   children,
 }: {
   title: string
+  hint?: ReactNode
+  hintLabel?: string
   spanClass: string
   bodyHeight: number
   children: ReactNode
 }) {
   return (
     <section className={`${styles.card} ${styles.panel} ${spanClass}`}>
-      <h3 className={`${styles.cardTitle} ${styles.panelTitle}`}>{title}</h3>
+      <h3 className={styles.panelTitle}>
+        {title}
+        {hint && hintLabel ? (
+          // 口径提示：图标 + Tooltip（键盘聚焦受控展示，P33 MetricHint 同款交互）
+          <PanelHint content={hint} label={hintLabel} />
+        ) : null}
+      </h3>
       <div className={styles.panelBody} style={{ height: bodyHeight }}>
         {children}
       </div>
@@ -83,131 +106,242 @@ function DashboardPanel({
   )
 }
 
+/** 面板标题口径提示：键盘聚焦/悬停展示完整口径文案 */
+function PanelHint({ content, label }: { content: ReactNode; label: string }) {
+  const [focused, setFocused] = useState(false)
+  return (
+    <Tooltip
+      placement="bottom"
+      overlayInnerStyle={{ maxWidth: 320, whiteSpace: 'pre-line' }}
+      mouseEnterDelay={0.2}
+      open={focused ? true : undefined}
+      onOpenChange={(open) => {
+        if (!open && focused) setFocused(false)
+      }}
+      title={content}
+    >
+      <span
+        className={styles.panelHint}
+        tabIndex={0}
+        role="button"
+        aria-label={label}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+      >
+        <HintIcon size={13} strokeWidth={2} aria-hidden="true" />
+      </span>
+    </Tooltip>
+  )
+}
+
 export default function Dashboard() {
-  const { t } = useTranslation('dashboard')
-  const { t: tCommon } = useTranslation('common')
-  const { overview, loading, error, reload } = useDashboardOverview()
+  const { t, i18n } = useTranslation('dashboard')
+  const navigate = useNavigate()
+  const auth = useAppSelector((state) => state.auth)
+  const { snapshot, alerts, loading, boardError, alertsError } = useRealtimeDashboard()
 
-  const firstLoad = loading && overview === null
+  // 权限上下文（与守卫同一解析函数）：导航入口按目标菜单码过滤（DoD 3）
+  const accessCtx = useMemo(() => buildAccessContext(auth), [auth])
+  const canOpenOrders = hasMenuAccess(accessCtx, PERM.ORDER_RECORD_VIEW)
+  const canOpenVehicles = hasMenuAccess(accessCtx, PERM.VEHICLE_LIST_VIEW)
 
-  const vehicleStateLabelMap = Object.fromEntries(
-    Object.entries(VEHICLE_STATE_LABELS).map(([state, label]) => [state, t(label)]),
-  ) as Record<VehicleRuntimeState, string>
+  const firstLoad = loading && snapshot === null
+  const locale = i18n.language
 
-  const orderTypeItems: RankBarItem[] = (overview?.orderTypes ?? []).map((slice) => ({
-    key: slice.orderType,
-    label: t(ORDER_TYPE_META[slice.orderType].label),
-    value: slice.count,
-    color: ORDER_TYPE_META[slice.orderType].color,
-  }))
+  /* ------------------------------ KPI 展示模型 ------------------------------ */
 
-  const vehicleRankItems: RankBarItem[] = (overview?.vehicleRank ?? []).map((item, index) => ({
-    key: `${item.vehicleName}-${index}`,
-    label: item.vehicleName,
-    description: item.groupName,
-    value: item.completedCount,
-  }))
+  const kpiViews = useMemo<Record<string, KpiViewModel>>(() => {
+    const empty: Record<string, KpiViewModel> = {}
+    if (!snapshot) return empty
+    const k = snapshot.kpis
+    return {
+      todayTaskTotal: buildKpiViewModel(k.todayTaskTotal, 'integer', locale),
+      todayCompletionRate: buildKpiViewModel(k.todayCompletionRate, 'percentage', locale),
+      // 复合展示「在线 / 总数」：两个整数各自千分位（旧实现同款拼接）
+      onlineVehicle: {
+        display: `${buildScalarKpiViewModel(k.onlineVehicleCount, 'integer', locale).display} / ${buildScalarKpiViewModel(k.totalVehicleCount, 'integer', locale).display}`,
+        changeTone: 'neutral',
+      },
+      faultVehicleCount: buildScalarKpiViewModel(k.faultVehicleCount, 'integer', locale),
+      averageCompletedDurationMs: buildKpiViewModel(k.averageCompletedDurationMs, 'duration', locale),
+      averageHourlyCompletedCount: buildKpiViewModel(k.averageHourlyCompletedCount, 'decimal', locale),
+      fleetUtilization: buildKpiViewModel(k.fleetUtilization, 'percentage', locale),
+      backlogCount: buildScalarKpiViewModel(k.backlogCount, 'integer', locale),
+    }
+  }, [snapshot, locale])
 
-  if (firstLoad) {
-    return (
-      <div>
-        <div className={styles.kpiRow}>
-          {KPI_CARDS.map((card) => (
-            <StatCard
-              key={card.key}
-              icon={card.icon}
-              tone={card.tone}
-              label={t(card.label)}
-              value=""
-              loading
-            />
-          ))}
+  /** KPI 强调边框：故障数 > 0 红、积压 > 5 橙（旧实现阈值等价保留） */
+  const kpiAccent = (key: string): 'danger' | 'warn' | undefined => {
+    if (!snapshot) return undefined
+    if (key === 'faultVehicleCount' && snapshot.kpis.faultVehicleCount > 0) return 'danger'
+    if (key === 'backlogCount' && snapshot.kpis.backlogCount > 5) return 'warn'
+    return undefined
+  }
+
+  /* ------------------------------ 图表入参 ------------------------------ */
+
+  const statusLabels = useMemo(
+    () =>
+      ({
+        running: t('运行'),
+        idle: t('空闲'),
+        charging: t('充电'),
+        fault: t('故障'),
+        offline: t('离线'),
+      }) satisfies Record<VehicleStatusKey, string>,
+    [t],
+  )
+
+  /* ------------------------------ 导航回调 ------------------------------ */
+
+  const openOrders = useMemo(
+    () => (canOpenOrders ? () => navigate('/order-record') : undefined),
+    [canOpenOrders, navigate],
+  )
+  const openVehicle = useMemo(
+    () =>
+      canOpenVehicles
+        ? (vehicleKey: string) => navigate(buildVehicleInfoPath(vehicleKey))
+        : undefined,
+    [canOpenVehicles, navigate],
+  )
+  const openOrder = useMemo(
+    () => (canOpenOrders ? (orderKey: string) => navigate(buildOrderInfoPath(orderKey)) : undefined),
+    [canOpenOrders, navigate],
+  )
+
+  /* ------------------------------ 渲染 ------------------------------ */
+
+  const renderKpiRow = () => (
+    <div className={styles.kpiRow}>
+      {KPI_CARDS.map((card) => (
+        <RealtimeKpiCard
+          key={card.key}
+          icon={card.icon}
+          label={t(card.labelKey)}
+          hint={t(card.hintKey)}
+          hintLabel={t('查看统计口径')}
+          value={
+            firstLoad
+              ? { display: '', changeTone: 'neutral' }
+              : (kpiViews[card.key] ?? { display: '--', changeTone: 'neutral' })
+          }
+          loading={firstLoad}
+          accent={kpiAccent(card.key)}
+          // 今日任务总数卡 → 任务管理（P03 导航契约；无权限不渲染入口）
+          onOpen={card.key === 'todayTaskTotal' ? openOrders : undefined}
+        />
+      ))}
+    </div>
+  )
+
+  const renderBoardArea = () => {
+    // 看板聚合真实失败：KPI/图表区域统一错误态（远端区域已清空，轮询自动恢复）
+    if (boardError && !snapshot) {
+      return (
+        <div className={styles.boardError}>
+          <StateBlock variant="offline" />
         </div>
+      )
+    }
+    if (firstLoad || !snapshot) {
+      return (
+        <>
+          {renderKpiRow()}
+          <div className={styles.grid}>
+            <DashboardPanel title={t('AGV 状态分布')} spanClass={styles.span4} bodyHeight={272}>
+              <Skeleton active title={false} paragraph={{ rows: 5 }} />
+            </DashboardPanel>
+            <DashboardPanel title={t('今日任务完成趋势')} spanClass={styles.span8} bodyHeight={272}>
+              <Skeleton active title={false} paragraph={{ rows: 6 }} />
+            </DashboardPanel>
+          </div>
+        </>
+      )
+    }
+    const statusEmpty = snapshot.vehicleStatus.every((entry) => entry.count === 0)
+    return (
+      <>
+        {renderKpiRow()}
         <div className={styles.grid}>
-          <DashboardPanel title={t('任务趋势（24 小时）')} spanClass={styles.span8} bodyHeight={272}>
-            <Skeleton active title={false} paragraph={{ rows: 6 }} />
+          <DashboardPanel
+            title={t('AGV 状态分布')}
+            hint={t('AGV 状态分布·计算方式')}
+            hintLabel={t('查看统计口径')}
+            spanClass={styles.span4}
+            bodyHeight={272}
+          >
+            {statusEmpty ? (
+              // 全零 = 无注册车辆的快照事实：明确空态（区别于查询失败）
+              <div className={styles.chartEmpty}>
+                <Empty description={t('暂无数据')} />
+              </div>
+            ) : (
+              <VehicleStatusDonut
+                data={snapshot.vehicleStatus}
+                onlineCount={snapshot.kpis.onlineVehicleCount}
+                labels={statusLabels}
+                centerLabel={t('在线 AGV（台）')}
+                unitSuffix={t('台')}
+              />
+            )}
           </DashboardPanel>
-          <DashboardPanel title={t('车辆状态分布')} spanClass={styles.span4} bodyHeight={272}>
-            <Skeleton active title={false} paragraph={{ rows: 5 }} />
-          </DashboardPanel>
-          <DashboardPanel title={t('近7日任务统计')} spanClass={styles.span7} bodyHeight={262}>
-            <Skeleton active title={false} paragraph={{ rows: 5 }} />
-          </DashboardPanel>
-          <DashboardPanel title={t('任务类型分布')} spanClass={styles.span5} bodyHeight={262}>
-            <Skeleton active title={false} paragraph={{ rows: 5 }} />
-          </DashboardPanel>
-          <DashboardPanel title={t('车辆任务排行')} spanClass={styles.span7} bodyHeight={262}>
-            <Skeleton active title={false} paragraph={{ rows: 5 }} />
-          </DashboardPanel>
-          <DashboardPanel title={t('最新告警')} spanClass={styles.span5} bodyHeight={262}>
-            <Skeleton active title={false} paragraph={{ rows: 5 }} />
+          <DashboardPanel
+            title={t('今日任务完成趋势')}
+            hint={t('今日任务完成趋势·计算方式')}
+            hintLabel={t('查看统计口径')}
+            spanClass={styles.span8}
+            bodyHeight={272}
+          >
+            <TodayTrendLine
+              data={snapshot.todayTaskTrend}
+              todayLabel={t('今日')}
+              yesterdayLabel={t('昨日')}
+              yAxisName={t('任务数量（个）')}
+              unitSuffix={t('个')}
+            />
           </DashboardPanel>
         </div>
-      </div>
+      </>
     )
   }
 
-  if (error && overview === null) {
-    return (
-      <div className={styles.errorBlock}>
-        <TriangleAlert size={28} strokeWidth={2} />
-        <Button danger onClick={reload}>
-          {tCommon('加载失败，点击重试')}
-        </Button>
-      </div>
-    )
-  }
-
-  if (!overview) return null
+  const renderAlertsArea = () => (
+    <div className={styles.grid}>
+      <DashboardPanel
+        title={t('实时告警')}
+        hint={t('实时告警·计算方式')}
+        hintLabel={t('查看统计口径')}
+        spanClass={styles.span12}
+        bodyHeight={252}
+      >
+        {alertsError && alerts === null ? (
+          // 告警区域独立失败：错误态只覆盖本面板（不用「无告警」冒充，D15）
+          <StateBlock variant="offline" />
+        ) : alerts && alerts.length > 0 ? (
+          <OpenAlertList
+            items={alerts}
+            locale={locale}
+            levelLabels={{ FATAL: t('严重'), WARNING: t('重要') }}
+            onOpenVehicle={openVehicle}
+            onOpenOrder={openOrder}
+          />
+        ) : alerts ? (
+          // 真实空结果（接口成功且无未关闭告警）：明确「暂无未关闭告警」
+          <div className={styles.chartEmpty}>
+            <Empty description={t('暂无未关闭告警')} />
+          </div>
+        ) : (
+          <Skeleton active title={false} paragraph={{ rows: 4 }} />
+        )}
+      </DashboardPanel>
+    </div>
+  )
 
   return (
     <div>
-      <div className={styles.kpiRow}>
-        {KPI_CARDS.map((card) => {
-          const metric = overview.kpi[card.key as keyof typeof overview.kpi]
-          return (
-            <StatCard
-              key={card.key}
-              icon={card.icon}
-              tone={card.tone}
-              label={t(card.label)}
-              value={card.suffix ? metric.value.toFixed(1) : metric.value.toLocaleString()}
-              suffix={card.suffix}
-              deltaPercent={metric.deltaPercent}
-              invertDelta={card.invertDelta}
-            />
-          )
-        })}
-      </div>
-
-      <div className={styles.grid}>
-        <DashboardPanel title={t('任务趋势（24 小时）')} spanClass={styles.span8} bodyHeight={272}>
-          <TrendAreaChart
-            points={overview.hourlyTrend}
-            createdLabel={t('新建任务')}
-            completedLabel={t('完成任务')}
-          />
-        </DashboardPanel>
-        <DashboardPanel title={t('车辆状态分布')} spanClass={styles.span4} bodyHeight={272}>
-          <StatusDonutChart
-            slices={overview.vehicleStatus}
-            labels={vehicleStateLabelMap}
-            totalLabel={t('车辆总数')}
-          />
-        </DashboardPanel>
-        <DashboardPanel title={t('近7日任务统计')} spanClass={styles.span7} bodyHeight={262}>
-          <DailyBarChart stats={overview.dailyStats} completedLabel={t('已完成')} failedLabel={t('失败')} />
-        </DashboardPanel>
-        <DashboardPanel title={t('任务类型分布')} spanClass={styles.span5} bodyHeight={262}>
-          <RankBars items={orderTypeItems} />
-        </DashboardPanel>
-        <DashboardPanel title={t('车辆任务排行')} spanClass={styles.span7} bodyHeight={262}>
-          <RankBars items={vehicleRankItems} />
-        </DashboardPanel>
-        <DashboardPanel title={t('最新告警')} spanClass={styles.span5} bodyHeight={262}>
-          <RecentAlarmList alarms={overview.recentAlarms} />
-        </DashboardPanel>
-      </div>
+      {renderBoardArea()}
+      {renderAlertsArea()}
     </div>
   )
 }

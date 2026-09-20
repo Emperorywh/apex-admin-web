@@ -1,0 +1,7 @@
+/* 图表容器（P34 双图共用）：填满面板内容区（面板 body 为 flex 容器，图表 flex:1） */
+
+.fill {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+}

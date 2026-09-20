@@ -1,8 +1,8 @@
-/* 仪表盘页布局：KPI 行 + 12 栅格图表面板 */
+/* 合并业务首页（P34）布局：KPI 行 + 12 栅格图表面板（模板玻璃卡片体系，整页重写） */
 
 .kpiRow {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(168px, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--app-space-3);
   margin-bottom: var(--app-space-3);
 }
@@ -13,18 +13,13 @@
   gap: var(--app-space-3);
 }
 
-/* 图表面板卡：不透明白卡（亮色）/ 纯色深卡（暗色） */
+/* 图表面板卡：不透明白卡（亮色）/ 纯色深卡（暗色），超宽内容不出卡片 */
 .card {
   background: var(--app-card-bg);
   border: 1px solid var(--app-card-line);
   border-radius: var(--app-radius-panel);
   box-shadow: var(--app-card-shadow);
-}
-
-.cardTitle {
-  font-size: var(--app-fs-primary);
-  font-weight: var(--app-fw-bold);
-  color: var(--app-card-title);
+  min-width: 0;
 }
 
 .panel {
@@ -36,57 +31,80 @@
 
 .panelTitle {
   margin: 0 0 var(--app-space-2);
+  font-size: var(--app-fs-primary);
+  font-weight: var(--app-fw-bold);
+  color: var(--app-card-title);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* 面板口径提示触发器：hover/focus 提亮，键盘可达 */
+.panelHint {
+  display: inline-flex;
+  color: var(--app-text-3);
+  cursor: help;
+}
+
+.panelHint:hover,
+.panelHint:focus-visible {
+  color: var(--app-blue);
+  outline: none;
 }
 
 .panelBody {
-  flex: 1;
+  /* 高度由内联 style（bodyHeight）提供：不用 flex:1——column 容器中 flex-basis:0
+     会覆盖 height 导致 grid 行塌陷到标题高度（首轮截图实测缺陷） */
   display: flex;
   flex-direction: column;
   min-height: 0;
+}
+
+/* 图表空态占位：撑满面板内容区并居中 */
+.chartEmpty {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 看板聚合失败块：全宽居中，保持一定高度避免布局塌陷 */
+.boardError {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
 }
 
 .span4 {
   grid-column: span 4;
 }
 
-.span5 {
-  grid-column: span 5;
-}
-
-.span7 {
-  grid-column: span 7;
-}
-
 .span8 {
   grid-column: span 8;
 }
 
-.errorBlock {
-  min-height: 320px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--app-space-4);
-  color: var(--app-text-3);
+.span12 {
+  grid-column: span 12;
 }
 
-@media (max-width: 1280px) {
-  .span8,
-  .span7 {
-    grid-column: span 12;
-  }
-
-  .span4,
-  .span5 {
-    grid-column: span 6;
+/* 窄视口：KPI 8 卡换行 2 列、图表面板单列堆叠；
+   横向溢出一律由面板内部消化，不撑破工作区（AGENTS §1 容器纪律） */
+@media (max-width: 1599px) {
+  .kpiRow {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
-@media (max-width: 860px) {
+@media (max-width: 1439px) {
+  .kpiRow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1279px) {
   .span4,
-  .span5,
-  .span7,
   .span8 {
     grid-column: span 12;
   }

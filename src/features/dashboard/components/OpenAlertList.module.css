@@ -1,0 +1,77 @@
+/* 实时告警列表（P34）：面板内滚动列表，行间细分隔线随主题 token */
+
+.scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 4px;
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 0;
+  border-bottom: 1px solid;
+  font-size: 12px;
+}
+
+.mainLine {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+/* 来源名：纯文本时加粗；可点击时为语义按钮（键盘可达） */
+.source {
+  font-weight: 500;
+  color: inherit;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.linkBtn {
+  padding: 0;
+  border: none;
+  background: none;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.linkBtn:focus-visible {
+  outline: 2px solid var(--app-blue);
+  outline-offset: 1px;
+}
+
+.time {
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.duration {
+  white-space: nowrap;
+}
+
+.descLine {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.desc {
+  flex: 1;
+  min-width: 0;
+  /* 描述可能很长：单行省略，悬浮完整内容由 title 提供 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
