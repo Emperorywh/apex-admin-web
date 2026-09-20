@@ -1,0 +1,22 @@
+{
+  "runId": "delivery-20260920-p21-4cd8214",
+  "taskId": "P21",
+  "purpose": "delivery",
+  "owner": "ZCode-delivery-20260920a",
+  "startedAt": "2026-09-20T01:53:04.759Z",
+  "baseHead": "4cd8214afbae8e284c7b9fd65a37d052ad67307c",
+  "initialStatus": "",
+  "progress": [],
+  "nextSteps": [],
+  "blocker": null,
+  "endedAt": "2026-09-20T01:53:21.420Z",
+  "outcome": "completed",
+  "endHead": "4cd8214afbae8e284c7b9fd65a37d052ad67307c",
+  "publish": {
+    "status": "synced",
+    "commit": "4cd8214afbae8e284c7b9fd65a37d052ad67307c",
+    "confirmedRemoteHead": "4cd8214afbae8e284c7b9fd65a37d052ad67307c",
+    "checkedAt": "2026-09-20T01:53:15.502Z",
+    "error": null
+  }
+}
