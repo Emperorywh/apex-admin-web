@@ -1,0 +1,72 @@
+{
+  "ok": true,
+  "checkedAt": "2026-09-20T19:17:40.072Z",
+  "base": "http://localhost:5173",
+  "checks": [
+    {
+      "step": "login",
+      "ok": true,
+      "detail": "HTTP 200 code=200 activated=true"
+    },
+    {
+      "step": "task-statistics-default",
+      "ok": true,
+      "detail": "HTTP 200 code=200 dailyCounts=7 durationDistribution=6 窗口=2026-09-15~2026-09-21"
+    },
+    {
+      "step": "task-row-shape",
+      "ok": true,
+      "detail": "date 非法行=0（[]）；计数字段非法行=0；首行 {\"date\":\"2026-09-15T00:00:00\",\"created\":25922,\"completed\":25925,\"cancelled\":0,\"failed\":0,\"createdSucceededCount\":25922,\"createdSucceededDurationSeconds\":4660895.782937,\"waitDurationSeconds\":85325.920226}"
+    },
+    {
+      "step": "task-duration-buckets",
+      "ok": true,
+      "detail": "命中固定桶=6/6 未知桶=0（label 原样：[\"<1min\",\"1-2min\",\"2-3min\",\"3-5min\",\"5-10min\",\">10min\"]）"
+    },
+    {
+      "step": "task-kpi-summary",
+      "ok": true,
+      "detail": "试算（页面同口径）：窗口天=7 接口下发天=7 补零天=0 totalCount=159361 completed=159361 failed=0 canceled=0 completionRate=1.0000 averageCompletedDurationMs=179369（供 UI 对照）"
+    },
+    {
+      "step": "simple-vehicles",
+      "ok": true,
+      "detail": "HTTP 200 code=200 vehicles=56"
+    },
+    {
+      "step": "task-filter-vehicle",
+      "ok": true,
+      "detail": "vehicleKeys=[\"2093172593386483758\"] → HTTP 200 code=200 dailyCounts=0"
+    },
+    {
+      "step": "daily-state-effective",
+      "ok": true,
+      "detail": "HTTP 200 code=200 dailyStateDurations=7 首行 {\"date\":\"2026-09-15T00:00:00\",\"totalDurationSeconds\":17842990,\"vehicleCount\":54}"
+    },
+    {
+      "step": "trend-utilization-summary",
+      "ok": true,
+      "detail": "试算（页面同口径，首天 2026-09-15）：overlapSeconds=86400 vehicleCount=54 totalDurationSeconds=17842990 utilization=3.8244（供 UI 对照）"
+    },
+    {
+      "step": "executing-time-effective",
+      "ok": true,
+      "detail": "HTTP 200 code=200 vehicleExecutingDurations=108"
+    },
+    {
+      "step": "rank-utilization-summary",
+      "ok": true,
+      "detail": "试算（页面同口径）：有效车辆数=54 windowSeconds=530258 首名 vehicleKey=\"2093172593386483729\" activeSeconds=3659790 utilization=6.9019（供 UI 对照）"
+    },
+    {
+      "step": "task-no-token",
+      "ok": true,
+      "detail": "HTTP 200 code=1000000 message=用户未登录"
+    },
+    {
+      "step": "logout",
+      "ok": true,
+      "detail": "HTTP 200 code=200"
+    }
+  ]
+}

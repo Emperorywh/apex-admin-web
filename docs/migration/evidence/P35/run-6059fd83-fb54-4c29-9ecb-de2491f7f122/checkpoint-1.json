@@ -1,0 +1,30 @@
+{
+  "task": {
+    "implementation": "implemented",
+    "verification": "partial",
+    "gate": "ready",
+    "acceptanceRecord": "docs/migration/evidence/P35/run-6059fd83-fb54-4c29-9ecb-de2491f7f122/acceptance.json",
+    "pendingItems": [
+      "A04/I06：真实 token 过期收敛、双窗口退出同步、真实网络级资源加载失败不白屏归 V01 长会话复核（本轮登出清理与持久化恢复机制级已实证，T00/P01/P02/P21/P33/P34/P36/P37/P40 同口径；后端互踢语义观察项已登记）",
+      "A24：长时多页签/真实规模稳定性与图表重建资源回收归 V01 统一收口（本环境 15.9 万任务/54 车/7 天真实样本；echarts dispose/重建机制级实现）",
+      "A19/G15：统计公式真实数据最终核对（测试数据 utilization>100%、完成率恒 1.0 为数据现象）与 Apex 明细行 DOM 渲染/真实指针交互视觉证据（本会话 IAB RO 冻结——零改动对照 P37 页同症状；数据管线/排序状态机/canvas/KPI 已取证），归 V01",
+      "zh-TW/ko-KR 运行时逐语言切换归 V01 五语言回归（ja/en/zh-CN 已实测三条加载路径）"
+    ],
+    "note": "P35 交付（2026-09-21，run-6059fd83）：整页实现（taskStatistics KPI/趋势/分布+agvStateStatistics 趋势+agvExecutingTimeStatistics 排行+每日明细 Apex data 模式）+report-task 服务/feature/四语言分片 57 key+路由解除 pending（7062e33，17 文件+2511 行）；P37 owner 契约兑现（EFFECTIVE_WORK_STATES/聚合/窗口截断经页面层组合，features 域不穿透）；旧 policy 过时注释与契约矛盾澄清（接口支持任意区间）；静态门禁全绿；真实只读 13/13；浏览器整页验收（KPI 试算互证/4 图 canvas/排序三态/口径提示 9 处插值（修复简中短 key 缺陷）/ja-en-简中重建/双视口双主题/登出清理/合法回跳）；verification=partial（A04/A19/A24/I06 deferred 归 V01），gate=ready；不勾选 TASKS"
+  },
+  "progress": [
+    "P35 整页交付：report-task 服务（taskStatistics）+ features/analyze-visual/task-statistics（statistics 纯计算 + 同构查询 hook + 4 echarts 图表）+ 页面重写（工具栏/KPI 4 卡/2×2 图表/Apex 每日明细）+ 四语言分片 57 key + i18n 注册 + 路由解除 pending",
+    "静态门禁全绿（lint 0/0、typecheck、structure 529 文件、build 1.20s；hint key 完整简中文案化修复后复绿）",
+    "真实只读 13/13（readonly-result.json）：taskStatistics KPI 试算互证、6 桶 label 归一化、vehicleKeys 筛选、agvStateStatistics/agvExecutingTimeStatistics 口径试算、无令牌拒绝、登出清理",
+    "浏览器整页验收：KPI 与只读一致、4 图 canvas 取证、排序 aria-sort 三态、口径提示 9 处简中/en 插值（修复短 key 缺陷）、ja/en/zh-CN 整页重建、双视口双主题、登出清理、登录合法回跳",
+    "acceptance.json 50 项矩阵（passed 36 / not_applicable 12 / deferred 5：A04/A24/I06/P35-5/P35-6）+ code-files.json 17 文件哈希",
+    "待办：提交实现代码 → 回填 codeCommit → 提交验收记录/交接/RUN_STATE/i18n-map → push --commit HEAD → end --outcome completed"
+  ],
+  "nextSteps": [
+    "git add 实现代码 17 文件 → commit（implCommit）",
+    "回填 acceptance.json codeCommit=implCommit → git add docs → commit",
+    "node scripts/migration-runner.mjs push --run run-6059fd83-fb54-4c29-9ecb-de2491f7f122 --commit <HEAD>",
+    "node scripts/migration-runner.mjs end --run run-6059fd83-fb54-4c29-9ecb-de2491f7f122 --outcome completed"
+  ],
+  "blocker": null
+}

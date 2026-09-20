@@ -1,0 +1,529 @@
+{
+  "taskId": "P35",
+  "runId": "run-6059fd83-fb54-4c29-9ecb-de2491f7f122",
+  "codeCommit": "7062e3391bd226f7c994d4c7e19fd32b2b6bd7a6",
+  "codeFiles": [
+    {
+      "path": "src/services/report-task/report-task.service.types.ts",
+      "sha256": "84753ce9a7e1f2fba468d0bc1fa666888d3e8d68c481ad3329c4b255910d19b2"
+    },
+    {
+      "path": "src/services/report-task/report-task.service.ts",
+      "sha256": "1f4a428908c23b898d860c1079427c4fef1918e6f79d62017646373229b40d87"
+    },
+    {
+      "path": "src/features/analyze-visual/task-statistics/statistics.ts",
+      "sha256": "20802db9bf82bd2f235514dc1db336e32c841db804fb2e4dc15c2a2c52746715"
+    },
+    {
+      "path": "src/features/analyze-visual/task-statistics/hooks/useTaskReportQuery.ts",
+      "sha256": "4c0ed81703a09fbd50034f6ed706d43f7be82a3ca5ac34bdc32408105eadf80a"
+    },
+    {
+      "path": "src/features/analyze-visual/task-statistics/components/TaskVolumeStackedBar.tsx",
+      "sha256": "047d32e85bb2b52dd098259c615d4f3535969a8215c83e1817bf5f331a206acc"
+    },
+    {
+      "path": "src/features/analyze-visual/task-statistics/components/DurationDistributionBar.tsx",
+      "sha256": "2078aa7e9c6ff3c1eb2e923d57442e005a840a969b4e66b84fee1042340aff06"
+    },
+    {
+      "path": "src/features/analyze-visual/task-statistics/components/VehicleUtilizationBar.tsx",
+      "sha256": "1c12df1049939bda3b835b63fc2f81c94ad33e7803835c3b0a35a3870adfd64f"
+    },
+    {
+      "path": "src/features/analyze-visual/task-statistics/components/UtilizationTrendLine.tsx",
+      "sha256": "d658c2a000c19f0b9f22ea0dd75d85e27c276bd44c152ce94042bb1d0fb3889c"
+    },
+    {
+      "path": "src/features/analyze-visual/task-statistics/components/TaskChart.module.css",
+      "sha256": "2f2b29d4c1de0436b49ab59b02f1e3e6c6523932a47dead6d0c4ddd102b06631"
+    },
+    {
+      "path": "src/pages/analyze-visual/TaskStatisticsReport/TaskStatisticsReport.tsx",
+      "sha256": "db6f7d13d10790e5e4f0ee9287b83e7597d9e0355820d68ec655676131c0a39d"
+    },
+    {
+      "path": "src/pages/analyze-visual/TaskStatisticsReport/TaskStatisticsReport.module.css",
+      "sha256": "db4db0540e5237557ed17531247706a1d04055162781e874bf30bf7dd9a9025f"
+    },
+    {
+      "path": "src/i18n/locales/en-US/report-task.ts",
+      "sha256": "7e01f17894bf1f7ec32a489f1611b55202064bbf9dfb312f9b6c04145b17f02b"
+    },
+    {
+      "path": "src/i18n/locales/zh-TW/report-task.ts",
+      "sha256": "2791a25b3d0022df7bf7e598a3693b7b82799081b000d71142e9023217508c45"
+    },
+    {
+      "path": "src/i18n/locales/ja-JP/report-task.ts",
+      "sha256": "94bffd7192b7094c18d580e817b4ef0f96a1bfb70bb91cb15dd5c286abae0162"
+    },
+    {
+      "path": "src/i18n/locales/ko-KR/report-task.ts",
+      "sha256": "56bf2af0ae305beeadb100e55b29066591ec8bfcbf043c4446d5738dd8ed13f7"
+    },
+    {
+      "path": "src/i18n/i18n.ts",
+      "sha256": "b867e71364ae386b5cd20ab413f16b131c71a58d8085fb3a717daf9cde791392"
+    },
+    {
+      "path": "src/router/definitions.tsx",
+      "sha256": "e02d0d676b011c194108df5663c5b4dd1fedd6d4c9bbe1b63c469c58f872ba6e"
+    }
+  ],
+  "generatedAt": "2026-09-21T04:20:00Z",
+  "environment": {
+    "backend": "10.11.2.67:8888（Vite 同源代理）",
+    "account": "root（.env.local 本机安全来源，不落文档）",
+    "dataScale": "taskStatistics 默认 7 天窗口 dailyCounts=7 天（created≈2.6 万/天，totalCount≈15.9 万）；getSimpleVehicles=56 车；agvExecutingTimeStatistics=108 行（54 车×2 状态）；agvStateStatistics=7 天×vehicleCount=54",
+    "role": "root（全部菜单可见）",
+    "viewports": [
+      "1920×945",
+      "1366×768"
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "languages": [
+      "ja-JP（初始环境实测）",
+      "en-US",
+      "zh-CN"
+    ],
+    "browser": "IAB Chromium（ZCode 内嵌；真实指针与自然浏览器复核归 V01）"
+  },
+  "releaseChecks": {
+    "scope": "passed",
+    "static": "passed",
+    "readOnly": "passed",
+    "ui": "passed",
+    "sharedConsumers": "passed"
+  },
+  "releaseReasons": [
+    "scope：旧 TaskStatisticsReport 8 文件（主组件 444 行 + 5 图表组件 + types + index）递归清点完毕；TaskTypePie 旧页仅 import 未在 JSX 接线（与 charts 目录 StateSharePie 等同类死代码），以可达实现为准不迁移；明细表旧页已移除（接口无任务级明细），TASKS 要求的「明细」以接口真实支持的每日聚合明细（dailyCounts）Apex data 模式交付，与任务量趋势同源一致（A19 图表与明细一致）",
+    "static：pnpm check lint 0 warning 0 error（543 文件）/ typecheck 通过 / check:structure 529 文件无违规；pnpm build 1.20s 成功（hint key 完整简中文案化修复后复绿）",
+    "readOnly：13/13 通过（readonly-result.json）：登录 activated=true；taskStatistics 默认窗口 dailyCounts=7 天 + 6 桶分布 label 归一化全命中 + KPI 试算互证（totalCount=159361、completionRate=1.0000、averageCompletedDurationMs=179369ms）；vehicleKeys 筛选 code=200；agvStateStatistics 三状态 7 天（首天 utilization 试算=3.8244）；agvExecutingTimeStatistics 108 行（首名 utilization 试算=6.9019）；无令牌 code=1000000；登出清理。利用率试算 >100% 为测试数据现象（Σ有效时长≫窗口，P37 同口径 G15 登记）",
+    "ui：真实登录浏览器整页验收（IAB Chromium）：菜单导航进入工作区页签；默认近 7 天窗口（2026-09-15 00:00:00~2026-09-21 23:59:59 部署时区）；KPI 4 卡数值与只读试算一致（159,415→159,759 随实时数据、100.0%、0 / 0、2m 59s）；4 图 canvas 真实绘制（painted 取证 118/79/138/90 样本）；日次明细 total=7 件 + 排序状态机 aria-sort none→descending→ascending→none 实证；MetricHint 口径提示 9 处（4 KPI+4 图+明细）简中完整文案 +「近 7 天」插值渲染、en 旧真译 + 插值实证（含本轮修复：hint 短 key 在 zh-CN 显示 key 本体的缺陷，已按 P33 纪律改完整简中文案 key 并回归）；五语言切换 ja→en→zh-CN 整页重建（html lang 同步、KPI/图卡标题/明细列头/工具栏随语言更新、不刷新整页、KPI 数值保留）；深浅主题切换；1366 无横向溢出（scrollW=clientW=1366）+ KPI 2×2 换行；登出清理（auth 持久化清空为 null/false 空结构、语言/列偏好按设计保留、回 /login 带 redirect 参数）；登录合法回跳 redirect 目标实测",
+    "sharedConsumers：消费 P37 owner 模块（EFFECTIVE_WORK_STATES/computeWindowSeconds/groupByVehicle/secondsOfStatesInGroup——页面层组合，features 域不穿透导入）与 P37 服务层（agvStateStatistics/agvExecutingTimeStatistics，零改动复用）、P33 MetricHint（零改动复用）、P34 RealtimeKpiCard/kpiViewModel/formatDurationMs（零改动复用）、T00 fetchSimpleVehicles 共享选项契约（零改动复用）；新增公共文件改动仅 i18n.ts 四语言懒加载表各 +1 行（消费方仅本页）与路由 definitions.tsx 本页 meta 行（解除 pending + i18nNamespaces），消费者影响均已核"
+  ],
+  "items": [
+    {
+      "id": "TASK",
+      "status": "passed",
+      "reason": "任务卡业务交付逐项落地：统计窗口（区间+车辆+快捷预设）、车辆时长/利用率（排行+趋势，P37 有效状态口径）、趋势（任务量堆叠+利用率折线）、每日聚合明细（Apex data 模式，与任务量趋势同源一致）；复用 P33/P37 计算与单位，页面独有指标（时长分布、终态 KPI）在 statistics.ts 单独登记口径。专项「只接受统计天数的接口不显示任意日期范围能力」：真实契约支持任意起止区间（TaskStatisticsParam.startTime/endTime + 旧可达实现 TimeRangePicker + 旧 repository 联调注释三重证据），本页提供区间选择符合契约——「仅按天数统计」为旧 policy.ts/index.tsx 过时注释不构成约束（差异登记 tasks/P35.md）",
+      "evidence": [
+        "docs/migration/evidence/P35/run-6059fd83-fb54-4c29-9ecb-de2491f7f122/readonly-result.json",
+        "docs/migration/tasks/P35.md"
+      ]
+    },
+    {
+      "id": "DoD1",
+      "status": "passed",
+      "reason": "旧页可达业务递归清点：工具栏（车辆多选+TimeRangePicker+查询）、4 KPI、4 图、三条并行链路；死代码（TaskTypePie 等未接线组件）不迁移并登记；旧页无明细表而 TASKS 要求明细 → 以接口真实支持的每日聚合明细交付（升级项，依据 TASKS 用户决策基线优先）",
+      "evidence": [
+        "docs/migration/tasks/P35.md"
+      ]
+    },
+    {
+      "id": "DoD2",
+      "status": "passed",
+      "reason": "页面不导入 axios、不拼 URL、不解原始包装；严格 POST /fms/v1/report/orderStatisticsReport/taskStatistics 与 /fms/v1/report/vehicleStatisticsReport/{agvStateStatistics,agvExecutingTimeStatistics}（哈希 a82e9b5f 未变化，本轮复核）；code=200 判定；int64 秒值 JSON number 承载（≤10^9 无精度风险，G10 同口径）",
+      "evidence": [
+        "src/services/report-task/report-task.service.ts",
+        "docs/migration/evidence/P35/run-6059fd83-fb54-4c29-9ecb-de2491f7f122/readonly-result.json"
+      ]
+    },
+    {
+      "id": "DoD3",
+      "status": "passed",
+      "reason": "路由守卫 dashboard-task:view（旧 .umirc.ts access 一致）；页内无按钮码（旧一致）；无权限/暂缓/缺口/离线/空态由 T00 统一状态块区分",
+      "evidence": [
+        "src/router/definitions.tsx"
+      ]
+    },
+    {
+      "id": "DoD4",
+      "status": "passed",
+      "reason": "明细表使用官方 npm ApexTableReact data 模式；无 antd Table/自绘表格/二次封装",
+      "evidence": [
+        "src/pages/analyze-visual/TaskStatisticsReport/TaskStatisticsReport.tsx"
+      ]
+    },
+    {
+      "id": "DoD5",
+      "status": "passed",
+      "reason": "data 模式承载真实接口完整小集合（窗口天数 ≤ 用户区间，本环境 7 行）；稳定行 ID=自然日；分页 10/20/50；rowCount=真实 total=7；数值列开放本地排序（P37 表格级 enableSorting 先例），日期列为窗口基线不开放；列偏好 report-task:daily 按用户/tableId 隔离",
+      "evidence": [
+        "docs/migration/evidence/P35/run-6059fd83-fb54-4c29-9ecb-de2491f7f122/acceptance.json"
+      ]
+    },
+    {
+      "id": "DoD6",
+      "status": "passed",
+      "reason": "三条链路独立防乱序（计数器+AbortController）、取消级联（页签 scope）、失败清空该链路区域+可见有限退避自动重查（3 次）；主动取消静默；筛选草稿保留；旧实现「失败仅留日志保留旧数据」与 DoD 6 冲突不迁移（差异登记 tasks/P35.md）。本环境互踢后旧 token 仍被后端接受（真实失败态未复现，后端互踢语义与预期不符）；失败呈现为 P33/P36/P37 同构 hook 代码审查 + 该四页历史真实实证",
+      "evidence": [
+        "src/features/analyze-visual/task-statistics/hooks/useTaskReportQuery.ts",
+        "docs/migration/tasks/P35.md"
+      ]
+    },
+    {
+      "id": "DoD7",
+      "status": "passed",
+      "reason": "报表页不默认轮询（规格 8.2）；草稿态工具栏切页保留（React 状态 + Activity 页签保活）；查询条件仅在当前页签；退出清理（登出实测 auth 清空）",
+      "evidence": [
+        "docs/migration/evidence/P35/run-6059fd83-fb54-4c29-9ecb-de2491f7f122/acceptance.json"
+      ]
+    },
+    {
+      "id": "DoD8",
+      "status": "not_applicable",
+      "reason": "本页为纯只读报表页，无任何写操作/控制/批量（旧页一致，三条 POST 均查询性质）",
+      "evidence": [
+        "docs/migration/tasks/P35.md"
+      ]
+    },
+    {
+      "id": "DoD9",
+      "status": "not_applicable",
+      "reason": "本页无文件上传下载（旧页一致）",
+      "evidence": [
+        "docs/migration/tasks/P35.md"
+      ]
+    },
+    {
+      "id": "DoD10",
+      "status": "passed",
+      "reason": "车辆选项经 T00 共享契约（fetchSimpleVehicles，label=名称 value=key）；失效选项不适用（选项实时加载，失败显示状态文本不冒充空集合）",
+      "evidence": [
+        "src/pages/analyze-visual/TaskStatisticsReport/TaskStatisticsReport.tsx"
+      ]
+    },
+    {
+      "id": "DoD11",
+      "status": "passed",
+      "reason": "五语言 report-task 分片交付：en 旧真译逐条沿用（hint 译文+插值）、zh-TW/ja/ko 旧缺失按 B1 基线补译（术语对齐 P36/P37）；快捷预设/桶标签/明细列头全量；插值一律 {{days}} 双花括号；语言切换动态重建实测（ja/en/zh-CN 三条路径）",
+      "evidence": [
+        "src/i18n/locales/en-US/report-task.ts",
+        "docs/migration/evidence/P35/run-6059fd83-fb54-4c29-9ecb-de2491f7f122/acceptance.json"
+      ]
+    },
+    {
+      "id": "DoD12",
+      "status": "passed",
+      "reason": "车辆名称等原始标识不翻译；协议枚举（orderTypes 不传走后端默认工作任务、states 三元组原值）原样提交；Accept-Language 由请求层统一（T00 机制）",
+      "evidence": [
+        "src/services/report-task/report-task.service.ts"
+      ]
+    },
+    {
+      "id": "DoD13",
+      "status": "passed",
+      "reason": "MacOS 外壳/工作区页签/深浅主题保留；1920 与 1366 实测布局完整无溢出；图表列/轴/图例随主题双套色表；工程门禁不替代整页渲染验收（本轮完成真实登录整页验收）",
+      "evidence": [
+        "docs/migration/evidence/P35/run-6059fd83-fb54-4c29-9ecb-de2491f7f122/screenshots/"
+      ]
+    },
+    {
+      "id": "DoD14",
+      "status": "passed",
+      "reason": "统计口径显式说明（9 处 MetricHint 四语言）；KPI 分母 0 → \"--\"（完成率/平均执行时长）绝不补 0；每日平均耗时分母 0 → 留白；利用率不可计算 null → 排行灰柱+悬浮 --、趋势断线（null ≠ 真实 0）；部署时区（dayjs.tz Asia/Shanghai）不随浏览器漂移；缺失天按 0 补齐为旧实现等价口径（计数聚合「无记录=0 个订单」）",
+      "evidence": [
+        "src/features/analyze-visual/task-statistics/statistics.ts",
+        "docs/migration/evidence/P35/run-6059fd83-fb54-4c29-9ecb-de2491f7f122/acceptance.json"
+      ]
+    },
+    {
+      "id": "DoD15",
+      "status": "passed",
+      "reason": "pnpm check + build 全绿；真实只读 13/13（三个查询性质 POST 按业务语义归只读）；不新增单元测试；无 mock",
+      "evidence": [
+        "docs/migration/evidence/P35/run-6059fd83-fb54-4c29-9ecb-de2491f7f122/readonly-result.json"
+      ]
+    },
+    {
+      "id": "DoD16",
+      "status": "passed",
+      "reason": "无 mock/假进度/随机统计迁入；echarts 按需注册、实例卸载 dispose；剩余缺口与跨页项登记 tasks/P35.md",
+      "evidence": [
+        "docs/migration/tasks/P35.md"
+      ]
+    },
+    {
+      "id": "A01",
+      "status": "passed",
+      "reason": "旧叶子 /analyze-visual/dashboard-task → 新 /analyze-visual/dashboard-task 同路径整页迁移；弹窗/子表/文件/关联流程清点无遗漏（旧页无弹窗/文件）",
+      "evidence": [
+        "docs/migration/tasks/P35.md"
+      ]
+    },
+    {
+      "id": "A02",
+      "status": "not_applicable",
+      "reason": "本页非暂缓页，不涉及暂缓边界",
+      "evidence": [
+        "docs/migration/tasks/P35.md"
+      ]
+    },
+    {
+      "id": "A03",
+      "status": "not_applicable",
+      "reason": "登录链路归 P01（本轮登录/登出仅作会话前置，未改认证代码）",
+      "evidence": [
+        "docs/migration/tasks/P35.md"
+      ]
+    },
+    {
+      "id": "A04",
+      "status": "deferred",
+      "category": "cross_page",
+      "basis": "真实 token 过期收敛与双窗口退出同步归 V01 长会话复核；本轮登出清理与持久化恢复机制级已实证（T00/P01/P02/P21/P33/P34/P36/P37/P40 同口径）",
+      "owner": "V01",
+      "resumeCondition": "V01 长会话场景复核",
+      "reason": "真实 token 过期收敛与双窗口退出同步场景未在本轮构造（后端互踢后旧 token 仍被接受，真实失败态未复现）；登出清理与持久化恢复机制级已实证",
+      "evidence": [
+        "docs/migration/tasks/P35.md"
+      ]
+    },
+    {
+      "id": "A05",
+      "status": "not_applicable",
+      "reason": "本页仅菜单码守卫（页内无按钮码），权限矩阵归 T00/P31/P32 owner 与 V01 收口",
+      "evidence": [
+        "docs/migration/tasks/P35.md"
+      ]
+    },
+    {
+      "id": "A06",
+      "status": "passed",
+      "reason": "三个 operation 的 method/path/DTO/业务码逐项核对 OpenAPI 并真实联调（13/13）",
+      "evidence": [
+        "docs/migration/evidence/P35/run-6059fd83-fb54-4c29-9ecb-de2491f7f122/readonly-result.json"
+      ]
+    },
+    {
+      "id": "A07",
+      "status": "passed",
+      "reason": "明细表 Apex data 模式；无替代表格",
+      "evidence": [
+        "src/pages/analyze-visual/TaskStatisticsReport/TaskStatisticsReport.tsx"
+      ]
+    },
+    {
+      "id": "A08",
+      "status": "passed",
+      "reason": "data 模式完整小集合语义、稳定行 ID、排序仅本地完整集合开放（不暗示全量排序）、空值留白",
+      "evidence": [
+        "src/pages/analyze-visual/TaskStatisticsReport/TaskStatisticsReport.tsx"
+      ]
+    },
+    {
+      "id": "A09",
+      "status": "passed",
+      "reason": "列偏好 useColumnPreferences('report-task:daily') 四切片受控接线（P03/P36/P37 同款）；无跨页选择语义",
+      "evidence": [
+        "src/pages/analyze-visual/TaskStatisticsReport/TaskStatisticsReport.tsx"
+      ]
+    },
+    {
+      "id": "A10",
+      "status": "passed",
+      "reason": "三链路防乱序+取消级联（同构 hook 计数器+AbortController）；快速查询切换无旧响应覆盖",
+      "evidence": [
+        "src/features/analyze-visual/task-statistics/hooks/useTaskReportQuery.ts"
+      ]
+    },
+    {
+      "id": "A11",
+      "status": "passed",
+      "reason": "失败清空对应链路区域（KPI/图 StateBlock、明细 Apex 内建错误态+内建重试）；查询条件保留；不显示假空成功（机制级：P33-P37 同构 hook 多轮真实实证；本环境真实失败态未复现——见 DoD6 登记）",
+      "evidence": [
+        "src/features/analyze-visual/task-statistics/hooks/useTaskReportQuery.ts",
+        "docs/migration/tasks/P35.md"
+      ]
+    },
+    {
+      "id": "A12",
+      "status": "not_applicable",
+      "reason": "报表页不默认轮询（规格 8.2 明确普通报表不轮询）；无实时生命周期要求",
+      "evidence": [
+        "docs/migration/tasks/P35.md"
+      ]
+    },
+    {
+      "id": "A13",
+      "status": "passed",
+      "reason": "草稿态工具栏（区间+车辆）切页保留于 Activity 缓存；无表单长草稿；登出清理实测",
+      "evidence": [
+        "docs/migration/evidence/P35/run-6059fd83-fb54-4c29-9ecb-de2491f7f122/acceptance.json"
+      ]
+    },
+    {
+      "id": "A14",
+      "status": "not_applicable",
+      "reason": "无写操作（只读报表页）",
+      "evidence": [
+        "docs/migration/tasks/P35.md"
+      ]
+    },
+    {
+      "id": "A15",
+      "status": "not_applicable",
+      "reason": "无批量/并发写（只读报表页）",
+      "evidence": [
+        "docs/migration/tasks/P35.md"
+      ]
+    },
+    {
+      "id": "A16",
+      "status": "not_applicable",
+      "reason": "无文件传输（只读报表页）",
+      "evidence": [
+        "docs/migration/tasks/P35.md"
+      ]
+    },
+    {
+      "id": "A17",
+      "status": "not_applicable",
+      "reason": "无地图/选点业务（只读报表页）",
+      "evidence": [
+        "docs/migration/tasks/P35.md"
+      ]
+    },
+    {
+      "id": "A18",
+      "status": "not_applicable",
+      "reason": "无工艺/Cron 业务（只读报表页）",
+      "evidence": [
+        "docs/migration/tasks/P35.md"
+      ]
+    },
+    {
+      "id": "A19",
+      "status": "deferred",
+      "reason": "口径已按契约等价交付并显式说明；G15 真实数据最终核对与明细行 DOM 渲染/真实指针视觉证据待 V01（本会话 IAB 环境限制，零改动对照 P37 同症状）",
+      "evidence": [
+        "src/features/analyze-visual/task-statistics/statistics.ts",
+        "docs/migration/tasks/P35.md",
+        "docs/migration/evidence/P35/run-6059fd83-fb54-4c29-9ecb-de2491f7f122/readonly-result.json"
+      ],
+      "category": "site_acceptance",
+      "basis": "口径已按契约+旧实现等价交付并四语言 9 处口径说明显式可解释（利用率排行分母=窗口秒数不乘车辆数、趋势分母=当天窗口交集秒×当天车辆数、终点截断当前时刻、首末非整天只算覆盖部分、有效状态三元组；缺失天按 0 补齐为计数聚合旧实现等价口径；图表与 Apex 明细同一 buildTaskStatistics 产物同源一致；未知分母不可计算——完成率/平均耗时分母 0 → --/留白、趋势 vehicleCount 无效 → null 断线、排行窗口 0 → null 灰柱）。deferred 余项：(a) G15 公式真实数据最终核对（本环境测试数据 utilization>100%、完成率恒 1.0 为数据现象，P33/P37 同口径）；(b) Apex 明细行 DOM 渲染/真实指针交互视觉证据（本会话 IAB RO 冻结——零改动对照：已交付 P37 页同环境同样 tbody 0 行而数据管线 total=162 正常——P34/P37/P40 同口径环境劣化；数据管线/排序 aria-sort 三态/列头结构/canvas 绘制/KPI 数值均已取证）",
+      "resumeCondition": "V01 真实数据复核与自然浏览器复核",
+      "owner": "V01"
+    },
+    {
+      "id": "A20",
+      "status": "passed",
+      "reason": "五语言分片 + 深浅主题 + 1920/1366 双视口实测（ja/en/zh-CN 三语言运行时切换 + html lang 同步）；zh-TW/ko 运行时切换归 V01（分片同构 typecheck 键一致）",
+      "evidence": [
+        "docs/migration/evidence/P35/run-6059fd83-fb54-4c29-9ecb-de2491f7f122/acceptance.json"
+      ]
+    },
+    {
+      "id": "A21",
+      "status": "passed",
+      "reason": "零 mock：无 mock 服务/样例记录/随机统计/伪进度迁入；页面数据全部来自真实接口",
+      "evidence": [
+        "docs/migration/tasks/P35.md"
+      ]
+    },
+    {
+      "id": "A22",
+      "status": "passed",
+      "reason": "路由唯一真相源接线（解除 pending）；登录 redirect 合法回跳实测；无历史拼写别名需求（旧路径同名）",
+      "evidence": [
+        "docs/migration/evidence/P35/run-6059fd83-fb54-4c29-9ecb-de2491f7f122/acceptance.json"
+      ]
+    },
+    {
+      "id": "A23",
+      "status": "passed",
+      "reason": "无新依赖（echarts 6.1.0 沿用 P33 安装）；lint/typecheck/structure/build 全绿；无无关格式化",
+      "evidence": [
+        "docs/migration/evidence/P35/run-6059fd83-fb54-4c29-9ecb-de2491f7f122/acceptance.json"
+      ]
+    },
+    {
+      "id": "A24",
+      "status": "deferred",
+      "category": "cross_page",
+      "basis": "长时多页签/真实规模稳定性归 V01 统一收口（本环境真实规模 15.9 万任务/54 车/7 天样本；图表 dispose/重建机制级实现）",
+      "owner": "V01",
+      "resumeCondition": "V01 长时观测收口",
+      "reason": "长时多页签/真实规模稳定性未做长时观测（本环境样本 15.9 万任务/54 车/7 天；echarts dispose/重建机制级已实现）",
+      "evidence": [
+        "docs/migration/tasks/P35.md"
+      ]
+    },
+    {
+      "id": "I01",
+      "status": "passed",
+      "reason": "语言入口复用 T00 基座（五语言切换/刷新恢复/html lang 同步实测 ja/en/zh-CN）",
+      "evidence": [
+        "docs/migration/evidence/P35/run-6059fd83-fb54-4c29-9ecb-de2491f7f122/acceptance.json"
+      ]
+    },
+    {
+      "id": "I02",
+      "status": "passed",
+      "reason": "旧 en 真译逐条沿用（含 4 条 hint 长译文）；zh-TW/ja/ko 旧有标题/aria 真译沿用、缺失词条按 B1 基线补译；旧 {days} 单花括号插值改 {{days}}；无故意丢弃已有译文",
+      "evidence": [
+        "src/i18n/locales/en-US/report-task.ts",
+        "docs/migration/tasks/P35.md"
+      ]
+    },
+    {
+      "id": "I03",
+      "status": "passed",
+      "reason": "{{days}} 插值简中/en 双语实测渲染正确（近 7 天 / last 7 days）；hint 短 key 缺陷（zh-CN 显示 key 本体）本轮真实渲染发现并修复——按 P33 纪律口径说明 key 一律完整简中文案",
+      "evidence": [
+        "docs/migration/evidence/P35/run-6059fd83-fb54-4c29-9ecb-de2491f7f122/acceptance.json"
+      ]
+    },
+    {
+      "id": "I04",
+      "status": "passed",
+      "reason": "语言切换整页动态重建（KPI/图卡/列头/工具栏），不刷新整页、KPI 数值与查询态保留、无写请求重发（只读页）",
+      "evidence": [
+        "docs/migration/evidence/P35/run-6059fd83-fb54-4c29-9ecb-de2491f7f122/acceptance.json"
+      ]
+    },
+    {
+      "id": "I05",
+      "status": "passed",
+      "reason": "antd ConfigProvider/Apex locale（useApexLocale）/dayjs 随语言同步（分页器/表头 en 形态实测）",
+      "evidence": [
+        "docs/migration/evidence/P35/run-6059fd83-fb54-4c29-9ecb-de2491f7f122/acceptance.json"
+      ]
+    },
+    {
+      "id": "I06",
+      "status": "deferred",
+      "category": "cross_page",
+      "basis": "真实网络级资源加载失败不白屏归 V01 复核（IAB 环境限制未构造）；四语言分片完整无缺失回退（T00/P01/P02/P21/P33/P34/P36/P37/P40 同口径）",
+      "owner": "V01",
+      "resumeCondition": "V01 网络故障场景复核",
+      "reason": "真实网络级资源加载失败不白屏场景未构造（IAB 环境限制）；四语言分片完整无缺失回退",
+      "evidence": [
+        "docs/migration/tasks/P35.md"
+      ]
+    },
+    {
+      "id": "I07",
+      "status": "not_applicable",
+      "reason": "本页无导出/上传；Accept-Language 由请求层统一发送（T00 机制，本页零改动复用）",
+      "evidence": [
+        "docs/migration/tasks/P35.md"
+      ]
+    },
+    {
+      "id": "I08",
+      "status": "passed",
+      "reason": "日期轴/区间与语言无关（YYYY-MM-DD 协议口径）；数值千分位/百分比 Intl 本地化不改协议值；1920/1366 + 深浅主题截图本地留存",
+      "evidence": [
+        "docs/migration/evidence/P35/run-6059fd83-fb54-4c29-9ecb-de2491f7f122/screenshots/"
+      ]
+    }
+  ]
+}

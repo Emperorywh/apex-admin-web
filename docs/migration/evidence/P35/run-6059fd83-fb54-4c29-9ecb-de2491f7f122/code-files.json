@@ -1,0 +1,74 @@
+{
+  "generatedAt": "2026-09-20T19:41:19.921Z",
+  "note": "受检代码与公共依赖文件清单（sha256 为实现内容哈希；codeCommit 绑定见 acceptance.json）",
+  "files": [
+    {
+      "path": "src/services/report-task/report-task.service.types.ts",
+      "sha256": "84753ce9a7e1f2fba468d0bc1fa666888d3e8d68c481ad3329c4b255910d19b2"
+    },
+    {
+      "path": "src/services/report-task/report-task.service.ts",
+      "sha256": "1f4a428908c23b898d860c1079427c4fef1918e6f79d62017646373229b40d87"
+    },
+    {
+      "path": "src/features/analyze-visual/task-statistics/statistics.ts",
+      "sha256": "20802db9bf82bd2f235514dc1db336e32c841db804fb2e4dc15c2a2c52746715"
+    },
+    {
+      "path": "src/features/analyze-visual/task-statistics/hooks/useTaskReportQuery.ts",
+      "sha256": "4c0ed81703a09fbd50034f6ed706d43f7be82a3ca5ac34bdc32408105eadf80a"
+    },
+    {
+      "path": "src/features/analyze-visual/task-statistics/components/TaskVolumeStackedBar.tsx",
+      "sha256": "047d32e85bb2b52dd098259c615d4f3535969a8215c83e1817bf5f331a206acc"
+    },
+    {
+      "path": "src/features/analyze-visual/task-statistics/components/DurationDistributionBar.tsx",
+      "sha256": "2078aa7e9c6ff3c1eb2e923d57442e005a840a969b4e66b84fee1042340aff06"
+    },
+    {
+      "path": "src/features/analyze-visual/task-statistics/components/VehicleUtilizationBar.tsx",
+      "sha256": "1c12df1049939bda3b835b63fc2f81c94ad33e7803835c3b0a35a3870adfd64f"
+    },
+    {
+      "path": "src/features/analyze-visual/task-statistics/components/UtilizationTrendLine.tsx",
+      "sha256": "d658c2a000c19f0b9f22ea0dd75d85e27c276bd44c152ce94042bb1d0fb3889c"
+    },
+    {
+      "path": "src/features/analyze-visual/task-statistics/components/TaskChart.module.css",
+      "sha256": "2f2b29d4c1de0436b49ab59b02f1e3e6c6523932a47dead6d0c4ddd102b06631"
+    },
+    {
+      "path": "src/pages/analyze-visual/TaskStatisticsReport/TaskStatisticsReport.tsx",
+      "sha256": "db6f7d13d10790e5e4f0ee9287b83e7597d9e0355820d68ec655676131c0a39d"
+    },
+    {
+      "path": "src/pages/analyze-visual/TaskStatisticsReport/TaskStatisticsReport.module.css",
+      "sha256": "db4db0540e5237557ed17531247706a1d04055162781e874bf30bf7dd9a9025f"
+    },
+    {
+      "path": "src/i18n/locales/en-US/report-task.ts",
+      "sha256": "7e01f17894bf1f7ec32a489f1611b55202064bbf9dfb312f9b6c04145b17f02b"
+    },
+    {
+      "path": "src/i18n/locales/zh-TW/report-task.ts",
+      "sha256": "2791a25b3d0022df7bf7e598a3693b7b82799081b000d71142e9023217508c45"
+    },
+    {
+      "path": "src/i18n/locales/ja-JP/report-task.ts",
+      "sha256": "94bffd7192b7094c18d580e817b4ef0f96a1bfb70bb91cb15dd5c286abae0162"
+    },
+    {
+      "path": "src/i18n/locales/ko-KR/report-task.ts",
+      "sha256": "56bf2af0ae305beeadb100e55b29066591ec8bfcbf043c4446d5738dd8ed13f7"
+    },
+    {
+      "path": "src/i18n/i18n.ts",
+      "sha256": "b867e71364ae386b5cd20ab413f16b131c71a58d8085fb3a717daf9cde791392"
+    },
+    {
+      "path": "src/router/definitions.tsx",
+      "sha256": "e02d0d676b011c194108df5663c5b4dd1fedd6d4c9bbe1b63c469c58f872ba6e"
+    }
+  ]
+}
