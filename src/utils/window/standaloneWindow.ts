@@ -6,7 +6,7 @@
  *
  * 机制说明：
  * - 独立窗口 = 浏览器弹窗直接打开目标路由（order-info / vehicle-info /
- *   server-resource-monitor 等布局外页面）。这些路由在路由树中受认证 + 权限
+ *   server-resource-monitor 等详情/监控页）。这些路由在路由树中受认证 + 权限
  *   守卫保护，新窗口加载时按持久化会话走同一套守卫，不存在免鉴权通道
  * - 会话/语言/主题来自 localStorage 持久化，新窗口自动一致；
  *   退出登录经 storage 事件同步到所有窗口（T00.3 authBridge）

@@ -1,0 +1,13 @@
+/* 实时数据表格弹窗（P40）：表格容器与数据源脚注 */
+
+.tableWrap {
+  height: 420px;
+  min-height: 0;
+}
+
+.modalFoot {
+  padding-top: var(--app-space-2);
+  font-size: var(--app-fs-caption);
+  color: var(--app-text-4);
+  font-variant-numeric: tabular-nums;
+}

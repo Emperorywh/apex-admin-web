@@ -17,10 +17,10 @@
  *
  * 菜单结构复刻自源系统路由配置：
  * - 完全公开页（meta.public）仅登录页与显式 404；其余独立页（软件授权、
- *   无权限、独立详情、全屏监控）一律受认证守卫，不因布局外而公开；
+ *   无权限、独立详情）一律受认证守卫，不因布局外而公开；
  * - 目录节点的默认子页用 index 表达，点击目录索引时动态解析为
  *   「首个有权限且已完成迁移」的子页，不得指向无权限/未迁移页；
- * - 「服务器资源」菜单别名 redirect 到布局外的全屏监控页。
+ * - 「服务器资源」菜单别名 redirect 到工作区页签形态的监控页（P40）。
  */
 
 import {
@@ -701,13 +701,33 @@ export const appRouteDefinitions = defineAppRoutes([
             }),
           },
           {
-            // 菜单别名：点击后 replace 到布局外的全屏监控页（守卫按同码校验）
+            // 菜单别名：点击后 replace 到工作区页签形态的监控页（同码守卫，
+            // 完整路径 /analyze-visual/server-resource-monitor，P40 交付）
             id: 'analyze-visual-server-resource',
             path: 'server-resource',
             redirect: '/analyze-visual/server-resource-monitor',
             meta: businessMeta('服务器资源', PERM.SERVER_RESOURCE_MONITOR_VIEW, {
               icon: Server,
             }),
+          },
+          {
+            // 服务器资源监控（P40 交付解除迁移占位）：默认工作区页签形态
+            // （D08/规格 7，P39 交接登记的同构迁移），完整路径保持
+            // /analyze-visual/server-resource-monitor；菜单入口是上方别名
+            // server-resource（redirect 到本页），本节点 hideInMenu 不重复出菜单、
+            // 也不作为登录落点候选；独立窗口/全屏入口在页面工具栏
+            // （openStandaloneWindow / Fullscreen API，同码同守卫）。
+            // server-resource：页面私有分片（监控页/全屏/快照表格等文案）。
+            id: 'analyze-visual-server-resource-monitor',
+            path: 'server-resource-monitor',
+            loadPage: () =>
+              import('@/pages/analyze-visual/ServerRealtimeResources/ServerRealtimeResources'),
+            meta: {
+              title: '服务器资源监控',
+              perm: PERM.SERVER_RESOURCE_MONITOR_VIEW,
+              hideInMenu: true,
+              i18nNamespaces: ['server-resource'],
+            },
           },
         ],
       },
@@ -760,17 +780,6 @@ export const appRouteDefinitions = defineAppRoutes([
         meta: auxiliaryMeta('页面不存在'),
       },
     ],
-  },
-  {
-    // 服务器资源监控全屏页：与菜单别名同码，鉴权不公开（P40）
-    id: 'server-resource-monitor',
-    path: '/analyze-visual/server-resource-monitor',
-    loadPage: () =>
-      import('@/pages/analyze-visual/ServerRealtimeResources/ServerRealtimeResources'),
-    meta: standaloneMeta('服务器资源监控', {
-      perm: PERM.SERVER_RESOURCE_MONITOR_VIEW,
-      migrationPending: true,
-    }),
   },
   {
     // 无权限落点（P41）：受认证守卫（未登录访问送回登录页），不公开但无菜单码；

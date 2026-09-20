@@ -1,0 +1,13 @@
+/* 趋势图画布容器（P40）：canvas 绝对定位，容器由页面布局给定高度 */
+
+.trendBody {
+  position: relative;
+  flex: 1;
+  min-height: 160px;
+}
+
+.trendBody canvas {
+  position: absolute;
+  left: 6px;
+  top: 2px;
+}

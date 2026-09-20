@@ -1,0 +1,108 @@
+/*
+ * 半圆仪表盘样式（P40）：环境色走 CSS 变量并按 data-theme 分档；
+ * 严重程度色（弧形/辉光）由组件按档位内联注入，双主题共用不在此定义。
+ */
+
+.gauge {
+  display: block;
+  width: 100%;
+  height: auto;
+
+  /* 亮色主题（默认）：刻度/轨道/装饰环取深蓝灰系，保证白底可读 */
+  --srv-gauge-tick-major: rgba(90, 110, 150, 0.5);
+  --srv-gauge-tick-minor: rgba(90, 110, 150, 0.22);
+  --srv-gauge-track: rgba(90, 110, 150, 0.16);
+  --srv-gauge-ring: rgba(90, 110, 150, 0.28);
+  --srv-gauge-name: var(--app-text-3);
+  --srv-gauge-value: var(--app-text);
+  --srv-gauge-percent: var(--app-text-4);
+}
+
+:global([data-theme='dark']) .gauge {
+  /* 暗色主题：沿旧大屏的蓝调辉光体系 */
+  --srv-gauge-tick-major: rgba(150, 190, 240, 0.5);
+  --srv-gauge-tick-minor: rgba(120, 160, 220, 0.22);
+  --srv-gauge-track: rgba(120, 160, 220, 0.14);
+  --srv-gauge-ring: rgba(120, 160, 220, 0.25);
+  --srv-gauge-name: #8fa3c8;
+  --srv-gauge-value: #e8eefc;
+  --srv-gauge-percent: #66779c;
+}
+
+/* 双层旋转虚线装饰环（尊重减少动画：prefers-reduced-motion 下静止） */
+.spinRing {
+  fill: none;
+  stroke: var(--srv-gauge-ring);
+  stroke-width: 1;
+  stroke-dasharray: 3 7;
+}
+
+.spin {
+  transform-origin: 120px 142px;
+  animation: gauge-spin 26s linear infinite;
+}
+
+.spinRev {
+  animation-direction: reverse;
+  animation-duration: 34s;
+}
+
+@keyframes gauge-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spin,
+  .spinRev {
+    animation: none;
+  }
+}
+
+.tickMajor {
+  stroke: var(--srv-gauge-tick-major);
+}
+
+.tickMinor {
+  stroke: var(--srv-gauge-tick-minor);
+}
+
+/* 轨道弧（底）与值弧（动态档位色由内联样式注入） */
+.track {
+  fill: none;
+  stroke: var(--srv-gauge-track);
+  stroke-width: 9;
+  stroke-linecap: round;
+}
+
+.valueArc {
+  fill: none;
+  stroke-width: 9;
+  stroke-linecap: round;
+  transition: stroke-dasharray 0.6s var(--app-ease-standard);
+}
+
+.gaugeName {
+  fill: var(--srv-gauge-name);
+  font-size: 13px;
+  text-anchor: middle;
+  font-weight: var(--app-fw-medium);
+}
+
+.gaugeNum {
+  fill: var(--srv-gauge-value);
+  font-size: 26px;
+  font-weight: var(--app-fw-bold);
+  font-variant-numeric: tabular-nums;
+}
+
+.valueText {
+  fill: var(--srv-gauge-value);
+}
+
+.percentText {
+  fill: var(--srv-gauge-percent);
+  font-size: 13px;
+  font-weight: var(--app-fw-medium);
+}

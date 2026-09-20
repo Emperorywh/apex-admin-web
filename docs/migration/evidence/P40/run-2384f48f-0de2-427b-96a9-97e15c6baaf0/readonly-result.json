@@ -1,0 +1,52 @@
+{
+  "ok": true,
+  "checkedAt": "2026-09-20T17:20:22.291Z",
+  "base": "http://localhost:5175",
+  "checks": [
+    {
+      "step": "current-no-token",
+      "ok": true,
+      "detail": "HTTP 200 code=1000000 message=用户未登录"
+    },
+    {
+      "step": "login",
+      "ok": true,
+      "detail": "HTTP 200 code=200 activated=true"
+    },
+    {
+      "step": "current-with-token",
+      "ok": true,
+      "detail": "HTTP 200 code=200 hasData=true timestamp=1789924821459"
+    },
+    {
+      "step": "rate-fields-shape",
+      "ok": true,
+      "detail": "systemCpuLoad=0 → normRate=0.0%；systemMemoryUsageRate=47.01 → normRate=47.0%；jvmHeapUsageRate=72.12 → normRate=72.1%；口径=0~100 百分比域内=true（G15：前端双口径兼容，真实样本如上）"
+    },
+    {
+      "step": "cpu-cores",
+      "ok": true,
+      "detail": "cpuCores=28"
+    },
+    {
+      "step": "memory-capacity-strings",
+      "ok": true,
+      "detail": "systemMemoryTotal=\"62.56 GB\" systemMemoryUsed=\"29.41 GB\" systemMemoryFree=\"33.15 GB\" jvmHeapMax=\"4 GB\" jvmHeapUsed=\"2.88 GB\"（后端格式化字符串，前端透传）"
+    },
+    {
+      "step": "disks-shape",
+      "ok": true,
+      "detail": "disks=2 行 非法行=0；首行 {\"device\":\"/dev/sda4\",\"mountPath\":\"/\",\"total\":\"453.92 GB\",\"free\":\"254.86 GB\",\"used\":\"199.07 GB\",\"usageRate\":43.85}；usageRate 归一化=43.9,1.2%"
+    },
+    {
+      "step": "current-repeat-sample",
+      "ok": true,
+      "detail": "第二次 HTTP 200 code=200 快照内容变化=true（可重复查询、快照随时间更新）"
+    },
+    {
+      "step": "logout",
+      "ok": true,
+      "detail": "HTTP 200 code=200"
+    }
+  ]
+}

@@ -1,0 +1,381 @@
+/*
+ * 服务器资源监控页（P40）布局样式：工作区页签内的三列监控面板。
+ * 颜色全部走全局主题令牌（双主题自动切换）；仪表内部环境色见
+ * ResourceGauge.module.css，Canvas 环境色见 resourcePolicy.TREND_THEME。
+ * 布局纪律：页面为 flex 列容器（flex:1 + min-height:0），主体区域内部
+ * 滚动消化超高内容，不做视口高度算术、不把内容顶出工作区。
+ */
+
+.page {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--app-space-3);
+  height: 100%;
+  min-height: 0;
+  padding: var(--app-space-3) var(--app-space-4) var(--app-space-4);
+}
+
+/* ------------------------------ 工具栏 ------------------------------ */
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--app-space-3);
+  flex-wrap: wrap;
+}
+
+.titleGroup {
+  display: flex;
+  align-items: baseline;
+  gap: var(--app-space-3);
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--app-fs-headline);
+  font-weight: var(--app-fw-semibold);
+  color: var(--app-text);
+  white-space: nowrap;
+}
+
+.subtitle {
+  font-size: var(--app-fs-caption);
+  letter-spacing: 0.12em;
+  color: var(--app-text-4);
+  white-space: nowrap;
+}
+
+.toolbarSide {
+  display: flex;
+  align-items: center;
+  gap: var(--app-space-4);
+  flex-wrap: wrap;
+}
+
+.toolbarActions {
+  display: flex;
+  align-items: center;
+  gap: var(--app-space-2);
+}
+
+/* 头部时钟：日期按语言格式化 + 24 小时制时间 */
+.clock {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.25;
+}
+
+.clockDate {
+  font-size: var(--app-fs-caption);
+  color: var(--app-text-4);
+}
+
+.clockTime {
+  font-size: var(--app-fs-primary);
+  font-weight: var(--app-fw-semibold);
+  color: var(--app-text);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 连接状态徽标：文字 + 颜色双通道（绿=实时 / 蓝=连接中 / 红=失败） */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: var(--app-radius-pill);
+  font-size: var(--app-fs-secondary);
+  font-weight: var(--app-fw-medium);
+  border: 1px solid transparent;
+}
+
+.badgeDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.badge_live {
+  color: var(--app-green);
+  border-color: color-mix(in srgb, var(--app-green) 35%, transparent);
+  background: color-mix(in srgb, var(--app-green) 10%, transparent);
+}
+
+.badge_live .badgeDot {
+  background: var(--app-green);
+}
+
+.badge_wait {
+  color: var(--app-blue);
+  border-color: color-mix(in srgb, var(--app-blue) 35%, transparent);
+  background: color-mix(in srgb, var(--app-blue) 10%, transparent);
+}
+
+.badge_wait .badgeDot {
+  background: var(--app-blue);
+}
+
+.badge_error {
+  color: var(--app-red);
+  border-color: color-mix(in srgb, var(--app-red) 35%, transparent);
+  background: color-mix(in srgb, var(--app-red) 10%, transparent);
+}
+
+.badge_error .badgeDot {
+  background: var(--app-red);
+}
+
+/* ------------------------------ 主体三列 ------------------------------ */
+
+.main {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--app-space-3);
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  align-items: start;
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--app-space-3);
+  min-width: 0;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--app-space-2);
+  padding: var(--app-space-3) var(--app-space-4) var(--app-space-4);
+  border-radius: var(--app-radius-panel);
+  border: 1px solid var(--app-line-soft);
+  background: var(--app-panel);
+  min-width: 0;
+}
+
+.panelTitle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--app-space-2);
+  font-size: var(--app-fs-body);
+  font-weight: var(--app-fw-semibold);
+  color: var(--app-text);
+}
+
+/* 仪表容器限宽居中：SVG 高度随宽度等比缩放，限宽保证 1366/1920 视口下
+   双面板叠加高度不超过工作区可用高度（整页免滚动，与旧大屏同观感） */
+.gaugeWrap {
+  max-width: 300px;
+  width: 100%;
+  margin: 0 auto;
+  padding: var(--app-space-2) 0 0;
+}
+
+.gaugeFoot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--app-space-2) var(--app-space-4);
+  border-top: 1px solid var(--app-line-soft);
+  padding-top: var(--app-space-2);
+}
+
+.mini {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.miniK {
+  font-size: var(--app-fs-caption);
+  color: var(--app-text-4);
+  white-space: nowrap;
+}
+
+.miniV {
+  font-size: var(--app-fs-secondary);
+  font-weight: var(--app-fw-medium);
+  color: var(--app-text);
+  font-variant-numeric: tabular-nums;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 严重程度状态 chip（仪表底部）：状态点 + 文案双通道 */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.chipDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--app-text-4);
+}
+
+.chipText {
+  font-style: normal;
+  font-size: var(--app-fs-secondary);
+  color: var(--app-text-2);
+}
+
+/* ------------------------------ 指标卡（2×2） ------------------------------ */
+
+.statGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--app-space-3);
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--app-space-3);
+  border-radius: var(--app-radius-panel);
+  border: 1px solid var(--app-line-soft);
+  background: var(--app-panel);
+  min-width: 0;
+}
+
+.tileK {
+  font-size: var(--app-fs-caption);
+  color: var(--app-text-4);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tileV {
+  font-size: var(--app-fs-title);
+  font-weight: var(--app-fw-semibold);
+  color: var(--app-text);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tileS {
+  font-size: var(--app-fs-caption);
+  color: var(--app-text-4);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ------------------------------ 趋势面板 ------------------------------ */
+
+.trendPanel {
+  flex: 1;
+  min-height: 240px;
+}
+
+.legend {
+  display: flex;
+  align-items: center;
+  gap: var(--app-space-3);
+  flex-wrap: wrap;
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--app-fs-caption);
+  color: var(--app-text-3);
+}
+
+.legendLine {
+  display: inline-block;
+  width: 14px;
+  height: 3px;
+  border-radius: 2px;
+}
+
+.legendItem b {
+  font-weight: var(--app-fw-semibold);
+  color: var(--app-text-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.trendFoot {
+  font-size: var(--app-fs-caption);
+  color: var(--app-text-4);
+  border-top: 1px solid var(--app-line-soft);
+  padding-top: var(--app-space-2);
+}
+
+/* 磁盘面板：列表区域限高滚动（超高内容面板内消化） */
+.diskPanel {
+  min-height: 0;
+}
+
+.diskPanel > :global(*) {
+  min-height: 0;
+}
+
+/* ------------------------------ 页面级悬浮提示 ------------------------------ */
+
+.globalTip {
+  position: fixed;
+  z-index: 1000;
+  pointer-events: none;
+  padding: var(--app-space-2) var(--app-space-3);
+  border-radius: var(--app-radius-panel);
+  border: 1px solid var(--app-line);
+  background: color-mix(in srgb, var(--app-panel) 88%, var(--app-text) 12%);
+  box-shadow: 0 8px 24px rgba(16, 23, 40, 0.16);
+  min-width: 160px;
+}
+
+.globalTipTitle {
+  font-size: var(--app-fs-caption);
+  color: var(--app-text-4);
+  margin-bottom: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.globalTipRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--app-fs-secondary);
+  line-height: 1.6;
+}
+
+.tipColor {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+}
+
+.tipName {
+  color: var(--app-text-3);
+  margin-right: auto;
+}
+
+.tipValue {
+  color: var(--app-text);
+  font-weight: var(--app-fw-medium);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ------------------------------ 窄视口适配（≥1366 基线内三列保持） ------------------------------ */
+
+@media (max-width: 1500px) {
+  .main {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

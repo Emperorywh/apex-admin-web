@@ -138,6 +138,8 @@ const enUsLoaders: NamespaceLoaders = {
   'report-fault': () => import('@/i18n/locales/en-US/report-fault'),
   // P37 车辆状态统计（analyze-visual/vehicle-status；页面私有命名空间）
   'report-vehicle-state': () => import('@/i18n/locales/en-US/report-vehicle-state'),
+  // P40 服务器资源监控（analyze-visual/server-resource-monitor；页面私有命名空间）
+  'server-resource': () => import('@/i18n/locales/en-US/server-resource'),
   // P41 无权限页（un-access；布局外独立页）
   'access-denied': () => import('@/i18n/locales/en-US/access-denied'),
 }
@@ -229,6 +231,8 @@ const zhTwLoaders: NamespaceLoaders = {
   'report-vehicle-state': () => import('@/i18n/locales/zh-TW/report-vehicle-state'),
   // P34 合并业务首页（/dashboard；页面私有命名空间，实时看板重定向同实例共用）
   dashboard: () => import('@/i18n/locales/zh-TW/dashboard'),
+  // P40 服务器资源监控（analyze-visual/server-resource-monitor；页面私有命名空间）
+  'server-resource': () => import('@/i18n/locales/zh-TW/server-resource'),
   'access-denied': () => import('@/i18n/locales/zh-TW/access-denied'),
 }
 const jaJpLoaders: NamespaceLoaders = {
@@ -311,6 +315,8 @@ const jaJpLoaders: NamespaceLoaders = {
   'report-vehicle-state': () => import('@/i18n/locales/ja-JP/report-vehicle-state'),
   // P34 合并业务首页（/dashboard；页面私有命名空间，实时看板重定向同实例共用）
   dashboard: () => import('@/i18n/locales/ja-JP/dashboard'),
+  // P40 服务器资源监控（analyze-visual/server-resource-monitor；页面私有命名空间）
+  'server-resource': () => import('@/i18n/locales/ja-JP/server-resource'),
   'access-denied': () => import('@/i18n/locales/ja-JP/access-denied'),
 }
 const koKrLoaders: NamespaceLoaders = {
@@ -393,6 +399,8 @@ const koKrLoaders: NamespaceLoaders = {
   'report-vehicle-state': () => import('@/i18n/locales/ko-KR/report-vehicle-state'),
   // P34 合并业务首页（/dashboard；页面私有命名空间，实时看板重定向同实例共用）
   dashboard: () => import('@/i18n/locales/ko-KR/dashboard'),
+  // P40 服务器资源监控（analyze-visual/server-resource-monitor；页面私有命名空间）
+  'server-resource': () => import('@/i18n/locales/ko-KR/server-resource'),
   'access-denied': () => import('@/i18n/locales/ko-KR/access-denied'),
 }
 

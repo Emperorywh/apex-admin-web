@@ -1,0 +1,38 @@
+{
+  "taskId": "P40",
+  "runId": "run-2384f48f-0de2-427b-96a9-97e15c6baaf0",
+  "checkedAt": "2026-09-21",
+  "environment": {
+    "browser": "IAB Chromium（rAF/RO 冻结、fullscreenchange 不派发、输入管线故障、screenshot 偶发超时——环境限制见 P40.md 验证边界）",
+    "backend": "192.168.0.158:8888（Vite 同源代理 localhost:5175）",
+    "role": "root（真实登录）",
+    "interaction": "合成事件路径（evaluate 派发 pointer/click 序列；真实指针归 V01）"
+  },
+  "checks": [
+    { "step": "guard-redirect", "result": "PASS", "detail": "未登录直访 /analyze-visual/server-resource-monitor → /login?redirect=%2Fanalyze-visual%2Fserver-resource-monitor（两次实证：首次进入+过期后 reload）" },
+    { "step": "login-redirect-return", "result": "PASS", "detail": "登录成功按 redirect 回跳 monitor，页签标题「服务器资源监控 · 调度系统」，工作区页签形态+完整外壳（3 次登录回跳实证）" },
+    { "step": "page-render-1920-1366-light-dark", "result": "PASS", "detail": "三列布局（CPU+内存 / 指标卡 2×2+趋势 / JVM+磁盘）全部面板渲染；仪表 2.x%/47%/17-40%、28 核、62.56 GB、4 GB、磁盘 43.9%/1.2% 与只读样本互证；1366 列宽 428/394/428 无横向溢出（scrollW==clientW 实测）" },
+    { "step": "polling-cadence", "result": "PASS", "detail": "performance entries 取证：12s 窗口 2 次请求、间隔 5990ms（5s 串行完成时刻起算）、无并发堆积" },
+    { "step": "snapshot-table-modal", "result": "PASS", "detail": "数据表格按钮 → antd Modal + Apex data 模式：指标/当前值/详情三列 5 行与实时快照一致、脚注「最近更新 · 实时接口」随轮询刷新（RO 冻结行不渲染为环境限制，垫片后行渲染取证，见 P40.md 边界）" },
+    { "step": "real-failure-state", "result": "PASS", "detail": "root 令牌自然过期时真实失败态：徽标红「连接失败」、全部面板 --/空态、磁盘「暂无磁盘数据」、趋势历史保留停止追加、脚注「连接失败，等待重试」——D15 清空+错误呈现实证" },
+    { "step": "recovery-after-failure", "result": "PASS", "detail": "过期清理后 reload → 守卫送 login（redirect 保留）；重新登录回跳 monitor，徽标恢复「实时数据」，轮询续采" },
+    { "step": "fullscreen-lifecycle", "result": "PASS", "detail": "fullscreenEnabled=true；点击进入 fullscreenElement=true、按钮「退出全屏」；再点退出 fullscreenElement=false、按钮「全屏」（乐观更新修复后复测；IAB 不派发 fullscreenchange 事件已取证，事件权威同步兜底保留）" },
+    { "step": "standalone-window", "result": "PASS", "detail": "IAB 拦截 window.open → 可读警告「打开独立窗口失败，请允许浏览器弹窗后重试」（拦截提示路径实证；开窗机制 P38/P39 同款已实证，实际开窗留 V01 自然浏览器）" },
+    { "step": "menu-alias-redirect", "result": "PASS", "detail": "Dock 数据统计 → 「服务器资源」点击 → redirect 打开 /analyze-visual/server-resource-monitor 同一工作区页签（同码守卫）" },
+    { "step": "theme-switch-canvas-redraw", "result": "PASS", "detail": "浅→深→浅切换：页面面板/仪表 CSS 变量随 data-theme 切换；Canvas 趋势图环境色（网格/文字/十字线/端点环）按 TREND_THEME 档重绘" },
+    { "step": "language-en-rebuild", "result": "PASS", "detail": "EN 切换：html lang=en-US；标题/徽标（Live）/按钮（Fullscreen/Standalone Window/Data Table）/图例/脚注（Sampling every…）/时钟 Intl 日期全部英文重建；无整页刷新、轮询不中断；zh-CN 回切实证" },
+    { "step": "logout-cleanup", "result": "PASS", "detail": "头像菜单 → 退出登录统一确认框 → 确认后回 /login?redirect=monitor + persist:apex-admin:auth token 清空（页面状态随组件卸载释放）" }
+  ],
+  "screenshots": [
+    { "file": "screenshots/modal-table-1920-light.png", "note": "数据表格弹窗（Apex 5 行）+1920 浅色整页", "storage": "local_only" },
+    { "file": "screenshots/full-1920-light.png", "note": "1920 浅色整页（仪表限宽免滚动）", "storage": "local_only" },
+    { "file": "screenshots/full-1920-dark.png", "note": "1920 深色整页（Canvas 双主题重绘+三分钟采样窗口）", "storage": "local_only" },
+    { "file": "screenshots/full-1366-dark.png", "note": "1366 深色（无溢出）", "storage": "local_only" },
+    { "file": "screenshots/full-1366-light.png", "note": "1366 浅色", "storage": "local_only" },
+    { "file": "screenshots/full-1366-light-en.png", "note": "1366 浅色 EN 整页重建", "storage": "local_only" }
+  ],
+  "defectsFoundAndFixed": [
+    "全屏按钮状态失同步：IAB 不派发 fullscreenchange（事件探针空数组取证）→ 按钮乐观更新+事件权威同步兜底，复测通过",
+    "快照表格漏「系统内存使用率」i18n key → 四分片补齐，审计纳入"
+  ]
+}

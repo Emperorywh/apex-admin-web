@@ -1,0 +1,17 @@
+{
+  "task": { "implementation": "in_progress", "verification": "not_started", "gate": "blocked" },
+  "progress": [
+    "P40 整页实现完成：服务层（GET /fms/v1/serverResource/current，DTO 逐字段对齐基线 OpenAPI A82E…49C7C）+ 纯计算模块 resourcePolicy（normRate 纪律修正：缺失/非法→null 不补 0）+ SVG 仪表（CSS 变量双主题）/Canvas 趋势（hex 主题档）/磁盘面板/Apex data 模式快照表格弹窗 + 页面重写（工作区页签形态 + 独立窗口/全屏入口 + useVisiblePolling 约 5s 串行）",
+    "路由迁移：monitor 从顶层 standaloneMeta 迁入受保护根 analyze-visual 组（hideInMenu + server-resource-monitor:view 同码，P39 交接登记的同构迁移），菜单别名 server-resource redirect 不变；i18n server-resource 命名空间四语言分片 61 key 同构（audit-i18n-keys.cjs 审计页面 61 key 全覆盖）",
+    "静态门禁全绿：oxlint 0/0（530 文件）/ typecheck / structure 517 文件 / build 1.23s",
+    "真实只读 9/9（readonly-result.json）：无令牌 1000000；带令牌 code=200 快照完整（cpuCores=28、内存容量字符串、disks 2 行）；使用率口径实证 0~100 百分比（CPU 0 真实零/内存 47.01/JVM 72.12/磁盘 43.85，G15 登记样本）；连续采样快照随时间更新；登出清理",
+    "浏览器整页验收（IAB Chromium，合成事件路径）：守卫 redirect/登录回跳（3 次）、工作区页签形态、1920+1366×浅+深四组截图、轮询 5990ms 串行取证、数据表格弹窗 5 行（RO 垫片后）、真实失败态实证（徽标连接失败+面板清空+趋势历史保留）、全屏进入/退出+按钮状态同步、EN 语言整页重建+html lang、菜单别名 redirect 同页签、登出清理",
+    "自测发现并修复 2 项：全屏按钮状态在 IAB fullscreenchange 不派发时失同步（乐观更新+事件权威同步兜底）；快照表格漏「系统内存使用率」key（四分片补齐）"
+  ],
+  "nextSteps": [
+    "更新 contracts.md / operations.md 登记",
+    "写交接记录 P40.md + acceptance.json + code-files.json（deferred：A04/A24/I06 归 V01 同口径 + 真实指针/独立窗口实际开窗/其余三语言运行时抽验登记）",
+    "逐文件暂存提交 + push --commit + end --outcome completed"
+  ],
+  "blocker": null
+}
