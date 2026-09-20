@@ -1,0 +1,23 @@
+{
+  "task": {
+    "implementation": "implemented",
+    "verification": "partial",
+    "gate": "ready",
+    "acceptanceRecord": "docs/migration/evidence/T00/run-b11c9c11-7926-49b5-b491-283f704b9be4/acceptance.json",
+    "pendingItems": [
+      "A04：真实 token 过期收敛与双窗口退出同步场景归 V01 长会话复核（机制级已实证，P01.md 同口径登记）",
+      "I06：真实资源加载失败不白屏场景归 V01 复核（IAB 环境限制未构造；预加载失败回滚机制经代码审查）"
+    ],
+    "note": "audit 复核通过（2026-09-21，run run-b11c9c11）：52 受检文件 49 个自 a9a3cc0 零变更、3 个变更文件（definitions.tsx/i18n.ts/package.json）逐 hunk 审查均为 P21/P33/P34/P35/P36/P37/P40/P43 登记授权扩展（pending 解除/重定向/命名空间注册/echarts 依赖），权限码零改写；当前基线 392e831 静态门禁复绿（lint 543 文件 0/0+structure 529+build 1.24s）+ 真实登录/带令牌只读复测 5/5 + OpenAPI 哈希一致；verification=partial（2 项跨页 deferred 归 V01），gate=ready 维持放行；不勾选 TASKS"
+  },
+  "progress": [
+    "T00 audit 复核（run-b11c9c11）：52 受检文件 49 个零变更、3 个变更文件逐 hunk 审查通过（均为登记授权扩展，redirect 节点经通用 createAliasRedirectLoader 同码守卫覆盖）",
+    "静态门禁复绿 @ 392e831：lint 543 文件 0/0、typecheck 通过、structure 529 文件、build 1.24s",
+    "真实只读复测 5/5（MD5 登录/带令牌 pageUsers/无令牌对照/公开接口/登出清理）；OpenAPI 哈希复核一致",
+    "acceptance.json 写入：49 项矩阵（A04/I06 deferred 归 V01）+ 52 文件哈希绑定 @ 392e831；T00.md 交接记录本轮复核节更新"
+  ],
+  "nextSteps": [
+    "提交验收记录/交接记录/RUN_STATE → push --commit HEAD → end --outcome completed"
+  ],
+  "blocker": null
+}

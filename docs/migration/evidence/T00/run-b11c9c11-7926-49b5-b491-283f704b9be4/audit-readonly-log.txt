@@ -1,0 +1,5 @@
+PASS login-md5: HTTP 200 code=200 activated=true userFields=4 permCodes=155
+PASS page-users-with-token: HTTP 200 code=200 records=1 total=3
+PASS page-users-anon-contrast: HTTP 200 code=1000000
+PASS system-logos-public: HTTP 200 code=200
+PASS logout: HTTP 200 code=200

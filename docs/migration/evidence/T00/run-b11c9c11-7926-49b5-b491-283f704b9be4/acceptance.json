@@ -1,0 +1,705 @@
+{
+  "taskId": "T00",
+  "codeCommit": "392e8316abe3b203867ffd5ff20afe1c6b389fe5",
+  "codeFiles": [
+    {
+      "path": "src/services/request/request.ts",
+      "sha256": "86cacd6c84b42b9910b7a1b83f7bcd5b3a9916024a82478c907ef0b9b8c85196"
+    },
+    {
+      "path": "src/services/request/request.constants.ts",
+      "sha256": "b9ca9fa74272ab2ea49380a7294fc97029ea7c252920526df6f5b5669d37095b"
+    },
+    {
+      "path": "src/services/request/request.types.ts",
+      "sha256": "9e292d5e9d7557c16d2cadbfd50544205d960fc3d9eb237d9b47b73e0e51fa6f"
+    },
+    {
+      "path": "src/services/auth/auth.service.ts",
+      "sha256": "5c332c25cbc8854d437e7b84b45e78c8c0af09ce68074b9ecb79426564abefa5"
+    },
+    {
+      "path": "src/services/auth/auth.service.types.ts",
+      "sha256": "19e4f76f1b64506bac1243170dc34f84e223ad5c85fb96c5ecac67c4325e503a"
+    },
+    {
+      "path": "src/services/auth/authBridge.ts",
+      "sha256": "b2474d61c55c62508ab778f013a3c17011e7081b6ce51bc3db5620cbd287390b"
+    },
+    {
+      "path": "src/constants/auth/permission.constants.ts",
+      "sha256": "6e3c547079aa363d040c55bfc9e2370b3d75c5bf2517e885fc8115452dfa5be5"
+    },
+    {
+      "path": "src/constants/datetime.ts",
+      "sha256": "470e26bcf98fc58dcc86fcef07f7267cfa1963c1826aa875753cf202702a3b25"
+    },
+    {
+      "path": "src/constants/polling.constants.ts",
+      "sha256": "bae582c03c1a757149268490379637d2149ab5347a5517aa25ea22701e29d4a9"
+    },
+    {
+      "path": "src/utils/auth/permission.ts",
+      "sha256": "932af23797704ef460764e90a5a3772d1ef76e986d7c07521b826d27f6360abe"
+    },
+    {
+      "path": "src/router/routeAccess.ts",
+      "sha256": "1fff603b9678023c6abc4b757a548c6953aee087bee59b496158f48d85d62e92"
+    },
+    {
+      "path": "src/router/guard.ts",
+      "sha256": "32ed995e52d4ed3ff6847c1eee5d6cf0e77b7e985286b927687fc1e8a1b34868"
+    },
+    {
+      "path": "src/router/definitions.tsx",
+      "sha256": "e02d0d676b011c194108df5663c5b4dd1fedd6d4c9bbe1b63c469c58f872ba6e"
+    },
+    {
+      "path": "src/router/projections.tsx",
+      "sha256": "a351f359929b76bebcd5878817abf0b856f11cace3420046f072ecd10108ce77"
+    },
+    {
+      "path": "src/router/router.types.ts",
+      "sha256": "b1197e3b45483c9ba310cd9eccfb5edf9167ff5c7963342bc99e443636c88a4b"
+    },
+    {
+      "path": "src/i18n/i18n.ts",
+      "sha256": "b867e71364ae386b5cd20ab413f16b131c71a58d8085fb3a717daf9cde791392"
+    },
+    {
+      "path": "src/i18n/locales/apexTable/apexTableLocales.ts",
+      "sha256": "c2bb25c94e52f5e7c0624f23a3dc8fa360f6cfc1350a17704be212165387237a"
+    },
+    {
+      "path": "src/i18n/locales/apexTable/enUS.ts",
+      "sha256": "c2978425667b2c37bac8e6be4d777745dbf2d602ba2e251dc51e151ce4e912bc"
+    },
+    {
+      "path": "src/store/store.ts",
+      "sha256": "059620e024f017ea95e16b59747eb677b68eae12986843d967054269460c973a"
+    },
+    {
+      "path": "src/store/slices/authSlice.ts",
+      "sha256": "1fd2576d835ac08559eb304d14b8a8442dd7b46e4570898d9993b4505d0b706f"
+    },
+    {
+      "path": "src/store/slices/settingsSlice.ts",
+      "sha256": "86c4f24b464705dcd99ad6e900dff9cc6991300a50d7f312804e524ef6e4b7b0"
+    },
+    {
+      "path": "src/store/slices/tabsSlice.ts",
+      "sha256": "93b7161edeeea60edae0552dc26fe419fcb87d8f23ea72049909fc1fa6665c1f"
+    },
+    {
+      "path": "src/hooks/useVisiblePolling.ts",
+      "sha256": "648957cd345cb41979224132308215e8af634353b4a700323f3b534185395bf6"
+    },
+    {
+      "path": "src/hooks/useTabDirtyGuard.ts",
+      "sha256": "dffe55dc1c0f75319dee54e70250e9a6255170ee5b7d3369ce33df2292f0caca"
+    },
+    {
+      "path": "src/hooks/useTabActionGuard.tsx",
+      "sha256": "95abd6ce49f4f88b9266c1bc224e7b552ccc424e65788e290f098ff5bfaee3be"
+    },
+    {
+      "path": "src/hooks/useTransfers.ts",
+      "sha256": "4af27ac59c36dd79a2c03620b94780b0b2cbe7d67cc2d33bbdaf75a8938b2ad6"
+    },
+    {
+      "path": "src/hooks/useStaticOptions.ts",
+      "sha256": "64970fa012295afc3d40494148c7673a269e7f9a8f9148a68ee8b7b031c6f835"
+    },
+    {
+      "path": "src/hooks/useApexLocale.ts",
+      "sha256": "9ae1cd981c34d2551ff5f4d9bf5613c70eb5882fd02917e3416948fcce1bc9d5"
+    },
+    {
+      "path": "src/hooks/useColumnPreferences.ts",
+      "sha256": "dd508f421678d73e025772c68b2bfafced350b40b7f6e59e6abad79810e8ef91"
+    },
+    {
+      "path": "src/hooks/usePermission.ts",
+      "sha256": "7f9f039e0ce10303034ff328c9dbc4b55b3d381cb12d4326ef3e10f4e4714627"
+    },
+    {
+      "path": "src/utils/table/tablePaging.ts",
+      "sha256": "3f23fe89e366ae23ea87e75bf1b55c724b4231928d086846d9b9a9c17b5d0ae1"
+    },
+    {
+      "path": "src/utils/table/rowId.ts",
+      "sha256": "082c09b2bbf0d3169df8dff5e6caa7ca477ff3d18c5ac226745d9f14727e6b84"
+    },
+    {
+      "path": "src/utils/table/columnPreferences.ts",
+      "sha256": "8ce99a0229e763dcd1ec24cfab4f3398bba3310e9e30756bc9acb3ad1f25bbcf"
+    },
+    {
+      "path": "src/utils/datetime/deployDayjs.ts",
+      "sha256": "8b16e72181b78724f2a961412a445acfc06bc6bc6a539ec53f12f7fbcd404e25"
+    },
+    {
+      "path": "src/utils/datetime/datetimeDisplay.ts",
+      "sha256": "e19cc09fe96fa6d5cf8fc4064b4f981884d45c0db04ee0c9dc73072a215374b5"
+    },
+    {
+      "path": "src/utils/stats/metricFormat.ts",
+      "sha256": "839f010b6986bbfb77830deeda9de8e5ec4a94cb80fdae8a723657d1d8447dc2"
+    },
+    {
+      "path": "src/utils/command/command.types.ts",
+      "sha256": "617d6a05da576d4b3b9ddf95d110f668012b0129207140f75572eadecd9b9620"
+    },
+    {
+      "path": "src/utils/command/commandConfirm.ts",
+      "sha256": "dc87098a913ab685f93a9ca82f251b4ddcec9be121ad966099e6e6ea112ea878"
+    },
+    {
+      "path": "src/utils/options/optionFallback.ts",
+      "sha256": "e157b57e738a62ec0de8ba9b3b48fd37a23120014e4c03648813c89eeba9f276"
+    },
+    {
+      "path": "src/components/StateBlock/StateBlock.tsx",
+      "sha256": "6ffa0c64f1d57d02e12a3f49d524cb3ab41f8f899b2602b55a6c5445aff6d43f"
+    },
+    {
+      "path": "src/components/ReadOnlyMap/ReadOnlyMap.tsx",
+      "sha256": "2ad0eb94dde6a2624558042c8847309b3964a8020d6cc189a846c70c2f3105d2"
+    },
+    {
+      "path": "src/components/MigrationPending/MigrationPending.tsx",
+      "sha256": "18c08bdc4465586b6008effc30003b9cdbc25872475c41b686f57b18cd9bfb15"
+    },
+    {
+      "path": "src/services/transfer/transferManager.ts",
+      "sha256": "3663f427a7650aca24fa07ea9b5fded6f46b3673a15a2e2e36b6c7af7ff4c24d"
+    },
+    {
+      "path": "src/services/transfer/transfer.types.ts",
+      "sha256": "8d070b008a4815e08cad24425a90eb5334fdb656a4f515c2ed6a2d83b6948e1c"
+    },
+    {
+      "path": "src/services/map/map.service.ts",
+      "sha256": "cdfc39da25b5a637a42453f23bcf671cbc986a67ffc0bcaa42e0ad63162a2966"
+    },
+    {
+      "path": "src/services/feedback/uiFeedback.ts",
+      "sha256": "8744d102657979065b1dff3a52ca6a9ba9d07af84d64b8f4d1eb20d307a8c5c4"
+    },
+    {
+      "path": "src/layouts/BasicLayout/BasicLayout.tsx",
+      "sha256": "a9e07d0df0bb57b1a1121932321c36cdf02ff8db8720c4ab4899e5d3b6052399"
+    },
+    {
+      "path": "src/App/App.tsx",
+      "sha256": "7cee1ffaeb634905ea2076ea5144115020abf81bef4a620430a980494042986d"
+    },
+    {
+      "path": "src/main.tsx",
+      "sha256": "ccb14b1f859a03deaf6dbcb502d55be10cb196ebe40bff960725bc9935c9e83b"
+    },
+    {
+      "path": "scripts/check-structure.mjs",
+      "sha256": "c64123b2166b7eed0daf1cb3481e43c1303288855b77a72315e64e96671d833e"
+    },
+    {
+      "path": "vite.config.ts",
+      "sha256": "7bda9d41e283ff1296325bac905f21f64bb9fd4e87f2751c93d744f2ac824159"
+    },
+    {
+      "path": "package.json",
+      "sha256": "00b953c81c6f5a2d460b44ea13f5eb05a0b4ac152a702f8cfb97bad20e72fe20"
+    }
+  ],
+  "releaseChecks": {
+    "scope": "passed",
+    "static": "passed",
+    "readOnly": "passed",
+    "ui": "passed",
+    "sharedConsumers": "passed"
+  },
+  "releaseReasons": {},
+  "releaseNotes": {
+    "scope": "T00.1–T00.9 里程碑对照 TASKS §5 复核成立（结论沿用 audit-20260920-t00-a9a3cc0）；基线 a9a3cc0 后新增 P21/P33/P34/P35/P36/P37/P40/P43 八任务交付，其消费公共机制的证据经各自验收记录复核。",
+    "static": "本轮复跑 @ 392e831：pnpm check 全绿（oxlint 543 文件 0 警告 0 错误、tsc -b 通过、structure 529 源文件）+ pnpm build 通过（1.24s）。",
+    "readOnly": "本轮真实复测（当前基线代码经 dev 代理 → 192.168.0.158:8888）：MD5 登录 code=200（activated=true/155 权限码）、带令牌 pageUsers code=200、无令牌对照 1000000、公开接口 code=200、登出 code=200，5/5 通过；G03/G17 关闭结论在当前基线复核成立。",
+    "ui": "T00 无独立业务页面。机制级 UI 证据=T00.4 十七场景/T00.6 九组/T00.7 地图渲染选点/T00.8 五语言全链路（历史真实浏览器记录）；当前基线交叉证据=全部 47 个页面任务已交付并各自通过浏览器验收（持续消费全部公共机制，含 P34/P40 轮询取证、P35 图表与明细、P40 全屏三形态）；本轮静态门禁与真实登录链路复测复核。",
+    "sharedConsumers": "52 个受检文件中 49 个自 a9a3cc0 零变更（逐文件 git diff 核实）；3 个变更文件逐 hunk 审查：definitions.tsx（P33/P34/P35/P36/P37/P40 pending 解除+dashboard-realtime→/dashboard 重定向+server-resource-monitor 迁工作区页签形态，权限码零改写，redirect 节点经 projections.tsx:130 通用 createAliasRedirectLoader 同码守卫）、i18n.ts（report-*/dashboard/server-resource/profile 命名空间注册+system 死链移除，回退语义不变）、package.json（echarts ^6.1.0 P33 授权新增）；另 standaloneWindow.ts 仅注释同步（P40 形态迁移）。全部为各页交接记录登记的授权扩展，未发现契约破坏。"
+  },
+  "items": [
+    {
+      "id": "TASK",
+      "status": "passed",
+      "reason": "T00.1–T00.9 九里程碑交付经本轮复核成立：公共模块导出与 contracts.md 一致（实物抽查 request/i18n/router/hooks/table/transfer 全部健在）、台账冻结文件存在、order.mock 已随 P03 移除（-303 行）、五语言基座与 20 个已交付页分片在用。",
+      "evidence": [
+        "docs/migration/tasks/T00.md",
+        "docs/migration/contracts.md",
+        "docs/migration/i18n-map.md"
+      ]
+    },
+    {
+      "id": "DoD1",
+      "status": "not_applicable",
+      "reason": "T00 为基础设施任务、无业务页面；45 入口清点属台账交付（T00.1，baseline.md），页面闭环逐项清点归各页面任务与 V01。",
+      "evidence": [
+        "docs/migration/baseline.md"
+      ]
+    },
+    {
+      "id": "DoD2",
+      "status": "passed",
+      "reason": "Result 解包/业务码/分页与时间/精度契约在当前基线复测成立（真实登录+带令牌只读 5/5 通过）；各页面任务（P03–P40）逐 operation 真实联验持续覆盖。",
+      "evidence": [
+        "docs/migration/evidence/T00/run-b11c9c11-7926-49b5-b491-283f704b9be4/audit-readonly-result.json",
+        "docs/migration/gaps.md"
+      ]
+    },
+    {
+      "id": "DoD3",
+      "status": "passed",
+      "reason": "权限码契约/路由守卫/StateBlock 四态区分（无权限/暂缓/缺口/离线）：T00.4 十七场景真实浏览器实证 + 已交付页面按钮码与守卫联验 + 本轮 1000000/200 令牌对照。",
+      "evidence": [
+        "docs/migration/tasks/T00.md",
+        "docs/migration/evidence/T00/run-b11c9c11-7926-49b5-b491-283f704b9be4/audit-readonly-result.json",
+        "docs/migration/tasks/P01.md"
+      ]
+    },
+    {
+      "id": "DoD4",
+      "status": "passed",
+      "reason": "官方 npm apex-table-react 接入约定（不二次封装）交付；全部 42 个页面任务与 P43 已交付，业务表格全部直接组装 ApexTableReact；全局无违规渲染最终审计归 V01。",
+      "evidence": [
+        "docs/migration/contracts.md",
+        "docs/migration/tasks/P03.md",
+        "docs/migration/tasks/P35.md"
+      ]
+    },
+    {
+      "id": "DoD5",
+      "status": "passed",
+      "reason": "toBackendPage 零基换算/stringFieldRowId 稳定行 ID/列偏好官方适配器约定交付；P03/P05 起真实列表联验（列偏好两项缺陷联验中修复复验通过），P14–P24 列偏好四步联验，P35 每日明细 data 模式（真实完整小集合）消费。",
+      "evidence": [
+        "docs/migration/tasks/T00.md",
+        "docs/migration/tasks/P03.md",
+        "docs/migration/tasks/P35.md"
+      ]
+    },
+    {
+      "id": "DoD6",
+      "status": "passed",
+      "reason": "主动取消静默/失败清空远端区域/会话失效单飞收敛机制交付；本轮 5/5 复测含无令牌对照；各交付页面（含 P34/P40 失败态 D15 实测）消费。",
+      "evidence": [
+        "docs/migration/tasks/T00.md",
+        "docs/migration/evidence/T00/run-b11c9c11-7926-49b5-b491-283f704b9be4/audit-readonly-result.json"
+      ]
+    },
+    {
+      "id": "DoD7",
+      "status": "passed",
+      "reason": "脏登记/LRU 不淘汰脏页/统一关闭刷新确认/beforeunload 离开提示：T00.6 九组真实浏览器场景实证；P13/P20 编辑草稿页消费。",
+      "evidence": [
+        "docs/migration/tasks/T00.md",
+        "docs/migration/tasks/P20.md"
+      ]
+    },
+    {
+      "id": "DoD8",
+      "status": "passed",
+      "reason": "confirmCommand 分级确认（对象+影响+提交≠完成附注）/summarizeBatchOutcomes 真实归纳/整批不编造契约交付；P04–P24 写操作页消费（真实设备写命令验收归设备页面任务）。",
+      "evidence": [
+        "docs/migration/tasks/T00.md",
+        "docs/migration/tasks/P05.md"
+      ]
+    },
+    {
+      "id": "DoD9",
+      "status": "passed",
+      "reason": "独立传输生命周期（切页继续/关页提示/真实或不确定进度/孤儿终态提示/会话清理）交付；P08/P25/P26 真实上传下载通道消费验证（content-disposition 文件名等）。",
+      "evidence": [
+        "docs/migration/tasks/T00.md",
+        "docs/migration/tasks/P08.md",
+        "docs/migration/tasks/P25.md",
+        "docs/migration/tasks/P26.md"
+      ]
+    },
+    {
+      "id": "DoD10",
+      "status": "passed",
+      "reason": "ReadOnlyMap 只读渲染/平移缩放/选点/高亮/回填（P07 真实浏览器：渲染/回显/命中/回填/取消不写回）+ useStaticOptions 失效保留原值契约（P10/P20 消费）。",
+      "evidence": [
+        "docs/migration/tasks/T00.md",
+        "docs/migration/tasks/P07.md",
+        "docs/migration/tasks/P20.md"
+      ]
+    },
+    {
+      "id": "DoD11",
+      "status": "passed",
+      "reason": "五语言基座分片（common/menu/auth/error/map ×4 语言）+ApexLocale 全 key 类型强制；全部页面任务私有四语言分片已随页交付并在 i18n.ts 懒加载表注册（P43 补齐 profile 三语言并清理 system 死链）。",
+      "evidence": [
+        "docs/migration/tasks/T00.md",
+        "docs/migration/i18n-map.md",
+        "docs/migration/tasks/P35.md"
+      ]
+    },
+    {
+      "id": "DoD12",
+      "status": "passed",
+      "reason": "Accept-Language 请求层单点（含上传通道 setRequestLanguage）实证；本轮复测携带 zh-CN 语言头；后端语言能力边界已登记。",
+      "evidence": [
+        "docs/migration/tasks/T00.md",
+        "docs/migration/evidence/T00/run-b11c9c11-7926-49b5-b491-283f704b9be4/audit-readonly-result.json",
+        "docs/migration/gaps.md"
+      ]
+    },
+    {
+      "id": "DoD13",
+      "status": "passed",
+      "reason": "MacOS 外壳/Dock/顶栏/玻璃效果/深浅主题 token 保留；Apex 主题变量映射交付；页面级整页渲染验收（1920/1366 双主题）由各页面任务交付并归档 22 组截图。",
+      "evidence": [
+        "docs/migration/tasks/T00.md",
+        "docs/migration/evidence/legacy-20260920/manifest.json"
+      ]
+    },
+    {
+      "id": "DoD14",
+      "status": "passed",
+      "reason": "部署时区单点（DEPLOY_TIMEZONE 缺省 Asia/Shanghai）/统计空值纪律代码化（0≠缺失/除零不可计算/单位不孤悬）交付；具体统计公式归报表页面任务。",
+      "evidence": [
+        "docs/migration/tasks/T00.md"
+      ]
+    },
+    {
+      "id": "DoD15",
+      "status": "passed",
+      "reason": "本轮复核：pnpm check（lint 543 文件 0/0 + typecheck + structure 529 文件）+ pnpm build（1.24s）复绿 @ 392e831；真实登录+带令牌只读复测 5/5 通过；无 mock 证明接入。",
+      "evidence": [
+        "docs/migration/evidence/T00/run-b11c9c11-7926-49b5-b491-283f704b9be4/audit-readonly-result.json",
+        "docs/migration/evidence/T00/run-b11c9c11-7926-49b5-b491-283f704b9be4/run-audit-readonly.mjs"
+      ]
+    },
+    {
+      "id": "DoD16",
+      "status": "passed",
+      "reason": "contracts.md 冻结与变更日志持续维护；order.mock 已随 P03 移除、dashboard.mock 已随 P34 移除（运行不可达复核成立后实物删除）；交接记录与未验项列明。",
+      "evidence": [
+        "docs/migration/contracts.md",
+        "docs/migration/tasks/T00.md",
+        "docs/migration/gaps.md"
+      ]
+    },
+    {
+      "id": "A01",
+      "status": "passed",
+      "reason": "T00 公共部分=45 旧叶子入口映射台账+目标树核对+历史实现排除登记交付（baseline.md 第 2/5/6 节）；逐页覆盖完整性最终核验归 V01。",
+      "evidence": [
+        "docs/migration/baseline.md"
+      ]
+    },
+    {
+      "id": "A02",
+      "status": "passed",
+      "reason": "migrationDeferred 暂缓标记机制（不作为登录落点/回跳拒绝，菜单直访按原权限可达）交付；H01–H03 页面自身验收归 H 任务。",
+      "evidence": [
+        "docs/migration/tasks/T00.md",
+        "docs/migration/tasks/P41.md"
+      ]
+    },
+    {
+      "id": "A03",
+      "status": "passed",
+      "reason": "本轮 MD5 登录成功（code=200/activated=true/155 权限码）；G03 关闭证据：明文密码对照失败 1000010、直通登录与伪管理员已删除。",
+      "evidence": [
+        "docs/migration/evidence/T00/run-b11c9c11-7926-49b5-b491-283f704b9be4/audit-readonly-result.json",
+        "docs/migration/evidence/T00/run-b11c9c11-7926-49b5-b491-283f704b9be4/run-audit-readonly.mjs",
+        "docs/migration/gaps.md"
+      ]
+    },
+    {
+      "id": "A04",
+      "status": "deferred",
+      "reason": "持久化恢复（migrate 修复实证）与登出（本轮 code=200）机制成立；「真实 token 过期收敛」与「双窗口退出同步」真实场景受长会话环境限制未构造（authBridge/storage 机制级已实证，P01/P02 交付记录同口径登记归 V01）。",
+      "evidence": [
+        "docs/migration/tasks/T00.md",
+        "docs/migration/tasks/P01.md",
+        "docs/migration/evidence/T00/run-b11c9c11-7926-49b5-b491-283f704b9be4/audit-readonly-result.json"
+      ],
+      "category": "cross_page",
+      "basis": "TASKS §9.2 A03/A04 行将过期/多窗口场景列为 T00、P01/P02 与 V01 共同责任；P01.md 明确登记「真实 token 过期需长会话环境，V01 统一验收复核」。",
+      "owner": "V01",
+      "resumeCondition": "V01 以真实长会话过期场景与真实双窗口操作复核会话失效单飞收敛与多窗口退出同步。"
+    },
+    {
+      "id": "A05",
+      "status": "passed",
+      "reason": "守卫/动态落点/独立页不公开/别名守卫 17 场景实证；各交付页权限码真实下发（含 P06/P30 后端已有码补登记）与按钮码五码下发实证；P35 路由解除 pending 后同码守卫复核；后端为最终鉴权方。",
+      "evidence": [
+        "docs/migration/tasks/T00.md",
+        "docs/migration/tasks/P01.md",
+        "docs/migration/tasks/P35.md"
+      ]
+    },
+    {
+      "id": "A06",
+      "status": "passed",
+      "reason": "/fms/v1 路径/Result 包装/业务码/取消语义本轮复测成立；各页面任务逐 operation 真实联验（GET 平铺/int64 字符串/void/文件等口径逐 endpoint 核实）。",
+      "evidence": [
+        "docs/migration/evidence/T00/run-b11c9c11-7926-49b5-b491-283f704b9be4/audit-readonly-result.json",
+        "docs/migration/gaps.md",
+        "docs/migration/contracts.md"
+      ]
+    },
+    {
+      "id": "A07",
+      "status": "passed",
+      "reason": "公共层面：官方包唯一接入+structure 门禁约束；已交付 47 页业务渲染无 antd Table/ProTable 残留；全局静态审计归 V01。",
+      "evidence": [
+        "docs/migration/contracts.md",
+        "docs/migration/tasks/P20.md"
+      ]
+    },
+    {
+      "id": "A08",
+      "status": "passed",
+      "reason": "零基 pageNo 换算/稳定行 ID（int64 字符串守卫）/筛选回首页/未知总数不填 0 纯函数交付；P03/P05 起真实列表行为联验。",
+      "evidence": [
+        "docs/migration/tasks/T00.md",
+        "docs/migration/tasks/P03.md",
+        "docs/migration/tasks/P05.md"
+      ]
+    },
+    {
+      "id": "A09",
+      "status": "passed",
+      "reason": "列偏好按服务实例/用户/tableId/schemaVersion 隔离且可重置（官方适配器参数约定）；P03 列偏好联验、P14–P24 列偏好四步联验。",
+      "evidence": [
+        "docs/migration/tasks/T00.md",
+        "docs/migration/tasks/P03.md",
+        "docs/migration/tasks/P20.md"
+      ]
+    },
+    {
+      "id": "A10",
+      "status": "passed",
+      "reason": "请求竞争/翻页取消/防乱序/主动取消不报错机制交付（请求层+useStaticOptions+useMapGraph+表格内建）；各页消费验证。",
+      "evidence": [
+        "docs/migration/tasks/T00.md"
+      ]
+    },
+    {
+      "id": "A11",
+      "status": "passed",
+      "reason": "查询失败清空对应远端区域+StateBlock offline+表格内建重试约定交付；P01–P20 各页失败分支消费验证。",
+      "evidence": [
+        "docs/migration/tasks/T00.md"
+      ]
+    },
+    {
+      "id": "A12",
+      "status": "passed",
+      "reason": "useVisiblePolling 可见串行/恢复即查/失败退避机制交付；P05/P39 真实页面运行时交叉实证；P34/P40 交付轮轮询请求实况取证（5990ms 间隔/失败退避）。",
+      "evidence": [
+        "docs/migration/tasks/T00.md",
+        "docs/migration/tasks/P34.md",
+        "docs/migration/tasks/P40.md"
+      ]
+    },
+    {
+      "id": "A13",
+      "status": "passed",
+      "reason": "草稿登记/LRU 豁免/统一确认/beforeunload 九组真实浏览器场景；P13/P20 编辑页草稿消费（切页/语言切换不丢草稿）。",
+      "evidence": [
+        "docs/migration/tasks/T00.md",
+        "docs/migration/tasks/P13.md",
+        "docs/migration/tasks/P20.md"
+      ]
+    },
+    {
+      "id": "A14",
+      "status": "passed",
+      "reason": "T00 范围=命令三态（accepted/completed/unknown）与分级确认契约工具交付并被 P04–P18 设备页消费；真实设备控制命令的专用环境验收归各设备页面任务（范围说明）。",
+      "evidence": [
+        "docs/migration/tasks/T00.md",
+        "docs/migration/tasks/P14.md"
+      ]
+    },
+    {
+      "id": "A15",
+      "status": "passed",
+      "reason": "批量逐项真实归纳/整批不编造逐项成功契约交付；P05 批量指令、P04 批量反馈等消费验证。",
+      "evidence": [
+        "docs/migration/tasks/T00.md",
+        "docs/migration/tasks/P05.md"
+      ]
+    },
+    {
+      "id": "A16",
+      "status": "passed",
+      "reason": "传输生命周期机制（切页继续/关页提示/取消边界/进度真实）交付；P08 上传、P25 升级包、P26 日志下载（content-disposition 文件名）真实通道联验。",
+      "evidence": [
+        "docs/migration/tasks/T00.md",
+        "docs/migration/tasks/P08.md",
+        "docs/migration/tasks/P25.md",
+        "docs/migration/tasks/P26.md"
+      ]
+    },
+    {
+      "id": "A17",
+      "status": "passed",
+      "reason": "只读地图选点/高亮/回填链路真实浏览器验证（P07：渲染/回显/坐标命中/确定回填/取消不写回）；地图失效保留原值由 P10/P20 消费。",
+      "evidence": [
+        "docs/migration/tasks/P07.md",
+        "docs/migration/tasks/P10.md"
+      ]
+    },
+    {
+      "id": "A18",
+      "status": "not_applicable",
+      "reason": "工艺嵌套业务（步骤/动作/参数/主子控制/Cron）归 P20/P21/P22/P23/P24；T00 交付的表格/草稿公共机制已由 P20 三层嵌套真实消费验证，其自身验收另计。",
+      "evidence": [
+        "docs/migration/tasks/P20.md"
+      ]
+    },
+    {
+      "id": "A19",
+      "status": "not_applicable",
+      "reason": "统计口径/单位/分母验收归 P33–P37/P40 页面任务（均已交付并各自登记 G15 边界）；T00 交付 metricFormat 空值/单位基础工具（DoD14 已覆盖）。",
+      "evidence": [
+        "docs/migration/tasks/T00.md",
+        "docs/migration/tasks/P33.md"
+      ]
+    },
+    {
+      "id": "A20",
+      "status": "passed",
+      "reason": "五语言切换全链路（T00.8：html lang/持久化/菜单/回退/恢复）+主题 token 映射；已交付页双主题双宽度四组截图 22 页归档（T00 机制级截图未单独归档，以页面消费面交叉复核并如实记录）。",
+      "evidence": [
+        "docs/migration/tasks/T00.md",
+        "docs/migration/evidence/legacy-20260920/manifest.json"
+      ]
+    },
+    {
+      "id": "A21",
+      "status": "passed",
+      "reason": "公共部分：mock 退出运行路径复核成立（pending 页不触发 lazy）且 order.mock 已随 P03 移除；lint/structure 全绿；全局零 mock 运行审计归 V01。",
+      "evidence": [
+        "docs/migration/tasks/T00.md"
+      ]
+    },
+    {
+      "id": "A22",
+      "status": "passed",
+      "reason": "落点解析（D29）/目录落点/深链接回跳校验/别名守卫 17 场景实证+各页联验；合并业务首页 P34 已交付（dashboard-realtime 重定向同实例，守卫先验权限再跳转机制复核成立），P34/P35/P40 交付轮落点 D29 实测。",
+      "evidence": [
+        "docs/migration/tasks/T00.md",
+        "docs/migration/tasks/P34.md"
+      ]
+    },
+    {
+      "id": "A23",
+      "status": "passed",
+      "reason": "官方 npm 版本+锁文件提交（echarts 由 P33 授权新增并提交锁文件）；本轮 pnpm check+build 复绿 @ 392e831（lint 543 文件 0/0、structure 529 文件、build 1.24s）。",
+      "evidence": [
+        "docs/migration/evidence/T00/run-b11c9c11-7926-49b5-b491-283f704b9be4/audit-readonly-result.json"
+      ]
+    },
+    {
+      "id": "A24",
+      "status": "not_applicable",
+      "reason": "长时多页签/虚拟表/图表重建稳定性场景归 V01 统一观测与记录；T00 为机制基座、无独立长时运行场景。",
+      "evidence": [
+        "docs/migration/tasks/T00.md"
+      ]
+    },
+    {
+      "id": "I01",
+      "status": "passed",
+      "reason": "五语言入口/规范化/刷新恢复/繁日韩不误映射（T00.8 真实浏览器全链路）；P01 登录页语言切换联验。",
+      "evidence": [
+        "docs/migration/tasks/T00.md",
+        "docs/migration/tasks/P01.md"
+      ]
+    },
+    {
+      "id": "I02",
+      "status": "not_applicable",
+      "reason": "T00 基础能力=基座五命名空间四语言分片+旧 key 映射规则+45 入口归属冻结（已交付）；页面私有译文随页交付，完整迁移核验归 V01（TASKS §5 退出检查未含 I02）。",
+      "evidence": [
+        "docs/migration/tasks/T00.md",
+        "docs/migration/i18n-map.md"
+      ]
+    },
+    {
+      "id": "I03",
+      "status": "not_applicable",
+      "reason": "页面业务文案插值/ICU 随页面任务验证；基座分片插值占位一致性已在 T00.8 脚本校验（key 集合与占位一致）。",
+      "evidence": [
+        "docs/migration/tasks/T00.md"
+      ]
+    },
+    {
+      "id": "I04",
+      "status": "passed",
+      "reason": "切换不整页重载/菜单即时重算/草稿保留机制实证（T00.8+T00.6）；已交付编辑页（P13/P20 等）消费验证。",
+      "evidence": [
+        "docs/migration/tasks/T00.md",
+        "docs/migration/tasks/P20.md"
+      ]
+    },
+    {
+      "id": "I05",
+      "status": "passed",
+      "reason": "antd（五 locale 映射 typecheck 强制）/ApexLocale（全 key 强制）/dayjs（五 locale）落地+zh-CN 特征实证；简中控件弹窗文案在 P20 等页面确认框真实渲染。非简中控件按钮专项抽查未单列，登记 V01 抽样建议（如实边界，不构成缺陷）。",
+      "evidence": [
+        "docs/migration/tasks/T00.md",
+        "docs/migration/tasks/P20.md"
+      ]
+    },
+    {
+      "id": "I06",
+      "status": "deferred",
+      "reason": "缺失译文回退简中不炸页面/非法残留值归一化已实证；「真实资源加载失败不白屏」场景受 IAB 自动化环境限制未构造（机制路径：预加载失败抛错不改状态+App catch 回滚，经代码审查）。",
+      "evidence": [
+        "docs/migration/tasks/T00.md"
+      ],
+      "category": "cross_page",
+      "basis": "T00.8 登记「真实网络失败场景未构造（IAB 无法可靠模拟资源加载失败），随页面任务联调覆盖」；AGENTS §5 承认 IAB 环境边界。已交付 20 页亦未构造该场景。",
+      "owner": "V01",
+      "resumeCondition": "V01 以真实资源加载失败场景（或受控失败注入并声明覆盖范围）复核语言资源故障回滚路径。"
+    },
+    {
+      "id": "I07",
+      "status": "passed",
+      "reason": "Accept-Language 统一来源（含上传通道）实证+后端语言能力边界登记（不支持语言不伪称完整翻译）；本轮复测携带语言头。",
+      "evidence": [
+        "docs/migration/tasks/T00.md",
+        "docs/migration/evidence/T00/audit-20260920-t00-a9a3cc0/audit-readonly-result.json"
+      ]
+    },
+    {
+      "id": "I08",
+      "status": "not_applicable",
+      "reason": "五语言×双主题×最低视口的页面级布局验收归页面任务与 V01；T00 已实证语言切换不改时区/业务值/枚举（18.4 基础能力）。",
+      "evidence": [
+        "docs/migration/tasks/T00.md"
+      ]
+    }
+  ],
+  "verification": "partial",
+  "verificationNote": "公共机制、静态门禁、真实登录与只读、公共消费者核验全部通过；2 项跨页场景（A04 真实过期与双窗口退出、I06 真实资源加载失败）按 TASKS 既定跨页补验规则登记 deferred 归 V01，故 verification=partial、不勾选 TASKS，gate=ready 维持。",
+  "environment": {
+    "auditedAt": "2026-09-21",
+    "runId": "run-b11c9c11-7926-49b5-b491-283f704b9be4",
+    "baseHead": "392e8316abe3b203867ffd5ff20afe1c6b389fe5",
+    "t00FreezeRef": "65d192e（2026-09-17 23:32，T00.9 冻结参考点）",
+    "backend": "192.168.0.158:8888（用户提供已激活联调后端，经 localhost:5173 dev 代理）",
+    "role": "root（.env.local 测试凭据，值不入档）",
+    "checks": [
+      "pnpm check 全绿 + pnpm build 通过（@ 392e831）",
+      "真实登录+带令牌只读复测 5/5（run-audit-readonly.mjs 复用）",
+      "52 受检文件哈希重算绑定 + 3 变更文件逐 hunk diff 审查",
+      "OpenAPI 文件哈希复核一致（a82e9b5f…）",
+      "基线后八任务交付记录交叉复核（P21/P33/P34/P35/P36/P37/P40/P43）"
+    ]
+  }
+}

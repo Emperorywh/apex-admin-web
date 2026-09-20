@@ -1,0 +1,45 @@
+{
+  "runId": "run-6059fd83-fb54-4c29-9ecb-de2491f7f122",
+  "taskId": "P35",
+  "purpose": "implement",
+  "owner": "sess_8c97f3f9-7813-4bc5-b178-bf70d9197fa9",
+  "runner": {
+    "provider": "zcode",
+    "sessionId": "sess_8c97f3f9-7813-4bc5-b178-bf70d9197fa9",
+    "turnId": "turn_25eeea70-2866-4d19-99d5-b3f6ff811df2",
+    "automationRunId": "automation-4c58cefd-88c2-4b25-b14d-53904b310c3e:1789930200000",
+    "identitySource": "running_tool_part",
+    "toolPartId": "part_mua68xng_57c66b06-a7d4-471a-bbf1-d09318f32744",
+    "toolCallId": "call_a783055b2901497eab254fab",
+    "messageId": "msg_mua68iyk_bb2db194-9443-4525-bc3d-9a1e7a1acb42"
+  },
+  "startedAt": "2026-09-20T18:50:38.234Z",
+  "baseHead": "d407ab0f990d3b0a47e93eb9ec8876e1e77aa958",
+  "initialStatus": "M docs/migration/RUN_STATE.json\n?? docs/migration/evidence/runs/run-2384f48f-0de2-427b-96a9-97e15c6baaf0.json",
+  "progress": [
+    "P35 整页交付：report-task 服务（taskStatistics）+ features/analyze-visual/task-statistics（statistics 纯计算 + 同构查询 hook + 4 echarts 图表）+ 页面重写（工具栏/KPI 4 卡/2×2 图表/Apex 每日明细）+ 四语言分片 57 key + i18n 注册 + 路由解除 pending",
+    "静态门禁全绿（lint 0/0、typecheck、structure 529 文件、build 1.20s；hint key 完整简中文案化修复后复绿）",
+    "真实只读 13/13（readonly-result.json）：taskStatistics KPI 试算互证、6 桶 label 归一化、vehicleKeys 筛选、agvStateStatistics/agvExecutingTimeStatistics 口径试算、无令牌拒绝、登出清理",
+    "浏览器整页验收：KPI 与只读一致、4 图 canvas 取证、排序 aria-sort 三态、口径提示 9 处简中/en 插值（修复短 key 缺陷）、ja/en/zh-CN 整页重建、双视口双主题、登出清理、登录合法回跳",
+    "acceptance.json 50 项矩阵（passed 36 / not_applicable 12 / deferred 5：A04/A24/I06/P35-5/P35-6）+ code-files.json 17 文件哈希",
+    "待办：提交实现代码 → 回填 codeCommit → 提交验收记录/交接/RUN_STATE/i18n-map → push --commit HEAD → end --outcome completed"
+  ],
+  "nextSteps": [
+    "git add 实现代码 17 文件 → commit（implCommit）",
+    "回填 acceptance.json codeCommit=implCommit → git add docs → commit",
+    "node scripts/migration-runner.mjs push --run run-6059fd83-fb54-4c29-9ecb-de2491f7f122 --commit <HEAD>",
+    "node scripts/migration-runner.mjs end --run run-6059fd83-fb54-4c29-9ecb-de2491f7f122 --outcome completed"
+  ],
+  "blocker": null,
+  "endedAt": "2026-09-20T19:52:29.083Z",
+  "outcome": "completed",
+  "endHead": "392e8316abe3b203867ffd5ff20afe1c6b389fe5",
+  "publish": {
+    "status": "synced",
+    "taskId": "P35",
+    "commit": "392e8316abe3b203867ffd5ff20afe1c6b389fe5",
+    "confirmedRemoteHead": "392e8316abe3b203867ffd5ff20afe1c6b389fe5",
+    "checkedAt": "2026-09-20T19:52:25.004Z",
+    "error": null
+  }
+}
