@@ -17,7 +17,7 @@
 | common / menu / auth / error | T00 统筹 | T00.8 全量交付 |
 | map | T00（共享地图能力） | T00.8 全量交付 |
 | apexTable（非 i18next ns） | T00.5 | T00.5 全量交付（locale 包） |
-| 页面私有（profile/system/orderRecord/dashboard 等） | 对应页面任务 | orderRecord 已随 P03 交付四语言（zh-CN 无需分片）；其余未交付，懒加载表查无返回空资源自动回退简中（i18n-missing.md 登记） |
+| 页面私有（profile/orderRecord/dashboard 等） | 对应页面任务 | orderRecord 已随 P03 交付四语言（zh-CN 无需分片）；profile 已随 P43 交付四语言；dashboard 待 P34（未交付时懒加载表查无返回空资源自动回退简中，i18n-missing.md 登记）。模板遗留 system 命名空间已随 P43 连同菜单管理死代码一并删除 |
 
 ## 各页命名空间/文件归属终版（T00.9 冻结）
 
@@ -97,7 +97,7 @@
 | P40 服务器资源 | /server-resource（别名 server-resource-monitor 同实现） | serverResource | serverResource |
 | P41 无权限页 | /no-permission | **access-denied**（已交付；P41 按任务卡独立分片，覆盖冻结时「复用 common/error」的盘点） | 沿用 pages/un-access |
 | P42 兜底错误页 | /404、/500 | **error**（已交付；沿用 T00 基座分片并入基座常载 BASE_NAMESPACES；旧 404 页 key「抱歉，您访问的页面不存在/首页」迁入，en 旧真译沿用，移除无消费模板 key） | 沿用 pages/error |
-| P43 模板个人中心清理 | /profile | profile（已声明） | 沿用 features/profile |
+| P43 模板个人中心清理 | /profile | **profile**（已交付四语言分片 10 key 同构：账户信息/状态/等级/角色等展示词与编辑不可用说明（G12 缺口文案，含 {{username}} 插值）；en 沿用既有真译（停用键改「禁用」与 P31/P32 术语收敛一致），繁日韩 B1 基线补译与 menu/access-user 对齐（使用者名稱/マイプロフィール/내 프로필 系）；模板遗留菜单管理链（Menu 页/MenuForm/useMenuTree/menu.service/menu.types/en-US/system.ts 与 system 命名空间注册）已随本任务整体删除，system 分片死键 26 个清零） | 沿用 features/profile | 2026-09-20（P43） |
 | H01 调度监控暂缓 | over-look | 复用 common+menu（暂缓说明统一组件；已交付，标题走 menu 旧真译，无新增 key） | 无业务文件（D07） |
 | H02 地图编辑暂缓 | map-nest-modify | 复用 common+menu（暂缓说明统一组件；已交付，标题走 menu 旧真译，无新增 key） | 无业务文件（D07） |
 | H03 录制回放暂缓 | record-playback | 复用 common+menu（暂缓说明统一组件） | 无业务文件（D07） |

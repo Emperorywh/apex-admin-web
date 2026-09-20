@@ -8,7 +8,7 @@ export default {
   '用户名': 'Username',
   '状态': 'Status',
   '启用': 'Enabled',
-  '停用': 'Disabled',
+  '禁用': 'Disabled',
   '等级': 'Level',
   '角色': 'Roles',
   '资料编辑暂不可用': 'Profile editing unavailable',

@@ -61,7 +61,6 @@ const enUsLoaders: NamespaceLoaders = {
   menu: () => import('@/i18n/locales/en-US/menu'),
   auth: () => import('@/i18n/locales/en-US/auth'),
   profile: () => import('@/i18n/locales/en-US/profile'),
-  system: () => import('@/i18n/locales/en-US/system'),
   // P03 任务管理交付：en-US 分片重写（旧真译沿用+补译）
   orderRecord: () => import('@/i18n/locales/en-US/orderRecord'),
   // P38 完整任务详情（order-info；页面私有命名空间，弹窗完整详情入口共用）
@@ -138,7 +137,7 @@ const enUsLoaders: NamespaceLoaders = {
 
 /**
  * zh-TW/ja-JP/ko-KR 基座命名空间（T00.8：common/menu/auth/error/map 全量交付）。
- * 页面私有命名空间（profile/system/orderRecord/dashboard 等）由对应页面任务
+ * 页面私有命名空间（profile/orderRecord/dashboard 等）由对应页面任务
  * 交付自己的四语言分片；此处查不到的命名空间返回空资源，i18next 自动回退简中
  * （key 即中文文案，回退语义天然成立），已登记 docs/migration/i18n-missing.md。
  * 三个语言目录结构一致，逐语言声明字面量导入（Vite 静态分析要求）。
@@ -149,6 +148,8 @@ const zhTwLoaders: NamespaceLoaders = {
   auth: () => import('@/i18n/locales/zh-TW/auth'),
   error: () => import('@/i18n/locales/zh-TW/error'),
   map: () => import('@/i18n/locales/zh-TW/map'),
+  // P43 个人中心（profile；页面私有命名空间）
+  profile: () => import('@/i18n/locales/zh-TW/profile'),
   // P03 任务管理（order-record；页面私有命名空间）
   orderRecord: () => import('@/i18n/locales/zh-TW/orderRecord'),
   // P38 完整任务详情（order-info；页面私有命名空间）
@@ -221,6 +222,8 @@ const jaJpLoaders: NamespaceLoaders = {
   auth: () => import('@/i18n/locales/ja-JP/auth'),
   error: () => import('@/i18n/locales/ja-JP/error'),
   map: () => import('@/i18n/locales/ja-JP/map'),
+  // P43 个人中心（profile；页面私有命名空间）
+  profile: () => import('@/i18n/locales/ja-JP/profile'),
   // P03 任务管理（order-record；页面私有命名空间）
   orderRecord: () => import('@/i18n/locales/ja-JP/orderRecord'),
   // P38 完整任务详情（order-info；页面私有命名空间）
@@ -293,6 +296,8 @@ const koKrLoaders: NamespaceLoaders = {
   auth: () => import('@/i18n/locales/ko-KR/auth'),
   error: () => import('@/i18n/locales/ko-KR/error'),
   map: () => import('@/i18n/locales/ko-KR/map'),
+  // P43 个人中心（profile；页面私有命名空间）
+  profile: () => import('@/i18n/locales/ko-KR/profile'),
   // P03 任务管理（order-record；页面私有命名空间）
   orderRecord: () => import('@/i18n/locales/ko-KR/orderRecord'),
   // P38 完整任务详情（order-info；页面私有命名空间）
