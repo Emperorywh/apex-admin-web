@@ -1,0 +1,27 @@
+{
+  "task": {
+    "implementation": "implemented",
+    "verification": "partial",
+    "gate": "ready",
+    "acceptanceRecord": "docs/migration/evidence/P42/run-749f4375-6600-4c32-ad51-89bbf5df4e47/acceptance.json",
+    "pendingItems": [
+      "A04：真实 token 过期收敛与双窗口退出同步归 V01 长会话复核（登出清理 auth 切片三键清空+语言保留本轮实测；T00/P01/P02/P41 等十一任务同口径）",
+      "I06：真实网络级资源加载失败不白屏归 V01 复核（IAB 环境限制未构造；error 分片基座常载+/500 同模式恢复动作实测维持机制级证据链）",
+      "错误边界运行时呈现（RouterErrorBoundary/PageErrorBoundary）归 V01 自然浏览器复核（无自然触发场景，不注入临时缺陷代码纪律；静态证据链：ns 显式化+基座常载+四语言 8 键齐备）",
+      "真实指针交互归 V01 自然浏览器复核（IAB 输入管线间歇冻结，部分步骤经合成 pointer 序列垫片，与此前三轮同口径）",
+      "观察项：/404、/500 作为站内辅助页仍可作为 redirect 参数在登录后到达（findLeafByPath 命中且无 perm 码放行；语义自洽无循环，是否随 /no-permission 先例收紧归 V01 统一裁定）",
+      "观察项：登出后 URL 瞬态 /login?redirect=<当前页>（P41 登记同口径，终态正确会话已清，归 V01）"
+    ],
+    "note": "P42 audit 第一次复核通过（2026-09-21，run run-749f4375）：错误页四组件+四语言分片自交付 fef00a3 零变更（git log --follow+SHA-256 重算）；交付后公共文件变更逐 hunk 从 P42 视角审查成立（i18n.ts 仅追加其他页 loader、error loader 与 BASE_NAMESPACES 未动；definitions.tsx error-500/root-not-found/error-404 零改动；routeAccess.ts 93e0681 排除暂缓页抢占落点与 57ce7ba 拒绝 /no-permission 回跳均与本页契约同向，未知路径此前即被拒绝）；静态门禁复用 P41 audit @ 57ce7ba 复绿结果（57ce7ba..4a922cb 仅 docs，git diff 证实）；真实只读复测 5/5（getHardwareInfo 代理+直连一致 sha256_8=e5c6aacc、真实登录 activated=true/155 权限码、落点前提 dashboard-realtime:view 在权限集合、登出清理，经 dev 代理→192.168.0.158:8888）；浏览器针对性复测 16/16（已登录公开/布局内 404 双挂载+Home 落 /dashboard 关闭交付轮限制 4+replace 防历史循环、/500 Reload+Home、五语言菜单齐全+en/ja/zh 切换 html lang 同步+ja 文案与分片逐字一致、深色双挂载截图 local_only、登出真实请求+persist auth 切片三键清空解析核验+语言保留、未登录去登录无回跳参数、守卫拦截带参数、带未知路径 redirect 登录拒绝落 /dashboard、404/500 页无会话信息）；A04/I06 两项跨任务场景 deferred 归 V01 故不勾选 TASKS；含上轮 P02 结束记录 run-c7d53b59 补交"
+  },
+  "progress": [
+    "静态核查：错误页四组件+四语言分片自 fef00a3 零变更；i18n.ts/definitions.tsx/routeAccess.ts 交付后变更逐 hunk 从 P42 视角审查成立；57ce7ba..4a922cb 非 docs 零变更（静态门禁复用 P41 audit @ 57ce7ba 复绿）",
+    "真实只读复测 5/5（run-p42-audit1-readonly.mjs → p42-audit1-readonly-result.json）",
+    "浏览器针对性复测 16/16（browser-ui-result.json + 深色双挂载截图 local_only）",
+    "acceptance.json 写入 49 项矩阵+17 文件哈希绑定 @ 4a922cb（runner 校验通过）；P42.md 复核节更新"
+  ],
+  "nextSteps": [
+    "提交验收记录/交接记录/RUN_STATE/上轮 P02 结束记录补交 → push --commit HEAD → end --outcome completed"
+  ],
+  "blocker": null
+}

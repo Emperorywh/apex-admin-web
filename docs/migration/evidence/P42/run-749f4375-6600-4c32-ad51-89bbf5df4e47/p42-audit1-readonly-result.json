@@ -1,0 +1,37 @@
+{
+  "runId": "run-749f4375-6600-4c32-ad51-89bbf5df4e47",
+  "taskId": "P42",
+  "purpose": "audit（第一次复核）",
+  "codeCommit": "4a922cb6cdcece4a52dfa5716a92f8cbd544d51b",
+  "executedAt": "2026-09-21T03:08:34.501Z",
+  "channel": "http://localhost:5173（Vite dev 同源代理）→ http://192.168.0.158:8888",
+  "results": [
+    {
+      "step": "getHardwareInfo 经 dev 代理（无令牌）",
+      "ok": true,
+      "detail": "HTTP 200 code=200 硬件码 len=72 sha256_8=e5c6aacc"
+    },
+    {
+      "step": "getHardwareInfo 直连后端对照",
+      "ok": true,
+      "detail": "HTTP 200 code=200 与代理一致=true"
+    },
+    {
+      "step": "真实登录读取 activated/权限码",
+      "ok": true,
+      "detail": "HTTP 200 code=200 activated=true 权限码=155 permissionsTree=10（token 不入档）"
+    },
+    {
+      "step": "落点前提：dashboard-realtime:view 在权限集合",
+      "ok": true,
+      "detail": "包含 → resolveLandingPath 落 /dashboard（P34 后行为，替代交付轮 /no-permission 分支）"
+    },
+    {
+      "step": "登出清理（释放探测会话）",
+      "ok": true,
+      "detail": "HTTP 200 code=200"
+    }
+  ],
+  "passCount": 5,
+  "totalCount": 5
+}

@@ -1,0 +1,36 @@
+{
+  "runId": "run-749f4375-6600-4c32-ad51-89bbf5df4e47",
+  "taskId": "P42",
+  "purpose": "audit（第一次复核）",
+  "codeCommit": "4a922cb6cdcece4a52dfa5716a92f8cbd544d51b",
+  "executedAt": "2026-09-21",
+  "channel": "Vite dev 同源代理 http://localhost:5173 → http://192.168.0.158:8888",
+  "viewport": "1366×768",
+  "themes": ["dark（切换实测+截图）", "light（交付轮截图+css 零变更绑定+本轮恢复实测）"],
+  "languages": ["zh-CN（运行时实测）", "en-US（浏览器持久态实测）", "ja-JP（切换实测）", "zh-TW/ko-KR（分片零变更绑定+交付轮全五语言实测）"],
+  "inputPipelineNote": "IAB 输入管线间歇冻结（与此前三轮同现象）：菜单打开/菜单项选择/登录提交等步骤经合成 pointer 序列垫片完成（pointerdown→mousedown→pointerup→mouseup→click）；部分按钮（404 Home/去登录）真实 click 成功。真实指针自然浏览器交互归 V01。",
+  "results": [
+    { "step": "B1 已登录公开 /404（持久会话 en-US）", "expected": "公开页独立渲染（无外壳）+ 登录态分支「Home」按钮", "actual": "快照仅 Result 内容（No Found/404/Sorry, the page you visited does not exist/Home），无 banner/Dock", "status": "PASS" },
+    { "step": "B2 已登录公开 /404 点击 Home（落点行为变更分支）", "expected": "resolveLandingPath 落点导航；P34 后 root 会话应落 /dashboard（替代交付轮实测的 /no-permission 分支）", "actual": "点击后 URL=/dashboard；关闭交付轮登记限制 4（业务页分支已实测）", "status": "PASS" },
+    { "step": "B4 已登录直访未知 URL /this-page-does-not-exist", "expected": "布局内 404（顶栏/页签区/Dock 齐全）+「首 页」按钮", "actual": "banner+tablist+main(Result 404)+主导航 Dock 全在；简中文案「抱歉，您访问的页面不存在」「首 页」", "status": "PASS" },
+    { "step": "B5 布局内 404 点击 Home + back 防循环", "expected": "replace 落点 /dashboard；back 不残留 404", "actual": "afterClick=/dashboard，back 后仍 /dashboard，无 404 残留", "status": "PASS" },
+    { "step": "B6 已登录直访 /500", "expected": "布局内 Result 500 + 重新加载 + 首页", "actual": "Result 500「服务暂时不可用，请稍后重试」+Reload+Home（首帧为懒加载中间态，1.5s 后完整渲染）", "status": "PASS" },
+    { "step": "B7 语言菜单五语言齐全", "expected": "简体中文/繁體中文/English/日本語/한국어", "actual": "menu 五个 menuitem 逐一核对", "status": "PASS" },
+    { "step": "B8 en→ja 切换 /500 页文案", "expected": "html lang=ja-JP；/500 文案与 ja 分片一致", "actual": "html lang=ja-JP；「サービスは一時的に利用できません。しばらくしてから再試行してください」+再読み込み+ホーム（与 src/i18n/locales/ja-JP/error.ts 逐字一致）；顶栏/Dock 同步日语", "status": "PASS" },
+    { "step": "B9 ja→zh-CN 切回 + 简中布局内 404", "expected": "html lang=zh-CN；「抱歉，您访问的页面不存在」+「首 页」", "actual": "快照逐字一致", "status": "PASS" },
+    { "step": "B10 深色主题双挂载截图", "expected": "玻璃面板衬底、文字可读、外壳完整", "actual": "深色布局内 404 与深色公开 404 截图均清晰可读（screenshots/p42-audit1-dark-inlayout-404.png、p42-audit1-dark-public-404.png，local_only）", "status": "PASS" },
+    { "step": "B11 顶栏登出（真实接口）+ persist 清理", "expected": "登出后 auth 切片 token/user=null、permissions/permissionsTree=[]，语言保留", "actual": "persist:apex-admin:auth 解析={token:null,user:null,permissions:[],permissionsTree:[]}；apex-admin:lang=zh-CN 保留；URL 终态 /login?redirect=%2Fthis-page-does-not-exist（P41 已登记登出回跳瞬态观察项同口径，归 V01）", "status": "PASS" },
+    { "step": "B12 未登录公开 /404（登出后）", "expected": "未登录分支「去登录」按钮；公开页独立渲染", "actual": "快照=No Found/404/抱歉，您访问的页面不存在/去登录，无外壳", "status": "PASS" },
+    { "step": "B13 去登录点击", "expected": "replace /login 不携带未知 URL 回跳参数", "actual": "URL=/login（无 redirect 参数）", "status": "PASS" },
+    { "step": "B14 未登录直访未知 URL /this-page-does-not-exist-2", "expected": "守卫拦截送 /login?redirect=%2Fthis-page-does-not-exist-2", "actual": "URL 逐字一致", "status": "PASS" },
+    { "step": "B15 带未知路径 redirect 登录", "expected": "resolveSafeRedirectPath 拒绝未知路径 → 落 resolveLandingPath=/dashboard", "actual": "URL=/dashboard（A22 回跳契约与 P41-audit-1 修复行为在 P42 视角复验成立）", "status": "PASS" },
+    { "step": "B16 会话信息泄漏检查", "expected": "404/500 页内容不渲染用户名/令牌等会话信息", "actual": "两种挂载快照 main 区仅 Result 静态内容；恢复动作按登录态布尔分支（代码审查）", "status": "PASS" }
+  ],
+  "registeredLimitations": [
+    "错误边界运行时呈现（RouterErrorBoundary 顶层 loader/guard 抛错与 chunk 加载失败、PageErrorBoundary 页面渲染异常）无自然触发场景，按「不注入临时缺陷代码」纪律未人工构造，归 V01 自然浏览器复核；本轮维持的证据链：error 分片 BASE_NAMESPACES 基座常载（i18n.ts 哈希绑定）+ ns 显式化（组件哈希零变更）+ 四语言 8 键齐备 + 类组件逻辑代码审查 + /500 同模式恢复动作实测",
+    "浅色主题公开 /404 截图为交付轮（2026-09-18）留存；本轮深色双挂载截图新增，NotFound.module.css/组件哈希自交付零变更绑定",
+    "IAB 输入管线间歇冻结经合成 pointer 序列垫片（真实指针归 V01）"
+  ],
+  "passCount": 16,
+  "totalCount": 16
+}
