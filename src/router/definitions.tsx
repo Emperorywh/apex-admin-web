@@ -39,7 +39,7 @@ export const appRouteDefinitions = defineAppRoutes([
   {
     id: 'root',
     path: '/',
-    meta: { title: '调度系统' },
+    meta: { title: '机器人系统' },
     children: [
       {
         id: 'root-index',

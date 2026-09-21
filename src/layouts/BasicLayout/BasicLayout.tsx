@@ -115,7 +115,7 @@ export function BasicLayout() {
   const activeTitle = activeTab ? findRouteMeta(activeTab.routeId)?.title : leaf?.meta.title
   useEffect(() => {
     if (activeTitle) {
-      document.title = `${t(activeTitle)} · ${t('调度系统')}`
+      document.title = `${t(activeTitle)} · ${t('机器人系统')}`
     }
   }, [activeTitle, t])
 

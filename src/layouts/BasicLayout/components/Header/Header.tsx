@@ -29,8 +29,9 @@ export function Header() {
       <div className={styles.brand}>
         <img className={styles.brandIcon} src="/favicon.ico" alt="" aria-hidden="true" />
         <span className={styles.brandCopy}>
-          <span className={styles.brandName} title={t('调度系统')}>{t('调度系统')}</span>
-          <span className={styles.brandCaption}>AGV DISPATCH SYSTEM</span>
+          <span className={styles.brandName} title={t('机器人系统')}>{t('机器人系统')}</span>
+          {/* 英文副标题与机器人本体控制的产品定位保持一致。 */}
+          <span className={styles.brandCaption}>AGV CONTROL SYSTEM</span>
         </span>
       </div>
 

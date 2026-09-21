@@ -3,7 +3,8 @@
  */
 
 export default {
-  '调度系统': 'Dispatch System',
+  // 登录页名称与机器人控制系统的产品定位保持一致。
+  '机器人系统': 'Robot Control System',
   '通用后台管理模板 · 多语言 · 多页签 · 页面保活':
     'General admin template · i18n · multi-tabs · keep-alive',
   '用户名': 'Username',

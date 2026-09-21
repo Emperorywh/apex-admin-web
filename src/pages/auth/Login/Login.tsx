@@ -13,7 +13,7 @@ export default function Login() {
       <div className={styles.card}>
         <div className={styles.brand}>
           <img className={styles.brandIcon} src="/favicon.ico" alt="" aria-hidden="true" />
-          <span className={styles.name}>{t('调度系统')}</span>
+          <span className={styles.name}>{t('机器人系统')}</span>
         </div>
         <p className={styles.sub}>{t('通用后台管理模板 · 多语言 · 多页签 · 页面保活')}</p>
         <LoginForm />

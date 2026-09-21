@@ -254,7 +254,8 @@ export function DockMenu() {
           <path className={styles.frameOutline} d="M0 13H243L260 4H1180L1197 13H1440M0 20H247L220 52M1440 20H1193L1220 52M234 52 267 10H1173L1206 52" />
           <path className={styles.frameAccent} d="M260 4H420M1020 4H1180M600 4H840M0 13H38M1402 13H1440" />
         </svg>
-        <div className={styles.dockBrand}>SMART LOGISTICS<small>INDUSTRIAL INTELLIGENCE</small></div>
+        {/* 底部品牌标识强调部署在机器人本体上的单机控制用途。 */}
+        <div className={styles.dockBrand}>ROBOT CONTROL<small>ONBOARD SYSTEM</small></div>
         <nav
           className={styles.dock}
           data-dock-menu
@@ -314,7 +315,8 @@ export function DockMenu() {
             <span className={styles.label}>{tCommon('清理页签')}</span>
           </button>
         </nav>
-        <div className={styles.dockTagline}>{tCommon('让物流更智能')}<small>MAKE MANUFACTURING SMARTER</small></div>
+        {/* 中英文说明统一表达 AGV 单机控制系统定位。 */}
+        <div className={styles.dockTagline}>{tCommon('AGV 单机控制系统')}<small>AGV ROBOT CONTROL SYSTEM</small></div>
       </footer>
       {trail.map((entry, depth) => (
         <DockMenuPanel

@@ -3,7 +3,8 @@
  */
 
 export default {
-  调度系统: 'Dispatch System',
+  // 系统名称对应机器人控制用途，与登录页及导航中的译名一致。
+  机器人系统: 'Robot Control System',
   '切换语言': 'Switch language',
   '切换主题': 'Switch theme',
   '浅色': 'Light',
@@ -33,7 +34,8 @@ export default {
   '关闭页签': 'Close tab',
   '主导航': 'Main navigation',
   '清理页签': 'Clear tabs',
-  '让物流更智能': 'Smarter logistics',
+  // 底部说明强调系统在单台 AGV 上运行的部署范围。
+  'AGV 单机控制系统': 'AGV Onboard Control System',
   /* 底部浮层的分组说明与无障碍数量名称。
      与中文键保持一致，切换语言时不会残留中文提示。 */
   '快捷导航': 'Quick navigation',

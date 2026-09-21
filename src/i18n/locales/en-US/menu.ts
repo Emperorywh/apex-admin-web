@@ -1,6 +1,7 @@
 /** en-US · menu 命名空间（路由标题）。 */
 export default {
-  '调度系统': 'Dispatch System',
+  // 导航名称与顶栏、登录页共用机器人控制系统的产品定位。
+  '机器人系统': 'Robot Control System',
   '工作台': 'Workspace',
   '登录': 'Sign in',
   // 默认入口对应 AGV 单机地图与运行状态监控。
