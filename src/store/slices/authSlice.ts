@@ -22,12 +22,6 @@ const authSlice = createSlice({
     sessionReady(_state, action: PayloadAction<AuthSession>) {
       return { user: action.payload.user }
     },
-    /** 局部更新当前用户（如个人中心保存后） */
-    userPatched(state, action: PayloadAction<Partial<AuthSession['user']>>) {
-      if (state.user !== null) {
-        state.user = { ...state.user, ...action.payload }
-      }
-    },
     /** 会话失效（登出、401 刷新失败等） */
     sessionExpired() {
       return initialState
@@ -35,5 +29,5 @@ const authSlice = createSlice({
   },
 })
 
-export const { sessionReady, sessionExpired, userPatched } = authSlice.actions
+export const { sessionReady, sessionExpired } = authSlice.actions
 export default authSlice.reducer

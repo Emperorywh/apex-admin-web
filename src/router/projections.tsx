@@ -69,8 +69,8 @@ function toAccessNode(
   if (isTopLevel) node.errorElement = <RouterErrorBoundary />
 
   if (isProtected) {
-    if (definition.index || definition.redirect) {
-      // index 与 redirect 节点固定 replace：index 未声明目标时回退受保护首页；
+    if (definition.index || definition.redirect || definition.path === '*') {
+      // index、redirect 与通配回退节点跳转：未声明目标时回退受保护首页；
       // 目标节点自带认证守卫，此处不再重复校验
       node.loader = () => redirect(definition.redirect ?? ROOT_REDIRECT_TARGET)
     } else {
@@ -90,7 +90,7 @@ function toAccessNode(
   }
 
   if (definition.loadPage && !isProtected) {
-    // 公开叶子（登录、显式 404）由 Data Router 直接渲染
+    // 公开叶子（登录）由 Data Router 直接渲染
     const LazyPage = getLazyPage(definition)
     node.element = wrapPublicPage(<LazyPage />)
   }

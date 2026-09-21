@@ -4,12 +4,10 @@
  */
 
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import { App, Dropdown, Popover, type MenuProps } from 'antd'
 import dayjs from 'dayjs'
-import { Languages, LogOut, Monitor, Moon, Sun, UserRoundCog, Wifi } from 'lucide-react'
-import { ROUTE_PATHS } from '@/router/definitions'
+import { Languages, LogOut, Monitor, Moon, Sun, Wifi } from 'lucide-react'
 import { logout } from '@/services/auth/auth.service'
 import { getRequestHealth, subscribeRequestHealth, type RequestHealth } from '@/services/request/request'
 import { useAppDispatch } from '@/hooks/useAppDispatch'
@@ -170,7 +168,6 @@ function AvatarMenu() {
   const { t } = useTranslation('common')
   const { user } = useAuth()
   const dispatch = useAppDispatch()
-  const navigate = useNavigate()
   const { modal } = App.useApp()
 
   const items: MenuProps['items'] = [
@@ -185,15 +182,11 @@ function AvatarMenu() {
       disabled: true,
     },
     { type: 'divider' },
-    { key: 'profile', icon: <UserRoundCog size={15} />, label: t('个人中心') },
-    { type: 'divider' },
     { key: 'logout', icon: <LogOut size={15} />, label: t('退出登录'), danger: true },
   ]
 
   const onClick: MenuProps['onClick'] = ({ key }) => {
-    if (key === 'profile') {
-      navigate(ROUTE_PATHS.profile)
-    } else if (key === 'logout') {
+    if (key === 'logout') {
       modal.confirm({
         title: t('确认退出登录？'),
         content: t('退出后需要重新输入账号密码。'),

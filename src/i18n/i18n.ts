@@ -26,11 +26,7 @@ const enUsLoaders: Record<string, () => Promise<{ default: Record<string, string
   common: () => import('@/i18n/locales/en-US/common'),
   menu: () => import('@/i18n/locales/en-US/menu'),
   auth: () => import('@/i18n/locales/en-US/auth'),
-  profile: () => import('@/i18n/locales/en-US/profile'),
-  system: () => import('@/i18n/locales/en-US/system'),
-  orderRecord: () => import('@/i18n/locales/en-US/orderRecord'),
   dashboard: () => import('@/i18n/locales/en-US/dashboard'),
-  error: () => import('@/i18n/locales/en-US/error'),
 }
 
 /** zh-* 一律映射 zh-CN；其余未支持语言回退 zh-CN */

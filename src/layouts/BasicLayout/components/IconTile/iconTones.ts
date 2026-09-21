@@ -4,16 +4,6 @@ export type IconTone = 'blue' | 'green' | 'orange' | 'purple'
 /** 路由 ID → 图标色调（未命中的路由回退蓝色） */
 const ROUTE_ICON_TONES = {
   dashboard: 'blue',
-  'over-look': 'green',
-  'order-record': 'blue',
-  'dispatch-hub': 'purple',
-  'analyze-visual-record-playback': 'orange',
-  'analyze-visual-dashboard-realtime': 'blue',
-  'analyze-visual-dashboard-task': 'green',
-  'analyze-visual-dashboard-fault': 'orange',
-  'analyze-visual-vehicle-status': 'purple',
-  'analyze-visual-server-resource': 'blue',
-  profile: 'blue',
 } as const
 
 /** 按路由 ID 取图标色调 */
