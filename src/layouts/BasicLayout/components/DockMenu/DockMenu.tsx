@@ -249,10 +249,10 @@ export function DockMenu() {
   return (
     <>
       <footer className={styles.dockFrame}>
-        <svg className={styles.frameLines} viewBox="0 0 1440 88" preserveAspectRatio="none" aria-hidden="true">
-          <path className={styles.frameFill} d="M220 88 280 10H1160L1220 88Z" />
-          <path className={styles.frameOutline} d="M0 23H257L280 10H1160L1183 23H1440M0 32H263L222 88M1440 32H1177L1218 88M242 88 291 18H1149L1198 88" />
-          <path className={styles.frameAccent} d="M280 10H440M1000 10H1160M600 10H840M0 23H38M1402 23H1440M264 48 280 28M1176 48 1160 28" />
+        <svg className={styles.frameLines} viewBox="0 0 1440 52" preserveAspectRatio="none" aria-hidden="true">
+          <path className={styles.frameFill} d="M220 52 260 4H1180L1220 52Z" />
+          <path className={styles.frameOutline} d="M0 13H243L260 4H1180L1197 13H1440M0 20H247L220 52M1440 20H1193L1220 52M234 52 267 10H1173L1206 52" />
+          <path className={styles.frameAccent} d="M260 4H420M1020 4H1180M600 4H840M0 13H38M1402 13H1440" />
         </svg>
         <div className={styles.dockBrand}>SMART LOGISTICS<small>INDUSTRIAL INTELLIGENCE</small></div>
         <nav
@@ -264,7 +264,7 @@ export function DockMenu() {
           onScroll={closeAll}
         >
           {sections.map((section) => {
-            /* 每个分区始终显示上方图标和下方名称。
+            /* 每个分区以单行图标和名称展示，节省工作区高度。
                未配置图标时使用统一兜底，保证底栏各项对齐。 */
             const Icon = section.icon ?? LayoutGrid
             const sectionActive = subtreeContains(section, location.pathname)
@@ -295,7 +295,7 @@ export function DockMenu() {
                 }}
               >
                 <span className={styles.dockIcon} aria-hidden="true">
-                  <Icon size={24} strokeWidth={1.7} />
+                  <Icon size={18} strokeWidth={1.7} />
                 </span>
                 <span className={styles.label}>{tMenu(section.title)}</span>
               </button>
@@ -310,7 +310,7 @@ export function DockMenu() {
             onMouseEnter={dismissHoverPanel}
             onClick={clearTabs}
           >
-            <span className={styles.dockIcon} aria-hidden="true"><Trash2 size={23} strokeWidth={1.5} /></span>
+            <span className={styles.dockIcon} aria-hidden="true"><Trash2 size={18} strokeWidth={1.5} /></span>
             <span className={styles.label}>{tCommon('清理页签')}</span>
           </button>
         </nav>

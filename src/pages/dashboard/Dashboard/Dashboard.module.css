@@ -1,12 +1,12 @@
 /* 高密度工作区：概览标题、六项 KPI、工程边框图表。 */
 .dashboard { min-width: 0; padding: 0 3px 6px; }
-.pageHeading { min-height: 72px; display: flex; align-items: center; gap: 20px; padding: 12px 6px; }
+.pageHeading { min-height: 56px; display: flex; align-items: center; gap: 16px; padding: 8px 6px; }
 .headingCopy { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px 20px; min-width: 0; }
-.headingCopy h1 { margin: 0; font-size: var(--app-fs-headline); font-weight: var(--app-fw-semibold); letter-spacing: 1px; text-shadow: 0 0 15px var(--app-accent-glow); }
+.headingCopy h1 { margin: 0; font-size: 22px; font-weight: var(--app-fw-semibold); letter-spacing: 1px; text-shadow: 0 0 15px var(--app-accent-glow); }
 .headingCopy p { margin: 0; font-size: var(--app-fs-body); color: var(--app-text-3); letter-spacing: 0.4px; }
 .slogan { margin-left: auto; padding-right: 8px; white-space: nowrap; color: var(--app-text-3); letter-spacing: 4px; font-size: var(--app-fs-secondary); }
-.kpiRow { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 13px; margin-bottom: 16px; }
-.grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 16px; }
+.kpiRow { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; margin-bottom: 12px; }
+.grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 12px; }
 .card { background: var(--app-card-surface); border: 1px solid var(--app-card-line); border-radius: var(--app-radius-panel); box-shadow: var(--app-card-shadow); }
 .cardTitle { font-size: 15px; font-weight: var(--app-fw-semibold); color: var(--app-card-title); }
 .panel { position: relative; padding: 0 18px 16px; display: flex; flex-direction: column; min-width: 0; }
@@ -46,9 +46,9 @@
 @media (max-width: 1100px) { .kpiRow { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 900px) { .span4, .span5, .span7, .span8 { grid-column: span 12; } }
 @media (max-width: 600px) {
-  .pageHeading { padding-block: 16px; }
+  .pageHeading { padding-block: 10px; }
   .headingCopy { gap: 6px; flex-direction: column; }
-  .headingCopy h1 { font-size: 23px; }
+  .headingCopy h1 { font-size: 21px; }
   .headingCopy p { font-size: var(--app-fs-secondary); }
   .panel { padding-inline: 12px; }
   .kpiRow { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }

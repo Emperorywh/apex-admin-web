@@ -12,7 +12,7 @@
 .bar::before {
   content: '';
   position: absolute;
-  inset: 0 10px 5px;
+  inset: 0 10px 3px;
   border: 1px solid var(--app-divider);
   border-top: 0;
   border-radius: 0 0 5px 10px;
@@ -51,13 +51,13 @@
 .tab {
   position: relative;
   flex: 0 0 auto;
-  min-width: 110px;
+  min-width: 96px;
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 9px;
-  padding: 0 18px;
+  gap: 7px;
+  padding: 0 12px;
   border: 0;
   color: var(--app-text-2);
   cursor: pointer;
@@ -70,9 +70,9 @@
 .tab::after {
   content: '';
   position: absolute;
-  bottom: 7px;
-  left: 17px;
-  right: 17px;
+  bottom: 4px;
+  left: 12px;
+  right: 12px;
   height: 2px;
   background: transparent;
   transition: background var(--app-dur-base), box-shadow var(--app-dur-base);
@@ -83,7 +83,7 @@
 .icon { flex: none; color: var(--app-text-3); }
 .tabActive .icon { color: var(--app-cyan); filter: drop-shadow(0 0 4px var(--app-accent-glow)); }
 .tabDragging { z-index: 10; background: var(--app-tab-drag-bg); box-shadow: var(--app-shadow-2); }
-.title { font-size: var(--app-fs-primary); font-weight: var(--app-fw-semibold); white-space: nowrap; }
+.title { font-size: var(--app-fs-body); font-weight: var(--app-fw-semibold); white-space: nowrap; }
 .close {
   width: 18px;
   height: 18px;
@@ -107,7 +107,5 @@
 @media (max-width: 600px) {
   .bar { padding-inline: 0; }
   .bar::before { inset-inline: 8px; }
-  .tab { padding-inline: 14px; min-width: 100px; }
-  .title { font-size: var(--app-fs-body); }
-  .tab::after { bottom: 4px; }
+  .tab { padding-inline: 10px; min-width: 88px; }
 }

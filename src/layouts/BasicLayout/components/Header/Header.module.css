@@ -7,8 +7,8 @@
   display: grid;
   grid-template-columns: auto auto minmax(0, 1fr) auto auto;
   align-items: center;
-  gap: 20px;
-  padding: 0 26px;
+  gap: 12px;
+  padding: 0 18px;
   background: var(--app-topbar-bg);
   border-bottom: 1px solid var(--app-line);
   box-shadow: var(--app-topbar-shadow);
@@ -23,23 +23,24 @@
   pointer-events: none;
   background: linear-gradient(90deg, transparent 2%, var(--app-cyan) 2%, var(--app-cyan) 5%, transparent 5%, transparent 18%, var(--app-accent-glow) 18%, transparent 65%);
 }
-.brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
-.brandIcon { width: 36px; height: 36px; flex: none; filter: drop-shadow(0 0 6px var(--app-accent-glow)); }
-.brandCopy { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.brand { display: flex; align-items: center; gap: 9px; min-width: 0; }
+.brandIcon { width: 28px; height: 28px; flex: none; filter: drop-shadow(0 0 6px var(--app-accent-glow)); }
+.brandCopy { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
 .brandName {
-  font-size: 21px;
+  font-size: 18px;
   font-weight: var(--app-fw-semibold);
   color: var(--app-text);
-  letter-spacing: 2px;
+  letter-spacing: 1.5px;
+  line-height: 1.25;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   text-shadow: 0 0 12px var(--app-accent-glow);
 }
-.brandCaption { font-size: 8px; letter-spacing: 2.1px; color: var(--app-text-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.divider { width: 1px; height: 26px; background: var(--app-divider); }
+.brandCaption { font-size: 7px; letter-spacing: 1.5px; line-height: 1.4; color: var(--app-text-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.divider { width: 1px; height: 22px; background: var(--app-divider); }
 .tabs { min-width: 0; height: 100%; display: flex; }
-.actions { display: flex; align-items: center; gap: 10px; }
+.actions { display: flex; align-items: center; gap: 6px; }
 .iconBtn {
   width: 30px;
   height: 32px;
@@ -57,8 +58,8 @@
 .iconBtn:hover { background: var(--app-hover-bg); border-color: var(--app-divider); color: var(--app-cyan); }
 .time { font-size: var(--app-fs-secondary); color: var(--app-text-2); white-space: nowrap; font-variant-numeric: tabular-nums; letter-spacing: 0.4px; margin: 0 8px; }
 .avatar {
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   border-radius: var(--app-radius-pill);
   border: 1px solid var(--app-blue-2);
   color: var(--app-on-accent);
@@ -78,14 +79,14 @@
 .avatarHeader { display: grid; gap: 2px; }
 
 @media (max-width: 1100px) {
-  .topbar { gap: 12px; padding-inline: 18px; }
+  .topbar { gap: 10px; padding-inline: 14px; }
   .actions { gap: 4px; }
   .time { display: none; }
 }
 @media (max-width: 600px) {
-  .topbar { height: auto; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: 56px 43px; row-gap: 0; padding-inline: 14px; }
+  .topbar { grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: 44px minmax(0, 1fr); row-gap: 0; padding-inline: 12px; }
   .topbar > .divider { display: none; }
-  .brandIcon { width: 30px; height: 30px; }
+  .brandIcon { width: 26px; height: 26px; }
   .brandName { font-size: 17px; }
   .brandCaption { font-size: 7px; letter-spacing: 1.1px; }
   .actions { grid-column: 2; grid-row: 1; gap: 2px; }

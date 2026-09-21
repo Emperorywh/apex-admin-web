@@ -1,23 +1,23 @@
-/* 菜单座的装饰独立于滚动导航，溢出菜单仍可访问首尾。 */
+/* 紧凑菜单座：图标与文字同排，装饰独立于滚动导航。 */
 .dockFrame {
   position: relative;
   flex: none;
   height: var(--app-dock-h);
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
-  padding: 0 218px 6px;
+  padding: 4px 180px;
   background: var(--app-dock-bg);
 }
 .frameLines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .frameFill { fill: var(--app-hover-bg); stroke: var(--app-line); }
 .frameOutline { fill: none; stroke: var(--app-line); stroke-width: 1; }
 .frameAccent { fill: none; stroke: var(--app-cyan); stroke-width: 1.2; filter: drop-shadow(0 0 4px var(--app-accent-glow)); }
-.dockBrand, .dockTagline { position: absolute; bottom: 23px; color: var(--app-text-3); white-space: nowrap; }
-.dockBrand { left: 28px; font-size: 11px; letter-spacing: 1.8px; }
-.dockBrand small { display: block; margin-top: 5px; font-size: 7px; letter-spacing: 2.1px; }
-.dockTagline { right: 28px; font-size: 12px; letter-spacing: 2px; text-align: right; }
-.dockTagline small { display: block; font-size: 7px; letter-spacing: 0.8px; margin-top: 5px; }
+.dockBrand, .dockTagline { position: absolute; bottom: 11px; color: var(--app-text-3); white-space: nowrap; }
+.dockBrand { left: 20px; font-size: 10px; letter-spacing: 1.5px; }
+.dockBrand small { display: block; margin-top: 3px; font-size: 7px; letter-spacing: 1.5px; }
+.dockTagline { right: 20px; font-size: 11px; letter-spacing: 1.5px; text-align: right; }
+.dockTagline small { display: block; font-size: 7px; letter-spacing: 0.5px; margin-top: 3px; }
 .dock {
   position: relative;
   display: flex;
@@ -25,8 +25,8 @@
   justify-content: flex-start;
   gap: 2px;
   max-width: 100%;
-  height: 74px;
-  padding: 4px 12px;
+  height: 100%;
+  padding: 4px 8px;
   overflow-x: auto;
   overflow-y: hidden;
   scrollbar-width: none;
@@ -37,14 +37,14 @@
 .item {
   position: relative;
   flex: 0 0 auto;
-  min-width: 82px;
-  height: 66px;
-  padding: 6px 14px;
+  min-width: 80px;
+  height: 100%;
+  padding: 0 10px;
   border: 1px solid transparent;
-  border-radius: 6px 6px 4px 4px;
+  border-radius: var(--app-radius-control);
   background: transparent;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
   gap: 7px;
@@ -55,8 +55,8 @@
   white-space: nowrap;
   transition: background var(--app-dur-base), border-color var(--app-dur-base), box-shadow var(--app-dur-base);
 }
-.item::after { content: ''; position: absolute; right: -2px; top: 15px; bottom: 15px; width: 1px; background: linear-gradient(transparent, var(--app-divider), transparent); }
-.dockIcon { display: grid; place-items: center; color: var(--app-blue-2); }
+.item::after { content: ''; position: absolute; right: -2px; top: 8px; bottom: 8px; width: 1px; background: linear-gradient(transparent, var(--app-divider), transparent); }
+.dockIcon { display: grid; place-items: center; flex: none; color: var(--app-blue-2); }
 .item:hover, .item[aria-expanded='true'] { background: var(--app-hover-bg); color: var(--app-text); border-color: var(--app-divider); }
 .itemActive, .itemActive:hover, .itemActive[aria-expanded='true'] {
   background: radial-gradient(ellipse at top, var(--app-accent-glow), transparent 75%), var(--app-bg-2);
@@ -73,7 +73,7 @@
 .item:focus-visible, .panelItem:focus-visible { outline: 2px solid var(--app-cyan); outline-offset: -3px; }
 .itemLaunching > :first-child { animation: dockPress var(--app-dur-slow) var(--app-ease-standard); }
 @keyframes dockPress { 0%, 100% { transform: scale(1); } 40% { transform: scale(0.9); } }
-.separator { width: 1px; height: 34px; background: var(--app-divider); margin: 0 6px; flex: none; }
+.separator { width: 1px; height: 22px; background: var(--app-divider); margin: 0 4px; flex: none; }
 
 @media (prefers-reduced-motion: reduce) { .itemLaunching > :first-child { animation: none; } }
 
@@ -301,17 +301,13 @@
   }
 }
 
-@media (max-width: 1100px) {
-  .dockFrame { padding-inline: 140px; }
-  .dockBrand { font-size: 9px; left: 16px; letter-spacing: 0.8px; }
-  .dockBrand small { font-size: 6px; letter-spacing: 0.8px; }
-  .dockTagline { right: 16px; font-size: 10px; }
-  .dockTagline small { display: none; }
+@media (max-width: 1200px) {
+  .dockFrame { padding-inline: 12px; }
+  .dockBrand, .dockTagline { display: none; }
 }
 @media (max-width: 760px) {
-  .dockFrame { padding-inline: 8px; }
-  .dockBrand, .dockTagline { display: none; }
-  .dock { padding-inline: 6px; }
-  .item { min-width: 76px; padding-inline: 10px; }
+  .dockFrame { padding-inline: 4px; }
+  .dock { padding-inline: 4px; }
+  .item { min-width: 76px; padding-inline: 8px; }
   .trash { min-width: 64px; }
 }

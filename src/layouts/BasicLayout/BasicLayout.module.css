@@ -13,7 +13,7 @@
   min-height: 0;
   display: grid;
   overflow: hidden;
-  padding: 0 24px 8px;
+  padding: 0 16px 4px;
   border-inline: 1px solid var(--app-tech-grid);
 }
 .workspace > * {
@@ -22,5 +22,5 @@
   min-width: 0;
 }
 @media (max-width: 760px) {
-  .workspace { padding-inline: 12px; }
+  .workspace { padding-inline: 10px; }
 }

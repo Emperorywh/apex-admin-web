@@ -33,8 +33,8 @@
   --app-dur-launch: 240ms;
   --app-ease-standard: cubic-bezier(0.25, 0.1, 0.25, 1);
   --app-ease-window: cubic-bezier(0.32, 0.72, 0, 1);
-  --app-topbar-h: 62px;
-  --app-dock-h: 88px;
+  --app-topbar-h: 48px;
+  --app-dock-h: 52px;
   --app-font: 'Bahnschrift', 'DIN Alternate', 'Microsoft YaHei UI', 'Microsoft YaHei', 'PingFang SC', sans-serif;
 
   --app-bg: #061724;
@@ -100,6 +100,14 @@
   --app-topbar-shadow: 0 4px 22px color-mix(in srgb, var(--app-shadow-color) 28%, transparent);
   --app-dock-shadow: inset 0 1px 0 var(--app-highlight-soft);
   --app-panel-shadow: var(--app-window-shadow), inset 0 0 0 3px var(--app-panel-inset);
+}
+
+/* 窄屏为品牌和页签保留两行，底部入口保持足够的触控高度。 */
+@media (max-width: 600px) {
+  :root {
+    --app-topbar-h: 80px;
+    --app-dock-h: 60px;
+  }
 }
 
 * { box-sizing: border-box; }
