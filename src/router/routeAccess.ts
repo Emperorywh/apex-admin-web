@@ -233,6 +233,11 @@ export function resolveSafeRedirectPath(
 ): string | null {
   if (!raw || !raw.startsWith('/')) return null
   const pathname = raw.split('?')[0] ?? ''
+  // 无权限页是「无任何可用业务页」的反馈落点而非业务目标：
+  // 即使当前会话可达（超管放行/已实现）也不作为登录回跳目标——
+  // 守卫把未登录深链接弹回登录页后，登录成功把用户原样送回
+  // 刚被反馈过「无权限」的页面，违背 A22 合法落点语义（P41 audit 实测修正）
+  if (pathname === ROUTE_PATHS['no-permission']) return null
   const leaf = findLeafByPath(pathname)
   if (!leaf) return null
   const ctx = buildAccessContext(subject)
