@@ -1,0 +1,41 @@
+{
+  "runId": "run-2d558b51-95f5-4df6-b332-b759b628c11b",
+  "taskId": "H02",
+  "purpose": "audit",
+  "owner": "sess_c2b1fc8f-afff-41f7-a45e-6bb51cb86499",
+  "runner": {
+    "provider": "zcode",
+    "sessionId": "sess_c2b1fc8f-afff-41f7-a45e-6bb51cb86499",
+    "turnId": "turn_b8a9d5a3-2f52-4af0-998e-a84ed7bffa4e",
+    "automationRunId": "automation-4c58cefd-88c2-4b25-b14d-53904b310c3e:1789966200000",
+    "identitySource": "running_tool_part",
+    "toolPartId": "part_muarohzi_9ef66c04-54c6-43d2-a4c2-e2b5c489bd3c",
+    "toolCallId": "call_572fdebfee38498399038acb",
+    "messageId": "msg_muaro9wp_d25b2972-687d-494f-8893-50858046531d"
+  },
+  "startedAt": "2026-09-21T04:50:36.666Z",
+  "baseHead": "76319c4e6fc2083fa7100d7311ce79dad36656bd",
+  "initialStatus": "M docs/migration/RUN_STATE.json\n?? docs/migration/evidence/runs/run-1446837b-7911-4cba-b9a7-1bf30a0938d2.json",
+  "progress": [
+    "静态核查：H02 受检 18 文件哈希绑定 @ 76319c4；交付 d508294 后 MapNestModify 零变更（git diff+SHA-256 重算），routeAccess.ts 唯一变更 57ce7ba（+5 行）逐 hunk 从 H02 视角审查成立、deferred 排除链路零改动；i18n.ts/definitions.tsx/BasicLayout/Header 变更均与本页契约同向或无关",
+    "静态门禁复用 P41 audit @ 57ce7ba 复绿（57ce7ba..76319c4 非 docs 零变更，git diff 证实）",
+    "真实只读复测 6/6（run-h02-audit1-readonly.mjs → h02-audit1-readonly-result.json）",
+    "浏览器针对性复测 8/8（browser-ui-result.json + 双主题截图 local_only ×2）",
+    "acceptance.json 写入 49 项矩阵+18 文件哈希绑定 @ 76319c4（runner 校验通过）；H02.md 复核节更新"
+  ],
+  "nextSteps": [
+    "提交验收记录/交接记录/RUN_STATE/上轮 H01 结束记录补交 → push --commit HEAD → end --outcome completed"
+  ],
+  "blocker": null,
+  "endedAt": "2026-09-21T05:09:54.354Z",
+  "outcome": "completed",
+  "endHead": "44f6afee366ba0821af0a234ea5f11614e36d9e8",
+  "publish": {
+    "status": "synced",
+    "taskId": "H02",
+    "commit": "44f6afee366ba0821af0a234ea5f11614e36d9e8",
+    "confirmedRemoteHead": "44f6afee366ba0821af0a234ea5f11614e36d9e8",
+    "checkedAt": "2026-09-21T05:09:47.068Z",
+    "error": null
+  }
+}
