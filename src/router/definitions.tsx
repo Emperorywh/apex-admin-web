@@ -2,10 +2,20 @@
  * 路由定义唯一来源：id、path、页面懒加载与 meta 在此声明。
  * projections.tsx 据此生成访问路由、缓存渲染路由与菜单；
  * ROUTE_IDS / ROUTE_PATHS / RouteId 由定义树自动推导。
- * 当前仅保留登录和仪表盘页面，根路径与未匹配地址跳转到仪表盘。
+ * 根路径与未匹配地址跳转到仪表盘。
  */
 
-import { LayoutDashboard } from 'lucide-react'
+import {
+  Bot,
+  Cog,
+  Cpu,
+  LayoutDashboard,
+  ListTree,
+  Map,
+  MapPlus,
+  Warehouse,
+  Workflow,
+} from 'lucide-react'
 import type { AppRouteDefinition } from '@/router/router.types'
 
 /** 以 const 泛型收集字面量 id，供 RouteId 联合类型推导 */
@@ -41,6 +51,67 @@ export const appRouteDefinitions = defineAppRoutes([
         path: 'dashboard',
         loadPage: () => import('@/pages/dashboard/Dashboard/Dashboard'),
         meta: { title: '仪表盘', icon: LayoutDashboard, affixTab: true, i18nNamespaces: ['dashboard'] },
+      },
+      {
+        id: 'action-orchestration',
+        path: 'action-orchestration',
+        loadPage: () => import('@/pages/action/ActionOrchestration/ActionOrchestration'),
+        meta: { title: '动作编排', icon: Workflow },
+      },
+      {
+        id: 'axis-motor-management',
+        path: 'axis-motor-management',
+        loadPage: () => import('@/pages/axis-motor/AxisMotorManagement/AxisMotorManagement'),
+        meta: { title: '轴电机管理', icon: Cog },
+      },
+      {
+        id: 'device-management',
+        path: 'device-management',
+        loadPage: () => import('@/pages/device/DeviceManagement/DeviceManagement'),
+        meta: { title: '设备管理', icon: Cpu },
+      },
+      {
+        id: 'storage-location-management',
+        path: 'storage-location-management',
+        loadPage: () => import('@/pages/storage-location/StorageLocationManagement/StorageLocationManagement'),
+        meta: { title: '库位管理', icon: Warehouse },
+      },
+      {
+        id: 'task-chain-orchestration',
+        path: 'task-chain-orchestration',
+        loadPage: () => import('@/pages/task-chain/TaskChainOrchestration/TaskChainOrchestration'),
+        meta: { title: '任务链编排', icon: ListTree },
+      },
+      {
+        id: 'robot-control',
+        path: 'robot-control',
+        meta: { title: '机器人控制', icon: Bot },
+        children: [
+          {
+            id: 'robot-control-index',
+            index: true,
+            redirect: '/robot-control/robots',
+            meta: { title: '机器人列表', hideInMenu: true, hideInTabs: true, noCache: true },
+          },
+          {
+            id: 'robot-list',
+            path: 'robots',
+            loadPage: () => import('@/pages/robot/RobotList/RobotList'),
+            meta: { title: '机器人列表', icon: Bot },
+          },
+          {
+            id: 'robot-map-edit',
+            path: 'map-edit',
+            loadPage: () => import('@/pages/robot/MapEdit/MapEdit'),
+            meta: { title: '地图编辑', icon: Map },
+          },
+          {
+            id: 'robot-map-create',
+            path: 'map-create',
+            loadPage: () => import('@/pages/robot/MapCreate/MapCreate'),
+            meta: { title: '地图创建', icon: MapPlus },
+          },
+        ],
       },
       {
         id: 'root-fallback',

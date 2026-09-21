@@ -4,4 +4,13 @@ export default {
   '工作台': 'Workspace',
   '登录': 'Sign in',
   '仪表盘': 'Dashboard',
+  '动作编排': 'Action Orchestration',
+  '轴电机管理': 'Axis Motor Management',
+  '设备管理': 'Device Management',
+  '库位管理': 'Storage Location Management',
+  '任务链编排': 'Task Chain Orchestration',
+  '机器人控制': 'Robot Control',
+  '机器人列表': 'Robot List',
+  '地图编辑': 'Map Editing',
+  '地图创建': 'Map Creation',
 } as const
