@@ -1,0 +1,41 @@
+{
+  "runId": "run-1446837b-7911-4cba-b9a7-1bf30a0938d2",
+  "taskId": "H01",
+  "purpose": "audit",
+  "owner": "sess_bd30ca9d-3445-4e17-825b-b0918581ad18",
+  "runner": {
+    "provider": "zcode",
+    "sessionId": "sess_bd30ca9d-3445-4e17-825b-b0918581ad18",
+    "turnId": "turn_7fe325c6-bf48-4fdd-9470-5d4fbbdb8ee2",
+    "automationRunId": "automation-4c58cefd-88c2-4b25-b14d-53904b310c3e:1789962600000",
+    "identitySource": "running_tool_part",
+    "toolPartId": "part_muapjh6q_d0ab2cb2-3307-4315-9f84-17bea71c6458",
+    "toolCallId": "call_9b4ef5922c5347f8b451184e",
+    "messageId": "msg_muapj55e_9e1d2b17-2950-4ebb-a3a8-d18ff93209f0"
+  },
+  "startedAt": "2026-09-21T03:50:41.763Z",
+  "baseHead": "b58ade8ff40bfa6e6ecf25cd87e0022d6e519514",
+  "initialStatus": "M docs/migration/RUN_STATE.json\n?? docs/migration/evidence/runs/run-749f4375-6600-4c32-ad51-89bbf5df4e47.json",
+  "progress": [
+    "静态核查：H01 受检 18 文件哈希绑定 @ b58ade8；交付 93e0681 后 Overlook/MigrationPending/router.types/guard 零变更（git diff+SHA-256 重算），routeAccess.ts 唯一变更 57ce7ba（+5 行）逐 hunk 从 H01 视角审查成立、deferred 排除链路零改动；i18n.ts/definitions.tsx/BasicLayout 变更均与本页契约同向或无关",
+    "静态门禁复用 P41 audit @ 57ce7ba 复绿（57ce7ba..b58ade8 非 docs 零变更，git diff 证实）",
+    "真实只读复测 6/6（run-h01-audit1-readonly.mjs → h01-audit1-readonly-result.json）",
+    "浏览器针对性复测 8/8（browser-ui-result.json + 双主题截图 local_only ×2）",
+    "acceptance.json 写入 49 项矩阵+18 文件哈希绑定 @ b58ade8（runner 校验通过）；H01.md 复核节更新"
+  ],
+  "nextSteps": [
+    "提交验收记录/交接记录/RUN_STATE/上轮 P42 结束记录补交 → push --commit HEAD → end --outcome completed"
+  ],
+  "blocker": null,
+  "endedAt": "2026-09-21T04:18:11.119Z",
+  "outcome": "completed",
+  "endHead": "76319c4e6fc2083fa7100d7311ce79dad36656bd",
+  "publish": {
+    "status": "synced",
+    "taskId": "H01",
+    "commit": "76319c4e6fc2083fa7100d7311ce79dad36656bd",
+    "confirmedRemoteHead": "76319c4e6fc2083fa7100d7311ce79dad36656bd",
+    "checkedAt": "2026-09-21T04:18:04.097Z",
+    "error": null
+  }
+}

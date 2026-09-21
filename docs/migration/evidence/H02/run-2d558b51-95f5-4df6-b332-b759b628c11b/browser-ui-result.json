@@ -1,0 +1,83 @@
+{
+  "runId": "run-2d558b51-95f5-4df6-b332-b759b628c11b",
+  "taskId": "H02",
+  "purpose": "audit（第一次复核）",
+  "codeCommit": "76319c4e6fc2083fa7100d7311ce79dad36656bd",
+  "executedAt": "2026-09-21",
+  "channel": "Vite dev 同源代理 http://localhost:5173 → 192.168.0.158:8888（APEX_DEV_LEGACY_TARGET，名称入档值不入档）",
+  "viewport": "1366×768",
+  "role": "root（凭据来源：本机 .env.local，仅记录来源名称）+ 未登录对照",
+  "steps": [
+    {
+      "id": 1,
+      "name": "未登录直访守卫拦截",
+      "action": "无会话直访 /map-through/map-nest-modify?mapId=42&tab=edit",
+      "expected": "守卫送回 /login?redirect=<完整含查询上下文>",
+      "actual": "URL=/login?redirect=%2Fmap-through%2Fmap-nest-modify%3FmapId%3D42%26tab%3Dedit",
+      "result": "PASS"
+    },
+    {
+      "id": 2,
+      "name": "deferred 页不抢占登录落点",
+      "action": "登录（redirect=%2Fmap-through%2Fmap-nest-modify%3FmapId%3D42%26tab%3Dedit 随 URL）",
+      "expected": "deferred 页被排除出回跳候选，落 resolveLandingPath 结果 /dashboard",
+      "actual": "登录成功后 URL=/dashboard（deferred 排除链路实测；自交付轮落 /no-permission 的差异为 P34 交付后落点规则预期内变更，H01 复核同口径）",
+      "result": "PASS"
+    },
+    {
+      "id": 3,
+      "name": "暂缓说明渲染+页签+Dock 入口高亮",
+      "action": "已登录直访 /map-through/map-nest-modify?mapId=42&tab=edit",
+      "expected": "统一暂缓说明渲染、页签创建选中、Dock「地图管理」子菜单含「地图编辑」且高亮",
+      "actual": "h1「地图编辑」+「该功能正在迁移中，迁移完成后开放使用」；页签「地图编辑」[selected]；Dock「地图管理」aria-expanded=true+_itemActive_，弹出菜单 5 项含 menuitem「地图编辑」_panelItemActive_ 高亮",
+      "result": "PASS"
+    },
+    {
+      "id": 4,
+      "name": "查询上下文保留不清洗",
+      "action": "同上直访后读取地址栏",
+      "expected": "?mapId=42&tab=edit 原样保留（不消费不清洗不跳转）",
+      "actual": "全程 URL 保持 /map-through/map-nest-modify?mapId=42&tab=edit（含语言切换与主题切换期间）",
+      "result": "PASS"
+    },
+    {
+      "id": 5,
+      "name": "零业务请求零编辑器加载",
+      "action": "performance resource 清点 + DOM 检查",
+      "expected": "无页面业务请求、无 WebSocket、无 Konva/canvas/编辑器脚本",
+      "actual": "/fms 请求仅 4 条全部为壳层品牌图（systemLogos headerLogo/favicon ×2）；WebSocket 0；canvas 0；Konva/编辑器脚本 0",
+      "result": "PASS"
+    },
+    {
+      "id": 6,
+      "name": "五语言菜单与切换",
+      "action": "打开语言菜单（简中/繁中/English/日本語/한국어 五项齐全）→ 切 English → 切 日本語 → 切回简体中文",
+      "expected": "文案随语言更新、html lang 同步、无整页刷新（URL 保持）",
+      "actual": "en-US：h1=Map Editor+说明英文+htmlLang=en-US+菜单页签全英文；ja-JP：h1=マップ編集+「この機能は移行中です。移行完了後に利用可能になります」+htmlLang=ja-JP+页签「マップ編集」；zh-CN 回切：h1=地图编辑+htmlLang=zh-CN；URL 全程带上下文不变（zh-TW/ko-KR 由 menu/common 四分片零变更哈希绑定+交付轮全五语言逐语言实测覆盖）",
+      "result": "PASS"
+    },
+    {
+      "id": 7,
+      "name": "双主题几何断言+截图",
+      "action": "浅色/深色两主题下断言 h1 与说明文字均在玻璃面板 boundingRect 内，并截图留存（local_only）",
+      "expected": "两主题 headingInside=true、textInside=true",
+      "actual": "light：headingInside=true/textInside=true（panel 246×146@560,294）；dark：headingInside=true/textInside=true。披露：①语言下拉浮层关闭动画在 IAB 残留入首张浅色截图，Escape+空白点击清除后重拍干净；②主题下拉选择「深色」后 DOM data-theme=dark 但截图返回旧浅色合成帧（AGENTS §5 已登记 IAB 现象），按纪律 reload 重建合成帧后深色截图成功（主题自持久化恢复=dark 复证持久化链路）；期间一次 screenshot 30000ms 超时，页签活性探测后重试成功",
+      "screenshots": [
+        "screenshots/h02-audit1-light-1366.png",
+        "screenshots/h02-audit1-dark-1366.png"
+      ],
+      "result": "PASS"
+    },
+    {
+      "id": 8,
+      "name": "真实登出+persist 清理+语言主题保留",
+      "action": "顶栏 RO 头像→退出登录→核验 URL/persist/auth 切片/语言主题",
+      "expected": "真实 logout 请求、auth 切片三键清空、语言与主题偏好保留",
+      "actual": "performance 证实真实请求 /fms/v1/auth/authorize/logout；persist:apex-admin:auth 双层 JSON 解析 token=null/user=null/permissions=[]/permissionsTree=[]；apex-admin:lang=zh-CN、apex-admin:theme=dark、htmlLang=zh-CN、data-theme=dark 保留；URL=/login?redirect=%2Fmap-through%2Fmap-nest-modify%3FmapId%3D42%26tab%3Dedit（P41/P42/H01 登记的登出后 URL 瞬态带 redirect 观察项同口径，终态正确会话已清，归 V01）",
+      "result": "PASS"
+    }
+  ],
+  "passCount": 8,
+  "totalCount": 8,
+  "shimDisclosure": "IAB 输入管线冻结（登录按钮自然 click 3000ms 超时零响应，与既往 P01/P02/P41/P42/H01 五轮同现象）：登录提交、菜单展开、语言/主题切换、登出等交互类点击经合成 pointer 序列垫片（pointerdown→mousedown→pointerup→mouseup→click）；表单填写用自然 fill 成功。真实指针交互归 V01 自然浏览器复核。语言菜单浮层关闭动画残留与主题切换旧合成帧两起 IAB 环境现象均按 AGENTS §5 纪律处理并如实登记，不影响功能断言（DOM 状态与功能结果均为直接证据）"
+}

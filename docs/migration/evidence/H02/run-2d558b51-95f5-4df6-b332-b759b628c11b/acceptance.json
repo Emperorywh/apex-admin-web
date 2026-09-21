@@ -1,0 +1,590 @@
+{
+  "taskId": "H02",
+  "runId": "run-2d558b51-95f5-4df6-b332-b759b628c11b",
+  "purpose": "audit（第一次复核）",
+  "codeCommit": "76319c4e6fc2083fa7100d7311ce79dad36656bd",
+  "deliveryCommit": "d508294",
+  "codeFiles": [
+    {
+      "path": "src/pages/map-through/MapNestModify/MapNestModify.tsx",
+      "sha256": "b120299f9c305738a050f8a45b37a1954f4471c1336a69e5bc23db11ffd296e7"
+    },
+    {
+      "path": "src/components/MigrationPending/MigrationPending.tsx",
+      "sha256": "18c08bdc4465586b6008effc30003b9cdbc25872475c41b686f57b18cd9bfb15"
+    },
+    {
+      "path": "src/components/MigrationPending/MigrationPending.module.css",
+      "sha256": "7f3e1ea7f2b18b05a46fac29905df28fef13eef009010db4f225c2c3e854020d"
+    },
+    {
+      "path": "src/router/definitions.tsx",
+      "sha256": "e02d0d676b011c194108df5663c5b4dd1fedd6d4c9bbe1b63c469c58f872ba6e"
+    },
+    {
+      "path": "src/router/routeAccess.ts",
+      "sha256": "e6a4d451afb751af8b94a4b1ae2d865f11b3abbd46ce3bcca7751cdbd6a0b9d8"
+    },
+    {
+      "path": "src/router/router.types.ts",
+      "sha256": "b1197e3b45483c9ba310cd9eccfb5edf9167ff5c7963342bc99e443636c88a4b"
+    },
+    {
+      "path": "src/router/guard.ts",
+      "sha256": "32ed995e52d4ed3ff6847c1eee5d6cf0e77b7e985286b927687fc1e8a1b34868"
+    },
+    {
+      "path": "src/i18n/i18n.ts",
+      "sha256": "b867e71364ae386b5cd20ab413f16b131c71a58d8085fb3a717daf9cde791392"
+    },
+    {
+      "path": "src/layouts/BasicLayout/BasicLayout.module.css",
+      "sha256": "83dba77cc69d871448f3fcf5980522830e01862da893e8ef30e0e0f7abba0c15"
+    },
+    {
+      "path": "src/layouts/BasicLayout/components/Header/Header.tsx",
+      "sha256": "02ee54e31bfe6ee5d22ccdb7acd08962ac173c9fbf276611637d416eeffafd91"
+    },
+    {
+      "path": "src/i18n/locales/en-US/menu.ts",
+      "sha256": "3f9af4500b963e30e308d7098abd738a7c43598635ac3537dc2767b8768e7f76"
+    },
+    {
+      "path": "src/i18n/locales/zh-TW/menu.ts",
+      "sha256": "c571a9eb789702f23d58fc0fbe5ab09e56fc5eb89240ba3642c06714f721fc62"
+    },
+    {
+      "path": "src/i18n/locales/ja-JP/menu.ts",
+      "sha256": "51add0b94dc87f9e7d378b3921d36c26d86502298f57ffad0f18ed397aab6eda"
+    },
+    {
+      "path": "src/i18n/locales/ko-KR/menu.ts",
+      "sha256": "47313ab3ae2bbab35d3952ace949b182c96b4a8f26c80eb5d1910e7068b13411"
+    },
+    {
+      "path": "src/i18n/locales/en-US/common.ts",
+      "sha256": "0ddaa21067f7c25dc077ca2cdaabcb00e7eb4c1a0548174b0213b5244d35484f"
+    },
+    {
+      "path": "src/i18n/locales/zh-TW/common.ts",
+      "sha256": "88fd4e88b3618cb365caceebb21cda3776ce5820a1beb466bdef2ef07234dca1"
+    },
+    {
+      "path": "src/i18n/locales/ja-JP/common.ts",
+      "sha256": "6797fa4be85778bd08982ec9e27c44d8df50ceb3f496652a32bb3c6ac284d67d"
+    },
+    {
+      "path": "src/i18n/locales/ko-KR/common.ts",
+      "sha256": "ca75fc05ac3ddde06ec5e77eb0202ae702a572d332b6266750136785a6d5b1a4"
+    }
+  ],
+  "environment": {
+    "backend": "http://192.168.0.158:8888（经 Vite dev 同源代理 http://localhost:5173）；OpenAPI sha256 前 8 位 a82e9b5f 与基线一致（getHardwareInfo 硬件码 sha256_8=e5c6aacc 与 T00/P01/P02/P41/P42/H01 各轮一致，同后端实例）",
+    "role": "root（凭据来源：本机 .env.local，名称入档、值不入档）；未登录对照",
+    "viewport": "1366×768",
+    "themes": [
+      "light（本轮实测+截图 local_only）",
+      "dark（本轮菜单切换实测+reload 重建合成帧截图 local_only）"
+    ],
+    "languages": [
+      "zh-CN 实测（含登出后保留与复位）",
+      "en-US 切换实测",
+      "ja-JP 切换实测",
+      "zh-TW/ko-KR menu/common 四分片零变更哈希绑定+交付轮全五语言逐语言实测"
+    ],
+    "dataScale": "无业务数据页（暂缓说明页零业务请求）"
+  },
+  "releaseChecks": {
+    "scope": "passed",
+    "static": "passed",
+    "readOnly": "passed",
+    "ui": "passed",
+    "sharedConsumers": "passed"
+  },
+  "releaseReasons": [
+    "scope：H02 暂缓说明任务卡逐项复核成立——/map-through/map-nest-modify 统一暂缓说明呈现（MigrationPending 复用 title=地图编辑）、migrationDeferred 路由元标记（复用 H01 语义：不作为登录落点/回跳候选）、原权限 map-edit:view（PERM.MAP_EDIT_VIEW）保留且新旧常量一致、查询上下文 ?mapId=42&tab=edit 保留不消费不清洗、旧 Konva 完整编辑器（NestGraph 画布/NestPanel 属性面板/启用编辑）整体不迁移、P07 选点与 P09 地图 CRUD/版本/导入导出/发布推送资源归属隔离；本页无业务接口（任务卡接口依据=无）",
+    "static：pnpm check/build 复用 P41 audit @ 57ce7ba 复绿结果——57ce7ba..76319c4 非 docs 变更为零（git diff --name-only | grep -v ^docs/ 输出为空；此前 T00/P01/P02/P42/H01 五轮复核同结论）；本轮全部受检文件为审查非变更",
+    "readOnly：真实只读复测 6/6（run-h02-audit1-readonly.mjs → h02-audit1-readonly-result.json）：getHardwareInfo 代理+直连一致、真实登录 activated=true/155 权限码、map-edit:view 在权限集合（H02 守卫/菜单前提）、dashboard-realtime:view 在权限集合（落点 /dashboard 前提）、登出清理释放探测会话",
+    "ui：浏览器针对性复测 8/8（browser-ui-result.json）：守卫拦截带完整查询上下文回跳、登录 redirect=%2Fmap-through%2Fmap-nest-modify%3FmapId%3D42%26tab%3Dedit 被拒落 /dashboard（deferred 排除链路实测，覆盖 57ce7ba 修复后当前代码）、暂缓说明渲染+页签+Dock「地图管理」子菜单「地图编辑」高亮、查询上下文保留不清洗、零业务请求（仅壳层品牌图 4 条）零 WebSocket 零 canvas/Konva、五语言菜单+en/ja/zh 切换 html lang 同步、双主题几何断言+截图 local_only ×2、真实登出+persist auth 三键清空（双层解析）+语言主题保留",
+    "sharedConsumers：MapNestModify.tsx 自交付 d508294 零变更（git diff d508294..76319c4 对应路径为空）；MigrationPending/router.types/guard 零变更（不在 diff 清单且哈希与 H01 轮绑定一致）；routeAccess.ts 交付后唯一变更 57ce7ba（P41-audit-1 +5 行）在 resolveSafeRedirectPath 头部精确拒绝 /no-permission，位于 findLeafByPath 与 isLeafAvailable deferred 排除链路之前且方向与 A22 回跳契约同向，redirect 拒绝行为本轮实测成立；i18n.ts 交付后 +306/-2 变更行零涉及 common/menu 五语言 loader 与 BASE_NAMESPACES（-2 为旧模板 system 分片退役，被 P25-P28 更细分片替代）；definitions.tsx 交付后 +291/-85 为后续页面交付，map-nest-modify 节点在 diff 中零出现（逐字节未变），migrationDeferred 相关 diff 属 H03 节点复用本页交付模式（预期内）；BasicLayout.module.css（P03 轨道锁定 minmax(0,1fr)+min-width:0）与本页居中面板无冲突（双主题几何断言在本轮容器代码下实测成立）、Header.tsx（P27 品牌图消费）与本页无冲突"
+  ],
+  "items": [
+    {
+      "id": "TASK",
+      "status": "passed",
+      "reason": "H02 专项逐项复核成立：①菜单/关联入口进入统一说明——Dock「地图管理」弹出菜单 5 项含「地图编辑」入口+_panelItemActive_ 高亮+直访可达（本轮实测）；②保留合法地图上下文——?mapId=42&tab=edit（旧入口地图 ID 上下文形态）地址栏原样保留不消费不清洗不跳转（本轮实测，含语言/主题切换期间）；③按原权限控制——旧 .umirc.ts access=PERM.MAP_EDIT_VIEW（map-edit:view）=新 definitions.tsx businessMeta 挂码两侧一致，map-edit:view 在真实权限集合断言+未登录守卫拦截（本轮实测）；④不加载完整编辑器/编辑副作用——页面全生命周期 /fms 业务请求 0 条（仅壳层品牌图）、WebSocket 0、canvas 0、Konva/编辑器脚本 0（本轮 performance+DOM 实测）；⑤P09 地图列表与 P07 选点资源归属隔离——本页仅路由叶子呈现，零触碰共享地图组件/service（自交付零变更+逐 hunk 审查成立）",
+      "evidence": [
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json",
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/h02-audit1-readonly-result.json",
+        "docs/migration/tasks/H02.md"
+      ]
+    },
+    {
+      "id": "DoD1",
+      "status": "passed",
+      "reason": "可达业务完整（暂缓语义）：旧页业务整体不迁移=D07 本期暂缓边界（规格 3.2 与任务卡明确），入口无死链——Dock 菜单「地图管理→地图编辑」+直访双路径可达统一说明页（本轮实测）；P09 地图列表→编辑导航进入本说明页不产生死链（交接登记+菜单结构本轮实证）",
+      "evidence": [
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json",
+        "docs/migration/tasks/H02.md"
+      ]
+    },
+    {
+      "id": "DoD2",
+      "status": "not_applicable",
+      "reason": "本页无业务接口：页面零业务请求（本轮 performance resource 清点实证，/fms 仅壳层品牌图 4 条与会话操作）；无需协议/DTO/业务码核对",
+      "evidence": [
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "DoD3",
+      "status": "passed",
+      "reason": "权限与状态区分：原权限 map-edit:view 保留（本轮只读登录断言权限集合包含）——有权限用户菜单可见+直访放行（实测），未登录守卫拦截（实测）；「暂缓」呈现与「无权限」「离线」「空结果」由不同组件承载（MigrationPending vs UnAccess vs 状态块，T00.5 机制）",
+      "evidence": [
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/h02-audit1-readonly-result.json",
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "DoD4",
+      "status": "not_applicable",
+      "reason": "本页无表格（统一暂缓说明页）",
+      "evidence": [
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/acceptance.json",
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "DoD5",
+      "status": "not_applicable",
+      "reason": "本页无表格",
+      "evidence": [
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/acceptance.json",
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "DoD6",
+      "status": "not_applicable",
+      "reason": "本页无数据请求区域（页面零业务请求）；壳层请求的取消/失败收敛为 T00 请求层全站机制，非本页范围",
+      "evidence": [
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "DoD7",
+      "status": "not_applicable",
+      "reason": "纯静态说明页：无表单草稿、无轮询；页签生命周期（脏检查/LRU）由 T00.6 基座承担，本页无脏状态（reload 实测后 URL/主题自持久化恢复无异常）",
+      "evidence": [
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/acceptance.json",
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "DoD8",
+      "status": "not_applicable",
+      "reason": "本页无写操作（旧页保存/发布等编辑副作用随 D07 整体不迁移）",
+      "evidence": [
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/acceptance.json",
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "DoD9",
+      "status": "not_applicable",
+      "reason": "本页无文件传输",
+      "evidence": [
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/acceptance.json",
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "DoD10",
+      "status": "not_applicable",
+      "reason": "本页无地图渲染（旧页 Konva 画布随 D07 暂缓不迁移）；只读地图与选点归 P07、地图 CRUD/版本/导入导出/发布推送归 P09，本页零触碰其共享组件（资源归属隔离，逐 hunk 审查+自交付零变更证实）",
+      "evidence": [
+        "docs/migration/tasks/H02.md",
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "DoD11",
+      "status": "passed",
+      "reason": "五语言随页交付：本页无新增私有分片（i18n-map H02 登记复用 menu+common），无缺译面；本轮 en-US/ja-JP/zh-CN 切换实测（标题 Map Editor/マップ編集/地图编辑+说明文案+html lang 同步+顶栏菜单同步），zh-TW/ko-KR 由 menu/common 四分片零变更哈希绑定+交付轮全五语言逐语言实测覆盖",
+      "evidence": [
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json",
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/acceptance.json"
+      ]
+    },
+    {
+      "id": "DoD12",
+      "status": "not_applicable",
+      "reason": "本页无后端原文/用户名称/日志等语言边界内容（说明文案为前端静态整句文案；无业务请求故无 Accept-Language 场景）",
+      "evidence": [
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/acceptance.json",
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "DoD13",
+      "status": "passed",
+      "reason": "外观与终端：1366×768 双主题实测（浅色/深色几何断言 headingInside=true+textInside=true+截图 local_only ×2）；交付后 BasicLayout 容器轨道锁定（P03）与本页居中面板无冲突（几何断言在本轮容器代码下实测成立）；深色截图经 reload 重建合成帧（IAB 旧帧现象按纪律处理，主题自持久化恢复=dark 复证持久化链路）",
+      "evidence": [
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "DoD14",
+      "status": "not_applicable",
+      "reason": "本页无统计/时间聚合",
+      "evidence": [
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/acceptance.json",
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "DoD15",
+      "status": "passed",
+      "reason": "验证与证据：静态门禁复用 P41 audit @ 57ce7ba 复绿（57ce7ba..76319c4 非 docs 零变更 git diff 证实）；真实只读 6/6（真实登录/权限前提/登出清理）；浏览器针对性复测 8/8（真实登录态+真实后端）；垫片使用已披露（合成 pointer 序列+浮层残留/旧合成帧两起 IAB 现象如实登记，真实指针归 V01）",
+      "evidence": [
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/h02-audit1-readonly-result.json",
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "DoD16",
+      "status": "passed",
+      "reason": "交接收尾：交付轮清除模板 PagePlaceholder 占位经哈希零变更维持；无 mock/无 Umi/无假进度/无 Konva 编辑器代码（本轮零业务请求+零 canvas/Konva 脚本实证）；交接记录本轮更新复核节；无未登记缺口",
+      "evidence": [
+        "docs/migration/tasks/H02.md",
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A01",
+      "status": "passed",
+      "reason": "45 叶子映射：/map-through/map-nest-modify 旧叶子 → 暂缓说明呈现（本期不迁业务，H02 任务卡定位），映射关系交付轮登记且本轮文件零变更维持；45 叶子全局框架主责 T00（多轮 audit 同口径）",
+      "evidence": [
+        "docs/migration/tasks/H02.md"
+      ]
+    },
+    {
+      "id": "A02",
+      "status": "passed",
+      "reason": "暂缓范围处理：本页不加载完整编辑器及其副作用（零业务请求/零 canvas/零 Konva 脚本本轮实测）；migrationDeferred 元标记语义区分交付轮建立（pending=占位不加载 vs deferred=正常渲染说明页），H03 节点复用同模式（definitions.tsx diff 证实）；P07 节点映射选点与 P09 地图版本/推送仍按真实接口使用——本页仅路由叶子呈现零触碰共享组件（资源归属隔离逐 hunk 审查成立）",
+      "evidence": [
+        "docs/migration/tasks/H02.md",
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A03",
+      "status": "not_applicable",
+      "reason": "认证会话主责 T00/P01/P02（多轮 audit 同口径 deferred 项均归 V01）；本页无认证交互面，仅消费守卫机制（守卫拦截/放行行为在 TASK/A22 项实测）",
+      "evidence": [
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/acceptance.json",
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A04",
+      "status": "deferred",
+      "category": "site_acceptance",
+      "basis": "真实 token 过期收敛与双窗口退出同步为跨任务长会话场景，IAB 环境不可构造；本轮实测覆盖机制级：真实登出（performance 证实 /fms/v1/auth/authorize/logout 请求）+persist auth 三键清空（token/user=null、permissions/tree=[] 双层解析）+守卫对失效会话拦截（登出后直访即拦回登录），与 T00/P01/P02/P41/P42/H01 等任务同口径",
+      "owner": "V01",
+      "resumeCondition": "V01 长会话统一复核：真实过期收敛、双窗口退出同步",
+      "evidence": [
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json"
+      ],
+      "reason": "真实 token 过期收敛与双窗口退出同步为跨任务长会话场景（IAB 不可构造）；本轮机制级实测：真实登出请求+persist 三键清空双层解析+守卫拦截失效会话，与既往各任务同口径 deferred 归 V01"
+    },
+    {
+      "id": "A05",
+      "status": "passed",
+      "reason": "原权限保留：旧 .umirc.ts /map-through/map-nest-modify access=PERM.MAP_EDIT_VIEW（map-edit:view）=新 definitions.tsx businessMeta 挂码，交付轮核对两侧常量一致且本轮文件零变更（节点在交付后 diff 中零出现）；本轮只读登录断言 map-edit:view 在真实权限集合（菜单可见+直访放行前提），未登录守卫拦截实测",
+      "evidence": [
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/h02-audit1-readonly-result.json",
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A06",
+      "status": "not_applicable",
+      "reason": "本页无业务协议（零业务请求）",
+      "evidence": [
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/acceptance.json",
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A07",
+      "status": "not_applicable",
+      "reason": "本页无表格",
+      "evidence": [
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/acceptance.json",
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A08",
+      "status": "not_applicable",
+      "reason": "本页无表格",
+      "evidence": [
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/acceptance.json",
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A09",
+      "status": "not_applicable",
+      "reason": "本页无表格",
+      "evidence": [
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/acceptance.json",
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A10",
+      "status": "not_applicable",
+      "reason": "本页无页面级请求（取消/竞争面不存在）",
+      "evidence": [
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/acceptance.json",
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A11",
+      "status": "not_applicable",
+      "reason": "本页无请求失败区域与草稿（零业务请求实证）",
+      "evidence": [
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/acceptance.json",
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A12",
+      "status": "not_applicable",
+      "reason": "本页非实时页（零 WebSocket 实测；旧监控/编辑器协作连接随 D07 不迁移）",
+      "evidence": [
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A13",
+      "status": "not_applicable",
+      "reason": "本页无草稿",
+      "evidence": [
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/acceptance.json",
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A14",
+      "status": "not_applicable",
+      "reason": "本页无写操作",
+      "evidence": [
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/acceptance.json",
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A15",
+      "status": "not_applicable",
+      "reason": "本页无写操作",
+      "evidence": [
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/acceptance.json",
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A16",
+      "status": "not_applicable",
+      "reason": "本页无文件传输",
+      "evidence": [
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/acceptance.json",
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A17",
+      "status": "passed",
+      "reason": "地图及关联（本页视角）：不携入完整编辑器——旧 Konva 画布/属性面板/启用编辑随 D07 整体不迁移，零 canvas/零 Konva 脚本轮实测；旧页业务文案随编辑器整体不迁移无遗留死资源（交付轮 i18n-map 登记去向+menu/common 分片零变更绑定）；P07 选点与 P09 地图 CRUD 资源归属隔离（本页零触碰共享地图组件/service，逐 hunk 审查+自交付零变更证实）；「真实选点回填正确」的 P07 侧验收归 P07 任务",
+      "evidence": [
+        "docs/migration/tasks/H02.md",
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A18",
+      "status": "not_applicable",
+      "reason": "本页无工艺",
+      "evidence": [
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/acceptance.json",
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A19",
+      "status": "not_applicable",
+      "reason": "本页无统计",
+      "evidence": [
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/acceptance.json",
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A20",
+      "status": "passed",
+      "reason": "语言/主题/终端：五语言菜单齐全+en/ja/zh 切换实测+html lang 同步；深浅双主题 1366×768 实测（几何断言+截图 local_only ×2）；Windows Chrome/IAB 环境。披露：IAB 输入管线冻结，交互经合成 pointer 序列垫片（与既往 P01/P02/P41/P42/H01 五轮同口径），真实指针自然浏览器复核归 V01（pendingItems 登记）",
+      "evidence": [
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A21",
+      "status": "passed",
+      "reason": "零 mock：页面零业务请求（performance resource 清点实证，仅壳层品牌图）；无样例/随机/伪进度/fallback/编辑器演示代码（零 canvas/Konva 脚本轮实测）",
+      "evidence": [
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A22",
+      "status": "passed",
+      "reason": "首页与链接：deferred 页不抢占落点——本轮 redirect=%2Fmap-through%2Fmap-nest-modify%3FmapId%3D42%26tab%3Dedit 登录后被拒、落 /dashboard（deferred 排除链路+落点契约实测，覆盖 57ce7ba 修复后代码；自交付轮落 /no-permission 的差异为 P34 交付后落点规则预期内变更，H01 复核同口径）；未登录直访守卫送回 /login?redirect=<完整含查询上下文> 实测；菜单别名「地图管理→地图编辑」与旧系统一致（Dock 弹出菜单 5 项本轮实证）；旧深链上下文保留不清洗",
+      "evidence": [
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A23",
+      "status": "passed",
+      "reason": "依赖与检查：静态门禁复用 P41 audit @ 57ce7ba 复绿（lint 547 文件 0/0+typecheck+structure 529+build 1.39s），57ce7ba..76319c4 非 docs 零变更（git diff 证实）；本轮无依赖/锁文件变更",
+      "evidence": [
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/acceptance.json"
+      ]
+    },
+    {
+      "id": "A24",
+      "status": "deferred",
+      "category": "site_acceptance",
+      "basis": "长时多页签/真实规模稳定性归 V01 统一收口；本页零业务请求、无图表/表格/传输/编辑器画布等资源增长面（与 P43/H01 零请求页同口径），页签宿主由 T00.6 基座承担",
+      "owner": "V01",
+      "resumeCondition": "V01 长时多页签稳定性统一验证",
+      "evidence": [
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json"
+      ],
+      "reason": "长时多页签/真实规模稳定性归 V01 统一收口；本页零业务请求、无资源增长面（P43/H01 零请求页同口径），页签宿主由 T00.6 基座承担"
+    },
+    {
+      "id": "I01",
+      "status": "passed",
+      "reason": "语言入口/规范化（消费面）：语言菜单五项齐全、en-US/ja-JP/zh-CN 切换实测生效（文案+html lang 即时同步），语言持久化键 apex-admin:lang 在登出后保留 zh-CN；语言入口主责 T00/P01，本页消费行为全部实测",
+      "evidence": [
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "I02",
+      "status": "passed",
+      "reason": "旧资源迁移映射：菜单 key「地图编辑」走 menu 分片旧菜单真译（en-US=Map Editor、ja-JP=マップ編集 本轮实测与交付轮登记一致；zh-TW=地圖編輯/ko-KR=맵 편집 分片零变更绑定）；说明文案复用 common 五语言既有 key（该功能正在迁移中...四分片哈希绑定）；页内旧编辑器业务文案随业务不迁移（D07 边界，交付轮 i18n-map 登记归属）——无故意丢译",
+      "evidence": [
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json",
+        "docs/migration/tasks/H02.md"
+      ]
+    },
+    {
+      "id": "I03",
+      "status": "not_applicable",
+      "reason": "本页文案均为整句静态文案，无插值/ICU/富文本",
+      "evidence": [
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/acceptance.json",
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "I04",
+      "status": "passed",
+      "reason": "切换与草稿：en→ja→zh-CN 连续切换资源即时加载渲染（无整页刷新、URL 保持 /map-through/map-nest-modify?mapId=42&tab=edit 全程不变）、本页无草稿可丢、无写请求可重发；common/menu 为基座常载命名空间（BASE_NAMESPACES 审查证实且本轮 diff 零涉及）无切换缺载",
+      "evidence": [
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "I05",
+      "status": "passed",
+      "reason": "第三方/辅助文案：顶栏语言/主题菜单项（浅色/深色/跟随系统）、用户下拉（root 未分配角色 disabled/个人中心/退出登录）、页签等 antd 辅助文案随语言切换（en-US 轮顶栏 Dashboard/Dispatch Monitor 实测、ja 轮主题菜单与言語切替实测）；本页无表格/编辑器/图表辅助面",
+      "evidence": [
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "I06",
+      "status": "deferred",
+      "category": "site_acceptance",
+      "basis": "真实网络级语言资源加载失败不白屏场景 IAB 环境不可构造；本页消费 common/menu 基座常载分片（交付轮品牌 404 资源缺失分支实测不白屏、T00/P01/H01 同口径机制级证据链），四个语言分片本轮哈希零变更绑定无缺译回退面",
+      "owner": "V01",
+      "resumeCondition": "V01 网络故障注入统一复核",
+      "evidence": [
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/acceptance.json"
+      ],
+      "reason": "真实网络级语言资源加载失败不白屏场景 IAB 环境不可构造；本页消费 common/menu 基座常载分片（交付轮品牌 404 缺资源分支实测不白屏机制级证据链），四分片哈希零变更绑定无缺译回退面，deferred 归 V01"
+    },
+    {
+      "id": "I07",
+      "status": "not_applicable",
+      "reason": "本页无后端语言协同内容（零业务请求，无错误消息/导出语言面）",
+      "evidence": [
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/acceptance.json",
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "I08",
+      "status": "passed",
+      "reason": "日期数值/布局：本页无日期/数值/枚举展示（切语言不改任何业务值）；双主题×1366 布局几何断言成立（zh-CN 态），en/ja 长译文（This feature is being migrated.../この機能は移行中です...）渲染完整无溢出（快照+截图证据）",
+      "evidence": [
+        "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/browser-ui-result.json"
+      ]
+    }
+  ],
+  "screenshotsIndex": [
+    {
+      "path": "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/screenshots/h02-audit1-light-1366.png",
+      "sha256": "4ba3844fe7b79c6a66cc19445f6faa94f6c24544131aba27a13865711d212609",
+      "storage": "local_only（.gitignore 排除，不提交 Git）",
+      "desc": "浅色主题玻璃面板+Dock「地图管理」高亮，1366×768"
+    },
+    {
+      "path": "docs/migration/evidence/H02/run-2d558b51-95f5-4df6-b332-b759b628c11b/screenshots/h02-audit1-dark-1366.png",
+      "sha256": "6e504ce945e5a0923b59e8bb30bc2119e295d10fba5f5565a65d42d8df42ebea",
+      "storage": "local_only（.gitignore 排除，不提交 Git）",
+      "desc": "深色主题玻璃面板+Dock 高亮（reload 重建合成帧），1366×768"
+    }
+  ],
+  "deferredSummary": [
+    {
+      "id": "A04",
+      "category": "site_acceptance",
+      "owner": "V01"
+    },
+    {
+      "id": "A24",
+      "category": "site_acceptance",
+      "owner": "V01"
+    },
+    {
+      "id": "I06",
+      "category": "site_acceptance",
+      "owner": "V01"
+    }
+  ],
+  "pendingItems": [
+    "A04：真实 token 过期收敛与双窗口退出同步归 V01 长会话复核（本轮真实登出请求+persist 三键清空双层解析+守卫拦截失效会话机制级实测；T00/P01/P02/P41/P42/H01 等任务同口径）",
+    "A24：长时多页签/真实规模稳定性归 V01 统一收口（本页零业务请求无资源增长面，P43/H01 同口径）",
+    "I06：真实网络级资源加载失败不白屏归 V01 复核（IAB 环境限制未构造；common/menu 基座常载+四分片零变更绑定）",
+    "真实指针交互归 V01 自然浏览器复核（IAB 输入管线冻结，全部交互类点击经合成 pointer 序列垫片；与既往 P01/P02/P41/P42/H01 五轮同口径）",
+    "观察项：登出后 URL 瞬态 /login?redirect=<当前页含查询上下文>（P41/P42/H01 登记同口径，终态正确会话已清，归 V01）"
+  ],
+  "conclusion": "H02 地图编辑暂缓说明页第一次复核通过：页面自交付 d508294 零变更（git diff+SHA-256 重算，17 个公共/分片受检文件哈希与 H01 轮 b58ade8 绑定一致）；交付后公共文件变更（routeAccess.ts 57ce7ba/i18n.ts loader 追加/definitions.tsx 后续页交付 map-nest-modify 节点零出现/BasicLayout P03+Header P27）逐 hunk 从 H02 视角审查成立且 deferred 排除链路与落点契约实测维持（redirect=%2Fmap-through%2Fmap-nest-modify 登录落 /dashboard）；静态门禁复用 57ce7ba 复绿（此后非 docs 零变更）；真实只读 6/6、浏览器针对性复测 8/8。A04/A24/I06 三项 deferred 归 V01，故 verification=partial、不勾选 TASKS；gate=ready 维持放行。"
+}
