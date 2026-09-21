@@ -108,10 +108,11 @@ export function MotorCard({ motor, visible, onSaveAttributes, onSaveParameters, 
       title={<Space size={8}><Typography.Text strong>{motor.name}</Typography.Text><Tag color="cyan">轴 {action.axisNumber}</Tag></Space>}
       extra={<Badge status={direction ? 'processing' : 'default'} text={direction ? `${direction === 1 ? action.positiveLabel : action.negativeLabel}中` : '已停止'} />}
     >
+      {/* 属性与参数均采用水平表单；窄卡片由共享容器规则减少字段列数。 */}
       <Form<MotorAttributes>
         form={attributesForm}
         name={`attributes-${motor.id}`}
-        layout="vertical"
+        layout="horizontal"
         size="small"
         requiredMark={false}
         initialValues={motor}
@@ -132,7 +133,7 @@ export function MotorCard({ motor, visible, onSaveAttributes, onSaveParameters, 
       <Form<MotorParameters>
         form={parametersForm}
         name={`parameters-${motor.id}`}
-        layout="vertical"
+        layout="horizontal"
         size="small"
         requiredMark={false}
         initialValues={motor.parameters}

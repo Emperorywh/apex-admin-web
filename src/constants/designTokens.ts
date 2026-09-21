@@ -74,6 +74,8 @@ export function buildAppTheme(resolvedTheme: ResolvedTheme): ThemeConfig {
       borderRadius: Number.parseInt(token('radius-control'), 10),
     },
     components: {
+      // 横向表单压缩行间留白，校验信息仍由组件在输入框下方自然展开。
+      Form: { itemMarginBottom: 12 },
       // 默认操作是深蓝描边按钮，主要操作用实心蓝色；悬停以青色边线确认焦点。
       Button: {
         primaryColor: token('text'),

@@ -38,7 +38,8 @@ export function LoginForm() {
   }
 
   return (
-    <Form<LoginFormValues> layout="vertical" requiredMark={false} onFinish={handleFinish}>
+    // 登录字段采用水平排列；大号表单使标签与现有大号输入框垂直居中。
+    <Form<LoginFormValues> layout="horizontal" size="large" className={styles.form} requiredMark={false} onFinish={handleFinish}>
       <Form.Item
         name="username"
         label={t('用户名')}

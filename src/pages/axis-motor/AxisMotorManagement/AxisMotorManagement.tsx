@@ -83,11 +83,11 @@ export default function AxisMotorManagement() {
               <Button type="primary" onClick={() => setAddActionType(defaultActionType)}>新增轴电机</Button>
             </Flex>
           </Flex>
-          {/* 筛选不卸载卡片，保留未提交表单；visible 同时让隐藏卡片清理模拟计时器。 */}
+          {/* 筛选保留表单草稿并暂停隐藏卡片模拟；超宽屏才并排卡片，为水平字段预留输入宽度。 */}
           <Row gutter={[16, 16]}>
             {motors.map((motor) => {
               const visible = visibleMotors.some((item) => item.id === motor.id)
-              return <Col xs={24} xl={12} key={motor.id} style={{ display: visible ? undefined : 'none' }}>
+              return <Col xs={24} xxl={12} key={motor.id} style={{ display: visible ? undefined : 'none' }}>
                 <MotorCard motor={motor} visible={visible} onSaveAttributes={saveAttributes} onSaveParameters={saveParameters} onAdd={setAddActionType} />
               </Col>
             })}

@@ -14,7 +14,7 @@ export function MotorAttributesFields({ form }: MotorAttributesFieldsProps) {
   const action = actionType ? getMotorAction(actionType) : undefined
 
   return (
-    // 小屏将属性逐项排列，常规宽度使用两列，保证卡片和弹窗内的表单均可阅读。
+    // 宽表单使用两列；共享容器查询在卡片或弹窗过窄时将字段改为单列水平排列。
     <Row gutter={16}>
       <Col xs={24} sm={12}>
         <Form.Item

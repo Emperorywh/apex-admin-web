@@ -148,10 +148,11 @@
 .healthSensors > span { display: flex; align-items: center; gap: 4px; font-size: 9px; color: #9bb1c5; }
 .healthSensors svg { color: #759bb8; }
 .healthSensors i { width: 4px; height: 4px; background: var(--monitor-green); border-radius: 50%; }
-.relocation { padding-top: 12px; border-top: 1px solid var(--monitor-line); }
-.relocation > label { display: flex; align-items: center; gap: 5px; font-size: 10px; color: #a1b3c8; }
-.relocation label > span { margin-left: auto; color: #687f98; font-size: 9px; }
-.relocation > div { display: flex; gap: 7px; margin-top: 9px; }
+/* 重定位也使用左标签、右控件；状态提示留在标签列，窄侧栏仍能完整显示操作。 */
+.relocation { display: grid; grid-template-columns: 82px minmax(0, 1fr); align-items: center; gap: 8px; padding-top: 12px; border-top: 1px solid var(--monitor-line); }
+.relocation > label { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; font-size: 10px; color: #a1b3c8; }
+.relocation label > span { flex-basis: 100%; color: #687f98; font-size: 9px; }
+.relocation > div { display: flex; min-width: 0; gap: 7px; }
 .relocation select { width: 0; flex: 1; min-width: 0; padding: 7px 6px; background: #152334; color: #9ab0c7; border: 1px solid #2a3d53; border-radius: 3px; font-size: 10px; }
 .relocation button { display: flex; align-items: center; gap: 4px; border: 1px solid #35556e; border-radius: 3px; background: #1b384d; color: #9fdaf0; padding: 0 10px; font-size: 10px; }
 .eventPanel { overflow-y: auto; }

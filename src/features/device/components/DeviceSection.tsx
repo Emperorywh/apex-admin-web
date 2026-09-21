@@ -83,7 +83,8 @@ function DeviceEditor<T extends DeviceRecord>({ title, initialValues, onSave, on
 }) {
   const [form] = Form.useForm<T>()
   return <Modal title={title} open width={560} okText="保存" cancelText="取消" onCancel={onCancel} onOk={() => form.submit()}>
-    <Form<T> form={form} layout="vertical" initialValues={initialValues} onFinish={onSave} className={styles.editor}>
+    {/* 三类设备共用水平表单，长接口标签在固定标签列内展示。 */}
+    <Form<T> form={form} layout="horizontal" initialValues={initialValues} onFinish={onSave} className={styles.editor}>
       {children}
     </Form>
   </Modal>

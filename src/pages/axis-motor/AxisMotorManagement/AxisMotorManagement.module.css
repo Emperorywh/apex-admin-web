@@ -28,8 +28,9 @@
 .motorCard :global(.ant-card-body) { padding: 14px 16px; }
 .motorCard :global(.ant-card-head-title) { white-space: normal; }
 .motorCard :global(.ant-card-extra) { margin-inline-start: 8px; }
+/* 标定参数标签较长，统一标签列避免同一行输入框起点错位。 */
+.compactForm { --app-form-label-width: 136px; }
 .compactForm :global(.ant-form-item) { margin-bottom: 10px; }
-.compactForm :global(.ant-form-item-label) { padding-bottom: 4px; }
 .numberInput { width: 100%; }
 .sectionDivider { margin: 16px 0 !important; }
 .sectionTitle { margin: 0 0 12px !important; font-size: var(--app-fs-primary) !important; }

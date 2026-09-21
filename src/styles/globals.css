@@ -124,6 +124,41 @@ body {
   background: var(--app-canvas);
 }
 button, input, select, textarea { font: inherit; }
+/* 所有水平表单共用标签列；容器查询依据编辑区实际宽度，适用于卡片和弹窗。 */
+.ant-form-horizontal {
+  container-type: inline-size;
+  container-name: app-form;
+  --app-form-label-width: 112px;
+}
+.ant-form-horizontal .ant-form-item > .ant-form-item-row {
+  flex-flow: row nowrap;
+}
+/* 覆盖组件的手机端堆叠规则，让窄屏也保持左标签、右控件；长标签允许完整换行。 */
+.ant-form.ant-form-horizontal .ant-form-item.ant-form-item-horizontal > .ant-form-item-row > .ant-form-item-label {
+  flex: 0 0 var(--app-form-label-width);
+  max-width: var(--app-form-label-width);
+  padding: 0 12px 0 0;
+  text-align: start;
+  white-space: normal;
+}
+.ant-form-horizontal .ant-form-item-label > label {
+  height: auto;
+  min-height: 32px;
+}
+.ant-form-horizontal.ant-form-small .ant-form-item-label > label { min-height: 24px; }
+.ant-form-horizontal.ant-form-large .ant-form-item-label > label { min-height: 40px; }
+.ant-form.ant-form-horizontal .ant-form-item.ant-form-item-horizontal > .ant-form-item-row > .ant-form-item-control {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 100%;
+}
+/* 表单不足两组标签和输入框的宽度时，字段改为单列，字段内部仍保持水平布局。 */
+@container app-form (max-width: 580px) {
+  .ant-form-horizontal > .ant-row > .ant-col {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}
 button:focus-visible, a:focus-visible {
   outline: 2px solid var(--app-cyan);
   outline-offset: 3px;

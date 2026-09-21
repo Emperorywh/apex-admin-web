@@ -15,8 +15,8 @@
 .rowAction { padding-inline: 0; height: auto; }
 .dataNote { font-size: var(--app-fs-secondary); }
 
-/* 弹窗表单使用单独草稿，输入区铺满列宽；窄屏 CAN 字段自动变为单列。 */
-.editor { margin-top: 20px; }
+/* 设备标签包含较长的通讯接口名称；按弹窗实际宽度将 CAN 字段排列为单列水平表单。 */
+.editor { margin-top: 16px; --app-form-label-width: 148px; }
 .numberInput { width: 100%; }
 @media (max-width: 575px) {
   .page { padding-inline: 0; }

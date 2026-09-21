@@ -13,13 +13,13 @@ interface StorageLocationEditorProps {
   onReset: () => void
 }
 
-/** 基础信息与参数分区排列；站点变化清空关联点，所有字段校验通过后才允许保存。 */
+/** 基础信息与参数分区使用水平表单；站点变化清空关联点，所有字段校验通过后才允许保存。 */
 export function StorageLocationEditor({ record, records, onSave, onDirty, onReset }: StorageLocationEditorProps) {
   const [form] = Form.useForm<StorageLocationValues>()
   const stationId = Form.useWatch('stationId', form)
   const station = getStorageStation(stationId)
 
-  return <Form<StorageLocationValues> form={form} layout="vertical" initialValues={record ?? emptyLocation} onFinish={onSave} onValuesChange={onDirty} className={styles.form}>
+  return <Form<StorageLocationValues> form={form} layout="horizontal" initialValues={record ?? emptyLocation} onFinish={onSave} onValuesChange={onDirty} className={styles.form}>
     <Row gutter={[20, 0]}>
       <Col xs={24} md={8}>
         <Form.Item name="name" label="库位名称" rules={[

@@ -45,7 +45,8 @@ export default function App() {
   const antdLocale = locale === 'zh-CN' ? zhCN : enUS
 
   return (
-    <ConfigProvider locale={antdLocale} theme={antdTheme}>
+    // 表单标签统一左对齐并允许长文案换行；宽度与横向排列由共享样式管理。
+    <ConfigProvider locale={antdLocale} theme={antdTheme} form={{ labelAlign: 'left', labelWrap: true, colon: false }}>
       <AntdApp>
         <Wallpaper />
         <FeedbackBridge />

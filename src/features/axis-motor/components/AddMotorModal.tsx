@@ -50,7 +50,8 @@ export function AddMotorModal({ open, initialActionType, onCancel, onCreate }: A
       <Typography.Paragraph type="secondary">
         选择动作类型并关联驱动器、编码器，轴所属编号将自动填写。
       </Typography.Paragraph>
-      <Form<MotorAttributes> form={form} layout="vertical" onFinish={handleCreate}>
+      {/* 新增与卡片编辑统一使用左标签、右输入的属性布局。 */}
+      <Form<MotorAttributes> form={form} layout="horizontal" onFinish={handleCreate}>
         <MotorAttributesFields form={form} />
       </Form>
     </Modal>
