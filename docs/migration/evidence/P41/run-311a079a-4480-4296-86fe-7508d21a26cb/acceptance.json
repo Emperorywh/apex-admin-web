@@ -1,0 +1,490 @@
+{
+  "taskId": "P41",
+  "codeCommit": "57ce7ba12603d02576454b9c68b91a91829cf11c",
+  "auditRound": "第一次验收复核（历史交付 22bed64 的首个完整验收记录；本轮含 P41-audit-1 缺陷修复）",
+  "releaseChecks": {
+    "scope": "passed",
+    "static": "passed",
+    "readOnly": "passed",
+    "ui": "passed",
+    "sharedConsumers": "passed"
+  },
+  "releaseReasons": [
+    "static：本轮因 routeAccess.ts 缺陷修复重跑全量门禁复绿（pnpm check：lint 547 文件 0/0+typecheck+structure 529 源文件；pnpm build 1.39s）——不以基线间仅 docs 为由复用旧结果；OpenAPI 哈希 a82e9b5f 与规格基线一致",
+    "ui：针对性复测 8/8（渲染/返回分支/历史往返/守卫/登出/修复验证/落点回归/en 渲染，见 browser-ui-result.json）；原轮双主题 1366 整页与五语言全页证据在布局与分片零变更前提下继续适用；深色玻璃面板证据维持",
+    "sharedConsumers：routeAccess.ts 修复的唯一运行时消费者为 LoginForm 登录回跳（NotFound 仅注释提及）——修复仅新增对无权限页单一路径的拒绝，授权页回跳（P02 已验证行为）与业务页回跳路径不变；登录落点回归实测 /dashboard；P41 页面自身动作（返回/登出/去登录）全部不经 resolveSafeRedirectPath，零影响"
+  ],
+  "releaseNotes": "audit 第一次复核：19 受检文件 17 个哈希与上轮基线一致（26c94cc..331bc5e 仅 docs）；复核中发现并修复 P41-audit-1（登录回跳可落无权限页，注释-实现不符）；针对性浏览器复测 8/8 含 P41 交接限制 1 补验（canReturn=true 返回分支首验落 /dashboard）；登出真实请求+会话清理复现；verification=partial（A04/I06 与 T00/P01/P02 audit 同口径 deferred 归 V01），gate=ready 维持 B1 放行；不勾选 TASKS",
+  "items": [
+    {
+      "id": "TASK",
+      "status": "passed",
+      "reason": "P41 专项三项逐项复核成立：①返回不进入无权限重定向循环——页面动作全部 replace（本轮 back/forward 实测不残留不循环）+落点=本页时不渲染返回入口（代码审查）+本轮修复后登录回跳也不再落本页；②无权限/服务离线/接口缺口/本期暂缓区分——本页只表达无权限单一语义（源码注释约束+渲染实测），其他状态由业务页 StateBlock 呈现；③五语言完整且不提供绕过权限入口——四语言分片 4 键+common 复用（哈希零变更+原轮五语言全页+本轮 en 抽验），返回入口经 resolveLandingPath 只产出有权地址（routeAccess 代码审查）。本轮复核另发现并修复登录回跳缺陷 P41-audit-1。",
+      "evidence": [
+        "docs/migration/tasks/P41.md",
+        "docs/migration/evidence/P41/run-311a079a-4480-4296-86fe-7508d21a26cb/browser-ui-result.json",
+        "src/pages/un-access/UnAccess/UnAccess.tsx",
+        "src/router/routeAccess.ts"
+      ]
+    },
+    {
+      "id": "DoD1",
+      "status": "passed",
+      "reason": "旧页可达业务清点完整并全量迁移：旧 UnAccess index.tsx 单文件 63 行（Result 403+退出登录/去登录二态），新实现一一对应并增强（主/补双说明、返回落点、真实 logout 接口替代旧本地清凭证）；无其他可达子组件（P41 交付轮递归清点，本轮源码复核维持）。",
+      "evidence": [
+        "docs/migration/tasks/P41.md",
+        "src/pages/un-access/UnAccess/UnAccess.tsx",
+        "docs/migration/evidence/P41/run-311a079a-4480-4296-86fe-7508d21a26cb/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "DoD2",
+      "status": "passed",
+      "reason": "页面不导入 axios/不拼 URL：唯一接口 POST /fms/v1/auth/authorize/logout（OpenAPI 已声明，ResultVoid）经 auth.service 单点封装；本轮 performance entries 实证请求真实发出；旧页无业务查询接口，新页同构不虚构。",
+      "evidence": [
+        "src/services/auth/auth.service.ts",
+        "docs/migration/evidence/P41/run-311a079a-4480-4296-86fe-7508d21a26cb/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "DoD3",
+      "status": "passed",
+      "reason": "状态区分本轮三态实测：已登录（返回+退出双按钮渲染，root/155 权限码前提经 persist 解析核验）、未登录（守卫拦截 /login?redirect=%2Fno-permission，登录页呈现）、会话被清后的去登录防御分支（user=null 渲染分支代码审查；过期清理实测使 persist 清空）；无权限/暂缓/离线不在本页混用（单一语义源码约束）。",
+      "evidence": [
+        "docs/migration/evidence/P41/run-311a079a-4480-4296-86fe-7508d21a26cb/browser-ui-result.json",
+        "src/pages/un-access/UnAccess/UnAccess.tsx"
+      ]
+    },
+    {
+      "id": "DoD4",
+      "status": "not_applicable",
+      "reason": "无任何表格（主表/弹窗表/明细均不涉及），Apex 统一要求不适用。",
+      "evidence": [
+        "docs/migration/tasks/P41.md"
+      ]
+    },
+    {
+      "id": "DoD5",
+      "status": "not_applicable",
+      "reason": "无表格分页/选择/列偏好语义。",
+      "evidence": [
+        "docs/migration/tasks/P41.md"
+      ]
+    },
+    {
+      "id": "DoD6",
+      "status": "passed",
+      "reason": "登出接口失败不阻塞本地清会话（try/catch/finally 结构+注释声明客户端登出语义，代码审查）；页面无查询请求，无取消/乱序面；写操作不自动重试（DoD8 同源）。",
+      "evidence": [
+        "src/pages/un-access/UnAccess/UnAccess.tsx",
+        "docs/migration/tasks/P41.md"
+      ]
+    },
+    {
+      "id": "DoD7",
+      "status": "passed",
+      "reason": "独立全屏页 standaloneMeta noCache：无页签草稿/LRU 面（不适用部分如实说明）；会话数据在登出时清理本轮实测（persist token/user 置 null、activated=false）；非实时页无轮询。",
+      "evidence": [
+        "src/router/definitions.tsx",
+        "docs/migration/evidence/P41/run-311a079a-4480-4296-86fe-7508d21a26cb/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "DoD8",
+      "status": "passed",
+      "reason": "登出为幂等认证交换（非破坏性控制）：旧系统同构直接执行无确认弹窗（旧源码 handleAction 对照）；不自动重试（代码无重试逻辑+本轮实测单次 XHR）；无批量语义。",
+      "evidence": [
+        "src/pages/un-access/UnAccess/UnAccess.tsx",
+        "docs/migration/evidence/P41/run-311a079a-4480-4296-86fe-7508d21a26cb/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "DoD9",
+      "status": "not_applicable",
+      "reason": "无文件传输。",
+      "evidence": [
+        "docs/migration/tasks/P41.md"
+      ]
+    },
+    {
+      "id": "DoD10",
+      "status": "not_applicable",
+      "reason": "无地图/关联。",
+      "evidence": [
+        "docs/migration/tasks/P41.md"
+      ]
+    },
+    {
+      "id": "DoD11",
+      "status": "passed",
+      "reason": "五语言随页交付：access-denied 四语言分片各 4 键（en 旧真译沿用；繁日韩按 B1 基线真实译文）+「退出登录」复用 common 四语言术语；原轮五语言全页实测（html lang 逐语言）维持（分片哈希零变更）；本轮 en-US 抽验复现（全元素 en 译文+html lang=en-US，截图本地留存）。",
+      "evidence": [
+        "src/i18n/locales/en-US/access-denied.ts",
+        "docs/migration/evidence/P41/run-311a079a-4480-4296-86fe-7508d21a26cb/browser-ui-result.json",
+        "docs/migration/tasks/P41.md"
+      ]
+    },
+    {
+      "id": "DoD12",
+      "status": "passed",
+      "reason": "语言边界：页面文案全静态、无用户名称/日志/原始标识猜测翻译；无服务端语言相关只读内容（无业务查询）；Accept-Language 由请求层统一发送（T00/P01 实证维持）。",
+      "evidence": [
+        "src/i18n/locales/en-US/access-denied.ts",
+        "docs/migration/tasks/P41.md"
+      ]
+    },
+    {
+      "id": "DoD13",
+      "status": "passed",
+      "reason": "原轮双主题 1366×768 整页截图维持有效（UnAccess.module.css 哈希零变更）；玻璃面板（--app-glass-* 既有令牌）解决深色反白叠浅壁纸不可读；本轮浅色 en 1366 截图复现（中央面板/按钮可达/无溢出）；IAB Chromium@Windows 边界归 V01（与 P02 同口径）。",
+      "evidence": [
+        "docs/migration/evidence/P41/run-311a079a-4480-4296-86fe-7508d21a26cb/screenshots/no-permission-en-light-1366.png",
+        "src/pages/un-access/UnAccess/UnAccess.module.css"
+      ]
+    },
+    {
+      "id": "DoD14",
+      "status": "not_applicable",
+      "reason": "无统计/时间业务。",
+      "evidence": [
+        "docs/migration/tasks/P41.md"
+      ]
+    },
+    {
+      "id": "DoD15",
+      "status": "passed",
+      "reason": "本轮修复后 pnpm check+build 全量重跑复绿（lint 547 文件 0/0+typecheck+structure 529+build 1.39s）——routeAccess.ts 公共文件变更后不复用旧门禁结果；真实登出请求 performance entries 实证；浏览器针对性复测 8/8；登出为认证交换（与登录对称，历轮 audit 一致执行），无其他写副作用；未新增单元测试。",
+      "evidence": [
+        "docs/migration/evidence/P41/run-311a079a-4480-4296-86fe-7508d21a26cb/browser-ui-result.json",
+        "docs/migration/evidence/P41/run-311a079a-4480-4296-86fe-7508d21a26cb/code-files.json"
+      ]
+    },
+    {
+      "id": "DoD16",
+      "status": "passed",
+      "reason": "P41 范围零 mock/console/debugger（哈希零变更维持原轮 grep 实证）；交接记录按 audit 口径更新（状态校正+限制 1 补验关闭）；缺口/deferred 如实登记于本记录与 RUN_STATE pendingItems。",
+      "evidence": [
+        "docs/migration/tasks/P41.md",
+        "docs/migration/evidence/P41/run-311a079a-4480-4296-86fe-7508d21a26cb/code-files.json"
+      ]
+    },
+    {
+      "id": "A01",
+      "status": "not_applicable",
+      "reason": "45 叶子全项目映射主责 T00/V01；P41 入口 /no-permission 在路由定义（definitions.tsx no-permission 节点零改动复核）、i18n-map、operations.md 有映射。",
+      "evidence": [
+        "src/router/definitions.tsx",
+        "docs/migration/operations.md"
+      ]
+    },
+    {
+      "id": "A02",
+      "status": "not_applicable",
+      "reason": "暂缓页边界主责 H01–H03；无权限页不涉及。",
+      "evidence": [
+        "docs/migration/tasks/P41.md"
+      ]
+    },
+    {
+      "id": "A03",
+      "status": "passed",
+      "reason": "真登录为 P01 owner（P01 第二次复核 passed 同基线）；P41 消费同一会话：本轮登录成功反馈+落点实测（「登录成功」提示/落点 /dashboard），无伪管理员（会话来自真实登录返回，155 权限码）。",
+      "evidence": [
+        "docs/migration/evidence/P01/run-0142d6d6-3479-4d63-bbb4-1b3257fab3c3/acceptance.json",
+        "docs/migration/evidence/P41/run-311a079a-4480-4296-86fe-7508d21a26cb/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A04",
+      "status": "deferred",
+      "reason": "机制级实证充分：持久化恢复（本轮浏览器重启后 en 偏好+会话恢复渲染）；过期清理（本轮意外实证：遗留失效 token 经 /dashboard board 请求 1000000 → 请求层收敛 → persist 三键清空 → 守卫拦截带 redirect 参数）；登出清理（两轮实测 persist 解析核验）。真实 token 过期收敛时长控制与双窗口 storage 同步退出需长会话/双窗口环境，与 T00/P01/P02 audit 同口径 deferred。",
+      "evidence": [
+        "docs/migration/evidence/P41/run-311a079a-4480-4296-86fe-7508d21a26cb/browser-ui-result.json",
+        "docs/migration/evidence/T00/run-b11c9c11-7926-49b5-b491-283f704b9be4/acceptance.json"
+      ],
+      "category": "site_acceptance",
+      "basis": "复现需真实长会话 token 过期与双窗口环境，IAB 单页签自动化环境无法构造；T00/P01/P02 audit 已同口径 deferred",
+      "owner": "V01",
+      "resumeCondition": "V01 统一验收在长会话环境复测 token 过期收敛与双窗口 storage 同步退出"
+    },
+    {
+      "id": "A05",
+      "status": "passed",
+      "reason": "P41 适用面复核成立：守卫三态本轮实测（未登录拦截带参数/已登录放行渲染/登录后落点规则）；无权限页不构成绕过入口——返回按钮经 resolveLandingPath 只产出当前会话有权到达的地址（expandWithAncestors/hasMenuAccess 代码审查），落点=本页时不渲染返回（防循环+防绕过双重）；页面本身无菜单码仅登录可达（standaloneMeta 审查）。",
+      "evidence": [
+        "src/router/routeAccess.ts",
+        "docs/migration/evidence/P41/run-311a079a-4480-4296-86fe-7508d21a26cb/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A06",
+      "status": "passed",
+      "reason": "协议：POST /fms/v1/auth/authorize/logout 本轮 performance entries 实证（xmlhttprequest 1 次，ResultVoid 语义）；路径/方法与 OpenAPI 一致（auth.service 零变更）；Bearer/MD5 认证契约 G03 已关闭（T00 域）。",
+      "evidence": [
+        "src/services/auth/auth.service.ts",
+        "docs/migration/evidence/P41/run-311a079a-4480-4296-86fe-7508d21a26cb/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A07",
+      "status": "not_applicable",
+      "reason": "无表格。",
+      "evidence": [
+        "docs/migration/tasks/P41.md"
+      ]
+    },
+    {
+      "id": "A08",
+      "status": "not_applicable",
+      "reason": "无表格数据语义。",
+      "evidence": [
+        "docs/migration/tasks/P41.md"
+      ]
+    },
+    {
+      "id": "A09",
+      "status": "not_applicable",
+      "reason": "无表格状态/列偏好。",
+      "evidence": [
+        "docs/migration/tasks/P41.md"
+      ]
+    },
+    {
+      "id": "A10",
+      "status": "passed",
+      "reason": "页面单动作（登出）无并发查询竞争面；返回/去登录为 SPA replace 导航不产生请求；登出按钮连点行为审查——handleSignOut 无防连点门闸，但登出幂等（清会话+replace 导航，二次点击时已离开页面），无副作用放大（代码审查结论，旧系统同构）。",
+      "evidence": [
+        "src/pages/un-access/UnAccess/UnAccess.tsx",
+        "docs/migration/tasks/P41.md"
+      ]
+    },
+    {
+      "id": "A11",
+      "status": "not_applicable",
+      "reason": "页面无远端查询数据区域（唯一请求为登出动作，其失败处理见 DoD6）。",
+      "evidence": [
+        "docs/migration/tasks/P41.md"
+      ]
+    },
+    {
+      "id": "A12",
+      "status": "not_applicable",
+      "reason": "非实时页，无轮询。",
+      "evidence": [
+        "docs/migration/tasks/P41.md"
+      ]
+    },
+    {
+      "id": "A13",
+      "status": "not_applicable",
+      "reason": "独立页 noCache 无表单草稿/页签缓存语义（standaloneMeta 审查）。",
+      "evidence": [
+        "src/router/definitions.tsx"
+      ]
+    },
+    {
+      "id": "A14",
+      "status": "passed",
+      "reason": "登出写操作不自动重放（代码无重试+本轮单次 XHR 实测）；结果未知语义不适用（登出客户端语义明确：失败也终止本地会话，注释声明不冒充服务端已登出）；无破坏性控制/批量。",
+      "evidence": [
+        "src/pages/un-access/UnAccess/UnAccess.tsx",
+        "docs/migration/evidence/P41/run-311a079a-4480-4296-86fe-7508d21a26cb/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A15",
+      "status": "not_applicable",
+      "reason": "无批量/冲突场景。",
+      "evidence": [
+        "docs/migration/tasks/P41.md"
+      ]
+    },
+    {
+      "id": "A16",
+      "status": "not_applicable",
+      "reason": "无文件传输。",
+      "evidence": [
+        "docs/migration/tasks/P41.md"
+      ]
+    },
+    {
+      "id": "A17",
+      "status": "not_applicable",
+      "reason": "无地图/关联。",
+      "evidence": [
+        "docs/migration/tasks/P41.md"
+      ]
+    },
+    {
+      "id": "A18",
+      "status": "not_applicable",
+      "reason": "无工艺。",
+      "evidence": [
+        "docs/migration/tasks/P41.md"
+      ]
+    },
+    {
+      "id": "A19",
+      "status": "not_applicable",
+      "reason": "无统计。",
+      "evidence": [
+        "docs/migration/tasks/P41.md"
+      ]
+    },
+    {
+      "id": "A20",
+      "status": "passed",
+      "reason": "五语言+主题+终端：原轮五语言全页/双主题 1366 截图维持（布局与分片零变更）；本轮 en-US 全元素渲染+html lang 同步+浅色截图复现；语言经持久化偏好恢复实测（浏览器新会话恢复 en-US）；IAB Chromium@Windows 边界与真实指针复核归 V01（与 P02 同口径）。",
+      "evidence": [
+        "docs/migration/evidence/P41/run-311a079a-4480-4296-86fe-7508d21a26cb/browser-ui-result.json",
+        "docs/migration/tasks/P41.md"
+      ]
+    },
+    {
+      "id": "A21",
+      "status": "passed",
+      "reason": "P41 范围零 mock（原轮 grep 实证+本轮 19 受检文件哈希比对维持）；无合法仿真接口涉及；全项目 mock 审计归 T00（392e831 已核）/V01。",
+      "evidence": [
+        "docs/migration/evidence/P41/run-311a079a-4480-4296-86fe-7508d21a26cb/code-files.json",
+        "docs/migration/tasks/P41.md"
+      ]
+    },
+    {
+      "id": "A22",
+      "status": "passed",
+      "reason": "本轮核心复核域：无权限有明确落点（resolveLandingPath 全不可用兜底，routeAccess 审查+原轮 root 全 pending 场景实测）；登录回跳拒绝无权限页——**复核发现缺陷 P41-audit-1（redirect=%2Fno-permission 登录回跳落无权限页，注释-实现不符）并修复**，修复后实测落 /dashboard；历史往返不残留无权限页不循环（back/forward 实测）；返回动作 replace 不堆积历史。",
+      "evidence": [
+        "src/router/routeAccess.ts",
+        "docs/migration/evidence/P41/run-311a079a-4480-4296-86fe-7508d21a26cb/browser-ui-result.json",
+        "docs/migration/tasks/P41.md"
+      ]
+    },
+    {
+      "id": "A23",
+      "status": "passed",
+      "reason": "依赖与门禁：本轮修复后 pnpm check+build 全量重跑复绿（lint 547 文件 0/0+typecheck+structure 529+build 1.39s）；官方 npm 依赖与锁文件未动（本轮零依赖变更）；修复仅 5 行（4 行注释+1 行判断）无无关格式化。",
+      "evidence": [
+        "docs/migration/evidence/P41/run-311a079a-4480-4296-86fe-7508d21a26cb/code-files.json"
+      ]
+    },
+    {
+      "id": "A24",
+      "status": "not_applicable",
+      "reason": "无图表/虚拟表/传输等长时资源面；多页签长时稳定性归 V01 全项目观测。",
+      "evidence": [
+        "docs/migration/tasks/P41.md"
+      ]
+    },
+    {
+      "id": "I01",
+      "status": "passed",
+      "reason": "五语言入口在登录页（P01 owner）；P41 页随持久化偏好渲染：本轮浏览器恢复 en-US 偏好（persist:apex-admin:settings.locale+apex-admin:lang 双源一致）+html lang=en-US 同步+全元素 en 译文实测；zh-TW/ja-JP/ko-KR 精确保留由原轮全页实测维持（分片零变更）。",
+      "evidence": [
+        "docs/migration/evidence/P41/run-311a079a-4480-4296-86fe-7508d21a26cb/browser-ui-result.json",
+        "docs/migration/tasks/P41.md"
+      ]
+    },
+    {
+      "id": "I02",
+      "status": "passed",
+      "reason": "旧 key 映射完整：旧 UnAccess 使用的「无权限访问当前页面」「退出登录」「去登录」均有去向（access-denied 分片+common 常驻基座），en 为旧系统真译沿用；i18n-map 冻结表「复用 common/error」更正为独立分片的登记维持；本轮 i18n.ts 哈希零变更（access-denied 四表注册零改动）；全项目 I02 收口归 V01。",
+      "evidence": [
+        "src/i18n/locales/en-US/access-denied.ts",
+        "docs/migration/i18n-map.md",
+        "docs/migration/tasks/P41.md"
+      ]
+    },
+    {
+      "id": "I03",
+      "status": "not_applicable",
+      "reason": "access-denied 4 键均为静态文案，无插值/ICU/富文本（本轮 en 渲染复现无裸占位符）。",
+      "evidence": [
+        "src/i18n/locales/en-US/access-denied.ts"
+      ]
+    },
+    {
+      "id": "I04",
+      "status": "passed",
+      "reason": "语言切换为 SPA 状态切换（原轮五语言逐语言实测无整页刷新维持）；本页无草稿/写请求，切换面仅静态文案（分片零变更）；独立页无切换入口与旧系统同构（跟随持久化偏好，本轮恢复实测）。",
+      "evidence": [
+        "docs/migration/tasks/P41.md",
+        "docs/migration/evidence/P41/run-311a079a-4480-4296-86fe-7508d21a26cb/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "I05",
+      "status": "passed",
+      "reason": "第三方与辅助文案：antd Result/Button 随语言更新（本轮 en：No permission.../Back to available page/Sign out；原轮五语言对照）；「退出登录」复用 common 四语言术语不重复定义；Apex/dayjs 不涉及。",
+      "evidence": [
+        "docs/migration/evidence/P41/run-311a079a-4480-4296-86fe-7508d21a26cb/browser-ui-result.json",
+        "src/i18n/locales/en-US/access-denied.ts"
+      ]
+    },
+    {
+      "id": "I06",
+      "status": "deferred",
+      "reason": "P41 范围内资源完整性实证维持：access-denied 四语言 4 键全齐、无缺失回退登记（分片哈希零变更）；本轮 en 正常加载路径复现（含浏览器重启后分片懒加载恢复）。真实网络级语言资源加载失败不白屏场景与 T00/P01/P02 同口径受 IAB 环境限制。",
+      "evidence": [
+        "docs/migration/evidence/P41/run-311a079a-4480-4296-86fe-7508d21a26cb/browser-ui-result.json",
+        "docs/migration/evidence/T00/run-b11c9c11-7926-49b5-b491-283f704b9be4/acceptance.json"
+      ],
+      "category": "site_acceptance",
+      "basis": "真实资源加载失败需构造网络故障环境；P41 四语言分片完整、无缺失回退登记",
+      "owner": "V01",
+      "resumeCondition": "V01 统一验收构造资源加载失败场景复核不白屏与可恢复"
+    },
+    {
+      "id": "I07",
+      "status": "passed",
+      "reason": "后端协同：本页唯一请求（登出）语言无关；Accept-Language 由请求层统一发送（P01/T00 实证维持）；无服务端语言相关只读内容；后端其他语言消息/导出能力边界归 V01 全局登记。",
+      "evidence": [
+        "docs/migration/evidence/P01/run-0142d6d6-3479-4d63-bbb4-1b3257fab3c3/acceptance.json",
+        "docs/migration/contracts.md"
+      ]
+    },
+    {
+      "id": "I08",
+      "status": "passed",
+      "reason": "语言切换不改业务值/时区/枚举（页面无业务值；本轮 en 与原轮简中渲染同构）；长译文布局：本轮 en 1366 截图主/补说明两行完整、按钮可达无截断；原轮五语言×双主题证据维持。",
+      "evidence": [
+        "docs/migration/evidence/P41/run-311a079a-4480-4296-86fe-7508d21a26cb/screenshots/no-permission-en-light-1366.png",
+        "docs/migration/tasks/P41.md"
+      ]
+    }
+  ],
+  "verification": "partial",
+  "verificationNote": "2 项 deferred：A04 真实 token 过期收敛/双窗口退出（本轮已意外补证过期清理机制链）、I06 真实资源加载失败不白屏（均与 T00/P01/P02 audit 同口径归 V01）；另有观察项登记：登出后 URL 瞬态（终态正确、两次复现实验干净，归 V01 自然浏览器复核）、真实无码用户构造无权限场景归 V01；P41 任务范围内全部适用项 passed，复核发现 1 缺陷（P41-audit-1 登录回跳落无权限页）已修复并复测",
+  "environment": {
+    "codeCommit": "57ce7ba12603d02576454b9c68b91a91829cf11c（含 P41-audit-1 修复：routeAccess.ts +5 行；其余 18 受检文件自 26c94cc 零变更）",
+    "channel": "Vite dev server 同源代理 http://localhost:5173（用户既有运行未接管，修复经 HMR 生效后整页加载验证）→ APEX_DEV_LEGACY_TARGET",
+    "backend": "192.168.0.158:8888（经 dev 代理；登录/登出认证交换各 3 次，测试会话均已登出清理）",
+    "credentials": "本机 .env.local（APEX_TEST_USERNAME/APEX_TEST_PASSWORD，来源名称记录、值不入档）",
+    "browser": "ZCode IAB（Chromium 内核，Windows 11），视口 1366×768",
+    "roles": "root（155 权限码，persist 解析核验）；真实无码用户构造无权限场景归 V01（本环境仅 root 凭据可得）",
+    "languages": "本轮 en-US 实测（持久化偏好恢复+全元素渲染+html lang）；zh-TW/ja-JP/ko-KR 由原轮全页实测维持（分片零变更）",
+    "themes": "本轮浅色截图；深色玻璃面板由原轮双主题截图维持（布局/CSS 零变更）",
+    "sideEffects": "零业务写接触：登录/登出为认证交换（与历轮 audit 同口径），登出后 persist 三键清空经解析核验；未触任何业务数据",
+    "syntheticPathNotes": "IAB 输入管线冻结（与 P01/P02 audit 同现象）：提交类点击经 evaluate 派发合成 pointer 序列、React 受控输入经 nativeSetter 注入完成，不能证明真实指针/键盘交互，真实指针自然浏览器复核归 V01；登出结果以 performance entries+persist 存储真实状态+history 拦截器核验，不凭残留 DOM 判定"
+  },
+  "codeFiles": [
+    { "sha256": "d4ea4e85904d10211313cf35a12746d6b8207e34342648c109627b348f3a04f7", "path": "src/pages/un-access/UnAccess/UnAccess.tsx" },
+    { "sha256": "423bf0a404e6ec132690f9953a6147f886cce934729a524d1a996004f57fa9d0", "path": "src/pages/un-access/UnAccess/UnAccess.module.css" },
+    { "sha256": "301a73a47d830f3da7e6b163225b0e98d6262fcb395b1c8c73e29b0ba46c9cc8", "path": "src/i18n/locales/en-US/access-denied.ts" },
+    { "sha256": "90116f4dba526de54a0af2f118d65c66449192d0d9be4510f5174747ebf7b23a", "path": "src/i18n/locales/zh-TW/access-denied.ts" },
+    { "sha256": "adf56a08091d26d5f1c39969cc416e9f26cf0a13b3f5f9bc7e97a278e7ddfaf6", "path": "src/i18n/locales/ja-JP/access-denied.ts" },
+    { "sha256": "4ce109a799868f928cb00ee9fd59f196865f5af80d9e5aba0b96aa7592662739", "path": "src/i18n/locales/ko-KR/access-denied.ts" },
+    { "sha256": "e02d0d676b011c194108df5663c5b4dd1fedd6d4c9bbe1b63c469c58f872ba6e", "path": "src/router/definitions.tsx" },
+    { "sha256": "e6a4d451afb751af8b94a4b1ae2d865f11b3abbd46ce3bcca7751cdbd6a0b9d8", "path": "src/router/routeAccess.ts", "note": "P41-audit-1 修复（57ce7ba）" },
+    { "sha256": "06b6a6089b7719603d2d1f3495864435c29a1bfd70bf9120926e6438d694c978", "path": "src/features/auth/components/LoginForm/LoginForm.tsx", "note": "修复消费者补登（零修改）" },
+    { "sha256": "b867e71364ae386b5cd20ab413f16b131c71a58d8085fb3a717daf9cde791392", "path": "src/i18n/i18n.ts" },
+    { "sha256": "5c332c25cbc8854d437e7b84b45e78c8c0af09ce68074b9ecb79426564abefa5", "path": "src/services/auth/auth.service.ts" },
+    { "sha256": "19e4f76f1b64506bac1243170dc34f84e223ad5c85fb96c5ecac67c4325e503a", "path": "src/services/auth/auth.service.types.ts" },
+    { "sha256": "1fd2576d835ac08559eb304d14b8a8442dd7b46e4570898d9993b4505d0b706f", "path": "src/store/slices/authSlice.ts" },
+    { "sha256": "86cacd6c84b42b9910b7a1b83f7bcd5b3a9916024a82478c907ef0b9b8c85196", "path": "src/services/request/request.ts" },
+    { "sha256": "7cee1ffaeb634905ea2076ea5144115020abf81bef4a620430a980494042986d", "path": "src/App/App.tsx" },
+    { "sha256": "0ddaa21067f7c25dc077ca2cdaabcb00e7eb4c1a0548174b0213b5244d35484f", "path": "src/i18n/locales/en-US/common.ts" },
+    { "sha256": "88fd4e88b3618cb365caceebb21cda3776ce5820a1beb466bdef2ef07234dca1", "path": "src/i18n/locales/zh-TW/common.ts" },
+    { "sha256": "6797fa4be85778bd08982ec9e27c44d8df50ceb3f496652a32bb3c6ac284d67d", "path": "src/i18n/locales/ja-JP/common.ts" },
+    { "sha256": "ca75fc05ac3ddde06ec5e77eb0202ae702a572d332b6266750136785a6d5b1a4", "path": "src/i18n/locales/ko-KR/common.ts" }
+  ]
+}

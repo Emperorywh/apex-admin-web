@@ -1,0 +1,75 @@
+{
+  "task": "P41",
+  "runId": "run-311a079a-4480-4296-86fe-7508d21a26cb",
+  "purpose": "audit（第一次验收复核）",
+  "channel": "Vite dev server 同源代理 http://localhost:5173（用户既有运行未接管，routeAccess.ts 修复经 HMR 生效）→ APEX_DEV_LEGACY_TARGET",
+  "viewport": "1366×768",
+  "language": "en-US（持久化偏好恢复）",
+  "theme": "light（截图）；深色由原轮双主题截图维持（布局/CSS 零变更）",
+  "checks": [
+    {
+      "id": "R1",
+      "name": "已登录直访 /no-permission 页面渲染与 canReturn=true 分支",
+      "expected": "已登录用户直访渲染 403 反馈；有可用业务页时渲染返回入口",
+      "actual": "Result 403 图形+标题+主说明 No permission to access this page+补充说明+「Back to available page」主按钮+「Sign out」按钮全部渲染（root/155 权限码/dashboard 权限前提经 persist 解析核验）；本轮补验 P41 交接登记限制 1（B2a 业务页交付后 canReturn=true 分支首验）",
+      "result": "passed"
+    },
+    {
+      "id": "R2",
+      "name": "返回可用页面落点导航",
+      "expected": "点击返回经 resolveLandingPath 落到 /dashboard",
+      "actual": "点击后 URL /dashboard；Playwright click 超时（IAB 输入管线冻结）改经合成 pointer 序列垫片（P01/P02 audit 同口径，真实指针归 V01）",
+      "result": "passed"
+    },
+    {
+      "id": "R3",
+      "name": "历史往返防循环",
+      "expected": "返回动作为 replace，无权限页不残留历史、无重定向风暴",
+      "actual": "back → about:blank（tab 初始页，非无权限页）、forward → /dashboard；无循环",
+      "result": "passed"
+    },
+    {
+      "id": "R4",
+      "name": "未登录直访守卫拦截",
+      "expected": "守卫送回 /login?redirect=%2Fno-permission",
+      "actual": "整页加载被守卫拦截，URL /login?redirect=%2Fno-permission（token 过期清理后实测；该场景同时实证请求层 1000000 收敛清会话机制）",
+      "result": "passed"
+    },
+    {
+      "id": "R5",
+      "name": "退出登录真实请求与本地清理",
+      "expected": "POST /fms/v1/auth/authorize/logout 发出；persist 清空；replace /login 无参数残留",
+      "actual": "performance entries 实证 logout XHR 1 次；persist:apex-admin:auth token/user 置 null、activated=false；URL /login search 空；history 拦截器仅一条 replace(/login)。复测第二轮出现 /login?redirect=%2Fno-permission 瞬态（终态相同、会话已清，经 HMR 后复现实验两次均干净，登记为不可复现观察项，疑似 dev HMR 与登出导航竞态）",
+      "result": "passed"
+    },
+    {
+      "id": "R6",
+      "name": "登录回跳拒绝无权限页（本轮缺陷修复验证）",
+      "expected": "修复后 redirect=%2Fno-permission 登录不再回无权限页，落 resolveLandingPath",
+      "actual": "修复前实测回跳落在 /no-permission（缺陷复现）；修复后同路径登录落 /dashboard",
+      "result": "passed"
+    },
+    {
+      "id": "R7",
+      "name": "无回跳参数登录落点回归",
+      "expected": "无 redirect 登录落 /dashboard（D29）",
+      "actual": "URL /dashboard；回归通过（resolveLandingPath 未受修复影响）",
+      "result": "passed"
+    },
+    {
+      "id": "R8",
+      "name": "en-US 渲染与 html lang",
+      "expected": "en 译文完整、html lang 同步",
+      "actual": "html lang=en-US；主/补说明、两按钮全 en 译文（截图 no-permission-en-light-1366.png 本地留存）；四语言分片哈希零变更+原轮五语言全页实测维持",
+      "result": "passed"
+    }
+  ],
+  "defectFoundAndFixed": {
+    "id": "P41-audit-1",
+    "summary": "resolveSafeRedirectPath 未拒绝无权限页登录回跳（函数注释声明「无权限页一律拒绝」，实现依赖 isLeafAvailable 对超管放行 hideInMenu 辅助页）",
+    "discovery": "R6 修复前实测：/login?redirect=%2Fno-permission 登录后回跳落在 /no-permission",
+    "fix": "src/router/routeAccess.ts resolveSafeRedirectPath 增加显式拒绝 ROUTE_PATHS['no-permission']（4 行多行简体中文注释+1 行判断），对齐既声明契约；授权页回跳（P02 已验证行为）与业务页回跳不受影响",
+    "verification": "R6 修复后实测落 /dashboard；R7 回归通过；静态门禁重跑复绿（lint 547 文件 0/0+typecheck+structure 529+build 1.39s）"
+  },
+  "syntheticPathNotes": "Playwright click 与 evaluate 表单输入均受 IAB 输入管线冻结影响（P01/P02 audit 同现象）：提交类点击经合成 pointer 序列（pointerdown→mousedown→pointerup→mouseup→click）垫片完成，React 受控输入经 nativeSetter 注入；不能证明真实指针/键盘交互，真实指针自然浏览器复核归 V01。登出结果以 performance entries+persist 存储真实状态+history 拦截器核验，不凭残留 DOM 判定"
+}

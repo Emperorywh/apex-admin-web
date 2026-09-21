@@ -1,0 +1,28 @@
+{
+  "taskId": "P41",
+  "runId": "run-311a079a-4480-4296-86fe-7508d21a26cb",
+  "boundAtCommitNote": "哈希在工作树绑定；codeCommit 见 acceptance.json（含本轮 routeAccess.ts 缺陷修复）",
+  "baselineNote": "26c94cc..331bc5e 经 git diff 证实 src/、package.json、pnpm-lock.yaml、vite.config.ts 零变化（仅 docs）；除 routeAccess.ts（本轮 P41-audit-1 缺陷修复）与 LoginForm.tsx（本轮补登消费者）外，全部受检文件哈希与上轮 P02 audit（run-9fc8d28e）记录一致=零变更",
+  "files": [
+    { "path": "src/pages/un-access/UnAccess/UnAccess.tsx", "sha256": "d4ea4e85904d10211313cf35a12746d6b8207e34342648c109627b348f3a04f7" },
+    { "path": "src/pages/un-access/UnAccess/UnAccess.module.css", "sha256": "423bf0a404e6ec132690f9953a6147f886cce934729a524d1a996004f57fa9d0" },
+    { "path": "src/i18n/locales/en-US/access-denied.ts", "sha256": "301a73a47d830f3da7e6b163225b0e98d6262fcb395b1c8c73e29b0ba46c9cc8" },
+    { "path": "src/i18n/locales/zh-TW/access-denied.ts", "sha256": "90116f4dba526de54a0af2f118d65c66449192d0d9be4510f5174747ebf7b23a" },
+    { "path": "src/i18n/locales/ja-JP/access-denied.ts", "sha256": "adf56a08091d26d5f1c39969cc416e9f26cf0a13b3f5f9bc7e97a278e7ddfaf6" },
+    { "path": "src/i18n/locales/ko-KR/access-denied.ts", "sha256": "4ce109a799868f928cb00ee9fd59f196865f5af80d9e5aba0b96aa7592662739" },
+    { "path": "src/router/definitions.tsx", "sha256": "e02d0d676b011c194108df5663c5b4dd1fedd6d4c9bbe1b63c469c58f872ba6e" },
+    { "path": "src/router/routeAccess.ts", "sha256": "e6a4d451afb751af8b94a4b1ae2d865f11b3abbd46ce3bcca7751cdbd6a0b9d8", "changedThisRound": "P41-audit-1 缺陷修复（resolveSafeRedirectPath 显式拒绝无权限页回跳）" },
+    { "path": "src/features/auth/components/LoginForm/LoginForm.tsx", "sha256": "06b6a6089b7719603d2d1f3495864435c29a1bfd70bf9120926e6438d694c978", "note": "resolveSafeRedirectPath 唯一运行时消费者，本轮补登（零修改）" },
+    { "path": "src/i18n/i18n.ts", "sha256": "b867e71364ae386b5cd20ab413f16b131c71a58d8085fb3a717daf9cde791392" },
+    { "path": "src/services/auth/auth.service.ts", "sha256": "5c332c25cbc8854d437e7b84b45e78c8c0af09ce68074b9ecb79426564abefa5" },
+    { "path": "src/services/auth/auth.service.types.ts", "sha256": "19e4f76f1b64506bac1243170dc34f84e223ad5c85fb96c5ecac67c4325e503a" },
+    { "path": "src/store/slices/authSlice.ts", "sha256": "1fd2576d835ac08559eb304d14b8a8442dd7b46e4570898d9993b4505d0b706f" },
+    { "path": "src/services/request/request.ts", "sha256": "86cacd6c84b42b9910b7a1b83f7bcd5b3a9916024a82478c907ef0b9b8c85196" },
+    { "path": "src/App/App.tsx", "sha256": "7cee1ffaeb634905ea2076ea5144115020abf81bef4a620430a980494042986d" },
+    { "path": "src/i18n/locales/en-US/common.ts", "sha256": "0ddaa21067f7c25dc077ca2cdaabcb00e7eb4c1a0548174b0213b5244d35484f" },
+    { "path": "src/i18n/locales/zh-TW/common.ts", "sha256": "88fd4e88b3618cb365caceebb21cda3776ce5820a1beb466bdef2ef07234dca1" },
+    { "path": "src/i18n/locales/ja-JP/common.ts", "sha256": "6797fa4be85778bd08982ec9e27c44d8df50ceb3f496652a32bb3c6ac284d67d" },
+    { "path": "src/i18n/locales/ko-KR/common.ts", "sha256": "ca75fc05ac3ddde06ec5e77eb0202ae702a572d332b6266750136785a6d5b1a4" }
+  ],
+  "openapiSha256": "a82e9b5f6ef5e564deee16e4e74713b28fccb35cd0a651e3631cfd9d63d49c7c"
+}
