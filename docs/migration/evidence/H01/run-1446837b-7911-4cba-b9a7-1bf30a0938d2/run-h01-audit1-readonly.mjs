@@ -1,0 +1,167 @@
+/**
+ * H01 audit 第一次复核真实只读复测脚本（run run-1446837b，代码基线 b58ade8）。
+ *
+ * H01 调度监控暂缓说明页无业务接口，本脚本验证与页面行为相关的真实前提：
+ * - dev 同源代理链路可达（浏览器验收同通道）：getHardwareInfo 无令牌；
+ * - 代理与直连后端一致性对照；
+ * - 真实登录（MD5+Bearer）读取 activated/权限码，断言：
+ *   ① overview:view 在权限集合（/over-look 守卫与菜单显隐前提，原权限保留）；
+ *   ② dashboard-realtime:view 在权限集合（登录落点应落 /dashboard，
+ *     deferred 页不抢占落点——P34 后落点行为，替代交付轮 /no-permission 分支）；
+ * - 登出清理：curl 会话立即释放，为浏览器单会话验证让路（后端 root 单会话）。
+ *
+ * 纪律：凭据从本机 .env.local 读取（仅记录来源名称）；token/Authorization、
+ * 密码不写入结果；全程查询性质 + 会话自身登出，无任何业务写操作。
+ */
+
+import { readFileSync, writeFileSync } from 'node:fs'
+import { createHash } from 'node:crypto'
+import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const here = dirname(fileURLToPath(import.meta.url))
+const devBase = process.argv[2] || 'http://localhost:5173'
+
+const envLocal = readFileSync(join(here, '../../../../../.env.local'), 'utf8')
+const readEnv = (key) => {
+  const line = envLocal.split(/\r?\n/).find((l) => l.startsWith(`${key}=`))
+  return line ? line.slice(key.length + 1).trim() : ''
+}
+const legacyTarget = readEnv('APEX_DEV_LEGACY_TARGET')
+const md5 = (s) => createHash('md5').update(s, 'utf8').digest('hex')
+
+const results = []
+const record = (step, ok, detail) => {
+  results.push({ step, ok, detail })
+  console.log(`${ok ? 'PASS' : 'FAIL'} | ${step} | ${detail}`)
+}
+
+const getJson = async (url, headers = {}) => {
+  const res = await fetch(url, { headers })
+  const text = await res.text()
+  let body = null
+  try {
+    body = JSON.parse(text)
+  } catch {
+    body = { _raw: text.slice(0, 200) }
+  }
+  return { httpStatus: res.status, body }
+}
+
+// ---- 1. 代理链路可达（无令牌查询）----
+const hwProxy = await getJson(`${devBase}/fms/v1/auth/license/getHardwareInfo`)
+const hwProxyOk =
+  hwProxy.httpStatus === 200 &&
+  hwProxy.body?.code === 200 &&
+  typeof hwProxy.body?.data === 'string' &&
+  hwProxy.body.data.length > 0
+record(
+  'getHardwareInfo 经 dev 代理（无令牌）',
+  hwProxyOk,
+  `HTTP ${hwProxy.httpStatus} code=${hwProxy.body?.code} 硬件码 ${
+    typeof hwProxy.body?.data === 'string'
+      ? `len=${hwProxy.body.data.length} sha256_8=${createHash('sha256').update(hwProxy.body.data, 'utf8').digest('hex').slice(0, 8)}`
+      : `类型=${typeof hwProxy.body?.data}`
+  }`
+)
+
+// ---- 2. 直连后端一致性对照 ----
+const hwDirect = legacyTarget
+  ? await getJson(`${legacyTarget}/fms/v1/auth/license/getHardwareInfo`)
+  : null
+const hwDirectOk = hwDirect && hwDirect.httpStatus === 200 && hwDirect.body?.code === 200
+const hwConsistent = hwProxyOk && hwDirectOk && hwDirect.body.data === hwProxy.body.data
+record(
+  'getHardwareInfo 直连后端对照',
+  Boolean(hwDirectOk && hwConsistent),
+  hwDirect
+    ? `HTTP ${hwDirect.httpStatus} code=${hwDirect.body?.code} 与代理一致=${hwConsistent}`
+    : '未读取到 APEX_DEV_LEGACY_TARGET，跳过'
+)
+
+// ---- 3. 真实登录读取 H01 两项前提（经 dev 代理，同浏览器通道） ----
+const username = readEnv('APEX_TEST_USERNAME')
+const password = readEnv('APEX_TEST_PASSWORD')
+if (!username || !password) {
+  console.error('FATAL: .env.local 缺少测试凭据（值不入档）')
+  record('真实登录读取 activated/权限码', false, '缺少凭据来源，跳过')
+} else {
+  let token = null
+  try {
+    const res = await fetch(`${devBase}/fms/v1/auth/authorize/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password: md5(password) }),
+    })
+    const body = await res.json()
+    const ok = res.status === 200 && body?.code === 200 && Boolean(body?.data?.token)
+    if (ok) {
+      token = body.data.token
+      const perms = Array.isArray(body.data.permissions) ? body.data.permissions : []
+      record(
+        '真实登录读取 activated/权限码',
+        true,
+        `HTTP ${res.status} code=${body.code} activated=${body.data.activated} 权限码=${perms.length} permissionsTree=${Array.isArray(body.data.permissionsTree) ? body.data.permissionsTree.length : 'N/A'}（token 不入档）`
+      )
+      const hasOverview = perms.includes('overview:view')
+      record(
+        'H01 守卫前提：overview:view 在权限集合',
+        hasOverview,
+        hasOverview
+          ? '包含 → /over-look 菜单可见+直访守卫放行（原权限保留核对成立）'
+          : '不包含 → 本环境无法复现有权限访问分支，浏览器阶段如实登记'
+      )
+      const hasDashboard = perms.includes('dashboard-realtime:view')
+      record(
+        '落点前提：dashboard-realtime:view 在权限集合（deferred 不抢占落点）',
+        hasDashboard,
+        hasDashboard
+          ? '包含 → resolveLandingPath 落 /dashboard；带 redirect=%2Fover-look 登录应被拒并回落 /dashboard（deferred 排除链路）'
+          : '不包含 → 落点将回落首个可用业务页，浏览器阶段核实'
+      )
+    } else {
+      record(
+        '真实登录读取 activated/权限码',
+        false,
+        `HTTP ${res.status} code=${body?.code} message=${String(body?.message || '').slice(0, 60)}`
+      )
+    }
+  } catch (err) {
+    record('真实登录读取 activated/权限码', false, `网络错误：${err.cause?.code || err.message}`)
+  }
+
+  // ---- 4. 登出清理（释放 curl 会话，保证浏览器单会话）----
+  if (token) {
+    try {
+      const res = await fetch(`${devBase}/fms/v1/auth/authorize/logout`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      let code = null
+      try {
+        code = (await res.json())?.code
+      } catch {
+        code = `HTTP ${res.status}`
+      }
+      record('登出清理（释放探测会话）', true, `HTTP ${res.status} code=${code}`)
+    } catch (err) {
+      record('登出清理（释放探测会话）', false, `网络错误：${err.cause?.code || err.message}`)
+    }
+  } else {
+    record('登出清理（释放探测会话）', false, '未获得令牌，跳过')
+  }
+}
+
+const summary = {
+  runId: 'run-1446837b-7911-4cba-b9a7-1bf30a0938d2',
+  taskId: 'H01',
+  purpose: 'audit（第一次复核）',
+  codeCommit: 'b58ade8ff40bfa6e6ecf25cd87e0022d6e519514',
+  executedAt: new Date().toISOString(),
+  channel: `${devBase}（Vite dev 同源代理）→ ${legacyTarget || 'N/A'}`,
+  results,
+  passCount: results.filter((r) => r.ok).length,
+  totalCount: results.length,
+}
+writeFileSync(join(here, 'h01-audit1-readonly-result.json'), JSON.stringify(summary, null, 2))
+console.log(`\n${summary.passCount}/${summary.totalCount} PASS；结果写入 h01-audit1-readonly-result.json`)

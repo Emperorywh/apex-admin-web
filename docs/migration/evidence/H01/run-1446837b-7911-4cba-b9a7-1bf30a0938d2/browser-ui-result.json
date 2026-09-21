@@ -1,0 +1,83 @@
+{
+  "runId": "run-1446837b-7911-4cba-b9a7-1bf30a0938d2",
+  "taskId": "H01",
+  "purpose": "audit（第一次复核）",
+  "codeCommit": "b58ade8ff40bfa6e6ecf25cd87e0022d6e519514",
+  "executedAt": "2026-09-21",
+  "channel": "Vite dev 同源代理 http://localhost:5173 → http://192.168.0.158:8888",
+  "viewport": "1366×768",
+  "interactionDisclosure": "IAB 输入管线间歇冻结（与既往 P01/P02/P41/P42 四轮同现象）：提交类点击（头像下拉/菜单项/语言项/主题项/退出登录）经合成 pointer 序列垫片派发；自然指针交互复核归 V01",
+  "scenarios": [
+    {
+      "id": 1,
+      "name": "未登录直访 /over-look（带查询上下文）→ 守卫拦截",
+      "steps": "登出态 goto /over-look?target=node-17&tab=traffic",
+      "expected": "送回 /login?redirect=<完整路径+上下文编码>",
+      "actual": "http://localhost:5173/login?redirect=%2Fover-look%3Ftarget%3Dnode-17%26tab%3Dtraffic",
+      "result": "pass"
+    },
+    {
+      "id": 2,
+      "name": "登录 redirect 指向 deferred 页 → 回跳拒绝、落点不抢占",
+      "steps": "登录页（redirect=%2Fover-look%3F...）填真实凭据提交",
+      "expected": "resolveSafeRedirectPath 经 isLeafAvailable(migrationDeferred)=false 返 null，落 resolveLandingPath=/dashboard",
+      "actual": "登录成功后 URL=/dashboard（deferred 页未抢占落点；与交付轮 /no-permission 的差异为 P34 交付 /dashboard 后的预期内变更，落点前提 dashboard-realtime:view 已在只读轮断言）",
+      "result": "pass"
+    },
+    {
+      "id": 3,
+      "name": "已登录直访渲染统一暂缓说明",
+      "steps": "已登录 goto /over-look",
+      "expected": "MigrationPending 渲染（标题+说明）、页签创建、Dock 菜单入口保留并高亮",
+      "actual": "main h1=调度监控 + p=该功能正在迁移中，迁移完成后开放使用 + 玻璃面板存在；页签「调度监控」选中；Dock 高亮（截图可见）",
+      "result": "pass"
+    },
+    {
+      "id": 4,
+      "name": "查询上下文保留",
+      "steps": "已登录直访 /over-look?target=node-17&tab=traffic",
+      "expected": "参数保留在地址栏，页面不消费不清洗不跳转",
+      "actual": "URL=/over-look?tab=traffic&target=node-17（参数齐全，顺序为 URL 标准化，无跳转发生）",
+      "result": "pass"
+    },
+    {
+      "id": 5,
+      "name": "业务隔离（零业务请求/零 WebSocket）",
+      "steps": "页面加载全生命周期 performance resource 清点",
+      "expected": "/fms 业务请求 0 条（壳层品牌图除外）、WebSocket 0 条",
+      "actual": "/fms 请求仅 headerLogo/favicon（壳层各页相同）+本轮登录/登出各 1 条（会话操作非页面业务）；无任何 /over-look 业务端点；无 WebSocket 连接",
+      "result": "pass"
+    },
+    {
+      "id": 6,
+      "name": "五语言菜单与切换",
+      "steps": "语言菜单枚举 → 切 English → 切 日本語 → 切回简体中文",
+      "expected": "五语言项齐全；标题/说明/html lang 逐语言同步",
+      "actual": "菜单五项（简体中文/繁體中文/English/日本語/한국어）；en-US：Dispatch Monitor + This feature is being migrated... + html lang=en-US + 菜单 Dashboard/Dispatch Monitor/Tasks；ja-JP：ディスパッチ監視 + この機能は移行中です... + html lang=ja-JP；zh-TW/ko-KR 由四分片零变更哈希绑定+交付轮全五语言实测覆盖",
+      "result": "pass"
+    },
+    {
+      "id": 7,
+      "name": "双主题玻璃面板可读性（几何断言+截图）",
+      "steps": "主题三态菜单切深色→几何断言→截图；切回浅色→同",
+      "expected": "标题与说明完全落在玻璃面板内，深浅两主题可读",
+      "actual": "深色：headingInside=true/textInside=true/persistedTheme=dark；浅色：同成立 theme=light；截图 local_only ×2（h01-audit1-dark-1366.png / h01-audit1-light-1366.png，SHA-256 见 evidence-index）",
+      "result": "pass"
+    },
+    {
+      "id": 8,
+      "name": "真实登出清理（全新会话）",
+      "steps": "XHR 监测安装 → 头像下拉 → 退出登录 → 双层解析 persist",
+      "expected": "真实 logout 请求 + persist auth 三键清空 + 语言主题保留",
+      "actual": "POST /fms/v1/auth/authorize/logout HTTP 200；token=null/user=null/permissions=[]/permissionsTree=[]（双层 JSON 解析修正假阳性口径）；apex-admin:lang=zh-CN/apex-admin:theme=light 保留；URL 终态 /login（带 redirect 瞬态，P41/P42 同口径观察项归 V01）",
+      "result": "pass"
+    }
+  ],
+  "observations": [
+    "顶栏头像按钮（用户名首字母 RO/title=root）为产品代码正常渲染，非垫片泄漏（本轮排查确认）",
+    "登录页 loginBackground 品牌图 404 为已知联调环境未上传品牌图（P01 pendingItems 同源登记），非 H01 缺陷",
+    "登出后 URL 瞬态 /login?redirect=<当前页含查询上下文>：守卫既有行为，终态正确（会话清空、落登录页），与 P41/P42 登记同口径归 V01"
+  ],
+  "passCount": 8,
+  "totalCount": 8
+}

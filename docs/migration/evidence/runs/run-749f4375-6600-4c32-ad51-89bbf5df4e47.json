@@ -1,0 +1,40 @@
+{
+  "runId": "run-749f4375-6600-4c32-ad51-89bbf5df4e47",
+  "taskId": "P42",
+  "purpose": "audit",
+  "owner": "sess_019a8332-ab9d-456a-9924-c5769f584fee",
+  "runner": {
+    "provider": "zcode",
+    "sessionId": "sess_019a8332-ab9d-456a-9924-c5769f584fee",
+    "turnId": "turn_7a3d2f8b-dec4-4812-9d7f-65735c47d03a",
+    "automationRunId": "automation-4c58cefd-88c2-4b25-b14d-53904b310c3e:manual:0048bff7-9f52-49d1-b74c-95a0cdadf447",
+    "identitySource": "running_tool_part",
+    "toolPartId": "part_muanqmga_3fc007f5-86e1-47f4-8dc9-5bc58761120d",
+    "toolCallId": "call_5fe32a6c7b8146adaafe1fd9",
+    "messageId": "msg_muanqen5_4390ab76-82c1-46e2-af7e-2148d380fbbd"
+  },
+  "startedAt": "2026-09-21T03:00:17.170Z",
+  "baseHead": "4a922cb6cdcece4a52dfa5716a92f8cbd544d51b",
+  "initialStatus": "M docs/migration/RUN_STATE.json\n?? docs/migration/evidence/runs/run-c7d53b59-d130-42e0-81df-7766f8c5b242.json",
+  "progress": [
+    "静态核查：错误页四组件+四语言分片自 fef00a3 零变更；i18n.ts/definitions.tsx/routeAccess.ts 交付后变更逐 hunk 从 P42 视角审查成立；57ce7ba..4a922cb 非 docs 零变更（静态门禁复用 P41 audit @ 57ce7ba 复绿）",
+    "真实只读复测 5/5（run-p42-audit1-readonly.mjs → p42-audit1-readonly-result.json）",
+    "浏览器针对性复测 16/16（browser-ui-result.json + 深色双挂载截图 local_only）",
+    "acceptance.json 写入 49 项矩阵+17 文件哈希绑定 @ 4a922cb（runner 校验通过）；P42.md 复核节更新"
+  ],
+  "nextSteps": [
+    "提交验收记录/交接记录/RUN_STATE/上轮 P02 结束记录补交 → push --commit HEAD → end --outcome completed"
+  ],
+  "blocker": null,
+  "endedAt": "2026-09-21T03:40:06.406Z",
+  "outcome": "completed",
+  "endHead": "b58ade8ff40bfa6e6ecf25cd87e0022d6e519514",
+  "publish": {
+    "status": "synced",
+    "taskId": "P42",
+    "commit": "b58ade8ff40bfa6e6ecf25cd87e0022d6e519514",
+    "confirmedRemoteHead": "b58ade8ff40bfa6e6ecf25cd87e0022d6e519514",
+    "checkedAt": "2026-09-21T03:39:58.175Z",
+    "error": null
+  }
+}

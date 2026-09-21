@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "revision": 109,
-  "updatedAt": "2026-09-21T03:37:57.205Z",
+  "revision": 114,
+  "updatedAt": "2026-09-21T04:16:58.298Z",
   "workspace": {
     "root": "C:\\code\\apex-admin-web",
     "branch": "apple-rxx",
@@ -114,14 +114,18 @@
         "T00"
       ],
       "implementation": "implemented",
-      "verification": "pending_review",
-      "gate": "pending_review",
+      "verification": "partial",
+      "gate": "ready",
       "handoff": "docs/migration/tasks/H01.md",
-      "acceptanceRecord": null,
+      "acceptanceRecord": "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/acceptance.json",
       "pendingItems": [
-        "核对完整 DoD / 专项 / A / I 矩阵，补齐缺失证据，禁止把登记例外当最终通过"
+        "A04：真实 token 过期收敛与双窗口退出同步归 V01 长会话复核（本轮真实登出 HTTP 200+persist 三键清空双层解析+守卫拦截失效会话机制级实测；T00/P01/P02/P41/P42 等十一任务同口径）",
+        "A24：长时多页签/真实规模稳定性归 V01 统一收口（本页零业务请求无资源增长面，P43 同口径）",
+        "I06：真实网络级资源加载失败不白屏归 V01 复核（IAB 环境限制未构造；common/menu 基座常载+四分片零变更绑定）",
+        "真实指针交互归 V01 自然浏览器复核（IAB 输入管线冻结，全部交互类点击经合成 pointer 序列垫片；与既往 P01/P02/P41/P42 四轮同口径）",
+        "观察项：登出后 URL 瞬态 /login?redirect=<当前页含查询上下文>（P41/P42 登记同口径，终态正确会话已清，归 V01）"
       ],
-      "note": "历史已交付，保留代码进度；旧勾选不再作为完整验收凭证"
+      "note": "audit 第一次复核通过（2026-09-21，run run-1446837b）：页面与复用组件自交付 93e0681 零变更（git diff+SHA-256 重算，Overlook.tsx 仓库 blob 与工作树哈希差异为行尾符、git 层零变更）；交付后公共文件变更逐 hunk 从 H01 视角审查成立——routeAccess.ts 唯一变更 57ce7ba（P41-audit-1 +5 行）在 findLeafByPath 之前精确拒绝 /no-permission、deferred 排除链路（isLeafAvailable migrationDeferred 提前返回）零改动，i18n.ts +306/-2 为其他页 loader 追加与旧模板 system 分片退役（common/menu 五语言 loader 与 BASE_NAMESPACES 未动），definitions.tsx over-look 节点逐字节未变（migrationDeferred diff 属 H02/H03 复用本页模式），BasicLayout.module.css（P03 轨道锁定）/Header.tsx（P27 品牌图）与本页无冲突；静态门禁复用 P41 audit @ 57ce7ba 复绿结果（57ce7ba..b58ade8 仅 docs，git diff 证实）；真实只读复测 6/6（getHardwareInfo 代理+直连一致 sha256_8=e5c6aacc、真实登录 activated=true/155 权限码、overview:view 在权限集合=守卫前提、dashboard-realtime:view 在权限集合=落点前提、登出清理，经 dev 代理→192.168.0.158:8888）；浏览器针对性复测 8/8（未登录直访问询上下文守卫拦回完整 redirect、登录 redirect=%2Fover-look 被拒落 /dashboard 实测 deferred 不抢占落点——自交付轮 /no-permission 的差异为 P34 后预期内变更、暂缓说明渲染+页签+Dock 高亮、上下文保留不清洗、零业务请求零 WebSocket、五语言菜单+en/ja 切换 html lang 同步、双主题几何断言+截图 local_only ×2、真实登出 HTTP 200+persist 三键清空双层解析+语言主题保留）；IAB 输入管线冻结经合成 pointer 序列垫片（真实指针归 V01）；顶栏「RO」按钮排查为 root 头像首字母产品代码；A04/A24/I06 三项 deferred 归 V01 故不勾选 TASKS"
     },
     {
       "id": "H02",
@@ -1042,6 +1046,44 @@
   ],
   "currentTaskId": "P35",
   "run": {
+    "runId": "run-1446837b-7911-4cba-b9a7-1bf30a0938d2",
+    "taskId": "H01",
+    "purpose": "audit",
+    "owner": "sess_bd30ca9d-3445-4e17-825b-b0918581ad18",
+    "runner": {
+      "provider": "zcode",
+      "sessionId": "sess_bd30ca9d-3445-4e17-825b-b0918581ad18",
+      "turnId": "turn_7fe325c6-bf48-4fdd-9470-5d4fbbdb8ee2",
+      "automationRunId": "automation-4c58cefd-88c2-4b25-b14d-53904b310c3e:1789962600000",
+      "identitySource": "running_tool_part",
+      "toolPartId": "part_muapjh6q_d0ab2cb2-3307-4315-9f84-17bea71c6458",
+      "toolCallId": "call_9b4ef5922c5347f8b451184e",
+      "messageId": "msg_muapj55e_9e1d2b17-2950-4ebb-a3a8-d18ff93209f0"
+    },
+    "startedAt": "2026-09-21T03:50:41.763Z",
+    "baseHead": "b58ade8ff40bfa6e6ecf25cd87e0022d6e519514",
+    "initialStatus": "M docs/migration/RUN_STATE.json\n?? docs/migration/evidence/runs/run-749f4375-6600-4c32-ad51-89bbf5df4e47.json",
+    "progress": [
+      "静态核查：H01 受检 18 文件哈希绑定 @ b58ade8；交付 93e0681 后 Overlook/MigrationPending/router.types/guard 零变更（git diff+SHA-256 重算），routeAccess.ts 唯一变更 57ce7ba（+5 行）逐 hunk 从 H01 视角审查成立、deferred 排除链路零改动；i18n.ts/definitions.tsx/BasicLayout 变更均与本页契约同向或无关",
+      "静态门禁复用 P41 audit @ 57ce7ba 复绿（57ce7ba..b58ade8 非 docs 零变更，git diff 证实）",
+      "真实只读复测 6/6（run-h01-audit1-readonly.mjs → h01-audit1-readonly-result.json）",
+      "浏览器针对性复测 8/8（browser-ui-result.json + 双主题截图 local_only ×2）",
+      "acceptance.json 写入 49 项矩阵+18 文件哈希绑定 @ b58ade8（runner 校验通过）；H01.md 复核节更新"
+    ],
+    "nextSteps": [
+      "提交验收记录/交接记录/RUN_STATE/上轮 P42 结束记录补交 → push --commit HEAD → end --outcome completed"
+    ],
+    "blocker": null
+  },
+  "publish": {
+    "status": "synced",
+    "taskId": "P42",
+    "commit": "b58ade8ff40bfa6e6ecf25cd87e0022d6e519514",
+    "confirmedRemoteHead": "b58ade8ff40bfa6e6ecf25cd87e0022d6e519514",
+    "checkedAt": "2026-09-21T03:39:58.175Z",
+    "error": null
+  },
+  "lastRun": {
     "runId": "run-749f4375-6600-4c32-ad51-89bbf5df4e47",
     "taskId": "P42",
     "purpose": "audit",
@@ -1068,52 +1110,16 @@
     "nextSteps": [
       "提交验收记录/交接记录/RUN_STATE/上轮 P02 结束记录补交 → push --commit HEAD → end --outcome completed"
     ],
-    "blocker": null
-  },
-  "publish": {
-    "status": "synced",
-    "taskId": "P02",
-    "commit": "4a922cb6cdcece4a52dfa5716a92f8cbd544d51b",
-    "confirmedRemoteHead": "4a922cb6cdcece4a52dfa5716a92f8cbd544d51b",
-    "checkedAt": "2026-09-21T02:13:23.491Z",
-    "error": null
-  },
-  "lastRun": {
-    "runId": "run-c7d53b59-d130-42e0-81df-7766f8c5b242",
-    "taskId": "P02",
-    "purpose": "audit",
-    "owner": "sess_e4aa5aff-ebe3-4801-a78a-97861e88a3d2",
-    "runner": {
-      "provider": "zcode",
-      "sessionId": "sess_e4aa5aff-ebe3-4801-a78a-97861e88a3d2",
-      "turnId": "turn_db43ffd8-c419-44d7-ab7d-32d4f2284ac3",
-      "automationRunId": "automation-4c58cefd-88c2-4b25-b14d-53904b310c3e:1789955400000",
-      "identitySource": "running_tool_part",
-      "toolPartId": "part_mual9kw9_05eb5116-e671-4b48-8334-8344ee599712",
-      "toolCallId": "call_c543fe3cd24140b48d97dddf",
-      "messageId": "msg_mual9f88_62eb7de8-dd1f-447b-9524-0e417d51a898"
-    },
-    "startedAt": "2026-09-21T01:51:01.541Z",
-    "baseHead": "59b5434dbc8e46369b5677a9ea1144ec576f80fe",
-    "initialStatus": "M docs/migration/RUN_STATE.json\n?? docs/migration/evidence/runs/run-ee6b7091-e1de-47dc-9cb9-521b863f54c6.json",
-    "progress": [
-      "静态核查：26c94cc..59b5434 非 docs 变更仅 routeAccess.ts（57ce7ba P41-audit-1 修复 +5 行）；24 受检文件 23 个 SHA-256 零变更；OpenAPI a82e9b5f 一致",
-      "routeAccess.ts 逐 hunk 从 P02 视角审查成立（授权页回跳链路零改动）+浏览器实测复现",
-      "真实只读复测 5/5；浏览器针对性复测 8/8；acceptance.json 写入 49 项矩阵+24 文件哈希重绑 @ 59b5434；P02.md 复核节更新"
-    ],
-    "nextSteps": [
-      "提交验收记录/交接记录/RUN_STATE/上轮 P01 结束记录补交 → push --commit HEAD → end --outcome completed"
-    ],
     "blocker": null,
-    "endedAt": "2026-09-21T02:13:27.740Z",
+    "endedAt": "2026-09-21T03:40:06.406Z",
     "outcome": "completed",
-    "endHead": "4a922cb6cdcece4a52dfa5716a92f8cbd544d51b",
+    "endHead": "b58ade8ff40bfa6e6ecf25cd87e0022d6e519514",
     "publish": {
       "status": "synced",
-      "taskId": "P02",
-      "commit": "4a922cb6cdcece4a52dfa5716a92f8cbd544d51b",
-      "confirmedRemoteHead": "4a922cb6cdcece4a52dfa5716a92f8cbd544d51b",
-      "checkedAt": "2026-09-21T02:13:23.491Z",
+      "taskId": "P42",
+      "commit": "b58ade8ff40bfa6e6ecf25cd87e0022d6e519514",
+      "confirmedRemoteHead": "b58ade8ff40bfa6e6ecf25cd87e0022d6e519514",
+      "checkedAt": "2026-09-21T03:39:58.175Z",
       "error": null
     }
   },

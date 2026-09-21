@@ -1,0 +1,590 @@
+{
+  "taskId": "H01",
+  "runId": "run-1446837b-7911-4cba-b9a7-1bf30a0938d2",
+  "purpose": "audit（第一次复核）",
+  "codeCommit": "b58ade8ff40bfa6e6ecf25cd87e0022d6e519514",
+  "deliveryCommit": "93e0681",
+  "codeFiles": [
+    {
+      "path": "src/pages/overlook/Overlook/Overlook.tsx",
+      "sha256": "b8186806b10e9d10a5009e07ee82173d5d9ea88a834cdb14fec45250c29742c7"
+    },
+    {
+      "path": "src/components/MigrationPending/MigrationPending.tsx",
+      "sha256": "18c08bdc4465586b6008effc30003b9cdbc25872475c41b686f57b18cd9bfb15"
+    },
+    {
+      "path": "src/components/MigrationPending/MigrationPending.module.css",
+      "sha256": "7f3e1ea7f2b18b05a46fac29905df28fef13eef009010db4f225c2c3e854020d"
+    },
+    {
+      "path": "src/router/definitions.tsx",
+      "sha256": "e02d0d676b011c194108df5663c5b4dd1fedd6d4c9bbe1b63c469c58f872ba6e"
+    },
+    {
+      "path": "src/router/routeAccess.ts",
+      "sha256": "e6a4d451afb751af8b94a4b1ae2d865f11b3abbd46ce3bcca7751cdbd6a0b9d8"
+    },
+    {
+      "path": "src/router/router.types.ts",
+      "sha256": "b1197e3b45483c9ba310cd9eccfb5edf9167ff5c7963342bc99e443636c88a4b"
+    },
+    {
+      "path": "src/router/guard.ts",
+      "sha256": "32ed995e52d4ed3ff6847c1eee5d6cf0e77b7e985286b927687fc1e8a1b34868"
+    },
+    {
+      "path": "src/i18n/i18n.ts",
+      "sha256": "b867e71364ae386b5cd20ab413f16b131c71a58d8085fb3a717daf9cde791392"
+    },
+    {
+      "path": "src/layouts/BasicLayout/BasicLayout.module.css",
+      "sha256": "83dba77cc69d871448f3fcf5980522830e01862da893e8ef30e0e0f7abba0c15"
+    },
+    {
+      "path": "src/layouts/BasicLayout/components/Header/Header.tsx",
+      "sha256": "02ee54e31bfe6ee5d22ccdb7acd08962ac173c9fbf276611637d416eeffafd91"
+    },
+    {
+      "path": "src/i18n/locales/en-US/menu.ts",
+      "sha256": "3f9af4500b963e30e308d7098abd738a7c43598635ac3537dc2767b8768e7f76"
+    },
+    {
+      "path": "src/i18n/locales/zh-TW/menu.ts",
+      "sha256": "c571a9eb789702f23d58fc0fbe5ab09e56fc5eb89240ba3642c06714f721fc62"
+    },
+    {
+      "path": "src/i18n/locales/ja-JP/menu.ts",
+      "sha256": "51add0b94dc87f9e7d378b3921d36c26d86502298f57ffad0f18ed397aab6eda"
+    },
+    {
+      "path": "src/i18n/locales/ko-KR/menu.ts",
+      "sha256": "47313ab3ae2bbab35d3952ace949b182c96b4a8f26c80eb5d1910e7068b13411"
+    },
+    {
+      "path": "src/i18n/locales/en-US/common.ts",
+      "sha256": "0ddaa21067f7c25dc077ca2cdaabcb00e7eb4c1a0548174b0213b5244d35484f"
+    },
+    {
+      "path": "src/i18n/locales/zh-TW/common.ts",
+      "sha256": "88fd4e88b3618cb365caceebb21cda3776ce5820a1beb466bdef2ef07234dca1"
+    },
+    {
+      "path": "src/i18n/locales/ja-JP/common.ts",
+      "sha256": "6797fa4be85778bd08982ec9e27c44d8df50ceb3f496652a32bb3c6ac284d67d"
+    },
+    {
+      "path": "src/i18n/locales/ko-KR/common.ts",
+      "sha256": "ca75fc05ac3ddde06ec5e77eb0202ae702a572d332b6266750136785a6d5b1a4"
+    }
+  ],
+  "environment": {
+    "backend": "http://192.168.0.158:8888（经 Vite dev 同源代理 http://localhost:5173）；OpenAPI sha256 前 8 位 a82e9b5f 与基线一致（getHardwareInfo 硬件码 sha256_8=e5c6aacc 与 T00/P01/P02/P41/P42 各轮一致，同后端实例）",
+    "role": "root（凭据来源：本机 .env.local，名称入档、值不入档）；未登录对照",
+    "viewport": "1366×768",
+    "themes": [
+      "dark（本轮切换实测+截图 local_only）",
+      "light（本轮实测+截图 local_only）"
+    ],
+    "languages": [
+      "zh-CN 实测（含登出后复位）",
+      "en-US 切换实测",
+      "ja-JP 切换实测",
+      "zh-TW/ko-KR 分片零变更哈希绑定+交付轮全五语言实测"
+    ],
+    "dataScale": "无业务数据页（暂缓说明页零业务请求）"
+  },
+  "releaseChecks": {
+    "scope": "passed",
+    "static": "passed",
+    "readOnly": "passed",
+    "ui": "passed",
+    "sharedConsumers": "passed"
+  },
+  "releaseReasons": [
+    "scope：H01 暂缓说明任务卡逐项复核成立——/over-look 统一暂缓说明呈现（MigrationPending 复用）、migrationDeferred 路由元标记（pending=占位不加载 vs deferred=正常渲染的语义区分）、deferred 页排除出落点/回跳候选、原权限 overview:view 保留、查询上下文保留不清洗、旧监控业务（力导图/WebSocket/地图操作/模拟停靠充电）零迁移；本页无业务接口（任务卡接口依据=无业务接口）",
+    "static：pnpm check/build 复用 P41 audit @ 57ce7ba 复绿结果——57ce7ba..b58ade8 非 docs 变更为零（git diff --name-only | grep -v ^docs/ 输出为空，此前 T00/P01/P02/P42 四轮复核同结论）；本轮全部受检文件为审查非变更",
+    "readOnly：真实只读复测 6/6（run-h01-audit1-readonly.mjs → h01-audit1-readonly-result.json）：getHardwareInfo 代理+直连一致、真实登录 activated=true/155 权限码、overview:view 在权限集合（H01 守卫/菜单前提）、dashboard-realtime:view 在权限集合（落点 /dashboard 前提）、登出清理释放探测会话",
+    "ui：浏览器针对性复测 8/8（browser-ui-result.json）：守卫拦截带完整上下文回跳、登录 redirect=%2Fover-look 被拒落 /dashboard（deferred 排除链路实测，覆盖 57ce7ba 修复后的当前代码）、暂缓说明渲染+页签+Dock 高亮、查询上下文保留、零业务请求零 WebSocket、五语言菜单+en/ja 切换 html lang 同步、双主题几何断言+截图 local_only、真实登出 HTTP 200+persist 三键清空（双层解析）",
+    "sharedConsumers：routeAccess.ts 交付后唯一变更 57ce7ba（P41-audit-1 +5 行）在 resolveSafeRedirectPath 头部精确拒绝 /no-permission，位于 findLeafByPath 之前，deferred 排除链路（isLeafAvailable 第 93 行 migrationDeferred 提前返回 false）零改动，且 redirect=%2Fover-look 登录落 /dashboard 本轮实测成立；i18n.ts 交付后 +306/-2 全部为其他页面私有命名空间 loader 追加与旧模板 system 分片退役（被 P25-P28 更细分片替代），common/menu 五语言 loader 与 BASE_NAMESPACES=['common','menu','error'] 未动；definitions.tsx 交付后 +208/-85 为后续页面交付，over-look 节点逐字节未变，diff 中 migrationDeferred 改动属 H02/H03 节点复用本页交付模式（预期内）；MigrationPending/Overlook/router.types/guard 零变更（git diff 93e0681..b58ade8 对应路径为空）；BasicLayout.module.css（P03 容器轨道锁定）与 Header.tsx（P27 品牌图消费）逐 hunk 审查与本页无冲突，几何断言实测成立"
+  ],
+  "items": [
+    {
+      "id": "TASK",
+      "status": "passed",
+      "reason": "H01 专项逐项复核成立：①对有权限用户保留菜单/直访并显示统一「本期暂未迁移」——OVERVIEW_VIEW 权限集合断言+已登录直访渲染实测；②保留合法目标标识/查询上下文——?target=node-17&tab=traffic 地址栏保留不清洗不跳转实测；③不加载旧监控业务/全局 WebSocket/地图操作/模拟停靠充电——页面全生命周期 /fms 业务请求 0 条+WebSocket 0 条实测；④原五语言资源有映射去向——菜单 key 走 menu 分片真译（本轮 en/ja 实测）、说明文案复用 common 五语言、页内业务文案随业务不迁移（交付轮登记+分片零变更绑定）",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json",
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/h01-audit1-readonly-result.json",
+        "docs/migration/tasks/H01.md"
+      ]
+    },
+    {
+      "id": "DoD1",
+      "status": "passed",
+      "reason": "可达业务完整（暂缓语义）：旧页业务整体不迁移=D07 本期暂缓边界（规格与任务卡明确），入口无死链——菜单/直访双路径可达统一说明页（本轮实测）；旧登录固定跳 /over-look 不复刻由 A22 落点契约覆盖（本轮 redirect 拒绝实测）",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json",
+        "docs/migration/tasks/H01.md"
+      ]
+    },
+    {
+      "id": "DoD2",
+      "status": "not_applicable",
+      "reason": "本页无业务接口：页面零业务请求（本轮 performance resource 清点实证，仅壳层品牌图 fetch 与会话操作）；无需协议/DTO/业务码核对",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "DoD3",
+      "status": "passed",
+      "reason": "权限与状态区分：原权限 overview:view 保留（本轮只读登录断言权限集合包含）——有权限用户菜单可见+直访放行（实测），未登录守卫拦截（实测）；「暂缓」呈现与「无权限」「离线」「空结果」由不同组件承载（MigrationPending vs UnAccess vs 状态块，T00.5 机制）",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/h01-audit1-readonly-result.json",
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "DoD4",
+      "status": "not_applicable",
+      "reason": "本页无表格（统一暂缓说明页）",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/acceptance.json",
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "DoD5",
+      "status": "not_applicable",
+      "reason": "本页无表格",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/acceptance.json",
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "DoD6",
+      "status": "not_applicable",
+      "reason": "本页无数据请求区域（页面零业务请求）；壳层请求的取消/失败收敛为 T00 请求层全站机制，非本页范围",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "DoD7",
+      "status": "not_applicable",
+      "reason": "纯静态说明页：无表单草稿、无轮询；页签生命周期（脏检查/LRU）由 T00.6 基座承担，本页无脏状态",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/acceptance.json",
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "DoD8",
+      "status": "not_applicable",
+      "reason": "本页无写操作",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/acceptance.json",
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "DoD9",
+      "status": "not_applicable",
+      "reason": "本页无文件传输",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/acceptance.json",
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "DoD10",
+      "status": "not_applicable",
+      "reason": "本页无地图/关联选择（旧页地图业务随 D07 暂缓不迁移）",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/acceptance.json",
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "DoD11",
+      "status": "passed",
+      "reason": "五语言随页交付：本页无新增私有分片（i18n-map H01 登记复用 menu+common），无缺译面；本轮 en-US/ja-JP 切换实测（标题 Dispatch Monitor/ディスパッチ監視+说明文案+html lang 同步+顶栏菜单同步），zh-TW/ko-KR 由四分片零变更哈希绑定+交付轮全五语言逐语言实测覆盖",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json",
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/acceptance.json"
+      ]
+    },
+    {
+      "id": "DoD12",
+      "status": "not_applicable",
+      "reason": "本页无后端原文/用户名称/日志等语言边界内容（说明文案为前端静态整句文案；无业务请求故无 Accept-Language 场景）",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/acceptance.json",
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "DoD13",
+      "status": "passed",
+      "reason": "外观与终端：1366×768 双主题实测（深色/浅色几何断言 headingInside=true+textInside=true+截图 local_only ×2）；交付后 BasicLayout 容器轨道锁定（P03）与本页居中面板无冲突（几何断言在本轮容器代码下实测成立）；玻璃面板可读性修复（交付轮缺陷 space-7 令牌不存在）经哈希零变更维持",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "DoD14",
+      "status": "not_applicable",
+      "reason": "本页无统计/时间聚合",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/acceptance.json",
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "DoD15",
+      "status": "passed",
+      "reason": "验证与证据：静态门禁复用 P41 audit @ 57ce7ba 复绿（57ce7ba..b58ade8 非 docs 零变更 git diff 证实）；真实只读 6/6（真实登录/权限前提/登出清理）；浏览器针对性复测 8/8（真实登录态+真实后端）；垫片使用已披露（合成 pointer 序列，真实指针归 V01）",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/h01-audit1-readonly-result.json",
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "DoD16",
+      "status": "passed",
+      "reason": "交接收尾：交付轮清除模板占位残留（console.log/硬编码 h1）经哈希零变更维持；无 mock/无 Umi/无假进度（本轮零业务请求实证）；交接记录本轮更新复核节；无未登记缺口",
+      "evidence": [
+        "docs/migration/tasks/H01.md",
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A01",
+      "status": "passed",
+      "reason": "45 叶子映射：/over-look 旧叶子 → 暂缓说明呈现（本期不迁业务，H01 任务卡定位），映射关系交付轮登记且本轮文件零变更维持；45 叶子全局框架主责 T00（多轮 audit 同口径）",
+      "evidence": [
+        "docs/migration/tasks/H01.md"
+      ]
+    },
+    {
+      "id": "A02",
+      "status": "passed",
+      "reason": "暂缓范围处理：migrationDeferred 元标记语义区分（pending=未完成占位不加载 / deferred=本期确定不迁移正常渲染说明页）交付轮建立，H02/H03 节点交付后复用同模式（definitions.tsx diff 证实）；本轮页面正常加载渲染实测维持",
+      "evidence": [
+        "docs/migration/tasks/H01.md",
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A03",
+      "status": "not_applicable",
+      "reason": "认证会话主责 T00/P01/P02（多轮 audit 同口径 deferred 项均归 V01）；本页无认证交互面，仅消费守卫机制（守卫拦截/放行行为在 TASK/A22 项实测）",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/acceptance.json",
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A04",
+      "status": "deferred",
+      "category": "site_acceptance",
+      "basis": "真实 token 过期收敛与双窗口退出同步为跨任务长会话场景，IAB 环境不可构造；本轮实测覆盖机制级：真实登出 HTTP 200+persist auth 三键清空（token/user=null、permissions/tree=[]双层解析）+守卫对失效会话拦截（登出后直访即拦回登录），与 T00/P01/P02/P41/P42 等十一任务同口径",
+      "owner": "V01",
+      "resumeCondition": "V01 长会话统一复核：真实过期收敛、双窗口退出同步",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json"
+      ],
+      "reason": "真实 token 过期收敛与双窗口退出同步为跨任务长会话场景（IAB 不可构造）；本轮机制级实测：真实登出 HTTP 200+persist auth 三键清空双层解析+守卫拦截失效会话，与 T00/P01/P02/P41/P42 等十一任务同口径 deferred 归 V01"
+    },
+    {
+      "id": "A05",
+      "status": "passed",
+      "reason": "原权限保留：旧 .umirc.ts /over-look access=overview:view = 新 definitions.tsx businessMeta 挂码，交付轮核对一致且本轮文件哈希零变更；本轮只读登录断言 overview:view 在真实权限集合（菜单可见+直访放行前提），未登录守卫拦截实测",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/h01-audit1-readonly-result.json",
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A06",
+      "status": "not_applicable",
+      "reason": "本页无业务协议（零业务请求）",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/acceptance.json",
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A07",
+      "status": "not_applicable",
+      "reason": "本页无表格",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/acceptance.json",
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A08",
+      "status": "not_applicable",
+      "reason": "本页无表格",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/acceptance.json",
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A09",
+      "status": "not_applicable",
+      "reason": "本页无表格",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/acceptance.json",
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A10",
+      "status": "not_applicable",
+      "reason": "本页无页面级请求（取消/竞争面不存在）",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/acceptance.json",
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A11",
+      "status": "not_applicable",
+      "reason": "本页无请求失败区域与草稿（零业务请求实证）",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/acceptance.json",
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A12",
+      "status": "not_applicable",
+      "reason": "本页非实时页（旧监控 WebSocket 随 D07 不迁移，本轮零 WebSocket 实测）",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A13",
+      "status": "not_applicable",
+      "reason": "本页无草稿",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/acceptance.json",
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A14",
+      "status": "not_applicable",
+      "reason": "本页无写操作",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/acceptance.json",
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A15",
+      "status": "not_applicable",
+      "reason": "本页无写操作",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/acceptance.json",
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A16",
+      "status": "not_applicable",
+      "reason": "本页无文件传输",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/acceptance.json",
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A17",
+      "status": "not_applicable",
+      "reason": "本页无地图/关联（旧页地图业务随 D07 不迁移）",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/acceptance.json",
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A18",
+      "status": "not_applicable",
+      "reason": "本页无工艺",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/acceptance.json",
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A19",
+      "status": "not_applicable",
+      "reason": "本页无统计",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/acceptance.json",
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A20",
+      "status": "passed",
+      "reason": "语言/主题/终端：五语言菜单齐全+en/ja 切换实测+html lang 同步；深浅双主题 1366×768 实测（几何断言+截图 local_only ×2）；Windows Chrome/IAB 环境。披露：IAB 输入管线间歇冻结，交互经合成 pointer 序列垫片（与既往四轮同口径），真实指针自然浏览器复核归 V01（pendingItems 登记）",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A21",
+      "status": "passed",
+      "reason": "零 mock：页面零业务请求（performance resource 清点实证）；交付轮清除模板占位残留经哈希零变更维持；无样例/随机/伪进度/fallback",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A22",
+      "status": "passed",
+      "reason": "首页与链接：旧「登录后固定跳 /over-look」不复刻——本轮 redirect=%2Fover-look（含查询上下文）登录后被拒、落 /dashboard（deferred 排除链路+落点契约实测，覆盖 57ce7ba 修复后代码）；未登录直访守卫送回 /login?redirect=<完整上下文> 实测；菜单别名「调度监控」一致",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "A23",
+      "status": "passed",
+      "reason": "依赖与检查：静态门禁复用 P41 audit @ 57ce7ba 复绿（lint 547 文件 0/0+typecheck+structure 529+build 1.39s），57ce7ba..b58ade8 非 docs 零变更（git diff 证实）；本轮无依赖/锁文件变更",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/acceptance.json"
+      ]
+    },
+    {
+      "id": "A24",
+      "status": "deferred",
+      "category": "site_acceptance",
+      "basis": "长时多页签/真实规模稳定性归 V01 统一收口；本页零业务请求、无图表/表格/传输等资源增长面（与 P43 零请求页同口径），页签宿主由 T00.6 基座承担",
+      "owner": "V01",
+      "resumeCondition": "V01 长时多页签稳定性统一验证",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json"
+      ],
+      "reason": "长时多页签/真实规模稳定性归 V01 统一收口；本页零业务请求、无图表/表格/传输等资源增长面（P43 零请求页同口径），页签宿主由 T00.6 基座承担"
+    },
+    {
+      "id": "I01",
+      "status": "passed",
+      "reason": "语言入口/规范化（消费面）：语言菜单五项齐全、en-US/ja-JP/zh-CN 切换实测生效（文案+html lang 即时同步），语言持久化键 apex-admin:lang 在登出后保留 zh-CN；语言入口主责 T00/P01，本页消费行为全部实测",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "I02",
+      "status": "passed",
+      "reason": "旧资源迁移映射：菜单 key「调度监控」走 menu 分片旧菜单真译（en-US=Dispatch Monitor、ja-JP=ディスパッチ監視 本轮实测与交付轮登记一致；zh-TW=調度監控/ko-KR=디스패치 모니터링 分片零变更绑定）；说明文案复用 common 五语言既有 key（该功能正在迁移中...四分片哈希绑定）；页内旧监控业务文案随业务不迁移（D07 边界）——无故意丢译",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json",
+        "docs/migration/tasks/H01.md"
+      ]
+    },
+    {
+      "id": "I03",
+      "status": "not_applicable",
+      "reason": "本页文案均为整句静态文案，无插值/ICU/富文本",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/acceptance.json",
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "I04",
+      "status": "passed",
+      "reason": "切换与草稿：en→ja→zh-CN 连续切换资源即时加载渲染（无整页刷新、URL 保持 /over-look）、本页无草稿可丢、无写请求可重发；common/menu 为基座常载命名空间（BASE_NAMESPACES 审查证实）无切换缺载",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "I05",
+      "status": "passed",
+      "reason": "第三方/辅助文案：顶栏语言/主题菜单项、用户下拉（个人中心/退出登录）、页签等 antd 辅助文案随语言切换（en-US 轮顶栏菜单 Dashboard/Dispatch Monitor/Tasks 实测）；本页无表格/编辑器/图表辅助面",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "I06",
+      "status": "deferred",
+      "category": "site_acceptance",
+      "basis": "真实网络级语言资源加载失败不白屏场景 IAB 环境不可构造；本页消费 common/menu 基座常载分片（交付轮品牌 404 资源缺失分支实测不白屏、T00/P01 同口径机制级证据链），四个语言分片本轮哈希零变更绑定无缺译回退面",
+      "owner": "V01",
+      "resumeCondition": "V01 网络故障注入统一复核",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/acceptance.json"
+      ],
+      "reason": "真实网络级语言资源加载失败不白屏场景 IAB 环境不可构造；本页消费 common/menu 基座常载分片（交付轮品牌 404 缺资源分支实测不白屏机制级证据链），四分片哈希零变更绑定无缺译回退面，deferred 归 V01"
+    },
+    {
+      "id": "I07",
+      "status": "not_applicable",
+      "reason": "本页无后端语言协同内容（零业务请求，无错误消息/导出语言面）",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/acceptance.json",
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json"
+      ]
+    },
+    {
+      "id": "I08",
+      "status": "passed",
+      "reason": "日期数值/布局：本页无日期/数值/枚举展示（切语言不改任何业务值）；双主题×1366 布局几何断言成立（zh-CN 态），en/ja 长译文（This feature is being migrated.../この機能は移行中です...）渲染完整无溢出（快照+截图证据）",
+      "evidence": [
+        "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/browser-ui-result.json"
+      ]
+    }
+  ],
+  "screenshotsIndex": [
+    {
+      "path": "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/screenshots/h01-audit1-dark-1366.png",
+      "sha256": "46ee9c0a032259410101a8c4e72422d08510390ce5e724a656da2a6db8c6d5b2",
+      "storage": "local_only（.gitignore 排除，不提交 Git）",
+      "desc": "深色主题玻璃面板+Dock 高亮，1366×768"
+    },
+    {
+      "path": "docs/migration/evidence/H01/run-1446837b-7911-4cba-b9a7-1bf30a0938d2/screenshots/h01-audit1-light-1366.png",
+      "sha256": "d6bf53ce1e743ea14e508e2846d60225f9343d2ccff9f465c18e729f035de9c6",
+      "storage": "local_only（.gitignore 排除，不提交 Git）",
+      "desc": "浅色主题玻璃面板+Dock 高亮，1366×768"
+    }
+  ],
+  "deferredSummary": [
+    {
+      "id": "A04",
+      "category": "site_acceptance",
+      "owner": "V01"
+    },
+    {
+      "id": "A24",
+      "category": "site_acceptance",
+      "owner": "V01"
+    },
+    {
+      "id": "I06",
+      "category": "site_acceptance",
+      "owner": "V01"
+    }
+  ],
+  "pendingItems": [
+    "A04：真实 token 过期收敛与双窗口退出同步归 V01 长会话复核（本轮真实登出 HTTP 200+persist 三键清空双层解析+守卫拦截失效会话机制级实测；T00/P01/P02/P41/P42 等十一任务同口径）",
+    "A24：长时多页签/真实规模稳定性归 V01 统一收口（本页零业务请求无资源增长面，P43 同口径）",
+    "I06：真实网络级资源加载失败不白屏归 V01 复核（IAB 环境限制未构造；common/menu 基座常载+四分片零变更绑定）",
+    "真实指针交互归 V01 自然浏览器复核（IAB 输入管线冻结，全部交互类点击经合成 pointer 序列垫片；与既往 P01/P02/P41/P42 四轮同口径）",
+    "观察项：登出后 URL 瞬态 /login?redirect=<当前页含查询上下文>（P41/P42 登记同口径，终态正确会话已清，归 V01）"
+  ],
+  "conclusion": "H01 调度监控暂缓说明页第一次复核通过：页面与复用组件自交付 93e0681 零变更（git diff+SHA-256 重算）；交付后公共文件变更（routeAccess.ts 57ce7ba/i18n.ts loader 追加/definitions.tsx 后续页交付/BasicLayout P03+P27 改动）逐 hunk 从 H01 视角审查成立且 deferred 排除链路与落点契约实测维持（redirect=%2Fover-look 登录落 /dashboard，落点自交付轮 /no-permission 的差异为 P34 交付后预期内变更）；静态门禁复用 57ce7ba 复绿（此后非 docs 零变更）；真实只读 6/6、浏览器针对性复测 8/8。A04/A24/I06 三项 deferred 归 V01，故 verification=partial、不勾选 TASKS；gate=ready 维持放行。"
+}

@@ -1,0 +1,42 @@
+{
+  "runId": "run-1446837b-7911-4cba-b9a7-1bf30a0938d2",
+  "taskId": "H01",
+  "purpose": "audit（第一次复核）",
+  "codeCommit": "b58ade8ff40bfa6e6ecf25cd87e0022d6e519514",
+  "executedAt": "2026-09-21T03:56:40.020Z",
+  "channel": "http://localhost:5173（Vite dev 同源代理）→ http://192.168.0.158:8888",
+  "results": [
+    {
+      "step": "getHardwareInfo 经 dev 代理（无令牌）",
+      "ok": true,
+      "detail": "HTTP 200 code=200 硬件码 len=72 sha256_8=e5c6aacc"
+    },
+    {
+      "step": "getHardwareInfo 直连后端对照",
+      "ok": true,
+      "detail": "HTTP 200 code=200 与代理一致=true"
+    },
+    {
+      "step": "真实登录读取 activated/权限码",
+      "ok": true,
+      "detail": "HTTP 200 code=200 activated=true 权限码=155 permissionsTree=10（token 不入档）"
+    },
+    {
+      "step": "H01 守卫前提：overview:view 在权限集合",
+      "ok": true,
+      "detail": "包含 → /over-look 菜单可见+直访守卫放行（原权限保留核对成立）"
+    },
+    {
+      "step": "落点前提：dashboard-realtime:view 在权限集合（deferred 不抢占落点）",
+      "ok": true,
+      "detail": "包含 → resolveLandingPath 落 /dashboard；带 redirect=%2Fover-look 登录应被拒并回落 /dashboard（deferred 排除链路）"
+    },
+    {
+      "step": "登出清理（释放探测会话）",
+      "ok": true,
+      "detail": "HTTP 200 code=200"
+    }
+  ],
+  "passCount": 6,
+  "totalCount": 6
+}
