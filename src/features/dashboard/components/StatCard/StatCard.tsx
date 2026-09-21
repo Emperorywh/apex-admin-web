@@ -49,12 +49,12 @@ export function StatCard({
         : styles.deltaBad
 
   return (
-    <div className={styles.card}>
-      <span className={`${styles.tile} ${styles[`tile${tone}`]}`}>
-        <Icon size={18} strokeWidth={2} />
+    <div className={styles.card} data-tone={tone}>
+      <span className={styles.tile} aria-hidden="true">
+        <Icon size={25} strokeWidth={1.8} />
       </span>
       <div className={styles.body}>
-        <div className={styles.label}>{label}</div>
+        <div className={styles.label} title={label}>{label}</div>
         {loading ? (
           <div className={`${styles.value} ${styles.valueLoading}`} aria-label={label} />
         ) : (

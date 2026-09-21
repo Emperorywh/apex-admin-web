@@ -3,6 +3,9 @@
  */
 
 export default {
+  '调度概览': 'Dispatch Overview',
+  '掌握任务执行与车队运行状态': 'Task execution and fleet operations at a glance',
+  '智能 · 高效 · 协同': 'INTELLIGENT · EFFICIENT · CONNECTED',
   '较昨日': 'vs yesterday',
   '今日任务': "Today's Orders",
   '执行中': 'Executing',

@@ -16,7 +16,7 @@ interface SettingsState {
 /** locale 取持久化偏好：与 i18next 初始语言一致，否则 App 启动即把语言拉回 zh-CN 并覆盖存储 */
 const initialState: SettingsState = {
   locale: readStoredLanguage(),
-  theme: 'light',
+  theme: 'dark',
 }
 
 const settingsSlice = createSlice({

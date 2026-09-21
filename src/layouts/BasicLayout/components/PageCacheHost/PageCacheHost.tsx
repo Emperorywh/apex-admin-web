@@ -4,9 +4,9 @@
  * - LRU 淘汰（cached=false）的页签不渲染 Activity，再激活时重新挂载
  * - noCache / hideInTabs 的当前页面走「当前实例」分支，离开即卸载
  * - 每个实例拥有独立 PageErrorBoundary、Suspense 与请求 scope
- * - 窗口开合动画：页面图层挂载时自 Dock 缩放浮入；被移除的激活页签在
+ * - 窗口开合动画：页面图层挂载时轻微位移并淡入；被移除的激活页签在
  *   同一次渲染内转入「关闭中」继续保留（实例只移动不卸载，动画播完再移除），
- *   后台页签移除不做动画；macOS 语义见 PageCacheHost.module.css
+ *   后台页签移除不做动画；动画见 PageCacheHost.module.css
  */
 
 import { Activity, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
@@ -130,7 +130,7 @@ export function PageCacheHost({ currentLocation, currentRouteId, currentMeta }: 
 }
 
 /**
- * 页面图层：挂载即播放一次自 Dock 浮入的开窗动画。
+ * 页面图层：挂载即播放一次淡入动画。
  * Activity 隐藏/显示通过 display 切换，而 display 复位会重放元素上存续的动画，
  * 因此 pageOpening 播毕即移除，保证切回缓存页时瞬时呈现、不重放。
  */

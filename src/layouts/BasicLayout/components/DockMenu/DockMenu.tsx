@@ -1,9 +1,9 @@
 /**
- * 底部 Dock 菜单：macOS 风格玻璃坞，只承载菜单树顶层分区入口（不再平铺全部叶子页）。
+ * 底部菜单座：工业控制台风格，承载菜单树顶层分区入口。
  *
- * - 含子级的分区：悬停/点击在 Dock 上方弹出磨砂玻璃面板，孙级分组沿面板侧边逐级飞出
+ * - 含子级的分区：悬停/点击在菜单座上方弹出分组面板，孙级分组沿面板侧边逐级飞出
  * - 叶子分区（如仪表盘）：点击直接导航；当前所在分区整组高亮
- * - 打开页面（叶子分区或面板项）时所属分区图标做 macOS 启动弹跳，动画结束自动复位
+ * - 打开页面（叶子分区或面板项）时所属分区图标做轻压反馈，动画结束自动复位
  * - 面板以分区标题、图标和数量呈现层次；Escape、点击外部、地址变化均收起
  * - 悬停移到叶子分区/废纸篓时收起悬停展开的面板
  * - 尾部「废纸篓」承载关闭全部页签并释放缓存
@@ -30,7 +30,7 @@ const PANEL_WIDTH = 272
 const PANEL_MAX_HEIGHT = 420
 /** 面板与锚点间距（px） */
 const PANEL_GAP = 10
-/** 子面板与父面板的间距（px）：比主面板更贴合，接近 macOS 子菜单的贴附感 */
+/** 子面板与父面板的间距（px）：子菜单贴近父菜单 */
 const FLYOUT_GAP = 6
 /** 视口四周最小留白（px） */
 const VIEWPORT_PADDING = 8
@@ -78,7 +78,7 @@ function hasFlyoutSpace(anchor: PanelAnchor): boolean {
 
 /**
  * 依据锚点与层级计算面板固定定位：顶层悬于 Dock 项上方（缩放原点在面板底边，向触发项生长）；
- * 子级顶部对齐触发项（macOS 子菜单贴附锚点），缩放原点取贴附侧边；
+ * 子级顶部对齐触发项，缩放原点取贴附侧边；
  * panelHeight 为面板实际高度，仅在底部放不下时按需整体上移——短面板不再被最大高度预留推向远处
  */
 function computePanelStyle(anchor: PanelAnchor, depth: number, panelHeight = PANEL_MAX_HEIGHT): CSSProperties {
@@ -130,14 +130,14 @@ export function DockMenu() {
 
   const sections = useMemo(() => buildMenuRoutes(), [])
   const [trail, setTrail] = useState<TrailEntry[]>([])
-  /** 正在播放启动弹跳的分区（routeId）；动画结束由 onAnimationEnd 复位 */
+  /** 正在播放点击动效的分区（routeId）；动画结束由 onAnimationEnd 复位 */
   const [launchingId, setLaunchingId] = useState<string | null>(null)
   const openTimer = useRef<number | null>(null)
   const closeTimer = useRef<number | null>(null)
   /** 当前展开是否由悬停触发：悬停展开后同分区的点击应保持展开而非收起 */
   const hoverOpenedRef = useRef(false)
 
-  /** 启动弹跳：导航的同时让所属分区图标弹跳（页面窗口浮出期间持续） */
+  /** 点击动效：导航时让所属分区图标轻压回弹 */
   const bounce = useCallback((routeId: string) => {
     setLaunchingId(routeId)
   }, [])
@@ -248,68 +248,74 @@ export function DockMenu() {
 
   return (
     <>
-      <nav
-        className={styles.dock}
-        data-dock-menu
-        aria-label={tCommon('主导航')}
-        onMouseEnter={cancelClose}
-        onMouseLeave={scheduleClose}
-        onScroll={closeAll}
-      >
-        {sections.map((section) => {
-          /* 每个分区始终显示上方图标和下方名称。
-             未配置图标时使用统一兜底，保证底栏各项对齐。 */
-          const Icon = section.icon ?? LayoutGrid
-          const sectionActive = subtreeContains(section, location.pathname)
-          const launching = launchingId === section.routeId
-          return (
-            <button
-              key={section.routeId}
-              type="button"
-              className={
-                (sectionActive ? `${styles.item} ${styles.itemActive}` : styles.item) +
-                (launching ? ` ${styles.itemLaunching}` : '')
-              }
-              title={tMenu(section.title)}
-              aria-current={sectionActive ? 'true' : undefined}
-              aria-expanded={section.children.length > 0 ? trail[0]?.node.routeId === section.routeId : undefined}
-              aria-haspopup={section.children.length > 0 ? 'menu' : undefined}
-              onMouseEnter={(event) => hoverSection(section, event.currentTarget)}
-              onMouseLeave={() => {
-                if (openTimer.current !== null) window.clearTimeout(openTimer.current)
-                openTimer.current = null
-              }}
-              onClick={(event) => clickSection(section, event.currentTarget)}
-              onAnimationEnd={(event) => {
-                /* 弹跳作用在首元素（图标瓷片）上；结束即复位，便于下次点击重新触发 */
-                if (event.target === event.currentTarget.firstElementChild) {
-                  setLaunchingId((prev) => (prev === section.routeId ? null : prev))
-                }
-              }}
-            >
-              {/* 缩小图标底座与内部字形，适配紧凑底栏。
-                  保留下方名称，维持原有菜单识别方式。 */}
-              <IconTile tone={routeIconTone(section.routeId)} size={28} radius={8}>
-                <Icon size={17} strokeWidth={2} />
-              </IconTile>
-              <span className={styles.label}>{tMenu(section.title)}</span>
-            </button>
-          )
-        })}
-        <span className={styles.separator} aria-hidden="true" />
-        <button
-          type="button"
-          className={`${styles.item} ${styles.trash}`}
-          title={tCommon('关闭全部页签并清空缓存')}
-          aria-label={tCommon('关闭全部页签并清空缓存')}
-          onMouseEnter={dismissHoverPanel}
-          onClick={clearTabs}
+      <footer className={styles.dockFrame}>
+        <svg className={styles.frameLines} viewBox="0 0 1440 88" preserveAspectRatio="none" aria-hidden="true">
+          <path className={styles.frameFill} d="M220 88 280 10H1160L1220 88Z" />
+          <path className={styles.frameOutline} d="M0 23H257L280 10H1160L1183 23H1440M0 32H263L222 88M1440 32H1177L1218 88M242 88 291 18H1149L1198 88" />
+          <path className={styles.frameAccent} d="M280 10H440M1000 10H1160M600 10H840M0 23H38M1402 23H1440M264 48 280 28M1176 48 1160 28" />
+        </svg>
+        <div className={styles.dockBrand}>SMART LOGISTICS<small>INDUSTRIAL INTELLIGENCE</small></div>
+        <nav
+          className={styles.dock}
+          data-dock-menu
+          aria-label={tCommon('主导航')}
+          onMouseEnter={cancelClose}
+          onMouseLeave={scheduleClose}
+          onScroll={closeAll}
         >
-          {/* 清理页签入口独立放在分隔线后。
-              同步缩小线性图标，并保留完整无障碍名称。 */}
-          <Trash2 size={26} strokeWidth={1.5} />
-        </button>
-      </nav>
+          {sections.map((section) => {
+            /* 每个分区始终显示上方图标和下方名称。
+               未配置图标时使用统一兜底，保证底栏各项对齐。 */
+            const Icon = section.icon ?? LayoutGrid
+            const sectionActive = subtreeContains(section, location.pathname)
+            const launching = launchingId === section.routeId
+            return (
+              <button
+                key={section.routeId}
+                type="button"
+                className={
+                  (sectionActive ? `${styles.item} ${styles.itemActive}` : styles.item) +
+                  (launching ? ` ${styles.itemLaunching}` : '')
+                }
+                title={tMenu(section.title)}
+                aria-current={sectionActive ? 'true' : undefined}
+                aria-expanded={section.children.length > 0 ? trail[0]?.node.routeId === section.routeId : undefined}
+                aria-haspopup={section.children.length > 0 ? 'menu' : undefined}
+                onMouseEnter={(event) => hoverSection(section, event.currentTarget)}
+                onMouseLeave={() => {
+                  if (openTimer.current !== null) window.clearTimeout(openTimer.current)
+                  openTimer.current = null
+                }}
+                onClick={(event) => clickSection(section, event.currentTarget)}
+                onAnimationEnd={(event) => {
+                  /* 动效作用在首元素（线性图标）上；结束即复位，便于下次点击重新触发 */
+                  if (event.target === event.currentTarget.firstElementChild) {
+                    setLaunchingId((prev) => (prev === section.routeId ? null : prev))
+                  }
+                }}
+              >
+                <span className={styles.dockIcon} aria-hidden="true">
+                  <Icon size={24} strokeWidth={1.7} />
+                </span>
+                <span className={styles.label}>{tMenu(section.title)}</span>
+              </button>
+            )
+          })}
+          <span className={styles.separator} aria-hidden="true" />
+          <button
+            type="button"
+            className={`${styles.item} ${styles.trash}`}
+            title={tCommon('关闭全部页签并清空缓存')}
+            aria-label={tCommon('关闭全部页签并清空缓存')}
+            onMouseEnter={dismissHoverPanel}
+            onClick={clearTabs}
+          >
+            <span className={styles.dockIcon} aria-hidden="true"><Trash2 size={23} strokeWidth={1.5} /></span>
+            <span className={styles.label}>{tCommon('清理页签')}</span>
+          </button>
+        </nav>
+        <div className={styles.dockTagline}>{tCommon('让物流更智能')}<small>MAKE MANUFACTURING SMARTER</small></div>
+      </footer>
       {trail.map((entry, depth) => (
         <DockMenuPanel
           key={entry.node.routeId}
@@ -331,7 +337,7 @@ export function DockMenu() {
             setTrail((prev) => prev.length > depth + 1 ? prev.slice(0, depth + 1) : prev)
           }}
           onNavigate={(node) => {
-            /* 先取面板所属分区：closeAll 清空 trail 后弹跳要落在 Dock 图标上 */
+            /* 先取面板所属分区：closeAll 清空 trail 后动效要落在所属分区图标上 */
             const sectionId = trail[0]?.node.routeId ?? null
             closeAll()
             if (sectionId !== null) bounce(sectionId)
@@ -365,7 +371,7 @@ interface DockMenuPanelProps {
 }
 
 /**
- * 磨砂玻璃菜单：标题明确当前分组，图标辅助扫描，计数提示下级规模。
+ * 控制台菜单：标题明确当前分组，图标辅助扫描，计数提示下级规模。
  * 叶子项与分组共用行布局，保持悬停、当前页和键盘焦点的反馈一致。
  */
 function DockMenuPanel({

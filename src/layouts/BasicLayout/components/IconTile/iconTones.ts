@@ -1,4 +1,4 @@
-/** 图标瓷片四色调（与视觉基准渐变一致） */
+/** 菜单图标的语义色调 */
 export type IconTone = 'blue' | 'green' | 'orange' | 'purple'
 
 /** 路由 ID → 图标色调（未命中的路由回退蓝色） */

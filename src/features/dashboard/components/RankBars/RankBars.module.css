@@ -46,7 +46,7 @@
 
 .track {
   height: 9px;
-  border-radius: var(--app-radius-pill);
+  border-radius: 2px;
   background: var(--app-divider);
   overflow: hidden;
 }
@@ -54,7 +54,8 @@
 .fill {
   display: block;
   height: 100%;
-  border-radius: var(--app-radius-pill);
+  border-radius: 2px;
+  box-shadow: inset 0 1px 0 var(--app-highlight);
   opacity: 0.9;
   transition: width var(--app-dur-slow) var(--app-ease-standard);
 }

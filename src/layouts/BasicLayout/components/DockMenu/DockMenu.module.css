@@ -1,152 +1,83 @@
-/* 底部 Dock：参考原型的通栏玻璃底座，图标在上、菜单名称在下。
-   保持布局流内占位，工作区不会被底栏遮挡，溢出时可横向滚动。 */
-
-.dock {
+/* 菜单座的装饰独立于滚动导航，溢出菜单仍可访问首尾。 */
+.dockFrame {
+  position: relative;
   flex: none;
   height: var(--app-dock-h);
-  padding: 6px 14px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0 218px 6px;
+  background: var(--app-dock-bg);
+}
+.frameLines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.frameFill { fill: var(--app-hover-bg); stroke: var(--app-line); }
+.frameOutline { fill: none; stroke: var(--app-line); stroke-width: 1; }
+.frameAccent { fill: none; stroke: var(--app-cyan); stroke-width: 1.2; filter: drop-shadow(0 0 4px var(--app-accent-glow)); }
+.dockBrand, .dockTagline { position: absolute; bottom: 23px; color: var(--app-text-3); white-space: nowrap; }
+.dockBrand { left: 28px; font-size: 11px; letter-spacing: 1.8px; }
+.dockBrand small { display: block; margin-top: 5px; font-size: 7px; letter-spacing: 2.1px; }
+.dockTagline { right: 28px; font-size: 12px; letter-spacing: 2px; text-align: right; }
+.dockTagline small { display: block; font-size: 7px; letter-spacing: 0.8px; margin-top: 5px; }
+.dock {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 4px;
-  background: var(--app-dock-bg);
-  backdrop-filter: var(--app-glass-filter);
-  -webkit-backdrop-filter: var(--app-glass-filter);
-  box-shadow: var(--app-dock-shadow);
-  /* 菜单项较多时横向滚动；隐藏滚动条保持胶囊外观 */
+  gap: 2px;
+  max-width: 100%;
+  height: 74px;
+  padding: 4px 12px;
   overflow-x: auto;
   overflow-y: hidden;
   scrollbar-width: none;
 }
-
-.dock::-webkit-scrollbar {
-  display: none;
-}
-
-/* 首尾自动外边距：内容未溢出时整体居中，溢出时可滚动到首尾项 */
-.dock > :first-child {
-  margin-left: auto;
-}
-
-.dock > :last-child {
-  margin-right: auto;
-}
-
+.dock::-webkit-scrollbar { display: none; }
+.dock > :first-child { margin-left: auto; }
+.dock > :last-child { margin-right: auto; }
 .item {
-  /* 按内容分配宽度，不再横向拉伸填满底栏。
-     常规名称使用紧凑底座，长名称仍能完整展示。 */
+  position: relative;
   flex: 0 0 auto;
-  min-width: 72px;
-  height: 56px;
-  /* 为图标缩放预留上下空间，名称基线保持整齐。
-     裁切仅作边界保护，正常动效不会触及背景边缘。 */
-  padding: 4px 8px;
-  overflow: hidden;
-  border: 0;
-  border-radius: var(--app-radius-panel);
+  min-width: 82px;
+  height: 66px;
+  padding: 6px 14px;
+  border: 1px solid transparent;
+  border-radius: 6px 6px 4px 4px;
   background: transparent;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
-  font-size: var(--app-fs-body);
-  font-weight: var(--app-fw-semibold);
+  gap: 7px;
+  font-size: var(--app-fs-secondary);
+  font-weight: var(--app-fw-medium);
   color: var(--app-text-2);
   cursor: pointer;
-  transition: background-color var(--app-dur-base) var(--app-ease-standard),
-    color var(--app-dur-base) var(--app-ease-standard);
   white-space: nowrap;
+  transition: background var(--app-dur-base), border-color var(--app-dur-base), box-shadow var(--app-dur-base);
 }
-
-/* 悬停只做居中的轻微缩放，不再向上位移。
-   内边距覆盖缩放增量，图标始终完整位于按钮背景内部。 */
-.item > :first-child {
-  transition: transform var(--app-dur-base) var(--app-ease-standard);
-}
-
-.item:hover > :first-child {
-  transform: scale(1.04);
-}
-
-.item:hover,
-.item[aria-expanded='true'] {
-  background: var(--app-hover-bg);
+.item::after { content: ''; position: absolute; right: -2px; top: 15px; bottom: 15px; width: 1px; background: linear-gradient(transparent, var(--app-divider), transparent); }
+.dockIcon { display: grid; place-items: center; color: var(--app-blue-2); }
+.item:hover, .item[aria-expanded='true'] { background: var(--app-hover-bg); color: var(--app-text); border-color: var(--app-divider); }
+.itemActive, .itemActive:hover, .itemActive[aria-expanded='true'] {
+  background: radial-gradient(ellipse at top, var(--app-accent-glow), transparent 75%), var(--app-bg-2);
+  border-color: var(--app-cyan);
+  box-shadow: inset 0 0 0 3px var(--app-highlight-soft), inset 0 0 18px var(--app-hover-bg), 0 0 10px var(--app-hover-bg);
   color: var(--app-text);
+  text-shadow: 0 0 7px var(--app-accent-glow);
 }
+.itemActive::before { content: ''; position: absolute; top: -1px; left: 22px; right: 22px; height: 2px; background: var(--app-cyan); box-shadow: 0 0 10px var(--app-cyan); }
+.itemActive .dockIcon { color: var(--app-cyan); filter: drop-shadow(0 0 5px var(--app-accent-glow)); }
+.label { line-height: 16px; white-space: nowrap; }
+.trash { min-width: 68px; }
+.trash .dockIcon { color: var(--app-text-2); }
+.item:focus-visible, .panelItem:focus-visible { outline: 2px solid var(--app-cyan); outline-offset: -3px; }
+.itemLaunching > :first-child { animation: dockPress var(--app-dur-slow) var(--app-ease-standard); }
+@keyframes dockPress { 0%, 100% { transform: scale(1); } 40% { transform: scale(0.9); } }
+.separator { width: 1px; height: 34px; background: var(--app-divider); margin: 0 6px; flex: none; }
 
-.itemActive,
-.itemActive:hover,
-.itemActive[aria-expanded='true'] {
-  background: var(--app-tab-bg);
-  color: var(--app-text);
-  box-shadow: inset 0 1px 0 var(--app-highlight);
-}
+@media (prefers-reduced-motion: reduce) { .itemLaunching > :first-child { animation: none; } }
 
-/* 名称始终展示；清理按钮保留独立尺寸。
-   键盘聚焦也显示清晰描边，避免仅依赖鼠标悬停反馈。 */
-.label {
-  line-height: 16px;
-  white-space: nowrap;
-}
-
-.trash {
-  flex: 0 0 44px;
-  min-width: 44px;
-  color: var(--app-text);
-}
-
-.item:focus-visible,
-.panelItem:focus-visible {
-  outline: 2px solid var(--app-blue);
-  outline-offset: -2px;
-}
-
-/* 点击采用原位轻压回弹，全程不放大到原尺寸以上。
-   保留动画结束事件，兼容原有的状态复位逻辑。 */
-.itemLaunching > :first-child {
-  animation: dockPress var(--app-dur-slow) var(--app-ease-standard);
-}
-
-@keyframes dockPress {
-  0% {
-    transform: scale(1);
-  }
-  40% {
-    transform: scale(0.9);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .itemLaunching > :first-child {
-    animation: none;
-  }
-
-  /* 尊重减少动态效果偏好。
-     悬停时仅保留背景反馈，不移动或缩放图标。 */
-  .item:hover > :first-child {
-    transform: none;
-  }
-}
-
-.separator {
-  width: 1px;
-  /* 分隔线随底栏缩短，保持上下留白。
-     继续区分业务菜单与清理页签入口。 */
-  height: 32px;
-  background: var(--app-line);
-  margin: 0 8px;
-  flex: 0 0 auto;
-}
-
-/* -------------------------------------------------------------------------- */
-/* 菜单面板：柔和磨砂玻璃、细高光边缘与分层阴影。
-   所有颜色沿用全局语义变量，亮暗主题共享结构和交互状态。 */
-/* -------------------------------------------------------------------------- */
-
+/* 菜单分组与子菜单共享控制台面板材质。 */
 .panel {
   position: fixed;
   z-index: 60;
@@ -154,12 +85,12 @@
   padding: 8px;
   display: flex;
   flex-direction: column;
-  border-radius: 18px;
-  background: linear-gradient(145deg, var(--app-highlight-soft), transparent 46%), var(--app-pop-bg);
+  border-radius: var(--app-radius-window);
+  background: var(--app-pop-bg);
   backdrop-filter: var(--app-glass-filter-window);
   -webkit-backdrop-filter: var(--app-glass-filter-window);
   border: 1px solid var(--app-glass-line);
-  box-shadow: var(--app-window-shadow), inset 0 0 0 1px var(--app-highlight-soft);
+  box-shadow: var(--app-panel-shadow);
   /* 从触发项方向轻盈展开，只改变透明度和位移。
      避免缩放整个面板导致子菜单锚点测量失真。 */
   animation: panelIn var(--app-dur-slow) var(--app-ease-window);
@@ -204,7 +135,7 @@
   flex: 0 0 34px;
   height: 34px;
   border: 1px solid var(--app-divider);
-  border-radius: 10px;
+  border-radius: var(--app-radius-control);
   background: var(--app-control-bg);
   color: var(--app-blue-text);
   cursor: pointer;
@@ -265,7 +196,7 @@
   min-height: 46px;
   padding: 6px 10px 6px 7px;
   border: 0;
-  border-radius: 10px;
+  border-radius: var(--app-radius-control);
   background: transparent;
   font-size: var(--app-fs-body);
   font-weight: var(--app-fw-semibold);
@@ -370,21 +301,17 @@
   }
 }
 
-/* 窄屏缩减间距，不隐藏菜单名称。
-   最小宽度保证点击区域，超出的入口通过底栏横向滚动访问。 */
+@media (max-width: 1100px) {
+  .dockFrame { padding-inline: 140px; }
+  .dockBrand { font-size: 9px; left: 16px; letter-spacing: 0.8px; }
+  .dockBrand small { font-size: 6px; letter-spacing: 0.8px; }
+  .dockTagline { right: 16px; font-size: 10px; }
+  .dockTagline small { display: none; }
+}
 @media (max-width: 760px) {
-  .dock {
-    padding-inline: 6px;
-    gap: 2px;
-  }
-
-  .item {
-    min-width: 72px;
-    padding-inline: 8px;
-  }
-
-  .trash {
-    min-width: 44px;
-    flex-basis: 44px;
-  }
+  .dockFrame { padding-inline: 8px; }
+  .dockBrand, .dockTagline { display: none; }
+  .dock { padding-inline: 6px; }
+  .item { min-width: 76px; padding-inline: 10px; }
+  .trash { min-width: 64px; }
 }

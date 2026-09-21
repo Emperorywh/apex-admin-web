@@ -1,6 +1,6 @@
 /**
- * 彩色图标瓷片：页签栏与 Dock 共用的「App 图标」样式（四色渐变底 + 白色字形）。
- * 路由 → 色调映射见同目录 iconTones.ts，避免页签与 Dock 各自维护副本。
+ * 菜单分组图标：语义色线框与内嵌面板材质。
+ * 路由 → 色调映射见同目录 iconTones.ts，统一菜单的图标语义色。
  */
 
 import type { CSSProperties, ReactNode } from 'react'
@@ -9,7 +9,7 @@ import styles from '@/layouts/BasicLayout/components/IconTile/IconTile.module.cs
 
 interface IconTileProps {
   tone: IconTone
-  /** 瓷片边长（px） */
+  /** 图标底座边长（px） */
   size?: number
   /** 圆角（px） */
   radius?: number

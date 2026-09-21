@@ -1,28 +1,17 @@
-/* 彩色图标瓷片：渐变底 + 白色字形（与视觉基准四色一致） */
-
+/* 线框仪表图标，共享语义色与内嵌面板材质。 */
 .tile {
+  --tile-accent: var(--app-cyan);
   display: flex;
   align-items: center;
   justify-content: center;
-  flex: 0 0 auto;
-  color: #fff;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.18),
-    0 0 0 1px rgba(255, 255, 255, 0.04);
+  flex: none;
+  color: var(--tile-accent);
+  border: 1px solid color-mix(in srgb, var(--tile-accent) 55%, transparent);
+  background: radial-gradient(circle, color-mix(in srgb, var(--tile-accent) 16%, var(--app-bg-2)), var(--app-bg-2));
+  box-shadow: inset 0 0 8px color-mix(in srgb, var(--tile-accent) 12%, transparent);
 }
-
-.blue {
-  background: linear-gradient(180deg, #3f8dff, #1f6eff);
-}
-
-.green {
-  background: linear-gradient(180deg, #31d67d, #16b76e);
-}
-
-.orange {
-  background: linear-gradient(180deg, #ffb449, #ff9500);
-}
-
-.purple {
-  background: linear-gradient(180deg, #a86dff, #7e56ff);
-}
+.tile svg { filter: drop-shadow(0 0 4px color-mix(in srgb, var(--tile-accent) 35%, transparent)); }
+.blue { --tile-accent: var(--app-cyan); }
+.green { --tile-accent: var(--app-green); }
+.orange { --tile-accent: var(--app-orange); }
+.purple { --tile-accent: var(--app-purple); }

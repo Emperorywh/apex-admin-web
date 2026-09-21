@@ -1,18 +1,31 @@
-/*
- * 全局静态壁纸：作为顶栏 / 悬浮窗口 / Dock / 弹层等玻璃材质的模糊采样源。
- * 背景图经 Vite 资源管线解析（url() 支持 @/ 别名，构建产物带 hash）；
- * cover + center 保证任意视口比例下铺满且不变形，底色令牌仅作图片加载前的兜底。
- */
-
+/* 工程网格与仓储轮廓降低对比度，避免干扰业务内容。 */
 .wall {
   position: fixed;
   inset: 0;
   z-index: -1;
   overflow: hidden;
   pointer-events: none;
-  background-color: var(--app-canvas);
-  background-image: url('@/assets/images/background.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  background: radial-gradient(ellipse at 65% 0, var(--app-hover-bg), transparent 55%), var(--app-canvas);
+}
+.wall::before {
+  content: '';
+  position: absolute;
+  inset: var(--app-topbar-h) 0 0;
+  background-image:
+    radial-gradient(var(--app-tech-dot) 0.7px, transparent 0.9px),
+    linear-gradient(var(--app-tech-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--app-tech-grid) 1px, transparent 1px);
+  background-size: 24px 24px, 120px 120px, 120px 120px;
+  mask-image: linear-gradient(to bottom, black, #0007 50%, black);
+}
+.factory {
+  position: absolute;
+  top: var(--app-topbar-h);
+  right: 0;
+  width: min(900px, 76vw);
+  height: 300px;
+  color: var(--app-cyan);
+  opacity: 0.08;
+  mask-image: linear-gradient(90deg, transparent, black 35%), linear-gradient(black, transparent 95%);
+  mask-composite: intersect;
 }

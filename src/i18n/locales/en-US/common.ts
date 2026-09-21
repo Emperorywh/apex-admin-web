@@ -32,6 +32,8 @@ export default {
   '向右滚动': 'Scroll right',
   '关闭页签': 'Close tab',
   '主导航': 'Main navigation',
+  '清理页签': 'Clear tabs',
+  '让物流更智能': 'Smarter logistics',
   /* 底部浮层的分组说明与无障碍数量名称。
      与中文键保持一致，切换语言时不会残留中文提示。 */
   '快捷导航': 'Quick navigation',

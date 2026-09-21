@@ -51,7 +51,7 @@ export function StatusDonutChart({ slices, labels, totalLabel }: StatusDonutChar
   return (
     <div className={styles.wrap}>
       <div className={styles.donutArea}>
-        <svg width={SIZE} height={SIZE} role="img">
+        <svg width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`} role="img" aria-label={totalLabel}>
           {total === 0 ? (
             <circle
               cx={CENTER}

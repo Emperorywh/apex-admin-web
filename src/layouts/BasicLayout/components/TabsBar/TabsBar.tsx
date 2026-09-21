@@ -193,6 +193,7 @@ function SortableTab({ tab, active, contextMenu, onActivate, onClose }: Sortable
     disabled: tab.affix,
   })
   const meta = findRouteMeta(tab.routeId)
+  const Icon = meta?.icon
 
   const style: React.CSSProperties = {
     transform: transform ? `translate3d(${transform.x}px, 0, 0)` : undefined,
@@ -219,10 +220,19 @@ function SortableTab({ tab, active, contextMenu, onActivate, onClose }: Sortable
         {...attributes}
         {...(tab.affix ? {} : listeners)}
         role="tab"
+        aria-disabled={undefined}
         aria-selected={active}
+        onKeyDown={(event) => {
+          if (event.target !== event.currentTarget) return
+          if (!isDragging && (event.key === 'Enter' || (tab.affix && event.key === ' '))) {
+            event.preventDefault()
+            onActivate(tab)
+          } else {
+            listeners?.onKeyDown?.(event)
+          }
+        }}
       >
-        {/* 顶部使用紧凑文字标签，与底部彩色菜单图标形成层级。
-            保留页签关闭、拖动排序及右键操作，固定标签不占关闭按钮空间。 */}
+        {Icon ? <Icon className={styles.icon} size={18} strokeWidth={1.7} aria-hidden="true" /> : null}
         <span className={styles.title}>{t(meta?.title ?? tab.key)}</span>
         {tab.closable ? (
           <button

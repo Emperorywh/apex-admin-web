@@ -1,6 +1,5 @@
 /**
- * 顶部工具条：品牌 + 页签栏 + 状态区（语言 / 网络 / 时钟 / 头像）三段式玻璃条。
- * 原菜单文字项、搜索框、加号、通知、日历及 ⌘K / Ctrl+K 命令面板已移除。
+ * 顶部控制条：品牌 + 页签栏 + 状态区（主题 / 语言 / 网络 / 时钟 / 头像）。
  */
 
 import { useEffect, useState } from 'react'
@@ -29,7 +28,10 @@ export function Header() {
     <header className={styles.topbar}>
       <div className={styles.brand}>
         <img className={styles.brandIcon} src="/favicon.ico" alt="" aria-hidden="true" />
-        <span className={styles.brandName}>{t('调度系统')}</span>
+        <span className={styles.brandCopy}>
+          <span className={styles.brandName} title={t('调度系统')}>{t('调度系统')}</span>
+          <span className={styles.brandCaption}>AGV DISPATCH SYSTEM</span>
+        </span>
       </div>
 
       <span className={styles.divider} aria-hidden="true" />

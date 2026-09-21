@@ -3,7 +3,7 @@
  */
 
 import { configureStore } from '@reduxjs/toolkit'
-import { persistReducer, persistStore } from 'redux-persist'
+import { createMigrate, persistReducer, persistStore } from 'redux-persist'
 import authReducer from '@/store/slices/authSlice'
 import settingsReducer from '@/store/slices/settingsSlice'
 import tabsReducer from '@/store/slices/tabsSlice'
@@ -45,7 +45,11 @@ const persistedSettings = persistReducer(
   {
     key: PERSIST_KEYS.SETTINGS,
     storage: localStorageAdapter,
-    version: PERSIST_SCHEMA_VERSION,
+    // 工业主题首次升级时应用深色；之后仍持久化用户主动选择的主题。
+    version: 2,
+    migrate: createMigrate({
+      2: (state) => state ? { ...state, theme: 'dark' } : state,
+    }),
     whitelist: ['locale', 'theme'],
   },
   settingsReducer,

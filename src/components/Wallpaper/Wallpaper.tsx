@@ -1,10 +1,21 @@
 /**
- * 全局静态壁纸：背景图 src/assets/images/background.png（cover 铺满，不变形）。
- * 固定在视口最底层（z-index:-1），不拦截指针；App 根组件挂载一次，登录页与主布局共用。
+ * 全局工程网格背景，登录页与控制台共用，不拦截指针。
  */
 
 import styles from '@/components/Wallpaper/Wallpaper.module.css'
 
 export function Wallpaper() {
-  return <div className={styles.wall} aria-hidden="true" />
+  return (
+    <div className={styles.wall} aria-hidden="true">
+      <svg className={styles.factory} viewBox="0 0 900 300" fill="none">
+        <g stroke="currentColor" strokeWidth="1.5">
+          <path d="M0 235H900M90 235V65L240 20H810L895 65V235M90 65H895M240 20V235M460 20V235M680 20V235M810 20V235" />
+          <path d="M130 96H420V212H130ZM490 96H770V212H490M130 132H420M130 174H420M490 132H770M490 174H770M200 96V212M350 96V212M560 96V212M700 96V212" />
+          <path d="M143 113H183V130H143ZM215 112H260V130H215ZM280 110H330V130H280ZM145 153H183V172H145ZM218 150H270V172H218ZM510 112H548V130H510ZM585 109H630V130H585ZM647 111H684V130H647ZM580 151H630V172H580Z" />
+          <path d="M335 245L362 224H425L450 245V268H335ZM354 245H431M372 224V214H408V224M575 256L595 240H645L670 256V276H575Z" />
+          <path d="M20 277H305L327 292H720L738 277H890M84 251H300M700 251H871" strokeDasharray="8 8" />
+        </g>
+      </svg>
+    </div>
+  )
 }

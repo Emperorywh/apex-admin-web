@@ -1,27 +1,12 @@
-/*
- * 全局样式：设计令牌 + 背景画布 + 滚动条 + 设计系统工具类。
- * 布局与业务样式一律使用 CSS Modules；本文件只承载跨页面共享的基础层。
- *
- * 本文件是全局视觉令牌的唯一事实源（双主题：亮色在 :root，暗色覆盖在 :root[data-theme='dark']，
- * 由 useTheme 渲染期同步到 <html>）。
- * 约束：新增令牌必须语义命名并双主题成对；组件只引用变量，不写裸色值/非标准字重。
- *
- * 材质体系（Sonoma 风）：--app-canvas 是壁纸底色渐变（挂 body + Wallpaper 组件兜底），
- * --app-wall-* 是壁纸光斑/绸带配色；--app-glass-* 是玻璃材质（窗口/条带/弹层），
- * 玻璃面一律半透明 + backdrop-filter 采样壁纸，所有表面透明度都刻意调低让色彩透出。
- */
-
+/* 共享设计令牌：深色工业控制台。 */
 :root {
-  color-scheme: light;
-
-  /* ---- 半径层级（同心关系：panel − 内边距 ≈ control，control − 内边距 ≈ badge；window 为最外悬浮窗口） ---- */
-  --app-radius-window: 18px;
-  --app-radius-panel: 12px;
-  --app-radius-control: 7px;
-  --app-radius-badge: 5px;
+  color-scheme: dark;
+  --app-radius-window: 8px;
+  --app-radius-panel: 5px;
+  --app-radius-control: 4px;
+  --app-radius-badge: 3px;
   --app-radius-pill: 999px;
 
-  /* ---- 间距刻度 ---- */
   --app-space-1: 4px;
   --app-space-2: 8px;
   --app-space-3: 12px;
@@ -30,253 +15,115 @@
   --app-space-6: 24px;
   --app-space-8: 32px;
 
-  /* ---- 字阶（Web 近似层级）与标准字重（禁止 650/750 等非标准值） ---- */
   --app-fs-caption: 11px;
   --app-fs-secondary: 12px;
   --app-fs-body: 13px;
   --app-fs-primary: 14px;
   --app-fs-title: 17px;
-  --app-fs-headline: 20px;
+  --app-fs-headline: 26px;
   --app-fw-regular: 400;
   --app-fw-medium: 500;
   --app-fw-semibold: 600;
   --app-fw-bold: 700;
 
-  /* ---- 动效令牌 ---- */
   --app-dur-fast: 120ms;
   --app-dur-base: 180ms;
   --app-dur-slow: 240ms;
-  /* 窗口级开合（页面自 Dock 浮入/收合）与 Dock 图标启动弹跳 */
-  --app-dur-window: 340ms;
-  --app-dur-launch: 900ms;
+  --app-dur-window: 220ms;
+  --app-dur-launch: 240ms;
   --app-ease-standard: cubic-bezier(0.25, 0.1, 0.25, 1);
-  /* Apple 窗口缓动：起步快、收尾缓，贴合 macOS 开窗手感 */
   --app-ease-window: cubic-bezier(0.32, 0.72, 0, 1);
+  --app-topbar-h: 62px;
+  --app-dock-h: 88px;
+  --app-font: 'Bahnschrift', 'DIN Alternate', 'Microsoft YaHei UI', 'Microsoft YaHei', 'PingFang SC', sans-serif;
 
-  /* ---- 布局尺寸 ---- */
-  --app-topbar-h: 48px;
-  /* 底栏采用紧凑的图标与名称两行布局。
-     降低整体高度，为业务工作区释放更多空间。 */
-  --app-dock-h: 68px;
-  --app-font:
-    'Inter Variable', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text',
-    'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', Arial, sans-serif;
+  --app-bg: #061724;
+  --app-bg-2: #0b2232;
+  --app-page-bg: transparent;
+  --app-panel: #0d2536;
+  --app-panel-inset: #041622;
+  --app-line: #315d75;
+  --app-line-soft: #28506855;
+  --app-text: #d9edff;
+  --app-text-2: #b4d3e6;
+  --app-text-3: #89adc6;
+  --app-text-4: #779ab3;
+  --app-cyan: #00cfff;
+  --app-blue: #009dff;
+  --app-blue-2: #61cbff;
+  --app-green: #00dca3;
+  --app-orange: #ffad41;
+  --app-red: #ff5b73;
+  --app-yellow: #edc15e;
+  --app-purple: #b29af5;
+  --app-on-accent: #041724;
+  --app-tech-grid: #1b577326;
+  --app-tech-dot: #3184a85e;
 
-  --app-bg: #dfe9f6;
-  --app-bg-2: #d4e2f2;
-  --app-page-bg: rgba(255, 255, 255, 0.24);
-  --app-panel: rgba(255, 255, 255, 0.62);
-  --app-line: rgba(108, 138, 184, 0.3);
-  --app-line-soft: rgba(60, 90, 140, 0.09);
-  --app-text: #101728;
-  --app-text-2: #3d4759;
-  --app-text-3: #5f6b80;
-  --app-text-4: #7d879b;
-  --app-blue: #1f6ef5;
-  --app-blue-2: #4c8dff;
-  --app-green: #0f9f58;
-  --app-orange: #e8860c;
-  --app-red: #e5484d;
-  --app-yellow: #d98e0b;
+  --app-glass-line: #36718d;
+  --app-pop-bg: #102c40f5;
+  --app-pop-bg-solid: #102c40;
+  --app-mask: #000d1dcc;
+  --app-card-bg: #0d2536;
+  --app-card-line: #32667f;
+  --app-card-title: #e2f3ff;
+  --app-control-bg: #102a3c;
+  --app-control-text: #cce9fa;
+  --app-highlight: #82dfff3d;
+  --app-highlight-soft: #77c9ed1a;
+  --app-divider: #34617a66;
+  --app-hover-bg: #007eb52b;
+  --app-scrollbar: #46748d99;
+  --app-scrollbar-hover: #68b3d5;
+  --app-tab-drag-bg: #123b52;
+  --app-red-text: #ff8b9c;
+  --app-orange-text: #ffc171;
+  --app-yellow-text: #edcf83;
+  --app-green-text: #60e6bb;
+  --app-blue-text: #65d6ff;
+  --app-shadow-color: #000b16;
 
-  /* 背景画布 = 壁纸底色（body 兜底 + Wallpaper 组件基底层），暖沙地平线快速过渡到饱和群青 */
-  --app-canvas:
-    radial-gradient(110% 80% at 92% 104%, rgba(190, 228, 255, 0.5), transparent 50%),
-    radial-gradient(85% 65% at 2% -8%, #f7eeda 0%, rgba(247, 238, 218, 0) 42%),
-    linear-gradient(168deg, #e9e2cf 0%, #bcd7f2 14%, #7fb2ee 32%, #3f87e0 52%, #1f66d6 74%, #123f9e 100%);
-
-  /* 壁纸动态层配色（光斑 / 绸带 / 高光丝边，由 Wallpaper 组件消费） */
-  --app-wall-glow-a: radial-gradient(closest-side, rgba(122, 222, 255, 0.85), rgba(122, 222, 255, 0) 72%);
-  --app-wall-glow-b: radial-gradient(closest-side, rgba(18, 70, 190, 0.78), rgba(18, 70, 190, 0) 72%);
-  --app-wall-glow-c: radial-gradient(closest-side, rgba(96, 168, 255, 0.75), rgba(96, 168, 255, 0) 72%);
-  --app-wall-ribbon:
-    linear-gradient(
-      97deg,
-      rgba(255, 255, 255, 0) 12%,
-      rgba(255, 255, 255, 0.5) 34%,
-      rgba(255, 255, 255, 0.08) 44%,
-      rgba(150, 225, 255, 0.55) 56%,
-      rgba(255, 255, 255, 0) 78%
-    );
-  --app-wall-sheen:
-    linear-gradient(
-      97deg,
-      rgba(255, 255, 255, 0) 20%,
-      rgba(255, 255, 255, 0.85) 50%,
-      rgba(255, 255, 255, 0) 80%
-    );
-
-  /* ---- 玻璃材质：条带/弹层一套、悬浮窗口一套（模糊强一档） ---- */
-  --app-glass-filter: blur(28px) saturate(180%);
-  --app-glass-filter-window: blur(36px) saturate(170%);
-  --app-glass-line: rgba(255, 255, 255, 0.55);
-  --app-glass-window: linear-gradient(168deg, rgba(255, 255, 255, 0.52), rgba(244, 249, 255, 0.36));
-  --app-pop-bg: rgba(250, 252, 255, 0.78);
-  --app-pop-bg-solid: #ffffff;
-  --app-mask: rgba(20, 32, 58, 0.3);
-
-  /* 卡片 / 控制 / 玻璃高光（卡片不透明：亮色纯白、暗色纯色深板） */
-  --app-card-bg: #ffffff;
-  --app-card-line: rgba(15, 35, 75, 0.08);
-  --app-card-title: #17233b;
-  --app-control-bg: rgba(255, 255, 255, 0.68);
-  --app-control-text: #33405a;
-  --app-highlight: rgba(255, 255, 255, 0.85);
-  --app-highlight-soft: rgba(255, 255, 255, 0.5);
-  /* 顶栏为悬浮玻璃条（页面内容从其下滚过），透明度让壁纸采样生效 */
-  --app-topbar-bg: rgba(255, 255, 255, 0.5);
-  --app-divider: rgba(125, 149, 187, 0.24);
-  --app-hover-bg: rgba(255, 255, 255, 0.4);
-  --app-scrollbar: rgba(70, 100, 155, 0.35);
-  --app-scrollbar-hover: rgba(70, 100, 155, 0.55);
-  --app-dock-bg: rgba(255, 255, 255, 0.52);
-  --app-tab-bg: rgba(255, 255, 255, 0.8);
-  --app-tab-drag-bg: rgba(255, 255, 255, 0.94);
-  --app-shadow-1: 0 4px 12px rgba(10, 30, 70, 0.14);
-  --app-shadow-2: 0 8px 22px rgba(10, 30, 70, 0.2);
-  --app-card-shadow: 0 8px 24px rgba(10, 30, 70, 0.08);
-  --app-window-shadow:
-    0 24px 70px rgba(10, 30, 70, 0.28),
-    0 4px 18px rgba(10, 30, 70, 0.12);
-  --app-topbar-shadow: 0 8px 28px rgba(10, 30, 70, 0.1);
-  --app-dock-shadow:
-    0 18px 40px rgba(10, 30, 70, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.7);
-  --app-panel-shadow:
-    0 30px 80px rgba(10, 30, 70, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.7);
-
-  /* 彩色语义文字（胶囊/标签用，暗色下整体提亮保证对比度） */
-  --app-red-text: #d92d20;
-  --app-orange-text: #c2690a;
-  --app-yellow-text: #a3660b;
-  --app-green-text: #0c8f53;
-  --app-blue-text: #1f6ef5;
+  /* 派生材质跟随语义色切换，维持相同的光线、边框和层次。 */
+  --app-canvas: var(--app-bg);
+  --app-glass-filter: blur(12px);
+  --app-glass-filter-window: blur(16px);
+  --app-glass-window: linear-gradient(115deg, var(--app-panel), var(--app-bg-2));
+  --app-card-surface: linear-gradient(112deg, var(--app-panel), var(--app-bg-2) 70%, var(--app-panel));
+  --app-topbar-bg: linear-gradient(100deg, var(--app-panel), var(--app-bg) 62%, var(--app-bg-2));
+  --app-dock-bg: linear-gradient(180deg, transparent, var(--app-bg) 45%);
+  --app-tab-bg: linear-gradient(0deg, color-mix(in srgb, var(--app-cyan) 19%, transparent), transparent);
+  --app-accent-glow: color-mix(in srgb, var(--app-cyan) 28%, transparent);
+  --app-shadow-1: 0 4px 12px color-mix(in srgb, var(--app-shadow-color) 28%, transparent);
+  --app-shadow-2: 0 8px 22px color-mix(in srgb, var(--app-shadow-color) 40%, transparent);
+  --app-card-shadow: inset 0 0 0 3px var(--app-panel-inset), inset 0 1px 18px var(--app-highlight-soft), 0 0 8px color-mix(in srgb, var(--app-cyan) 5%, transparent);
+  --app-window-shadow: 0 18px 48px color-mix(in srgb, var(--app-shadow-color) 55%, transparent);
+  --app-topbar-shadow: 0 4px 22px color-mix(in srgb, var(--app-shadow-color) 28%, transparent);
+  --app-dock-shadow: inset 0 1px 0 var(--app-highlight-soft);
+  --app-panel-shadow: var(--app-window-shadow), inset 0 0 0 3px var(--app-panel-inset);
 }
 
-:root[data-theme='dark'] {
-  color-scheme: dark;
-
-  --app-bg: #0b101c;
-  --app-bg-2: #0e1524;
-  --app-page-bg: rgba(14, 21, 38, 0.32);
-  --app-panel: rgba(20, 28, 48, 0.62);
-  --app-line: rgba(129, 155, 205, 0.24);
-  --app-line-soft: rgba(129, 155, 205, 0.09);
-  --app-text: #e9edf7;
-  --app-text-2: #b9c3d8;
-  --app-text-3: #8b97ad;
-  --app-text-4: #66738c;
-  --app-blue: #4c8dff;
-  --app-blue-2: #7fa9ff;
-  --app-green: #2fbf74;
-  --app-orange: #f0a13c;
-  --app-red: #f2555a;
-  --app-yellow: #e8ac3f;
-
-  --app-canvas:
-    radial-gradient(110% 80% at 92% 104%, rgba(70, 150, 255, 0.28), transparent 50%),
-    radial-gradient(85% 65% at 2% -8%, #1b2544 0%, rgba(27, 37, 68, 0) 42%),
-    linear-gradient(168deg, #0a1122 0%, #0d1a33 20%, #102a55 42%, #123a75 66%, #163f7e 100%);
-
-  --app-wall-glow-a: radial-gradient(closest-side, rgba(64, 205, 255, 0.5), rgba(64, 205, 255, 0) 72%);
-  --app-wall-glow-b: radial-gradient(closest-side, rgba(30, 90, 230, 0.62), rgba(30, 90, 230, 0) 72%);
-  --app-wall-glow-c: radial-gradient(closest-side, rgba(110, 90, 255, 0.42), rgba(110, 90, 255, 0) 72%);
-  --app-wall-ribbon:
-    linear-gradient(
-      97deg,
-      rgba(255, 255, 255, 0) 12%,
-      rgba(255, 255, 255, 0.28) 34%,
-      rgba(255, 255, 255, 0.05) 44%,
-      rgba(120, 210, 255, 0.36) 56%,
-      rgba(255, 255, 255, 0) 78%
-    );
-  --app-wall-sheen:
-    linear-gradient(
-      97deg,
-      rgba(255, 255, 255, 0) 20%,
-      rgba(255, 255, 255, 0.5) 50%,
-      rgba(255, 255, 255, 0) 80%
-    );
-
-  --app-glass-line: rgba(160, 190, 240, 0.16);
-  --app-glass-window: linear-gradient(168deg, rgba(24, 34, 58, 0.6), rgba(14, 21, 38, 0.55));
-  --app-pop-bg: rgba(24, 33, 55, 0.82);
-  --app-pop-bg-solid: #182137;
-  --app-mask: rgba(0, 0, 0, 0.45);
-
-  --app-card-bg: #1b253d;
-  --app-card-line: rgba(160, 190, 240, 0.14);
-  --app-card-title: #e9edf7;
-  --app-control-bg: rgba(38, 50, 78, 0.7);
-  --app-control-text: #ccd5e6;
-  --app-highlight: rgba(255, 255, 255, 0.1);
-  --app-highlight-soft: rgba(255, 255, 255, 0.14);
-  --app-topbar-bg: rgba(12, 18, 33, 0.5);
-  --app-divider: rgba(129, 155, 205, 0.2);
-  --app-hover-bg: rgba(130, 170, 240, 0.14);
-  --app-scrollbar: rgba(129, 155, 205, 0.28);
-  --app-scrollbar-hover: rgba(129, 155, 205, 0.45);
-  --app-dock-bg: rgba(16, 24, 42, 0.55);
-  --app-tab-bg: rgba(40, 52, 80, 0.75);
-  --app-tab-drag-bg: rgba(46, 60, 92, 0.92);
-  --app-shadow-1: 0 4px 12px rgba(0, 0, 0, 0.4);
-  --app-shadow-2: 0 8px 22px rgba(0, 0, 0, 0.5);
-  --app-card-shadow: 0 8px 24px rgba(0, 0, 0, 0.32);
-  --app-window-shadow:
-    0 24px 70px rgba(0, 0, 0, 0.55),
-    0 4px 18px rgba(0, 0, 0, 0.35);
-  --app-topbar-shadow: 0 8px 28px rgba(0, 0, 0, 0.3);
-  --app-dock-shadow:
-    0 18px 40px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  --app-panel-shadow:
-    0 30px 80px rgba(0, 0, 0, 0.6),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
-
-  /* 彩色语义文字（胶囊/标签用，暗色下整体提亮保证对比度） */
-  --app-red-text: #ff8589;
-  --app-orange-text: #f2b04e;
-  --app-yellow-text: #edc25f;
-  --app-green-text: #4cd595;
-  --app-blue-text: #7fa9ff;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-html,
-body,
-#root {
-  height: 100%;
-}
-
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; }
 body {
   margin: 0;
   overflow: hidden;
   font-family: var(--app-font);
+  font-size: var(--app-fs-body);
   color: var(--app-text);
   background: var(--app-canvas);
 }
-
-/* 细滚动条，贴合玻璃风格 */
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+button, input, select, textarea { font: inherit; }
+button:focus-visible, a:focus-visible {
+  outline: 2px solid var(--app-cyan);
+  outline-offset: 3px;
 }
-
+::selection { background: var(--app-accent-glow); color: var(--app-text); }
+::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-thumb {
   background: var(--app-scrollbar);
-  border-radius: var(--app-radius-pill);
-  border: 3px solid transparent;
+  border-radius: var(--app-radius-control);
+  border: 2px solid transparent;
   background-clip: padding-box;
 }
-
-::-webkit-scrollbar-thumb:hover {
-  background-color: var(--app-scrollbar-hover);
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
+::-webkit-scrollbar-thumb:hover { background-color: var(--app-scrollbar-hover); }
+::-webkit-scrollbar-track { background: transparent; }

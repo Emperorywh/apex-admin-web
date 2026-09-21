@@ -61,7 +61,7 @@ const KPI_CARDS: KpiCardConfig[] = [
   { key: 'activeAlarms', icon: TriangleAlert, tone: 'red', label: '活跃告警', invertDelta: true },
 ]
 
-/** 图表面板壳：玻璃卡片 + 标题行 + 固定高度内容区 */
+/** 图表面板：工程边框、标题导线和独立内容区。 */
 function DashboardPanel({
   title,
   spanClass,
@@ -75,11 +75,24 @@ function DashboardPanel({
 }) {
   return (
     <section className={`${styles.card} ${styles.panel} ${spanClass}`}>
-      <h3 className={`${styles.cardTitle} ${styles.panelTitle}`}>{title}</h3>
+      <h2 className={`${styles.cardTitle} ${styles.panelTitle}`}>{title}</h2>
       <div className={styles.panelBody} style={{ height: bodyHeight }}>
         {children}
       </div>
     </section>
+  )
+}
+
+function DashboardHeading() {
+  const { t } = useTranslation('dashboard')
+  return (
+    <div className={styles.pageHeading}>
+      <div className={styles.headingCopy}>
+        <h1>{t('调度概览')}</h1>
+        <p>{t('掌握任务执行与车队运行状态')}</p>
+      </div>
+      <span className={styles.slogan}>{t('智能 · 高效 · 协同')}</span>
+    </div>
   )
 }
 
@@ -110,7 +123,8 @@ export default function Dashboard() {
 
   if (firstLoad) {
     return (
-      <div>
+      <div className={styles.dashboard}>
+        <DashboardHeading />
         <div className={styles.kpiRow}>
           {KPI_CARDS.map((card) => (
             <StatCard
@@ -161,7 +175,8 @@ export default function Dashboard() {
   if (!overview) return null
 
   return (
-    <div>
+    <div className={styles.dashboard}>
+      <DashboardHeading />
       <div className={styles.kpiRow}>
         {KPI_CARDS.map((card) => {
           const metric = overview.kpi[card.key as keyof typeof overview.kpi]

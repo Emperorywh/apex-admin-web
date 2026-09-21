@@ -1,68 +1,50 @@
-/* 顶部工具条：48px 悬浮玻璃条（macOS 菜单栏语义，页面内容从其下滚过），三段网格（品牌 | 页签 | 状态区） */
-
+/* 三段式控制条：品牌、可滚动页签、系统状态。 */
 .topbar {
-  /* 顶栏保持固定高度，避免工作区内容将其压缩。
-     中间标签允许收缩并滚动，右侧状态区保持可操作。 */
+  position: relative;
+  z-index: 20;
   flex: none;
   height: var(--app-topbar-h);
   display: grid;
   grid-template-columns: auto auto minmax(0, 1fr) auto auto;
   align-items: center;
-  gap: 12px;
-  padding: 0 16px 0 20px;
+  gap: 20px;
+  padding: 0 26px;
   background: var(--app-topbar-bg);
-  backdrop-filter: var(--app-glass-filter);
-  -webkit-backdrop-filter: var(--app-glass-filter);
-  border-bottom: 1px solid var(--app-glass-line);
-  box-shadow:
-    var(--app-topbar-shadow),
-    inset 0 1px 0 var(--app-highlight-soft);
+  border-bottom: 1px solid var(--app-line);
+  box-shadow: var(--app-topbar-shadow);
 }
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
+.topbar::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent 2%, var(--app-cyan) 2%, var(--app-cyan) 5%, transparent 5%, transparent 18%, var(--app-accent-glow) 18%, transparent 65%);
 }
-
-.brandIcon {
-  width: 19px;
-  height: 19px;
-  flex: 0 0 auto;
-}
-
+.brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.brandIcon { width: 36px; height: 36px; flex: none; filter: drop-shadow(0 0 6px var(--app-accent-glow)); }
+.brandCopy { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
 .brandName {
-  font-size: var(--app-fs-body);
-  font-weight: var(--app-fw-bold);
+  font-size: 21px;
+  font-weight: var(--app-fw-semibold);
   color: var(--app-text);
+  letter-spacing: 2px;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 0 12px var(--app-accent-glow);
 }
-
-.divider {
-  width: 1px;
-  height: 20px;
-  background: var(--app-divider);
-  flex: 0 0 auto;
-}
-
-.tabs {
-  min-width: 0;
-  height: 100%;
-  display: flex;
-}
-
-/* 右侧状态区 */
-.actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
+.brandCaption { font-size: 8px; letter-spacing: 2.1px; color: var(--app-text-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.divider { width: 1px; height: 26px; background: var(--app-divider); }
+.tabs { min-width: 0; height: 100%; display: flex; }
+.actions { display: flex; align-items: center; gap: 10px; }
 .iconBtn {
-  width: 28px;
-  height: 28px;
-  border: 0;
+  width: 30px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid transparent;
   background: transparent;
   color: var(--app-text-2);
   border-radius: var(--app-radius-control);
@@ -70,117 +52,44 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition:
-    background-color var(--app-dur-fast) var(--app-ease-standard),
-    color var(--app-dur-fast) var(--app-ease-standard);
+  transition: background var(--app-dur-fast), color var(--app-dur-fast), border-color var(--app-dur-fast);
 }
-
-.iconBtn:hover {
-  background: var(--app-hover-bg);
-}
-
-.time {
-  font-size: var(--app-fs-secondary);
-  font-weight: var(--app-fw-bold);
-  color: var(--app-text);
-  white-space: nowrap;
-  font-variant-numeric: tabular-nums;
-}
-
+.iconBtn:hover { background: var(--app-hover-bg); border-color: var(--app-divider); color: var(--app-cyan); }
+.time { font-size: var(--app-fs-secondary); color: var(--app-text-2); white-space: nowrap; font-variant-numeric: tabular-nums; letter-spacing: 0.4px; margin: 0 8px; }
 .avatar {
-  width: 27px;
-  height: 27px;
+  width: 34px;
+  height: 34px;
   border-radius: var(--app-radius-pill);
-  border: 1px solid var(--app-glass-line);
-  color: #fff;
-  background:
-    radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.45), transparent 55%),
-    linear-gradient(180deg, #8fb0e8, #5d7cc0);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.4),
-    var(--app-shadow-1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  border: 1px solid var(--app-blue-2);
+  color: var(--app-on-accent);
+  background: radial-gradient(circle at 25% 20%, var(--app-cyan), var(--app-blue));
+  box-shadow: inset 0 1px 3px var(--app-highlight), 0 0 12px var(--app-accent-glow);
+  display: grid;
+  place-items: center;
   font-size: var(--app-fs-secondary);
-  font-weight: var(--app-fw-bold);
+  font-weight: var(--app-fw-semibold);
   cursor: pointer;
   padding: 0;
 }
+.popList { display: grid; gap: 4px; max-width: 280px; }
+.popItem { display: grid; gap: 3px; }
+.popItem strong, .avatarHeader strong { font-size: var(--app-fs-body); color: var(--app-text); }
+.popItem span, .avatarHeader span { font-size: var(--app-fs-secondary); color: var(--app-text-3); }
+.avatarHeader { display: grid; gap: 2px; }
 
-/* 弹出内容 */
-.popList {
-  display: grid;
-  gap: 4px;
-  max-width: 280px;
+@media (max-width: 1100px) {
+  .topbar { gap: 12px; padding-inline: 18px; }
+  .actions { gap: 4px; }
+  .time { display: none; }
 }
-
-.popItem {
-  display: grid;
-  gap: 3px;
-}
-
-.popItem strong {
-  font-size: var(--app-fs-body);
-  color: var(--app-text);
-}
-
-.popItem span {
-  font-size: var(--app-fs-secondary);
-  color: var(--app-text-3);
-}
-
-.avatarHeader {
-  display: grid;
-  gap: 2px;
-}
-
-.avatarHeader strong {
-  font-size: var(--app-fs-body);
-  color: var(--app-text);
-}
-
-.avatarHeader span {
-  font-size: var(--app-fs-secondary);
-  color: var(--app-text-3);
-}
-
-/* 平板优先给标签留出空间；手机将标签放到顶栏第二行。
-   品牌和状态操作仍保持可见，避免页签区域被挤到零宽。 */
-@media (max-width: 1000px) {
-  .topbar {
-    gap: 8px;
-    padding-inline: 12px;
-  }
-
-  .actions {
-    gap: 4px;
-  }
-
-  .time {
-    display: none;
-  }
-}
-
 @media (max-width: 600px) {
-  .topbar {
-    height: auto;
-    grid-template-columns: minmax(0, 1fr) auto;
-    grid-template-rows: 42px 38px;
-    row-gap: 0;
-  }
-
-  .topbar > .divider {
-    display: none;
-  }
-
-  .actions {
-    grid-column: 2;
-    grid-row: 1;
-  }
-
-  .tabs {
-    grid-column: 1 / -1;
-    grid-row: 2;
-  }
+  .topbar { height: auto; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: 56px 43px; row-gap: 0; padding-inline: 14px; }
+  .topbar > .divider { display: none; }
+  .brandIcon { width: 30px; height: 30px; }
+  .brandName { font-size: 17px; }
+  .brandCaption { font-size: 7px; letter-spacing: 1.1px; }
+  .actions { grid-column: 2; grid-row: 1; gap: 2px; }
+  .iconBtn { width: 27px; }
+  .avatar { width: 29px; height: 29px; }
+  .tabs { grid-column: 1 / -1; grid-row: 2; }
 }

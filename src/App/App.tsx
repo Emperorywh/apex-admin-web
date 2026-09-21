@@ -26,8 +26,7 @@ import { localeChanged } from '@/store/slices/settingsSlice'
 export default function App() {
   const dispatch = useAppDispatch()
   const locale = useAppSelector((state) => state.settings.locale)
-  /* 副作用调用：解析并同步 <html data-theme>，供全局 CSS 变量消费；
-     渲染期读取（data-theme 已更新后的）计算变量生成 antd 主题，与 CSS 同帧切换 */
+  /* 保留主题解析与切换接线，当前外观统一回退到深色 */
   const resolvedTheme = useTheme()
   const antdTheme = useMemo(() => buildAppTheme(resolvedTheme), [resolvedTheme])
   const { i18n } = useTranslation()

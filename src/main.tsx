@@ -5,7 +5,6 @@ import { PersistGate } from 'redux-persist/integration/react'
 import App from '@/App/App'
 import { bootstrapRouter } from '@/router/bootstrap'
 import { persistor, store } from '@/store/store'
-import '@fontsource-variable/inter'
 import '@/i18n/i18n'
 import '@/styles/globals.css'
 

@@ -31,6 +31,7 @@
 
 .gridLine {
   stroke: var(--app-line-soft);
+  stroke-dasharray: 3 5;
 }
 
 .axisText {
@@ -45,6 +46,7 @@
   stroke: var(--app-blue);
   stroke-width: 2;
   stroke-linecap: round;
+  filter: drop-shadow(0 0 3px var(--app-accent-glow));
 }
 
 .lineCompleted {

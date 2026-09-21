@@ -1,36 +1,93 @@
-/* 页签栏：参考原型的顶部文字标签，减少图标与卡片投影的视觉干扰。
-   标签名称完整展示，保留横向滚动与当前页高亮。 */
-
+/* 斜边轨道和青色底部光线，保留拖动、关闭及溢出滚动。 */
 .bar {
+  position: relative;
   flex: 1;
   height: 100%;
   min-width: 0;
   display: flex;
   align-items: center;
   gap: 4px;
+  padding-inline: 8px;
 }
-
+.bar::before {
+  content: '';
+  position: absolute;
+  inset: 0 10px 5px;
+  border: 1px solid var(--app-divider);
+  border-top: 0;
+  border-radius: 0 0 5px 10px;
+  transform: skewX(-32deg);
+  background: linear-gradient(0deg, var(--app-hover-bg), transparent 65%);
+  pointer-events: none;
+}
 .scroll {
+  position: relative;
   flex: 1;
   min-width: 0;
   display: flex;
-  align-items: center;
-  gap: 4px;
+  align-items: stretch;
+  gap: 2px;
   height: 100%;
   overflow-x: auto;
   overflow-y: hidden;
   scrollbar-width: none;
 }
-
-.scroll::-webkit-scrollbar {
-  display: none;
-}
-
-/* 箭头仅在页签溢出时渲染（见组件） */
+.scroll::-webkit-scrollbar { display: none; }
 .arrow {
-  width: 22px;
-  height: 26px;
+  position: relative;
+  width: 24px;
+  height: 30px;
+  flex: none;
+  border: 1px solid var(--app-divider);
+  border-radius: var(--app-radius-control);
+  background: var(--app-bg-2);
+  color: var(--app-text-3);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.arrow:hover { color: var(--app-cyan); border-color: var(--app-cyan); }
+.tab {
+  position: relative;
   flex: 0 0 auto;
+  min-width: 110px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 0 18px;
+  border: 0;
+  color: var(--app-text-2);
+  cursor: pointer;
+  user-select: none;
+  touch-action: none;
+  background: transparent;
+  transition: background var(--app-dur-fast), color var(--app-dur-fast);
+}
+.tab + .tab::before { content: ''; position: absolute; left: 0; width: 1px; height: 20px; background: var(--app-divider); }
+.tab::after {
+  content: '';
+  position: absolute;
+  bottom: 7px;
+  left: 17px;
+  right: 17px;
+  height: 2px;
+  background: transparent;
+  transition: background var(--app-dur-base), box-shadow var(--app-dur-base);
+}
+.tab:hover { background: var(--app-hover-bg); color: var(--app-text); }
+.tabActive, .tabActive:hover { color: var(--app-text); background: var(--app-tab-bg); text-shadow: 0 0 9px var(--app-accent-glow); }
+.tabActive::after { background: var(--app-cyan); box-shadow: 0 0 8px var(--app-cyan), 0 0 16px var(--app-accent-glow); }
+.icon { flex: none; color: var(--app-text-3); }
+.tabActive .icon { color: var(--app-cyan); filter: drop-shadow(0 0 4px var(--app-accent-glow)); }
+.tabDragging { z-index: 10; background: var(--app-tab-drag-bg); box-shadow: var(--app-shadow-2); }
+.title { font-size: var(--app-fs-primary); font-weight: var(--app-fw-semibold); white-space: nowrap; }
+.close {
+  width: 18px;
+  height: 18px;
+  flex: none;
   border: 0;
   border-radius: var(--app-radius-control);
   background: transparent;
@@ -39,105 +96,18 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition:
-    color var(--app-dur-fast) var(--app-ease-standard),
-    background-color var(--app-dur-fast) var(--app-ease-standard);
-}
-
-.arrow:not(:disabled):hover {
-  color: var(--app-blue);
-  background: var(--app-hover-bg);
-}
-
-.tab {
-  /* 页签宽度随内容自适应：菜单名称再长也完整展示，溢出交给条带横向滚动 */
-  flex: 0 0 auto;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  gap: var(--app-space-2);
-  padding: 0 12px;
-  border: 1px solid transparent;
-  border-radius: var(--app-radius-control);
-  color: var(--app-text-2);
-  cursor: pointer;
-  user-select: none;
-  touch-action: none;
-  background: transparent;
-  transition:
-    background-color var(--app-dur-fast) var(--app-ease-standard),
-    color var(--app-dur-fast) var(--app-ease-standard);
-}
-
-.tab:hover {
-  background: var(--app-hover-bg);
-}
-
-.tabActive,
-.tabActive:hover {
-  color: var(--app-text);
-  border-color: transparent;
-  background: var(--app-tab-bg);
-}
-
-.tabDragging {
-  z-index: 10;
-  background: var(--app-tab-drag-bg);
-  box-shadow: var(--app-shadow-2);
-}
-
-.title {
-  flex: 1;
-  min-width: 0;
-  font-size: var(--app-fs-body);
-  font-weight: var(--app-fw-semibold);
-  white-space: nowrap;
-}
-
-.close {
-  width: 17px;
-  height: 17px;
-  flex: 0 0 auto;
-  border: 0;
-  border-radius: var(--app-radius-pill);
-  background: transparent;
-  color: var(--app-text-4);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   padding: 0;
-  transition:
-    background-color var(--app-dur-fast) var(--app-ease-standard),
-    color var(--app-dur-fast) var(--app-ease-standard);
-}
-
-.close:hover {
-  background: var(--app-hover-bg);
-  color: var(--app-control-text);
-}
-
-/* 鼠标悬停和键盘聚焦时显示关闭入口。
-   触屏设备始终显示，保留无需悬停即可操作的路径。 */
-.close {
   opacity: 0;
 }
+.close:hover { background: var(--app-hover-bg); color: var(--app-cyan); }
+.tab:hover .close, .tab:focus-within .close, .tabActive .close { opacity: 1; }
+.tab:focus-visible, .close:focus-visible, .arrow:focus-visible { outline: 2px solid var(--app-cyan); outline-offset: -3px; }
+@media (hover: none) { .close { opacity: 1; } }
 
-.tab:hover .close,
-.tab:focus-within .close,
-.tabActive .close {
-  opacity: 1;
-}
-
-.tab:focus-visible,
-.close:focus-visible,
-.arrow:focus-visible {
-  outline: 2px solid var(--app-blue);
-  outline-offset: -2px;
-}
-
-@media (hover: none) {
-  .close {
-    opacity: 1;
-  }
+@media (max-width: 600px) {
+  .bar { padding-inline: 0; }
+  .bar::before { inset-inline: 8px; }
+  .tab { padding-inline: 14px; min-width: 100px; }
+  .title { font-size: var(--app-fs-body); }
+  .tab::after { bottom: 4px; }
 }
