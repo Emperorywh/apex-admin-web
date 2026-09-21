@@ -1,0 +1,75 @@
+{
+  "runId": "run-c7d53b59-d130-42e0-81df-7766f8c5b242",
+  "taskId": "P02",
+  "purpose": "audit（第三次复核）浏览器针对性复测",
+  "codeCommit": "59b5434dbc8e46369b5677a9ea1144ec576f80fe",
+  "focus": "routeAccess.ts P41-audit-1 修复（resolveSafeRedirectPath 显式拒绝 /no-permission）后的 P02 敏感行为复测",
+  "executedAt": "2026-09-21",
+  "channel": "Vite dev server 同源代理 http://localhost:5173（用户既有运行未接管）→ APEX_DEV_LEGACY_TARGET(192.168.0.158:8888)",
+  "viewport": "1280×720（IAB Chromium/Windows；1366/1920 双视口整页由第二轮复核覆盖，布局代码零变更不重复）",
+  "results": [
+    {
+      "id": "B1",
+      "name": "未登录守卫拦截",
+      "expected": "未登录直访 /authorize-ingress 重定向登录页并保留站内回跳参数",
+      "actual": "→ /login?redirect=%2Fauthorize-ingress",
+      "status": "pass"
+    },
+    {
+      "id": "B2",
+      "name": "登录合法回跳授权页（routeAccess 修复后关键敏感项）",
+      "expected": "redirect=%2Fauthorize-ingress 登录成功后回跳授权页（修复仅精确拒绝 /no-permission，授权页 perm 未声明经 hasMenuAccess 登录即可达，不应受影响）",
+      "actual": "登录成功后 URL=/authorize-ingress，授权页完整渲染",
+      "status": "pass"
+    },
+    {
+      "id": "B3",
+      "name": "硬件码真实渲染与只读脚本一致性",
+      "expected": "页面硬件码与只读复测（代理+直连一致）同一真实值",
+      "actual": "页面渲染 72 字符，SHA-256 前 8 位 e5c6aacc 与只读脚本完全一致（真实值不入档）；「登录成功」提示与空输入激活按钮 disabled 态同帧核验",
+      "status": "pass"
+    },
+    {
+      "id": "B4",
+      "name": "复制成功提示路径",
+      "expected": "复制成功才提示（组件设计，旧系统同源行为）",
+      "actual": "合成环境下 navigator.clipboard.writeText 拒绝（NotAllowedError，无 transient activation）且 document.execCommand('copy') 返回 false——双路失败时组件按设计不提示，组件代码零变更（哈希与上轮一致）且第二轮已实测剪贴板读回一致；同上轮登记为 IAB 合成事件环境限制，真实指针复核归 V01。本轮补充诊断垫片证据（双路返回值实测）",
+      "status": "pass_with_limitation"
+    },
+    {
+      "id": "B5",
+      "name": "授权页 reload 会话恢复 + 返回登录 replace 语义",
+      "expected": "reload 后会话恢复硬件码重新渲染；返回登录 replace 到 /login 且保留会话",
+      "actual": "reload 后 /authorize-ingress 硬件码重新渲染；返回登录落 /login（无 redirect 参数），persist:apex-admin:auth 的 token 仍在（replace 保留会话，与第二轮源码注释语义一致）",
+      "status": "pass"
+    },
+    {
+      "id": "B6",
+      "name": "五语言入口与 en-US 授权页全元素渲染",
+      "expected": "登录页五语言菜单齐全；切换 en-US 后 html lang 同步、授权页全元素英文",
+      "actual": "菜单五项（简体中文/繁體中文/English/日本語/한국어）；切换后 html lang=en-US、登录按钮 Sign in（SPA 切换无整页刷新）；授权页全元素 en（Software License/System not activated…/Hardware ID/Copy/Please enter activation code/Back to Login/Activate License），硬件码同一原值（业务值不随语言变化）；截图 p02-audit3-en-authorize.png 本地留存",
+      "status": "pass"
+    },
+    {
+      "id": "B7",
+      "name": "顶栏登出清理（persist 解析核验）",
+      "expected": "登出后 auth 会话数据全清、语言偏好保留",
+      "actual": "登出后 persist:apex-admin:auth 二次解析核验：token=null、user=null、permissions=[]、permissionsTree=[]、activated=false；persist:apex-admin:settings locale=en-US 保留。注意：persist 字段为双层 JSON 序列化，Boolean(\"null\") 会假阳性——本轮修正解析方法（parse 后判定），结论与 P01/P41 轮「三键清空+语言保留」一致",
+      "status": "pass"
+    },
+    {
+      "id": "B8",
+      "name": "落点回归（resolveLandingPath 主路径）",
+      "expected": "无 redirect 登录落 /dashboard（D29：activated=true 且 dashboard 有权限）",
+      "actual": "无参数 en 登录 → /dashboard（AGV Status Distribution en 渲染）；登出落 /login?redirect=%2Fdashboard 为守卫既有行为（P41 瞬态观察项同款，归 V01 自然浏览器复核）",
+      "status": "pass"
+    }
+  ],
+  "syntheticPathNotes": [
+    "IAB 输入管线冻结复现（与 P01/P02 第二轮同现象）：提交类点击（登录/语言切换/复制/返回登录/登出）经 evaluate 派发 pointer 序列（pointerdown→mousedown→pointerup→mouseup→click）垫片完成，不能证明真实指针交互，真实指针自然浏览器复核归 V01",
+    "剪贴板管线在合成事件下双路失败（NotAllowedError + execCommand false），复制成功提示与剪贴板读回不可核验；组件零变更且第二轮已实测读回一致",
+    "persist 双层序列化解析修正：auth 字段值为 JSON 字符串，直接 Boolean 判定 token 会把字符串 \"null\" 误判为存在；本轮以二次 parse 后判定为准"
+  ],
+  "passCount": 8,
+  "totalCount": 8
+}

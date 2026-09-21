@@ -1,0 +1,37 @@
+{
+  "runId": "run-c7d53b59-d130-42e0-81df-7766f8c5b242",
+  "taskId": "P02",
+  "purpose": "audit（第三次复核）",
+  "codeCommit": "59b5434dbc8e46369b5677a9ea1144ec576f80fe",
+  "executedAt": "2026-09-21T01:55:48.988Z",
+  "channel": "http://localhost:5173（Vite dev 同源代理）→ http://192.168.0.158:8888；认证交换目标 http://10.11.2.67:8888",
+  "results": [
+    {
+      "step": "getHardwareInfo 经 dev 代理（无令牌）",
+      "ok": true,
+      "detail": "HTTP 200 code=200 len=72 sha256_8=e5c6aacc"
+    },
+    {
+      "step": "getHardwareInfo 直连后端对照",
+      "ok": true,
+      "detail": "HTTP 200 code=200 与代理一致=true len=72 sha256_8=e5c6aacc"
+    },
+    {
+      "step": "10.11.2.67 登录读取 activated",
+      "ok": true,
+      "detail": "HTTP 200 code=200 activated=true 权限码=155（token 不入档）"
+    },
+    {
+      "step": "10.11.2.67 getHardwareInfo（带令牌）",
+      "ok": true,
+      "detail": "HTTP 200 code=200 硬件码 len=72 sha256_8=05a02f04"
+    },
+    {
+      "step": "10.11.2.67 登出清理",
+      "ok": true,
+      "detail": "HTTP 200 code=200（探测会话已清理）"
+    }
+  ],
+  "passCount": 5,
+  "totalCount": 5
+}

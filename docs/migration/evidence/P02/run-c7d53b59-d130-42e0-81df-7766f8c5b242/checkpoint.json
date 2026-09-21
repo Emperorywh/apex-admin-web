@@ -1,0 +1,25 @@
+{
+  "task": {
+    "implementation": "implemented",
+    "verification": "partial",
+    "gate": "ready",
+    "acceptanceRecord": "docs/migration/evidence/P02/run-c7d53b59-d130-42e0-81df-7766f8c5b242/acceptance.json",
+    "pendingItems": [
+      "A14：真实激活成功链路（写副作用）归 V01 专用未激活环境/现场执行（机制级已实证：防连点/失败留稿/不自动重放/code=200 唯一判定；三轮失败分支零网络接触实测；10.11.2.67 连续两轮可达实测已激活，未激活环境依旧不可得）",
+      "activated=false→授权页落点与 1001000 真实业务触发归 V01 未激活环境（三轮探测 10.11.2.67：上上轮不可达、近两轮可达但 activated=true；G17 有真实业务码观察；机制两端各自实证，resolveLandingPath 落点已随 P34 交付实测 /dashboard）",
+      "A04：真实 token 过期收敛与双窗口退出同步场景归 V01 长会话复核（与 T00/P01 同口径；本轮登出清理 persist 二次解析核验+授权页 reload 恢复复测）",
+      "I06：真实资源加载失败不白屏场景归 V01 复核（IAB 环境限制；四语言分片完整无缺失回退，T00/P01 同口径）",
+      "真实指针交互归 V01 自然浏览器复核（IAB 输入管线冻结三轮同现象，提交类点击经合成 pointer 序列垫片）"
+    ],
+    "note": "audit 第三次复核通过（2026-09-21，run run-c7d53b59）：26c94cc..59b5434 非 docs 变更仅 routeAccess.ts（57ce7ba P41-audit-1 修复 +5 行），24 受检文件 23 个哈希零变更；routeAccess.ts 逐 hunk 从 P02 视角审查成立——resolveSafeRedirectPath 新增拒绝仅精确匹配 /no-permission，授权页 perm 未声明经 hasMenuAccess 登录即可达、回跳链路零改动、resolveLandingPath activated=false→授权页分支未触及，浏览器实测 redirect=%2Fauthorize-ingress 登录回跳授权页复现（修复未破坏）；静态门禁复用 P41 audit @ 57ce7ba 复绿结果（57ce7ba..59b5434 仅 docs，git diff 证实）；真实只读复测 5/5（getHardwareInfo 代理+直连一致 sha256_8=e5c6aacc、10.11.2.67 认证交换 activated=true/155 权限码、登出清理）；浏览器针对性复测 8/8（守卫/授权页回跳/硬件码一致性/复制环境限制（Clipboard NotAllowedError+execCommand false 双路失败按设计不提示）/reload 恢复+返回登录 replace/en-US 全元素+截图/登出清理 persist 二次解析核验（双层序列化假阳性修正登记）/落点回归 /dashboard）；IAB 输入管线冻结经合成 pointer 序列垫片（真实指针归 V01）；A14/A04/I06 三项 deferred 归 V01 故不勾选 TASKS；含上轮 P01 结束记录 run-ee6b7091 补交"
+  },
+  "progress": [
+    "静态核查：26c94cc..59b5434 非 docs 变更仅 routeAccess.ts（57ce7ba P41-audit-1 修复 +5 行）；24 受检文件 23 个 SHA-256 零变更；OpenAPI a82e9b5f 一致",
+    "routeAccess.ts 逐 hunk 从 P02 视角审查成立（授权页回跳链路零改动）+浏览器实测复现",
+    "真实只读复测 5/5；浏览器针对性复测 8/8；acceptance.json 写入 49 项矩阵+24 文件哈希重绑 @ 59b5434；P02.md 复核节更新"
+  ],
+  "nextSteps": [
+    "提交验收记录/交接记录/RUN_STATE/上轮 P01 结束记录补交 → push --commit HEAD → end --outcome completed"
+  ],
+  "blocker": null
+}

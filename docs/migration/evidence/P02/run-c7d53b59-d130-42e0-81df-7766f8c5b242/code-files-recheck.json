@@ -1,0 +1,146 @@
+[
+  {
+    "path": "src/pages/authorize-ingress/AuthorizeIngress/AuthorizeIngress.tsx",
+    "prev": "e7bd6852a751",
+    "now": "e7bd6852a751",
+    "same": true
+  },
+  {
+    "path": "src/pages/authorize-ingress/AuthorizeIngress/AuthorizeIngress.module.css",
+    "prev": "88005e1fc3cd",
+    "now": "88005e1fc3cd",
+    "same": true
+  },
+  {
+    "path": "src/services/license-activation/license.service.ts",
+    "prev": "c0d34eac883e",
+    "now": "c0d34eac883e",
+    "same": true
+  },
+  {
+    "path": "src/services/license-activation/license.service.types.ts",
+    "prev": "5d68f722ad35",
+    "now": "5d68f722ad35",
+    "same": true
+  },
+  {
+    "path": "src/features/license-activation/components/ActivationForm/ActivationForm.tsx",
+    "prev": "4b2fecf223b4",
+    "now": "4b2fecf223b4",
+    "same": true
+  },
+  {
+    "path": "src/features/license-activation/components/ActivationForm/ActivationForm.module.css",
+    "prev": "34179a581049",
+    "now": "34179a581049",
+    "same": true
+  },
+  {
+    "path": "src/features/license-activation/components/ActivationRedirectListener/ActivationRedirectListener.tsx",
+    "prev": "d74393ca7e66",
+    "now": "d74393ca7e66",
+    "same": true
+  },
+  {
+    "path": "src/features/license-activation/hooks/useHardwareInfo.ts",
+    "prev": "0c04b28b1231",
+    "now": "0c04b28b1231",
+    "same": true
+  },
+  {
+    "path": "src/features/license-activation/utils/copyText.ts",
+    "prev": "23f9b0a930d0",
+    "now": "23f9b0a930d0",
+    "same": true
+  },
+  {
+    "path": "src/i18n/locales/en-US/license-activation.ts",
+    "prev": "3261f035121f",
+    "now": "3261f035121f",
+    "same": true
+  },
+  {
+    "path": "src/i18n/locales/zh-TW/license-activation.ts",
+    "prev": "ae4b7109bf24",
+    "now": "ae4b7109bf24",
+    "same": true
+  },
+  {
+    "path": "src/i18n/locales/ja-JP/license-activation.ts",
+    "prev": "4c1cb64dcff6",
+    "now": "4c1cb64dcff6",
+    "same": true
+  },
+  {
+    "path": "src/i18n/locales/ko-KR/license-activation.ts",
+    "prev": "ed5a4ab663a3",
+    "now": "ed5a4ab663a3",
+    "same": true
+  },
+  {
+    "path": "src/i18n/locales/en-US/common.ts",
+    "prev": "0ddaa21067f7",
+    "now": "0ddaa21067f7",
+    "same": true
+  },
+  {
+    "path": "src/i18n/locales/zh-TW/common.ts",
+    "prev": "88fd4e88b361",
+    "now": "88fd4e88b361",
+    "same": true
+  },
+  {
+    "path": "src/i18n/locales/ja-JP/common.ts",
+    "prev": "6797fa4be857",
+    "now": "6797fa4be857",
+    "same": true
+  },
+  {
+    "path": "src/i18n/locales/ko-KR/common.ts",
+    "prev": "ca75fc05ac3d",
+    "now": "ca75fc05ac3d",
+    "same": true
+  },
+  {
+    "path": "src/services/request/request.ts",
+    "prev": "86cacd6c84b4",
+    "now": "86cacd6c84b4",
+    "same": true
+  },
+  {
+    "path": "src/services/request/request.constants.ts",
+    "prev": "b9ca9fa74272",
+    "now": "b9ca9fa74272",
+    "same": true
+  },
+  {
+    "path": "src/store/slices/authSlice.ts",
+    "prev": "1fd2576d835a",
+    "now": "1fd2576d835a",
+    "same": true
+  },
+  {
+    "path": "src/router/definitions.tsx",
+    "prev": "e02d0d676b01",
+    "now": "e02d0d676b01",
+    "same": true
+  },
+  {
+    "path": "src/router/routeAccess.ts",
+    "prev": "1fff603b9678",
+    "now": "e6a4d451afb7",
+    "same": false
+  },
+  {
+    "path": "src/i18n/i18n.ts",
+    "prev": "b867e71364ae",
+    "now": "b867e71364ae",
+    "same": true
+  },
+  {
+    "path": "src/App/App.tsx",
+    "prev": "7cee1ffaeb63",
+    "now": "7cee1ffaeb63",
+    "same": true
+  }
+]
