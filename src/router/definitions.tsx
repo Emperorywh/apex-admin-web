@@ -54,36 +54,6 @@ export const appRouteDefinitions = defineAppRoutes([
         meta: { title: '机器人监控', icon: Radar, affixTab: true },
       },
       {
-        id: 'action-orchestration',
-        path: 'action-orchestration',
-        loadPage: () => import('@/pages/action/ActionOrchestration/ActionOrchestration'),
-        meta: { title: '动作编排', icon: Workflow },
-      },
-      {
-        id: 'axis-motor-management',
-        path: 'axis-motor-management',
-        loadPage: () => import('@/pages/axis-motor/AxisMotorManagement/AxisMotorManagement'),
-        meta: { title: '轴电机管理', icon: Cog },
-      },
-      {
-        id: 'device-management',
-        path: 'device-management',
-        loadPage: () => import('@/pages/device/DeviceManagement/DeviceManagement'),
-        meta: { title: '设备管理', icon: Cpu },
-      },
-      {
-        id: 'storage-location-management',
-        path: 'storage-location-management',
-        loadPage: () => import('@/pages/storage-location/StorageLocationManagement/StorageLocationManagement'),
-        meta: { title: '库位管理', icon: Warehouse },
-      },
-      {
-        id: 'task-chain-orchestration',
-        path: 'task-chain-orchestration',
-        loadPage: () => import('@/pages/task-chain/TaskChainOrchestration/TaskChainOrchestration'),
-        meta: { title: '任务链编排', icon: ListTree },
-      },
-      {
         id: 'robot-control',
         path: 'robot-control',
         meta: { title: '机器人控制', icon: Bot },
@@ -115,6 +85,36 @@ export const appRouteDefinitions = defineAppRoutes([
         ],
       },
       {
+        id: 'action-orchestration',
+        path: 'action-orchestration',
+        loadPage: () => import('@/pages/action/ActionOrchestration/ActionOrchestration'),
+        meta: { title: '动作编排', icon: Workflow },
+      },
+      {
+        id: 'axis-motor-management',
+        path: 'axis-motor-management',
+        loadPage: () => import('@/pages/axis-motor/AxisMotorManagement/AxisMotorManagement'),
+        meta: { title: '轴电机管理', icon: Cog },
+      },
+      {
+        id: 'device-management',
+        path: 'device-management',
+        loadPage: () => import('@/pages/device/DeviceManagement/DeviceManagement'),
+        meta: { title: '设备管理', icon: Cpu },
+      },
+      {
+        id: 'storage-location-management',
+        path: 'storage-location-management',
+        loadPage: () => import('@/pages/storage-location/StorageLocationManagement/StorageLocationManagement'),
+        meta: { title: '库位管理', icon: Warehouse },
+      },
+      {
+        id: 'task-chain-orchestration',
+        path: 'task-chain-orchestration',
+        loadPage: () => import('@/pages/task-chain/TaskChainOrchestration/TaskChainOrchestration'),
+        meta: { title: '任务链编排', icon: ListTree },
+      },
+      {
         id: 'root-fallback',
         path: '*',
         meta: { title: '工作台', hideInMenu: true, hideInTabs: true, noCache: true },
@@ -137,10 +137,10 @@ export function joinPath(base: string, segment: string | undefined): string {
 /** 从定义树递归提取全部 id 字面量 */
 type RouteIdOf<T> = T extends readonly (infer U)[]
   ? U extends { id: infer I; children?: infer C }
-    ? C extends readonly unknown[]
-      ? I | RouteIdOf<C>
-      : I
-    : never
+  ? C extends readonly unknown[]
+  ? I | RouteIdOf<C>
+  : I
+  : never
   : never
 
 /** 全局唯一路由 id 联合；新增树节点后自动扩充 */
