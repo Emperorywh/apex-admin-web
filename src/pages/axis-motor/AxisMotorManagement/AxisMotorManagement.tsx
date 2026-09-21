@@ -63,10 +63,10 @@ export default function AxisMotorManagement() {
           <Button block className={styles.allMotors} type={selectedKey === 'all' ? 'primary' : 'text'} onClick={() => setSelectedKey('all')}>
             <Flex justify="space-between" align="center" style={{ width: '100%' }}>全部轴电机<Badge count={motors.length} showZero color="var(--app-blue)" /></Flex>
           </Button>
+          {/* 分类默认全部收起；点击箭头手动展开，选中类别仍独立控制电机筛选。 */}
           <Tree.DirectoryTree
             aria-label="电机分类"
             blockNode
-            defaultExpandAll
             expandAction={false}
             selectedKeys={selectedKey === 'all' ? [] : [selectedKey]}
             treeData={treeData}

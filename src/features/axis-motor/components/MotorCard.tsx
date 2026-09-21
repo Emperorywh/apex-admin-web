@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import { App, Badge, Button, Card, Col, Divider, Flex, Form, InputNumber, Row, Space, Tag, Typography } from 'antd'
+import { ChevronRight } from 'lucide-react'
 import { MotorAttributesFields } from '@/features/axis-motor/components/MotorAttributesFields'
 import { getMotorAction } from '@/features/axis-motor/axisMotor.model'
 import type { AxisMotor, MotorAttributes, MotorParameters } from '@/features/axis-motor/axisMotor.types'
@@ -24,6 +25,9 @@ export function MotorCard({ motor, visible, onSaveAttributes, onSaveParameters, 
   const [parametersForm] = Form.useForm<MotorParameters>()
   const [attributesDirty, setAttributesDirty] = useState(false)
   const [parametersDirty, setParametersDirty] = useState(false)
+  // 每张卡片的参数区默认收起；保留表单挂载，避免展开切换丢失草稿或可选字段。
+  const [parametersExpanded, setParametersExpanded] = useState(false)
+  const parametersPanelId = useId()
   const [direction, setDirection] = useState<-1 | 0 | 1>(0)
   const [encoder, setEncoder] = useState(motor.currentEncoder)
   const encoderRef = useRef(encoder)
@@ -100,12 +104,19 @@ export function MotorCard({ motor, visible, onSaveAttributes, onSaveParameters, 
     }
   }
 
+  /** 收起时停止当前模拟，避免测试控件不可见后仍继续运行；展开不自动恢复测试。 */
+  const toggleParameters = () => {
+    if (parametersExpanded) setDirection(0)
+    setParametersExpanded(!parametersExpanded)
+  }
+
   return (
     <Card
       size="small"
       className={styles.motorCard}
       aria-label={`${motor.name}配置`}
-      title={<Space size={8}><Typography.Text strong>{motor.name}</Typography.Text><Tag color="cyan">轴 {action.axisNumber}</Tag></Space>}
+      // 标题显示已保存动作对应的轴所属编号；换行确保窄卡片仍能完整识别名称和编号。
+      title={<Space size={8} wrap><Typography.Text strong>{motor.name}</Typography.Text><Tag color="cyan">轴所属编号：{action.axisNumber}</Tag></Space>}
       extra={<Badge status={direction ? 'processing' : 'default'} text={direction ? `${direction === 1 ? action.positiveLabel : action.negativeLabel}中` : '已停止'} />}
     >
       {/* 属性与参数均采用水平表单；窄卡片由共享容器规则减少字段列数。 */}
@@ -130,117 +141,129 @@ export function MotorCard({ motor, visible, onSaveAttributes, onSaveParameters, 
 
       <Divider className={styles.sectionDivider} />
 
-      <Form<MotorParameters>
-        form={parametersForm}
-        name={`parameters-${motor.id}`}
-        layout="horizontal"
-        size="small"
-        requiredMark={false}
-        initialValues={motor.parameters}
-        disabled={direction !== 0}
-        onValuesChange={() => setParametersDirty(true)}
-        onFinish={saveParameters}
-        className={styles.compactForm}
+      {/* 原生按钮支持键盘展开与收起，并关联常驻的控制、标定和测试区域。 */}
+      <button
+        type="button"
+        className={styles.parametersToggle}
+        aria-expanded={parametersExpanded}
+        aria-controls={parametersPanelId}
+        onClick={toggleParameters}
       >
-        <Typography.Title level={5} className={styles.sectionTitle}>轴电机控制参数</Typography.Title>
-        <Row gutter={12}>
-          <Col span={12}>
-            <Form.Item name="positiveTarget" label={`${action.positiveLabel}目标`} dependencies={['negativeTarget', 'upperPosition', 'lowerPosition', 'upperEncoder', 'lowerEncoder']} rules={[
-              { required: true, message: '请输入正向目标' },
-              ({ getFieldValue }) => ({ validator: (_, value) => value == null || (value > getFieldValue('negativeTarget') && value <= getFieldValue('upperPosition') && value >= getFieldValue('lowerPosition')) ? Promise.resolve() : Promise.reject(new Error('目标需在标定范围内且大于反向目标')) }),
-              ({ getFieldValue }) => ({ validator: (_, value) => {
-                // 编码器只能记录整数，两个不同的位置目标仍需能区分为至少一个计数。
-                if (value == null || action.hasTargetEncoder) return Promise.resolve()
-                const lower = getFieldValue('lowerEncoder')
-                const scale = (getFieldValue('upperEncoder') - lower) / (getFieldValue('upperPosition') - getFieldValue('lowerPosition'))
-                const positive = Math.round(lower + (value - getFieldValue('lowerPosition')) * scale)
-                const negative = Math.round(lower + (getFieldValue('negativeTarget') - getFieldValue('lowerPosition')) * scale)
-                return positive > negative ? Promise.resolve() : Promise.reject(new Error('目标间距小于编码器分辨率'))
-              } }),
-            ]}>
-              <InputNumber min={0} max={1000000} precision={2} suffix={action.unit} className={styles.numberInput} />
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item name="negativeTarget" label={`${action.negativeLabel}目标`} dependencies={['upperPosition', 'lowerPosition']} rules={[
-              { required: true, message: '请输入反向目标' },
-              ({ getFieldValue }) => ({ validator: (_, value) => value == null || (value >= getFieldValue('lowerPosition') && value <= getFieldValue('upperPosition')) ? Promise.resolve() : Promise.reject(new Error('目标需在标定范围内')) }),
-            ]}>
-              <InputNumber min={0} max={1000000} precision={2} suffix={action.unit} className={styles.numberInput} />
-            </Form.Item>
-          </Col>
-          {action.hasPullWireEncoder && <Col span={12}>
-            <Form.Item name="pullWireEncoder" label="拉线编码器值" preserve={false} rules={[{ required: true, message: '请输入拉线编码器值' }]}>
-              <InputNumber min={0} max={2147483647} precision={0} className={styles.numberInput} />
-            </Form.Item>
-          </Col>}
-          {action.hasTargetEncoder && <Col span={12}>
-            <Form.Item name="targetEncoder" label="编码器值" preserve={false} dependencies={['lowerEncoder', 'upperEncoder', 'negativeTarget', 'lowerPosition', 'upperPosition']} rules={[
-              { required: true, message: '请输入编码器值' },
-              ({ getFieldValue }) => ({ validator: (_, value) => value == null || (value >= getFieldValue('lowerEncoder') && value <= getFieldValue('upperEncoder')) ? Promise.resolve() : Promise.reject(new Error('编码器值需在标定范围内')) }),
-              ({ getFieldValue }) => ({ validator: (_, value) => {
-                // 伸缩的正向编码器设定也必须高于回缩位置换算值，避免两个方向同时不可启动。
-                const lower = getFieldValue('lowerEncoder')
-                const reverseTarget = Math.round(lower + (getFieldValue('negativeTarget') - getFieldValue('lowerPosition')) / (getFieldValue('upperPosition') - getFieldValue('lowerPosition')) * (getFieldValue('upperEncoder') - lower))
-                return value == null || value > reverseTarget ? Promise.resolve() : Promise.reject(new Error('编码器值必须大于回缩目标对应的读数'))
-              } }),
-            ]}>
-              <InputNumber min={0} max={2147483647} precision={0} className={styles.numberInput} />
-            </Form.Item>
-          </Col>}
-        </Row>
+        <span className={styles.parametersToggleLabel}><ChevronRight size={14} aria-hidden="true" />轴电机控制参数</span>
+        <span className={styles.hint}>{parametersExpanded ? '收起' : '展开'}</span>
+      </button>
+      <div id={parametersPanelId} hidden={!parametersExpanded} className={styles.parametersPanel}>
+        <Form<MotorParameters>
+          form={parametersForm}
+          name={`parameters-${motor.id}`}
+          layout="horizontal"
+          size="small"
+          requiredMark={false}
+          initialValues={motor.parameters}
+          disabled={direction !== 0}
+          onValuesChange={() => setParametersDirty(true)}
+          onFinish={saveParameters}
+          className={styles.compactForm}
+        >
+          <Row gutter={12}>
+            <Col span={12}>
+              <Form.Item name="positiveTarget" label={`${action.positiveLabel}目标`} dependencies={['negativeTarget', 'upperPosition', 'lowerPosition', 'upperEncoder', 'lowerEncoder']} rules={[
+                { required: true, message: '请输入正向目标' },
+                ({ getFieldValue }) => ({ validator: (_, value) => value == null || (value > getFieldValue('negativeTarget') && value <= getFieldValue('upperPosition') && value >= getFieldValue('lowerPosition')) ? Promise.resolve() : Promise.reject(new Error('目标需在标定范围内且大于反向目标')) }),
+                ({ getFieldValue }) => ({ validator: (_, value) => {
+                  // 编码器只能记录整数，两个不同的位置目标仍需能区分为至少一个计数。
+                  if (value == null || action.hasTargetEncoder) return Promise.resolve()
+                  const lower = getFieldValue('lowerEncoder')
+                  const scale = (getFieldValue('upperEncoder') - lower) / (getFieldValue('upperPosition') - getFieldValue('lowerPosition'))
+                  const positive = Math.round(lower + (value - getFieldValue('lowerPosition')) * scale)
+                  const negative = Math.round(lower + (getFieldValue('negativeTarget') - getFieldValue('lowerPosition')) * scale)
+                  return positive > negative ? Promise.resolve() : Promise.reject(new Error('目标间距小于编码器分辨率'))
+                } }),
+              ]}>
+                <InputNumber min={0} max={1000000} precision={2} suffix={action.unit} className={styles.numberInput} />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item name="negativeTarget" label={`${action.negativeLabel}目标`} dependencies={['upperPosition', 'lowerPosition']} rules={[
+                { required: true, message: '请输入反向目标' },
+                ({ getFieldValue }) => ({ validator: (_, value) => value == null || (value >= getFieldValue('lowerPosition') && value <= getFieldValue('upperPosition')) ? Promise.resolve() : Promise.reject(new Error('目标需在标定范围内')) }),
+              ]}>
+                <InputNumber min={0} max={1000000} precision={2} suffix={action.unit} className={styles.numberInput} />
+              </Form.Item>
+            </Col>
+            {action.hasPullWireEncoder && <Col span={12}>
+              <Form.Item name="pullWireEncoder" label="拉线编码器值" preserve={false} rules={[{ required: true, message: '请输入拉线编码器值' }]}>
+                <InputNumber min={0} max={2147483647} precision={0} className={styles.numberInput} />
+              </Form.Item>
+            </Col>}
+            {action.hasTargetEncoder && <Col span={12}>
+              <Form.Item name="targetEncoder" label="编码器值" preserve={false} dependencies={['lowerEncoder', 'upperEncoder', 'negativeTarget', 'lowerPosition', 'upperPosition']} rules={[
+                { required: true, message: '请输入编码器值' },
+                ({ getFieldValue }) => ({ validator: (_, value) => value == null || (value >= getFieldValue('lowerEncoder') && value <= getFieldValue('upperEncoder')) ? Promise.resolve() : Promise.reject(new Error('编码器值需在标定范围内')) }),
+                ({ getFieldValue }) => ({ validator: (_, value) => {
+                  // 伸缩的正向编码器设定也必须高于回缩位置换算值，避免两个方向同时不可启动。
+                  const lower = getFieldValue('lowerEncoder')
+                  const reverseTarget = Math.round(lower + (getFieldValue('negativeTarget') - getFieldValue('lowerPosition')) / (getFieldValue('upperPosition') - getFieldValue('lowerPosition')) * (getFieldValue('upperEncoder') - lower))
+                  return value == null || value > reverseTarget ? Promise.resolve() : Promise.reject(new Error('编码器值必须大于回缩目标对应的读数'))
+                } }),
+              ]}>
+                <InputNumber min={0} max={2147483647} precision={0} className={styles.numberInput} />
+              </Form.Item>
+            </Col>}
+          </Row>
 
-        <Typography.Title level={5} className={styles.sectionTitle}>轴电机标定参数</Typography.Title>
-        {/* 位置边界和对应编码器标定值按上、下限成行展示，避免与控制目标混淆。 */}
-        <Row gutter={12}>
-          <Col span={12}>
-            <Form.Item name="upperPosition" label={`${action.positionLabel}上限`} dependencies={['lowerPosition']} rules={[
-              { required: true, message: '请输入位置上限' },
-              ({ getFieldValue }) => ({ validator: (_, value) => value == null || value > getFieldValue('lowerPosition') ? Promise.resolve() : Promise.reject(new Error('上限必须大于下限')) }),
-            ]}>
-              <InputNumber min={0} max={1000000} precision={2} suffix={action.unit} className={styles.numberInput} />
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item name="upperEncoder" label="上限编码器标定值" dependencies={['lowerEncoder']} rules={[
-              { required: true, message: '请输入上限标定值' },
-              ({ getFieldValue }) => ({ validator: (_, value) => value == null || value > getFieldValue('lowerEncoder') ? Promise.resolve() : Promise.reject(new Error('上限标定值必须大于下限')) }),
-            ]}>
-              <InputNumber min={0} max={2147483647} precision={0} className={styles.numberInput} />
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item name="lowerPosition" label={`${action.positionLabel}下限`} rules={[{ required: true, message: '请输入位置下限' }]}>
-              <InputNumber min={0} max={1000000} precision={2} suffix={action.unit} className={styles.numberInput} />
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item name="lowerEncoder" label="下限编码器标定值" rules={[{ required: true, message: '请输入下限标定值' }]}>
-              <InputNumber min={0} max={2147483647} precision={0} className={styles.numberInput} />
-            </Form.Item>
-          </Col>
-        </Row>
+          <Typography.Title level={5} className={styles.sectionTitle}>轴电机标定参数</Typography.Title>
+          {/* 位置边界和对应编码器标定值按上、下限成行展示，避免与控制目标混淆。 */}
+          <Row gutter={12}>
+            <Col span={12}>
+              <Form.Item name="upperPosition" label={`${action.positionLabel}上限`} dependencies={['lowerPosition']} rules={[
+                { required: true, message: '请输入位置上限' },
+                ({ getFieldValue }) => ({ validator: (_, value) => value == null || value > getFieldValue('lowerPosition') ? Promise.resolve() : Promise.reject(new Error('上限必须大于下限')) }),
+              ]}>
+                <InputNumber min={0} max={1000000} precision={2} suffix={action.unit} className={styles.numberInput} />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item name="upperEncoder" label="上限编码器标定值" dependencies={['lowerEncoder']} rules={[
+                { required: true, message: '请输入上限标定值' },
+                ({ getFieldValue }) => ({ validator: (_, value) => value == null || value > getFieldValue('lowerEncoder') ? Promise.resolve() : Promise.reject(new Error('上限标定值必须大于下限')) }),
+              ]}>
+                <InputNumber min={0} max={2147483647} precision={0} className={styles.numberInput} />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item name="lowerPosition" label={`${action.positionLabel}下限`} rules={[{ required: true, message: '请输入位置下限' }]}>
+                <InputNumber min={0} max={1000000} precision={2} suffix={action.unit} className={styles.numberInput} />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item name="lowerEncoder" label="下限编码器标定值" rules={[{ required: true, message: '请输入下限标定值' }]}>
+                <InputNumber min={0} max={2147483647} precision={0} className={styles.numberInput} />
+              </Form.Item>
+            </Col>
+          </Row>
 
-        <Flex className={styles.telemetry} gap={8} align="center" justify="space-between" wrap>
-          <Space size={8}>
-            <Typography.Text type="secondary">编码器实时值</Typography.Text>
-            <Typography.Text className={styles.encoderValue}>{encoder.toLocaleString()}</Typography.Text>
-            <Tag>模拟</Tag>
-          </Space>
-          {action.hasLimitSwitches && <Space size={12} wrap>
-            <Badge status={atUpperLimit ? 'warning' : 'default'} text={`上限位 IO · ${atUpperLimit ? '已触发' : '未触发'}`} />
-            <Badge status={atLowerLimit ? 'warning' : 'default'} text={`下限位 IO · ${atLowerLimit ? '已触发' : '未触发'}`} />
-          </Space>}
-        </Flex>
+          <Flex className={styles.telemetry} gap={8} align="center" justify="space-between" wrap>
+            <Space size={8}>
+              <Typography.Text type="secondary">编码器实时值</Typography.Text>
+              <Typography.Text className={styles.encoderValue}>{encoder.toLocaleString()}</Typography.Text>
+              <Tag>模拟</Tag>
+            </Space>
+            {action.hasLimitSwitches && <Space size={12} wrap>
+              <Badge status={atUpperLimit ? 'warning' : 'default'} text={`上限位 IO · ${atUpperLimit ? '已触发' : '未触发'}`} />
+              <Badge status={atLowerLimit ? 'warning' : 'default'} text={`下限位 IO · ${atLowerLimit ? '已触发' : '未触发'}`} />
+            </Space>}
+          </Flex>
 
-        <Flex className={styles.testActions} gap={8} wrap>
-          <Button type="primary" htmlType="submit" size="small">参数保存</Button>
-          <Button size="small" disabled={direction !== 0 || attributesDirty || parametersDirty || encoder >= positiveEncoder} onClick={() => startTest(1)}>{action.positiveLabel}测试</Button>
-          <Button size="small" disabled={direction !== 0 || attributesDirty || parametersDirty || encoder <= negativeEncoder} onClick={() => startTest(-1)}>{action.negativeLabel}测试</Button>
-          <Button size="small" danger disabled={false} onClick={() => setDirection(0)}>停止</Button>
-        </Flex>
-        {parametersDirty && <Typography.Text type="warning" className={styles.hint}>参数有未保存的修改，保存后可测试</Typography.Text>}
-      </Form>
+          <Flex className={styles.testActions} gap={8} wrap>
+            <Button type="primary" htmlType="submit" size="small">参数保存</Button>
+            <Button size="small" disabled={direction !== 0 || attributesDirty || parametersDirty || encoder >= positiveEncoder} onClick={() => startTest(1)}>{action.positiveLabel}测试</Button>
+            <Button size="small" disabled={direction !== 0 || attributesDirty || parametersDirty || encoder <= negativeEncoder} onClick={() => startTest(-1)}>{action.negativeLabel}测试</Button>
+            <Button size="small" danger disabled={false} onClick={() => setDirection(0)}>停止</Button>
+          </Flex>
+          {parametersDirty && <Typography.Text type="warning" className={styles.hint}>参数有未保存的修改，保存后可测试</Typography.Text>}
+        </Form>
+      </div>
 
       <Divider className={styles.footerDivider} />
       <Button type="dashed" size="small" block onClick={() => onAdd(motor.actionType)}>新增轴电机</Button>

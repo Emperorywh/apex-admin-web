@@ -36,6 +36,16 @@
 .sectionTitle { margin: 0 0 12px !important; font-size: var(--app-fs-primary) !important; }
 .hint { font-size: var(--app-fs-secondary); }
 
+/* 参数标题占满卡片宽度以便点击；箭头和文案同步表示状态，键盘聚焦保留清晰边框。 */
+.parametersToggle { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 28px; padding: 2px 0; border: 0; border-radius: var(--app-radius-control); background: transparent; color: var(--app-text); font: inherit; font-weight: 600; text-align: left; cursor: pointer; }
+.parametersToggle:hover { background: var(--app-hover-bg); }
+.parametersToggle:focus-visible { outline: 2px solid var(--app-blue); outline-offset: 3px; }
+.parametersToggleLabel { display: inline-flex; align-items: center; gap: 8px; }
+.parametersToggleLabel svg { flex-shrink: 0; }
+.parametersToggle[aria-expanded='true'] .parametersToggleLabel svg { transform: rotate(90deg); }
+/* 仅展开时显示内容；表单一直挂载，折叠不会清空未保存的参数。 */
+.parametersPanel { padding-top: 12px; }
+
 /* 实时区用内嵌底色区分只读反馈与可编辑标定值，数值采用等宽数字便于观察变化。 */
 .telemetry { padding: 10px 12px; background: var(--app-panel-inset); border: 1px solid var(--app-divider); border-radius: var(--app-radius-control); }
 .encoderValue { color: var(--app-cyan) !important; font-variant-numeric: tabular-nums; font-size: 18px; }
