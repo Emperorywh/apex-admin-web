@@ -2,14 +2,14 @@
  * 路由定义唯一来源：id、path、页面懒加载与 meta 在此声明。
  * projections.tsx 据此生成访问路由、缓存渲染路由与菜单；
  * ROUTE_IDS / ROUTE_PATHS / RouteId 由定义树自动推导。
- * 根路径与未匹配地址跳转到仪表盘。
+ * 根路径与未匹配地址跳转到机器人监控。
  */
 
 import {
   Bot,
   Cog,
   Cpu,
-  LayoutDashboard,
+  Radar,
   ListTree,
   Map,
   MapPlus,
@@ -47,10 +47,11 @@ export const appRouteDefinitions = defineAppRoutes([
         meta: { title: '工作台', hideInMenu: true, hideInTabs: true, noCache: true },
       },
       {
-        id: 'dashboard',
-        path: 'dashboard',
-        loadPage: () => import('@/pages/dashboard/Dashboard/Dashboard'),
-        meta: { title: '仪表盘', icon: LayoutDashboard, affixTab: true, i18nNamespaces: ['dashboard'] },
+        // 单机监控作为默认工作台，固定页签保证实时状态入口始终可达。
+        id: 'robot-monitor',
+        path: 'robot-monitor',
+        loadPage: () => import('@/pages/robot-monitor/RobotMonitor/RobotMonitor'),
+        meta: { title: '机器人监控', icon: Radar, affixTab: true },
       },
       {
         id: 'action-orchestration',

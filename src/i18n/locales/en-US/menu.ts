@@ -3,7 +3,8 @@ export default {
   '调度系统': 'Dispatch System',
   '工作台': 'Workspace',
   '登录': 'Sign in',
-  '仪表盘': 'Dashboard',
+  // 默认入口对应 AGV 单机地图与运行状态监控。
+  '机器人监控': 'Robot Monitor',
   '动作编排': 'Action Orchestration',
   '轴电机管理': 'Axis Motor Management',
   '设备管理': 'Device Management',

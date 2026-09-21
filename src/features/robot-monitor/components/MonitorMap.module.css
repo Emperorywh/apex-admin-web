@@ -1,0 +1,168 @@
+/* 深石墨地图是监控的主工作区，独立色值保证地图在浅色管理后台中仍有足够对比度。 */
+.map {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  /* 使用裁切而非可编程滚动，避免聚焦底部工具按钮时浏览器移动标尺和整个画布。 */
+  overflow: clip;
+  color: #a1b3c3;
+  background: #111b26;
+  isolation: isolate;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 画布铺满容器；触摸手势仅在画布内用于拖动，浮层按钮仍保留原生点击行为。 */
+.canvas { position: absolute; inset: 24px 0 0 24px; width: calc(100% - 24px); height: calc(100% - 24px); cursor: grab; touch-action: none; }
+.dragging { cursor: grabbing; }
+
+/* 标尺固定在视窗边缘，并使用细小刻痕表达工程地图的坐标基准。 */
+.topRuler { position: absolute; top: 0; left: 24px; right: 0; height: 24px; background: #121e2a; border-bottom: 1px solid #2a3a484d; font: 8px/1.2 'Cascadia Code', 'SFMono-Regular', Consolas, monospace; color: #54687d; z-index: 2; }
+.topRuler::after { position: absolute; bottom: 0; left: 0; right: 0; height: 5px; content: ''; background: repeating-linear-gradient(90deg, #52657955 0 1px, transparent 1px 10px); }
+.topRuler > span { position: absolute; top: 4px; transform: translateX(-50%); }
+.topRuler > span:last-child { transform: translateX(-100%); padding-right: 5px; }
+.topRuler > .rulerUnit { left: -16px; color: #778b9d; transform: none; }
+.leftRuler { position: absolute; inset: 24px auto 0 0; width: 24px; border-right: 1px solid #2a3a484d; background: #121e2a; z-index: 2; }
+.leftRuler::after { position: absolute; right: 0; top: 0; bottom: 0; width: 5px; content: ''; background: repeating-linear-gradient(0deg, #52657955 0 1px, transparent 1px 10px); }
+.leftRuler span { position: absolute; left: 10px; font: 8px 'Cascadia Code', 'SFMono-Regular', Consolas, monospace; color: #54687d; text-align: center; transform: translate(-50%, -50%) rotate(-90deg); }
+
+/* 地图标题与指南针保留在空白边缘，避免遮挡机器人和导航节点。 */
+.mapInfo { position: absolute; top: 48px; left: 49px; display: flex; flex-direction: column; gap: 7px; z-index: 2; pointer-events: none; }
+.mapInfo > span:nth-child(2) { font: 10px 'Cascadia Code', 'SFMono-Regular', Consolas, monospace; letter-spacing: 1.4px; color: #91a5b4; }
+.mapInfo small { font-size: 10px; color: #536b7d; }
+.mapStatus { display: inline-flex; gap: 6px; align-items: center; color: #c2d1d7; font-size: 11px; font-weight: 500; }
+.mapStatus i { width: 5px; height: 5px; border-radius: 50%; background: #6acfab; box-shadow: 0 0 9px #6acfaa66; }
+.compass { position: absolute; right: 30px; top: 44px; display: flex; flex-direction: column; align-items: center; gap: 0; z-index: 2; color: #8da0b1; font: 10px 'Cascadia Code', Consolas, monospace; }
+.compass svg { width: 34px; height: 34px; }
+.compass path:first-child { fill: #91a9bc; }
+.compass path:last-child { fill: #3c5469; }
+
+/* 厂区外墙、通道和立柱保持低饱和度，形成可辨认但不争夺注意力的底图。 */
+.floorSurface { fill: #15212d; }
+.wallShadow { fill: none; stroke: #070e17; stroke-width: 12; stroke-linejoin: miter; }
+.wall { fill: none; stroke: #738596; stroke-width: 3; stroke-linejoin: miter; }
+.wallInner { fill: none; stroke: #344658; stroke-width: 1; }
+.column { fill: #8497a6; stroke: #263a4c; }
+.entrance { stroke: #5d92a0; stroke-width: 2; stroke-dasharray: 5 4; }
+.zoneLabel { fill: #7990a2; font-size: 11px; letter-spacing: 1px; }
+.floorGuide { fill: none; stroke: #324456; stroke-width: 1; stroke-dasharray: 5 7; opacity: .55; }
+.corridorLabel { fill: #4b6174; font-size: 9px; letter-spacing: 3px; }
+.directionArrow { fill: none; stroke: #465d70; stroke-width: 1.3; }
+.floorLabel { fill: #476075; font: 30px 'Cascadia Code', Consolas, monospace; letter-spacing: -2px; }
+.floorCaption { fill: #3e566b; font: 9px 'Cascadia Code', Consolas, monospace; letter-spacing: 1.6px; }
+
+/* 货架采用分格金属表面与防撞护角，使简化几何仍有工业设备的尺度感。 */
+.rackBase { fill: #1c2a37; stroke: #607184; stroke-width: 1.4; }
+.rackDivider { stroke: #495e70; stroke-width: 1; }
+.rackLabelPlate { fill: #172330; stroke: #465e71; stroke-width: .6; }
+.rackLabel { fill: #a5b7c5; font: 12px 'Cascadia Code', Consolas, monospace; letter-spacing: 1px; }
+.rackCaption { fill: #657e90; font-size: 9px; letter-spacing: 1px; }
+.rackGuard { fill: none; stroke: #a28e55; stroke-width: 2; opacity: .65; }
+.chargingBay { fill: #183631; stroke: #487568; stroke-width: 1; stroke-dasharray: 4 3; }
+.chargingCorner { fill: none; stroke: #70ba93; stroke-width: 1.4; }
+.loadingBay { fill: #2c2b25; stroke: #74694a; stroke-width: 1; stroke-dasharray: 4 3; }
+.loadingDetail { fill: none; stroke: #9b8250; stroke-width: 1.3; opacity: .6; }
+.standbyBay { fill: #213043; stroke: #526d8b; stroke-width: 1; stroke-dasharray: 4 3; }
+
+/* 路线通过窄实线与缓慢短划流动说明方向，绿色覆盖仅表示车辆已经通过的路径。 */
+.route polyline { fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.routeHalo { stroke: #39d2c9; stroke-width: 17; opacity: .055; }
+.routeBase { stroke: #34cfc8; stroke-width: 2.6; opacity: .9; }
+.routeFlow { stroke: #d0fff6; stroke-width: 2; stroke-dasharray: 3 23; opacity: .85; }
+.flowing { animation: route-flow 3s linear infinite; }
+.traveledRoute { stroke: #91d8a9; stroke-width: 3.2; }
+@keyframes route-flow { to { stroke-dashoffset: -104; } }
+
+/* 点击范围大于可见节点，兼顾触摸操作；焦点、悬浮和选中均有轮廓反馈。 */
+.station { cursor: pointer; outline: none; }
+.stationHit { fill: transparent; }
+.stationOuter { fill: #142b32; stroke: #57b7b8; stroke-width: 1.5; transition: stroke .15s, fill .15s; }
+.stationDot { fill: #67dbd1; }
+.stationLabel { fill: #9dbac6; font: 10px 'Cascadia Code', Consolas, monospace; pointer-events: none; }
+.stationName { fill: #829ba9; font-family: var(--app-font); font-size: 9px; }
+.station:hover .stationOuter, .station:focus-visible .stationOuter, .selectedStation .stationOuter { fill: #225257; stroke: #cbfff5; stroke-width: 2; }
+.station:hover .stationLabel, .selectedStation .stationLabel { fill: #d5fff7; }
+.selectedRing { fill: none; stroke: #75e3d5; stroke-width: 1; stroke-dasharray: 3 4; pointer-events: none; }
+.station:focus-visible .stationHit { stroke: #d8fff9; stroke-width: 1; }
+
+/* 扫描范围、稀疏回波与旋转扇面表达感知状态，透明度控制在不遮挡货架的范围内。 */
+.robotGroup { pointer-events: none; }
+.scanOuter { fill: none; stroke: #48b8aa; stroke-width: 1; stroke-opacity: .27; stroke-dasharray: 2 8; }
+.scanInner { fill: none; stroke: #43b6a9; stroke-width: .75; stroke-opacity: .15; }
+.scanSweep { transform-origin: 0 0; }
+.scanning { animation: scan-sweep 7s linear infinite; }
+.scanSector { fill: #50d7bd; opacity: .065; }
+.scanRay { stroke: #57cebd; stroke-width: 1; opacity: .3; }
+.scanPoint { fill: #65d6bb; opacity: .55; }
+@keyframes scan-sweep { to { transform: rotate(360deg); } }
+
+/* 车辆使用金属机身、四轮和激光雷达的俯视图，朝向箭头与实际姿态共同旋转。 */
+.robotHalo { fill: #3ac9b01a; stroke: #55c8b1; stroke-width: .8; stroke-dasharray: 2 5; }
+.headingArrow { fill: #a4ffdf; }
+.wheel { fill: #09101a; stroke: #647b89; stroke-width: 1; }
+.robotBody { stroke: #e9ffff; stroke-width: 1; filter: drop-shadow(0 4px 5px #0008); }
+.robotDeck { fill: #3b525e; stroke: #77929f; stroke-width: .8; }
+.robotDetail { fill: none; stroke: #6c8997; stroke-width: 1; }
+.lidar { fill: #162c36; stroke: #597c86; stroke-width: 1; }
+.lidarLight { fill: #4ce5c4; }
+.robotLight { fill: none; stroke: #8cefd0; stroke-width: 2; }
+.robotTag > rect { fill: #142831; stroke: #395965; stroke-width: .8; }
+.robotTag > circle { fill: #66dab3; }
+.robotTag > text { fill: #d8f1ef; font: 11px 'Cascadia Code', Consolas, monospace; letter-spacing: .5px; }
+.robotTag > .robotTagStatus { fill: #80a69f; font-size: 9px; font-family: var(--app-font); letter-spacing: .4px; }
+.tagLeader { fill: none; stroke: #567780; stroke-width: .8; }
+
+/* 控件的深色实体背景提升密集地图上的可读性，固定高度防止缩放后触控目标变小。 */
+.viewControls { position: absolute; left: 46px; bottom: 20px; display: flex; align-items: center; gap: 2px; padding: 4px; border: 1px solid #334959; border-radius: 6px; background: #162430ed; box-shadow: 0 4px 15px #070d1626; z-index: 3; }
+.viewControls button { width: 30px; height: 30px; display: grid; place-items: center; border: 0; border-radius: 3px; background: transparent; color: #a1b6c6; cursor: pointer; transition: color .15s, background .15s; }
+.viewControls button:hover { background: #263a4a; color: #d9f6f4; }
+.viewControls button:focus-visible { outline: 2px solid #4fd5c7; outline-offset: 1px; }
+.viewControls button:disabled { opacity: .3; cursor: default; }
+.viewControls button.activeControl { background: #234243; color: #76e0cf; }
+.viewControls > span { width: 43px; text-align: center; color: #c0d0dc; font: 10px 'Cascadia Code', Consolas, monospace; }
+.viewControls small { font-size: 8px; color: #778f9f; margin-left: 2px; }
+.viewControls > i { height: 16px; width: 1px; background: #344958; margin: 0 4px; }
+/* 比例尺根据实际视野换算米数，坐标使用等宽数字避免每次位置更新造成跳动。 */
+.scale { position: absolute; bottom: 21px; left: 50%; transform: translateX(-50%); display: flex; align-items: flex-end; gap: 5px; font: 8px 'Cascadia Code', Consolas, monospace; color: #7890a1; }
+.scale i { width: 57px; height: 5px; margin-bottom: 2px; border: 1px solid #698396; border-top: 0; }
+.coordinateReadout { position: absolute; right: 23px; bottom: 21px; display: flex; gap: 12px; font: 9px 'Cascadia Code', Consolas, monospace; color: #567285; }
+.coordinateReadout b { color: #9db6c4; font-weight: 400; margin-left: 3px; }
+
+/* 急停让车辆标记与当前状态同步变红，不改变静态厂区及站点的业务含义。 */
+.emergency .robotHalo { fill: #ef66711c; stroke: #ef7f8b; }
+.emergency .robotTag > circle, .emergency .lidarLight, .emergency .headingArrow { fill: #ff8b91; }
+.emergency .robotTag > .robotTagStatus { fill: #f0929a; }
+.emergency .robotLight { stroke: #f79295; }
+.emergency .scanOuter { stroke: #cc7079; }
+
+/* 紧凑屏幕优先保留导航地图与操作按钮，次要坐标信息移到顶部避免相互遮挡。 */
+@media (max-width: 1100px) {
+  .scale { left: auto; right: 23px; transform: none; bottom: 44px; }
+  .coordinateReadout { gap: 8px; font-size: 8px; }
+}
+@media (max-width: 640px) {
+  .mapInfo { top: 39px; left: 38px; }
+  .mapInfo > span:nth-child(2) { font-size: 8px; letter-spacing: .8px; }
+  .mapInfo small { display: none; }
+  .compass { top: 36px; right: 15px; }
+  .viewControls { left: 36px; bottom: 34px; }
+  .coordinateReadout { left: 38px; right: auto; bottom: 14px; gap: 8px; }
+  .scale { display: none; }
+}
+
+/* 矮视窗由父面板控制高度；收紧浮层而非撑高地图，确保控制条和页脚仍在可视区域。 */
+.compact .mapInfo { top: 36px; left: 38px; gap: 5px; }
+.compact .mapInfo > span:nth-child(2) { font-size: 8px; letter-spacing: .6px; }
+.compact .mapInfo small { display: none; }
+.compact .viewControls { left: 35px; bottom: 8px; padding: 2px; }
+.compact .viewControls button { height: 25px; width: 25px; }
+.compact .coordinateReadout { bottom: 10px; right: 13px; }
+.compact .scale { display: none; }
+.compact .compass { top: 32px; right: 13px; }
+.compact .compass svg { height: 26px; width: 26px; }
+
+/* 遵守减少动态效果设置，保留静态路线与扫描范围，不影响实时状态可读性。 */
+@media (prefers-reduced-motion: reduce) {
+  .flowing, .scanning { animation: none; }
+  .stationOuter, .viewControls button { transition: none; }
+}

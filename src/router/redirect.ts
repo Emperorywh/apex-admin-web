@@ -5,8 +5,8 @@
 import { LOGIN_REDIRECT_QUERY_KEY } from '@/constants/auth/auth.constants'
 import { ROUTE_PATHS } from '@/router/definitions'
 
-/** 受保护根 index（/）的固定跳转地址：首个菜单页（仪表盘） */
-export const ROOT_REDIRECT_TARGET = ROUTE_PATHS['dashboard']
+/** 受保护根 index（/）固定进入机器人监控，登录后直接查看单机状态。 */
+export const ROOT_REDIRECT_TARGET = ROUTE_PATHS['robot-monitor']
 
 /** 登录页地址；携带回跳参数以登录后返回原页面 */
 export function buildLoginPath(fromPathname: string, fromSearch: string): string {
