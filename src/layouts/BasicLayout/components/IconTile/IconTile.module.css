@@ -1,4 +1,4 @@
-/* 线框仪表图标，共享语义色与内嵌面板材质。 */
+/* 线框图标共享深蓝内嵌底色，降低边框与辉光亮度以突出图标的语义色。 */
 .tile {
   --tile-accent: var(--app-cyan);
   display: flex;
@@ -6,11 +6,11 @@
   justify-content: center;
   flex: none;
   color: var(--tile-accent);
-  border: 1px solid color-mix(in srgb, var(--tile-accent) 55%, transparent);
-  background: radial-gradient(circle, color-mix(in srgb, var(--tile-accent) 16%, var(--app-bg-2)), var(--app-bg-2));
-  box-shadow: inset 0 0 8px color-mix(in srgb, var(--tile-accent) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--tile-accent) 30%, transparent);
+  background: color-mix(in srgb, var(--tile-accent) 7%, var(--app-bg-2));
+  box-shadow: inset 0 0 8px color-mix(in srgb, var(--tile-accent) 6%, transparent);
 }
-.tile svg { filter: drop-shadow(0 0 4px color-mix(in srgb, var(--tile-accent) 35%, transparent)); }
+.tile svg { filter: drop-shadow(0 0 3px color-mix(in srgb, var(--tile-accent) 22%, transparent)); }
 .blue { --tile-accent: var(--app-cyan); }
 .green { --tile-accent: var(--app-green); }
 .orange { --tile-accent: var(--app-orange); }

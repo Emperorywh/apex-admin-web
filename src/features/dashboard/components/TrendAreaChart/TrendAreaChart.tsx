@@ -73,14 +73,15 @@ export function TrendAreaChart({ points, createdLabel, completedLabel }: TrendAr
       >
         {width > 0 ? (
           <svg width={width} height={HEIGHT} role="img">
+            {/* 面积仅保留轻微染色，让蓝、绿曲线和灰蓝刻度保持清晰。 */}
             <defs>
               <linearGradient id={`${gradientId}-created`} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" style={{ stopColor: 'var(--app-blue)', stopOpacity: 0.3 }} />
-                <stop offset="100%" style={{ stopColor: 'var(--app-blue)', stopOpacity: 0.02 }} />
+                <stop offset="0%" style={{ stopColor: 'var(--app-blue)', stopOpacity: 0.16 }} />
+                <stop offset="100%" style={{ stopColor: 'var(--app-blue)', stopOpacity: 0 }} />
               </linearGradient>
               <linearGradient id={`${gradientId}-completed`} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" style={{ stopColor: 'var(--app-green)', stopOpacity: 0.26 }} />
-                <stop offset="100%" style={{ stopColor: 'var(--app-green)', stopOpacity: 0.02 }} />
+                <stop offset="0%" style={{ stopColor: 'var(--app-green)', stopOpacity: 0.1 }} />
+                <stop offset="100%" style={{ stopColor: 'var(--app-green)', stopOpacity: 0 }} />
               </linearGradient>
             </defs>
             {axis.ticks.map((tick) => (

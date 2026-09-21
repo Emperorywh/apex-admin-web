@@ -1,4 +1,4 @@
-/* 登录页：渐变画布上的居中玻璃卡片 */
+/* 登录页沿用工作区的深蓝面板与青色上沿，保持入口和业务界面配色一致。 */
 
 .wrap {
   min-height: 100%;
@@ -12,8 +12,9 @@
   width: 400px;
   padding: 36px 34px 28px;
   border-radius: var(--app-radius-window);
-  background: var(--app-panel);
-  border: 1px solid var(--app-glass-line);
+  background: var(--app-card-surface);
+  border: 1px solid var(--app-card-line);
+  border-top-color: var(--app-cyan);
   box-shadow: var(--app-panel-shadow);
   backdrop-filter: var(--app-glass-filter);
   -webkit-backdrop-filter: var(--app-glass-filter);

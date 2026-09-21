@@ -26,12 +26,12 @@ import { useDashboardOverview } from '@/features/dashboard/hooks/useDashboardOve
 import type { DashboardOrderType, VehicleRuntimeState } from '@/types/dashboard/dashboard.types'
 import styles from '@/pages/dashboard/Dashboard/Dashboard.module.css'
 
-/** 任务类型 → 译文 key 与条形色 */
+/** 任务类型对应独立主题色；空跑使用青色，避免与充电的琥珀色混淆。 */
 const ORDER_TYPE_META: Record<DashboardOrderType, { label: string; color: string }> = {
   WORK: { label: '工作', color: 'var(--app-blue)' },
   PARK: { label: '回桩', color: 'var(--app-green)' },
   CHARGE: { label: '充电', color: 'var(--app-orange)' },
-  MOVE: { label: '空跑', color: 'var(--app-yellow)' },
+  MOVE: { label: '空跑', color: 'var(--app-cyan)' },
 }
 
 /** 车辆运行状态 → 译文 key */

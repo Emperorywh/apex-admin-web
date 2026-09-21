@@ -1,31 +1,23 @@
-/* 工程网格与仓储轮廓降低对比度，避免干扰业务内容。 */
+/* 深海军蓝底色承载业务内容，顶部蓝光和底部青光对应监控大屏的纵向层次。 */
 .wall {
   position: fixed;
   inset: 0;
   z-index: -1;
   overflow: hidden;
   pointer-events: none;
-  background: radial-gradient(ellipse at 65% 0, var(--app-hover-bg), transparent 55%), var(--app-canvas);
+  background:
+    radial-gradient(ellipse at 50% -18%, color-mix(in srgb, var(--app-blue) 20%, transparent), transparent 58%),
+    radial-gradient(ellipse at 50% 118%, color-mix(in srgb, var(--app-cyan) 9%, transparent), transparent 55%),
+    var(--app-canvas);
 }
+/* 细网格向视口边缘渐隐，避免点阵和插图干扰表格、图表与面板边界。 */
 .wall::before {
   content: '';
   position: absolute;
-  inset: var(--app-topbar-h) 0 0;
+  inset: 0;
   background-image:
-    radial-gradient(var(--app-tech-dot) 0.7px, transparent 0.9px),
     linear-gradient(var(--app-tech-grid) 1px, transparent 1px),
     linear-gradient(90deg, var(--app-tech-grid) 1px, transparent 1px);
-  background-size: 24px 24px, 120px 120px, 120px 120px;
-  mask-image: linear-gradient(to bottom, black, #0007 50%, black);
-}
-.factory {
-  position: absolute;
-  top: var(--app-topbar-h);
-  right: 0;
-  width: min(900px, 76vw);
-  height: 300px;
-  color: var(--app-cyan);
-  opacity: 0.08;
-  mask-image: linear-gradient(90deg, transparent, black 35%), linear-gradient(black, transparent 95%);
-  mask-composite: intersect;
+  background-size: 44px 44px;
+  mask-image: radial-gradient(ellipse at 50% 40%, black 25%, transparent 78%);
 }

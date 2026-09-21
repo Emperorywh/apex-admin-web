@@ -29,9 +29,9 @@
   width: 100%;
 }
 
+/* 网格与趋势图共用低亮蓝色实线，使状态色柱形成为主要信息。 */
 .gridLine {
   stroke: var(--app-line-soft);
-  stroke-dasharray: 3 5;
 }
 
 .bandHighlight {

@@ -1,5 +1,5 @@
 /**
- * 登录页：明亮玻璃卡片风格。
+ * 登录页：与业务工作区共用海军蓝面板和青色强调的居中认证入口。
  */
 
 import { useTranslation } from 'react-i18next'

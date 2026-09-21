@@ -29,9 +29,9 @@
   width: 100%;
 }
 
+/* 低亮实线网格呼应监控大屏，减少与悬浮辅助虚线的视觉竞争。 */
 .gridLine {
   stroke: var(--app-line-soft);
-  stroke-dasharray: 3 5;
 }
 
 .axisText {
@@ -41,12 +41,13 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* 主曲线沿用主题蓝色，微光与曲线同色，避免出现额外的青色光晕。 */
 .lineCreated {
   fill: none;
   stroke: var(--app-blue);
   stroke-width: 2;
   stroke-linecap: round;
-  filter: drop-shadow(0 0 3px var(--app-accent-glow));
+  filter: drop-shadow(0 0 3px color-mix(in srgb, var(--app-blue) 30%, transparent));
 }
 
 .lineCompleted {

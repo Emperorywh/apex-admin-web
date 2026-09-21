@@ -1,4 +1,4 @@
-/* 全局进度条：固定于视口顶部的细渐变条 */
+/* 全局进度条：顶部细线沿用图表蓝到焦点青的渐变，绿色仅表达正常业务状态。 */
 
 .bar {
   position: fixed;
@@ -8,7 +8,7 @@
   height: 3px;
   z-index: 1100;
   border-radius: 0 0 2px 2px;
-  background: linear-gradient(90deg, var(--app-blue), var(--app-blue-2), var(--app-green));
+  background: linear-gradient(90deg, var(--app-blue), var(--app-cyan));
   transform-origin: left;
   animation: globalProgressGrow 1.1s ease-in-out infinite;
 }

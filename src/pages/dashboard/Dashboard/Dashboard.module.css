@@ -27,10 +27,10 @@
     linear-gradient(var(--app-cyan), var(--app-cyan)) right bottom / 2px 13px no-repeat;
   opacity: 0.8;
 }
-.panel::after { content: ''; position: absolute; inset: 5px; border-top: 1px solid var(--app-highlight-soft); border-bottom: 1px solid var(--app-highlight-soft); border-radius: 2px; pointer-events: none; }
 .panelTitle { display: flex; align-items: center; gap: 10px; margin: 0; min-height: 49px; }
-.panelTitle::before { content: ''; width: 3px; height: 13px; flex: none; background: var(--app-cyan); box-shadow: 0 0 7px var(--app-accent-glow); }
-.panelTitle::after { content: ''; flex: 1; height: 1px; margin-left: 6px; background: linear-gradient(90deg, var(--app-divider), transparent); }
+/* 标题以青蓝短标和渐隐导线点亮，面板内部不再叠加额外装饰边线。 */
+.panelTitle::before { content: ''; width: 3px; height: 13px; flex: none; background: linear-gradient(180deg, var(--app-cyan), var(--app-blue)); box-shadow: 0 0 7px var(--app-accent-glow); }
+.panelTitle::after { content: ''; flex: 1; height: 1px; margin-left: 6px; background: linear-gradient(90deg, color-mix(in srgb, var(--app-cyan) 35%, transparent), transparent); }
 .panelBody { flex: 1; display: flex; flex-direction: column; min-width: 0; min-height: 0; }
 .span4 { grid-column: span 4; }
 .span5 { grid-column: span 5; }

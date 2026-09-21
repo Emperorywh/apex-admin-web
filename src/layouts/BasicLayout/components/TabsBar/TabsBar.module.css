@@ -1,4 +1,4 @@
-/* 斜边轨道和青色底部光线，保留拖动、关闭及溢出滚动。 */
+/* 暗蓝轨道与细青色选中线划分页签层级，保留拖动、关闭及溢出滚动。 */
 .bar {
   position: relative;
   flex: 1;
@@ -13,11 +13,11 @@
   content: '';
   position: absolute;
   inset: 0 10px 3px;
-  border: 1px solid var(--app-divider);
+  border: 1px solid var(--app-card-line);
   border-top: 0;
   border-radius: 0 0 5px 10px;
   transform: skewX(-32deg);
-  background: linear-gradient(0deg, var(--app-hover-bg), transparent 65%);
+  background: linear-gradient(0deg, var(--app-bg-2), transparent 65%);
   pointer-events: none;
 }
 .scroll {
@@ -78,8 +78,9 @@
   transition: background var(--app-dur-base), box-shadow var(--app-dur-base);
 }
 .tab:hover { background: var(--app-hover-bg); color: var(--app-text); }
-.tabActive, .tabActive:hover { color: var(--app-text); background: var(--app-tab-bg); text-shadow: 0 0 9px var(--app-accent-glow); }
-.tabActive::after { background: var(--app-cyan); box-shadow: 0 0 8px var(--app-cyan), 0 0 16px var(--app-accent-glow); }
+/* 当前页只在底边保留局部辉光，标题维持清晰的冷白色。 */
+.tabActive, .tabActive:hover { color: var(--app-text); background: var(--app-tab-bg); }
+.tabActive::after { background: var(--app-cyan); box-shadow: 0 0 8px var(--app-accent-glow); }
 .icon { flex: none; color: var(--app-text-3); }
 .tabActive .icon { color: var(--app-cyan); filter: drop-shadow(0 0 4px var(--app-accent-glow)); }
 .tabDragging { z-index: 10; background: var(--app-tab-drag-bg); box-shadow: var(--app-shadow-2); }

@@ -1,5 +1,6 @@
+/* 指标卡以深蓝面板承载数据；图标颜色仅表达业务状态，避免整卡泛光。 */
 .card {
-  --stat-accent: var(--app-cyan);
+  --stat-accent: var(--app-blue);
   position: relative;
   background: var(--app-card-surface);
   border: 1px solid var(--app-card-line);
@@ -15,8 +16,9 @@
 .card[data-tone='green'] { --stat-accent: var(--app-green); }
 .card[data-tone='orange'] { --stat-accent: var(--app-orange); }
 .card[data-tone='red'] { --stat-accent: var(--app-red); }
-.card::before { content: ''; position: absolute; inset: 5px; border-top: 1px solid var(--app-highlight); border-left: 1px solid var(--app-highlight-soft); border-radius: 2px; pointer-events: none; }
-.card::after { content: ''; position: absolute; left: -1px; top: 13px; width: 1px; height: 44px; background: var(--stat-accent); box-shadow: 0 0 8px var(--stat-accent); }
+/* 左侧青色细线沿面板向下淡出，与监控面板的青色角标保持一致。 */
+.card::after { content: ''; position: absolute; left: -1px; top: 0; bottom: 0; width: 3px; background: linear-gradient(180deg, var(--app-cyan), color-mix(in srgb, var(--app-blue) 15%, transparent)); pointer-events: none; }
+/* 图标仅使用低亮底色和细边框，确保浅白指标数字始终是首要视觉信息。 */
 .tile {
   width: 43px;
   height: 47px;
@@ -26,16 +28,15 @@
   justify-content: center;
   flex-shrink: 0;
   color: var(--stat-accent);
-  border: 1px solid color-mix(in srgb, var(--stat-accent) 65%, transparent);
-  background: radial-gradient(ellipse, color-mix(in srgb, var(--stat-accent) 22%, transparent), var(--app-bg-2) 80%);
-  box-shadow: inset 0 0 8px color-mix(in srgb, var(--stat-accent) 20%, transparent), 0 0 10px color-mix(in srgb, var(--stat-accent) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--stat-accent) 30%, transparent);
+  background: color-mix(in srgb, var(--stat-accent) 8%, var(--app-panel-inset));
 }
-.tile svg { filter: drop-shadow(0 0 4px color-mix(in srgb, var(--stat-accent) 55%, transparent)); }
 .body { min-width: 0; }
 .label { font-size: var(--app-fs-secondary); font-weight: var(--app-fw-medium); color: var(--app-text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.value { font-size: 26px; font-weight: var(--app-fw-medium); color: var(--stat-accent); line-height: 1.2; font-variant-numeric: tabular-nums; margin-top: 5px; letter-spacing: 0.3px; }
+/* 数值与单位使用浅白、灰蓝两级文字，状态色由图标和涨跌提示承担。 */
+.value { font-size: 26px; font-weight: var(--app-fw-medium); color: var(--app-text); line-height: 1.2; font-variant-numeric: tabular-nums; margin-top: 5px; letter-spacing: 0.3px; }
 .valueLoading { width: 64px; height: 25px; border-radius: var(--app-radius-badge); background: var(--app-divider); animation: pulse 1.2s ease-in-out infinite; }
-.suffix { font-size: var(--app-fs-primary); font-weight: var(--app-fw-medium); color: var(--stat-accent); margin-left: 3px; }
+.suffix { font-size: var(--app-fs-primary); font-weight: var(--app-fw-medium); color: var(--app-text-2); margin-left: 3px; }
 .delta { display: flex; align-items: center; gap: 4px; font-size: 10px; font-weight: var(--app-fw-medium); margin-top: 5px; font-variant-numeric: tabular-nums; }
 .delta svg { flex: none; }
 .deltaGood { color: var(--app-green-text); }

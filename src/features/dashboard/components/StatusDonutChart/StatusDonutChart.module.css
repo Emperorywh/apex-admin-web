@@ -22,8 +22,9 @@
   cursor: default;
 }
 
+/* 无数据时展示与资源进度条相同的深蓝轨道，不误用业务状态色。 */
 .emptyRing {
-  stroke: var(--app-divider);
+  stroke: var(--app-track);
 }
 
 .centerContent {

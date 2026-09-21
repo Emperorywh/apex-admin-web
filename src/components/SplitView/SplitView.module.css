@@ -34,7 +34,7 @@
   justify-content: center;
 }
 
-/* 中线：1px 分隔线；悬停/拖拽时增粗并染强调色 */
+/* 中线保持低亮蓝色；悬停和拖拽时使用全局青色提示可调整区域。 */
 .divider::before {
   content: '';
   width: 1px;
@@ -48,13 +48,13 @@
 .divider:hover::before {
   width: 3px;
   border-radius: var(--app-radius-pill);
-  background: rgba(47, 127, 255, 0.4);
+  background: color-mix(in srgb, var(--app-cyan) 40%, transparent);
 }
 
 .dragging .divider::before {
   width: 3px;
   border-radius: var(--app-radius-pill);
-  background: rgba(47, 127, 255, 0.55);
+  background: color-mix(in srgb, var(--app-cyan) 65%, transparent);
 }
 
 /* 折叠按钮：悬停分隔条时浮现的小圆钮（macOS 侧栏折叠语义） */
