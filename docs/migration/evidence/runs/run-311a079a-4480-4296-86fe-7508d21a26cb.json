@@ -1,0 +1,40 @@
+{
+  "runId": "run-311a079a-4480-4296-86fe-7508d21a26cb",
+  "taskId": "P41",
+  "purpose": "audit",
+  "owner": "sess_4df9c449-3501-4e1d-8c89-0f717466bb17",
+  "runner": {
+    "provider": "zcode",
+    "sessionId": "sess_4df9c449-3501-4e1d-8c89-0f717466bb17",
+    "turnId": "turn_c077198a-4486-4992-98ae-bd82831ecfe0",
+    "automationRunId": "automation-4c58cefd-88c2-4b25-b14d-53904b310c3e:1789948200000",
+    "identitySource": "running_tool_part",
+    "toolPartId": "part_muagyi12_bbb67a43-b102-4464-aa08-81cf9f401477",
+    "toolCallId": "call_0db96867c05a429f906a995e",
+    "messageId": "msg_muagyfua_c7f98d8d-0074-48f7-acfe-a990e1bd290f"
+  },
+  "startedAt": "2026-09-20T23:50:27.246Z",
+  "baseHead": "331bc5e9d2e956e170968f5823d850ee6a0e68f0",
+  "initialStatus": "M docs/migration/RUN_STATE.json\n?? docs/migration/evidence/runs/run-9fc8d28e-f5a1-4c48-8d7f-cbb16250663e.json",
+  "progress": [
+    "静态核查：26c94cc..331bc5e 仅 docs（git diff 证实）；19 受检文件 17 个哈希与 P02 audit 基线一致；OpenAPI 哈希一致",
+    "缺陷 P41-audit-1 复现→修复（routeAccess.ts 显式拒绝无权限页回跳）→静态门禁重跑复绿→浏览器修复验证+回归",
+    "浏览器针对性复测 8/8（browser-ui-result.json）+登出复现实验（history 拦截器取证）",
+    "acceptance.json 写入：49 项矩阵（A04/I06 deferred 归 V01）+19 文件哈希绑定 @ 57ce7ba；P41.md 交接记录复核节+限制 1 补验关闭"
+  ],
+  "nextSteps": [
+    "提交验收记录/交接记录/RUN_STATE/证据索引 → push --commit HEAD → end --outcome completed"
+  ],
+  "blocker": null,
+  "endedAt": "2026-09-21T00:12:46.802Z",
+  "outcome": "completed",
+  "endHead": "daeb4be3e358cab6d702dc94ed53609a092f1e07",
+  "publish": {
+    "status": "synced",
+    "taskId": "P41",
+    "commit": "daeb4be3e358cab6d702dc94ed53609a092f1e07",
+    "confirmedRemoteHead": "daeb4be3e358cab6d702dc94ed53609a092f1e07",
+    "checkedAt": "2026-09-21T00:12:43.142Z",
+    "error": null
+  }
+}

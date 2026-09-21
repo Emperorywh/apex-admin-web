@@ -1,0 +1,13 @@
+{
+  "task": { "implementation": "implemented", "verification": "partial", "gate": "ready" },
+  "progress": [
+    "静态核查：392e831..daeb4be 非 docs 变更仅 routeAccess.ts（+5 行，57ce7ba P41-audit-1 修复）；57ce7ba..daeb4be 仅 docs（git diff 证实）",
+    "52 受检文件 SHA-256 重算：51 个与上轮基线一致、唯一变更 routeAccess.ts 逐 hunk 审查成立（resolveSafeRedirectPath 显式拒绝 /no-permission 回跳，消费者仅 LoginForm）",
+    "OpenAPI 哈希 a82e9b5f 一致；真实只读复测 5/5（audit-readonly-result.json）",
+    "acceptance.json 写入：49 项矩阵（A04/I06 deferred 归 V01）+52 文件哈希绑定 @ daeb4be；T00.md 复核节更新；RUN_STATE T00 条目更新"
+  ],
+  "nextSteps": [
+    "提交验收记录/交接记录/RUN_STATE/上轮 P41 结束记录补交 → push --commit HEAD → end --outcome completed"
+  ],
+  "blocker": null
+}

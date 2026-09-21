@@ -1,0 +1,34 @@
+{
+  "ok": true,
+  "proxyTarget": "http://192.168.0.158:8888",
+  "activated": true,
+  "checks": [
+    {
+      "step": "login-md5",
+      "ok": true,
+      "detail": "HTTP 200 code=200 activated=true userFields=4 permCodes=155"
+    },
+    {
+      "step": "page-users-with-token",
+      "ok": true,
+      "detail": "HTTP 200 code=200 records=1 total=3"
+    },
+    {
+      "step": "page-users-anon-contrast",
+      "ok": true,
+      "detail": "HTTP 200 code=1000000"
+    },
+    {
+      "step": "system-logos-public",
+      "ok": true,
+      "detail": "HTTP 200 code=200"
+    },
+    {
+      "step": "logout",
+      "ok": true,
+      "detail": "HTTP 200 code=200"
+    }
+  ],
+  "checkedAt": "2026-09-21T00:53:49.672Z",
+  "note": "输出不含密码与 token；pageUsers 仅 pageSize=1 只读查询。"
+}
