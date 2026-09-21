@@ -1,0 +1,23 @@
+{
+  "task": {
+    "verification": "partial",
+    "gate": "ready",
+    "acceptanceRecord": "docs/migration/evidence/P01/run-ee6b7091-e1de-47dc-9cb9-521b863f54c6/acceptance.json",
+    "pendingItems": [
+      "A04：真实 token 过期收敛与双窗口退出同步场景归 V01 长会话复核（机制级三轮均实证，与 T00/P02 同口径）",
+      "I06：真实网络级语言资源加载失败不白屏场景归 V01 复核（品牌 404 资源缺失分支三轮实测不白屏；IAB 无法构造网络故障）",
+      "品牌图成功显示路径：联调环境未上传品牌图，有图环境或 P27 上传完成后顺带复验"
+    ],
+    "note": "audit 第三次复核通过（2026-09-21，run run-ee6b7091）：24 受检文件 23 个哈希与上轮基线一致（bbe05cb..a0a1071 非 docs 变更仅 routeAccess.ts，git diff 证实）、OpenAPI a82e9b5f 一致；唯一变更 routeAccess.ts（57ce7ba P41-audit-1 修复）逐 hunk 从 P01 视角审查成立——resolveSafeRedirectPath 函数头注释本就声明「无权限页一律拒绝」，修复补显式拒绝使实现与既声明 A22 回跳契约对齐，唯一运行时消费者 LoginForm（零变更）以 safeRedirect ?? resolveLandingPath 消费 null 正确落回落点；静态门禁复用 P41 audit @ 57ce7ba 复绿结果（57ce7ba..a0a1071 仅 docs）；真实只读复测 8/8 与上轮逐项一致（错误凭据 1000010/MD5 登录 activated=true/155 权限码/落点权限前提/pageUsers total=3/无令牌对照 1000000/systemLogos/登出清理，经 dev 代理→192.168.0.158:8888）；浏览器针对性复测 5/5（无参数落 /dashboard、合法业务页回跳 %2Forder-record 落 /order-record 正向未破坏、%2Fno-permission 拒绝落 /dashboard 修复行为 P01 视角复验、外站拒绝、登出清理 persist 三键清空+表单清空+语言保留，登出带站内回跳参数为守卫既有行为与 P41 瞬态观察项分场景归 V01）；IAB 输入管线冻结经合成 pointer 序列垫片（真实指针归 V01）；A04/I06 两项跨页场景 deferred 归 V01 故不勾选 TASKS；含上轮 T00 结束记录 run-3801e11a 补交"
+  },
+  "progress": [
+    "静态核查：bbe05cb..a0a1071 非 docs 变更仅 routeAccess.ts（+5 行，57ce7ba P41-audit-1 修复）；24 受检文件 SHA-256 重算 23 个零变更；OpenAPI 哈希一致",
+    "routeAccess.ts 变更逐 hunk 审查（P01 视角）：实现与既声明 A22 回跳契约对齐，LoginForm 消费 null 返回正确落回落点",
+    "真实只读复测 8/8（p01-audit3-readonly-result.json）；浏览器针对性复测 5/5（browser-ui-result.json+2 截图本地留存）",
+    "acceptance.json 写入：49 项矩阵（A04/I06 deferred 归 V01）+24 文件哈希绑定 @ a0a1071；P01.md 复核节更新"
+  ],
+  "nextSteps": [
+    "提交验收记录/交接记录/RUN_STATE/上轮 T00 结束记录补交 → push --commit HEAD → end --outcome completed"
+  ],
+  "blocker": null
+}

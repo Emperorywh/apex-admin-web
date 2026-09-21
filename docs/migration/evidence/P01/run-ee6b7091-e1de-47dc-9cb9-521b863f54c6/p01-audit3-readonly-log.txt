@@ -1,0 +1,8 @@
+PASS login-wrong-credentials: HTTP 200 code=1000010 message=用户名或密码错误
+PASS login-md5-correct: HTTP 200 code=200 activated=true permCodes=155
+PASS system-logos-list: HTTP 200 code=200 items=0
+PASS login-background-absent-fallback-condition: HTTP 404 contentType=n/a
+PASS dashboard-landing-permission-present: dashboard-realtime:view 在 155 个权限码中
+PASS token-readonly-pageusers: HTTP 200 code=200 total=3
+PASS token-readonly-anon-contrast: HTTP 200 code=1000000
+PASS logout: HTTP 200 code=200

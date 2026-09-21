@@ -1,0 +1,62 @@
+{
+  "runId": "run-ee6b7091-e1de-47dc-9cb9-521b863f54c6",
+  "taskId": "P01",
+  "purpose": "audit（第三次复核）",
+  "codeBaseline": "a0a1071（src 与 57ce7ba 一致；bbe05cb..a0a1071 唯一 src 变更为 routeAccess.ts 57ce7ba P41-audit-1 修复）",
+  "checkedAt": "2026-09-21T01:20:00+08:00",
+  "viewport": "IAB 默认视口（Chromium 内核，Windows 11）",
+  "theme": "light（持久化偏好恢复）",
+  "language": "en-US（持久化偏好恢复，html lang 同步）",
+  "backend": "192.168.0.158:8888 经 Vite dev server 同源代理（localhost:5173）",
+  "credentials": "本机 .env.local（APEX_TEST_USERNAME/APEX_TEST_PASSWORD，来源名称记录、值不入档）",
+  "scenarios": [
+    {
+      "id": "s1",
+      "name": "无参数登录落点回归",
+      "steps": "直接打开 /login，真实凭据填写并提交",
+      "expected": "登录成功落 /dashboard（D29 有权限首页优先）",
+      "actual": "/dashboard",
+      "result": "passed",
+      "evidence": "screenshots/s1-login-noparam-landing-dashboard.png（Dashboard KPI 9755/99.4%/56 车真实数据渲染）"
+    },
+    {
+      "id": "s2",
+      "name": "合法业务页回跳（正向路径，修复未破坏）",
+      "steps": "打开 /login?redirect=%2Forder-record，真实凭据登录",
+      "expected": "resolveSafeRedirectPath 校验通过（站内+存在+有权限+非无权限页），登录后落 /order-record",
+      "actual": "/order-record（以工作区页签打开，Dashboard 页签保留）",
+      "result": "passed",
+      "evidence": "screenshots/s2-redirect-order-record-landing.png（统计条/筛选/表格/分页器整页渲染）"
+    },
+    {
+      "id": "s3",
+      "name": "无权限页回跳拒绝（P41-audit-1 修复行为，P01 视角复验）",
+      "steps": "打开 /login?redirect=%2Fno-permission，真实凭据登录",
+      "expected": "resolveSafeRedirectPath 显式拒绝 no-permission（57ce7ba），null → resolveLandingPath 落 /dashboard",
+      "actual": "/dashboard（未落入刚被反馈无权限的页面）",
+      "result": "passed",
+      "note": "与 P41 audit 轮（run-311a079a）同代码实测结论一致，本轮从 P01 回跳契约视角复验"
+    },
+    {
+      "id": "s4",
+      "name": "外站回跳拒绝",
+      "steps": "打开 /login?redirect=https%3A%2F%2Fevil.example.com%2Fx，真实凭据登录",
+      "expected": "非 / 前缀直接拒绝，落站内 /dashboard",
+      "actual": "http://localhost:5173/dashboard（站内，redirect 参数剥除）",
+      "result": "passed"
+    },
+    {
+      "id": "s5",
+      "name": "登出清理",
+      "steps": "已登录状态（/dashboard 与 /order-record 两个场景下各登出一次）点击头像菜单 Sign out",
+      "expected": "真实登出请求；persist auth 三键清空（token/user/permissions）；登录表单清空；语言偏好保留",
+      "actual": "persist:apex-admin:auth 终态 token=\"null\"、user=\"null\"、permissions=\"[]\"、roles=\"[]\"、permissionsTree=\"[]\"（redux-persist 序列化形态，业务值全空）；登录页表单 inputLens=[0,0]；apex-admin:lang=en-US 保留且 html lang 同步；登出落点 /login?redirect=%2Fdashboard 与 %2Forder-record（守卫保留站内回跳参数，与上轮 P01 记录的「守卫保留站内回跳参数」一致，非 P41 登记的 /no-permission 瞬态场景）",
+      "result": "passed",
+      "note": "真实登出请求未在本轮重新抓包（监听器随登出后完整导航丢失），登出请求真实性由 P41 audit 轮同代码实测（run-311a079a）与请求层/authSlice 零变更哈希延续"
+    }
+  ],
+  "inputPipelineNote": "IAB 输入管线冻结复现：Playwright fill 正常生效（inputLens 断言），click 超时冻结（首轮复现）。登录提交/菜单操作经 evaluate 合成 pointer 序列垫片（pointerdown→mousedown→pointerup→mouseup→click）完成，与 P41 audit 轮同口径诊断垫片；不证明真实指针交互，真实指针复核归 V01",
+  "screenshotsNote": "截图仅本地留存于本目录 screenshots/（.gitignore 排除，不提交 Git）；本索引不含图片",
+  "privacyNote": "记录不含密码与 token；一次过早读取曾带出 token 形态值至会话日志（未写入任何持久文件，登出终态以遮蔽形态断言复核）",
+  "summary": "5/5 passed——落点回归/正向回跳/无权限页拒绝/外站拒绝/登出清理在修复后代码（57ce7ba routeAccess.ts）上全部复验成立"
+}
