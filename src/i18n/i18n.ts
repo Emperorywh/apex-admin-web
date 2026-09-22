@@ -26,6 +26,8 @@ const enUsLoaders: Record<string, () => Promise<{ default: Record<string, string
   common: () => import('@/i18n/locales/en-US/common'),
   menu: () => import('@/i18n/locales/en-US/menu'),
   auth: () => import('@/i18n/locales/en-US/auth'),
+  // 动作编排随页面按需加载，避免在其他工作区加载列表及操作文案。
+  action: () => import('@/i18n/locales/en-US/action'),
 }
 
 /** zh-* 一律映射 zh-CN；其余未支持语言回退 zh-CN */

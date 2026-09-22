@@ -89,16 +89,17 @@ function toAccessNode(
     return node
   }
 
-  if (definition.loadPage && !isProtected) {
-    // 公开叶子（登录）由 Data Router 直接渲染
+  if (definition.loadPage && (isTopLevel || !isProtected)) {
+    // 顶层页面由 Data Router 在空白布局中直接渲染，业务编辑页仍执行认证守卫。
     const LazyPage = getLazyPage(definition)
-    node.element = wrapPublicPage(<LazyPage />)
+    node.element = wrapStandalonePage(<LazyPage />)
   }
-  // 受保护业务叶子：空锚点，不直接渲染业务页
+  // 布局内的受保护业务叶子仍为空锚点，由页签缓存渲染。
   return node
 }
 
-function wrapPublicPage(children: ReactNode): ReactNode {
+/** 顶层页面使用空白布局，以便占满视口且不显示工作台导航。 */
+function wrapStandalonePage(children: ReactNode): ReactNode {
   return (
     <BlankLayout>
       <Suspense fallback={<PageLoading />}>{children}</Suspense>
@@ -107,7 +108,8 @@ function wrapPublicPage(children: ReactNode): ReactNode {
 }
 
 export const accessRoutes: RouteObject[] = appRouteDefinitions.map((definition) =>
-  toAccessNode(definition, definition.id === ROUTE_IDS['root'], true),
+  // 登录页公开访问，其余顶层业务页面及其子路由保持认证保护。
+  toAccessNode(definition, definition.id !== ROUTE_IDS['auth-login'], true),
 )
 
 /* -------------------------------------------------------------------------- */

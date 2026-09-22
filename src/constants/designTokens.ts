@@ -12,10 +12,10 @@ const THEME_ALGORITHMS: Partial<Record<ResolvedTheme, ThemeConfig['algorithm']>>
   dark: theme.darkAlgorithm,
 }
 
-/** 按解析后的主题生成 antd ThemeConfig（主题切换时重建） */
-export function buildAppTheme(resolvedTheme: ResolvedTheme): ThemeConfig {
+/** 按解析后的主题生成 antd 配置；页面色板只覆盖传入的令牌，仍复用统一的控件与状态规则。 */
+export function buildAppTheme(resolvedTheme: ResolvedTheme, palette: Readonly<Record<string, string>> = {}): ThemeConfig {
   const styles = getComputedStyle(document.documentElement)
-  const token = (name: string) => styles.getPropertyValue(`--app-${name}`).trim()
+  const token = (name: string) => palette[name] ?? styles.getPropertyValue(`--app-${name}`).trim()
 
   return {
     algorithm: THEME_ALGORITHMS[resolvedTheme] ?? theme.darkAlgorithm,

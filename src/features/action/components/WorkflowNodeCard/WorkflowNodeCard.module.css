@@ -1,0 +1,32 @@
+/* 节点采用统一的紧凑宽度与分层蓝色表面，选中时以青色描边确认当前配置对象。 */
+.node { position: relative; width: 236px; padding: 13px; border: 1px solid var(--app-line); border-radius: 9px; background: var(--app-card-surface); box-shadow: var(--app-shadow-1); color: var(--app-text); font-size: 12px; }
+.node:hover { border-color: var(--app-blue); }
+/* 选中态优先于悬停态，鼠标停留在当前节点时仍保留清晰的青色边框。 */
+.node.selected { border-color: var(--app-cyan); box-shadow: 0 0 0 2px var(--app-accent-glow), var(--app-shadow-2); }
+.heading { display: flex; align-items: center; gap: 9px; min-height: 27px; }
+.heading strong { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; font-weight: 600; }
+.menu { display: grid; place-items: center; padding: 2px; border: 0; border-radius: 3px; background: transparent; color: var(--app-text-3); cursor: pointer; }
+.menu:hover { background: var(--app-highlight); color: var(--app-cyan); }
+.startLabel { position: absolute; top: -24px; left: 2px; color: var(--app-text-3); font-size: 11px; }
+/* 摘要限宽省略，避免长目标或 URL 推开画布端口；完整值在配置面板中可编辑。 */
+.summary, .endSummary { margin-top: 11px; padding: 7px 8px; background: var(--app-panel-inset); border-radius: 4px; color: var(--app-text-2); }
+.summary { display: flex; align-items: center; gap: 7px; }
+.summary svg, .summary b { flex-shrink: 0; color: var(--app-blue-2); font-size: 10px; }
+.summary span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.footer { display: flex; align-items: center; gap: 5px; margin-top: 10px; font-size: 10px; color: var(--app-text-3); }
+.variables { margin-top: 10px; padding: 6px 8px; background: var(--app-panel-inset); border-radius: 4px; }
+.variables > div { display: flex; justify-content: space-between; gap: 8px; padding: 4px 0; font-size: 10px; }
+.variables b { color: var(--app-cyan); font-weight: 500; }
+.variables small { color: var(--app-text-3); }
+.variables > span { color: var(--app-text-3); font-size: 11px; }
+/* 条件端口固定在各分支行中线，独立点击入口位于端口外侧，不拦截拖拽连线。 */
+.branches { margin-top: 10px; }
+.branch { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 10px; height: 29px; color: var(--app-text-2); }
+.branch > span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 11px; }
+.branch > b { font-size: 10px; font-weight: 500; color: var(--app-cyan); }
+.node .handle { width: 8px; height: 8px; border: 2px solid var(--app-blue-2); background: var(--app-card-bg); }
+.branch .handle { right: -18px; }
+.addPort { position: absolute; right: -37px; top: 50%; transform: translateY(-50%); display: grid; place-items: center; width: 18px; height: 18px; padding: 0; border: 1px solid var(--app-line); border-radius: 50%; background: var(--app-panel); color: var(--app-cyan); cursor: pointer; opacity: 0; }
+.singlePort { right: -24px; }
+.node:hover .addPort, .selected .addPort, .addPort:focus-visible { opacity: 1; }
+.addPort:hover { background: var(--app-primary); color: var(--app-text); }

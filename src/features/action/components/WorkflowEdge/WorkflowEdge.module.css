@@ -1,0 +1,5 @@
+/* 连线按钮按画布坐标定位；默认透明保留键盘可达性，选中、悬停及聚焦时显示插入入口。 */
+.insert { position: absolute; display: grid; place-items: center; width: 23px; height: 23px; padding: 0; border: 1px solid var(--app-blue); border-radius: 50%; background: var(--app-panel); box-shadow: var(--app-shadow-1); color: var(--app-cyan); cursor: pointer; pointer-events: all; opacity: 0; transition: opacity var(--app-dur-fast), background var(--app-dur-fast), border-color var(--app-dur-fast); }
+.visible, .insert:hover, .insert:focus-visible { opacity: 1; }
+.insert:hover { border-color: var(--app-cyan); background: var(--app-primary); color: var(--app-text); }
+.insert:focus-visible { outline: 2px solid var(--app-cyan); outline-offset: 3px; }

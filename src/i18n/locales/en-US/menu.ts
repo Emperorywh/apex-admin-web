@@ -7,6 +7,8 @@ export default {
   // 默认入口对应 AGV 单机地图与运行状态监控。
   '机器人监控': 'Robot Monitor',
   '动作编排': 'Action Orchestration',
+  // 全屏编辑页的路由标题译文。
+  '动作编排编辑': 'Action Orchestration Editor',
   '轴电机管理': 'Axis Motor Management',
   '设备管理': 'Device Management',
   '库位管理': 'Storage Location Management',

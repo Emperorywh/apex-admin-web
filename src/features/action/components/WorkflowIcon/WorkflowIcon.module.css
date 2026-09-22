@@ -1,0 +1,8 @@
+/* 图标容器保持统一尺寸，类型配色沿用项目令牌，方便各处识别节点职责。 */
+.icon { display: inline-flex; width: 27px; height: 27px; flex-shrink: 0; align-items: center; justify-content: center; border-radius: 6px; background: var(--app-primary); color: var(--app-text); }
+.action { background: color-mix(in srgb, var(--app-blue) 25%, var(--app-panel)); color: var(--app-blue-2); }
+.condition { background: color-mix(in srgb, var(--app-cyan) 20%, var(--app-panel)); color: var(--app-cyan); }
+.http { background: color-mix(in srgb, var(--app-purple) 22%, var(--app-panel)); color: var(--app-purple); }
+.delay { background: color-mix(in srgb, var(--app-orange) 18%, var(--app-panel)); color: var(--app-orange-text); }
+.end { background: color-mix(in srgb, var(--app-green) 18%, var(--app-panel)); color: var(--app-green-text); }
+.start { background: var(--app-primary); }

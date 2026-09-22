@@ -1,0 +1,32 @@
+/* 沿用项目海军蓝色板，查询面板直接置顶，与列表保持清晰的上下层级。 */
+.page { min-width: 0; min-height: 100%; padding: 8px 4px 16px; }
+.hint, .dataNote { font-size: var(--app-fs-secondary); }
+.queryPanel { padding: 20px 20px 4px; border: 1px solid var(--app-card-line); border-radius: var(--app-radius-panel); background: var(--app-highlight-soft); }
+.queryForm { --app-form-label-width: 128px; }
+/* 标签在固定列内靠右，沿用与控件之间的 12px 间距；中英文均不受全局左对齐规则影响。 */
+.queryForm :global(.ant-form-item-label) { display: flex; justify-content: flex-end; }
+/* 查询、重置、新增按顺序靠右排列；窄屏或英文文案较长时允许整颗按钮换行。 */
+.queryActions { margin-bottom: 12px; }
+.dateRange { width: 100%; }
+
+/* 表格负责横向滚动，固定操作列保证窄屏可编辑、启停和删除；动作顺序展示前三步摘要。 */
+.list { min-width: 0; }
+.table :global(.ant-table-thead > tr > th) { padding-block: 12px; white-space: nowrap; }
+.table :global(.ant-table-tbody > tr > td) { padding-block: 14px; overflow-wrap: anywhere; }
+.code, .timestamp { font-size: var(--app-fs-secondary); font-variant-numeric: tabular-nums; }
+.code { letter-spacing: .3px; }
+.sceneTag { margin: 0; border-color: var(--app-line-soft); background: var(--app-highlight-soft); color: var(--app-blue-text); }
+.sequence { white-space: nowrap; }
+.sequenceItem { display: inline-flex; align-items: center; gap: 5px; }
+.sequenceItem svg { color: var(--app-text-3); flex-shrink: 0; }
+.dataNote { margin-top: auto; padding-top: 4px; }
+
+/* 查询标签保持单行，避免中英文在字词中间折断。 */
+.queryForm :global(.ant-form-item-label > label) { white-space: nowrap; }
+
+/* 手机查询和主操作保持足够宽度，外层页面不产生横向溢出。 */
+@media (max-width: 575px) {
+  .page { padding-inline: 0; }
+  .queryPanel { padding: 14px 12px 2px; }
+  .queryActions > :global(.ant-btn) { flex: 1; }
+}

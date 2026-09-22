@@ -37,6 +37,14 @@ export const appRouteDefinitions = defineAppRoutes([
     },
   },
   {
+    // 与登录页同级，使用全屏布局；新增和编辑共用入口，不进入菜单或页签缓存。
+    id: 'action-orchestration-edit',
+    path: '/action-orchestration/edit',
+    loadPage: () => import('@/pages/action/ActionOrchestrationEdit/ActionOrchestrationEdit'),
+    // 编辑页独立加载动作命名空间，直接访问与刷新同样支持英文配置界面。
+    meta: { title: '动作编排编辑', hideInMenu: true, hideInTabs: true, noCache: true, i18nNamespaces: ['action'] },
+  },
+  {
     id: 'root',
     path: '/',
     meta: { title: '机器人系统' },
@@ -88,7 +96,8 @@ export const appRouteDefinitions = defineAppRoutes([
         id: 'action-orchestration',
         path: 'action-orchestration',
         loadPage: () => import('@/pages/action/ActionOrchestration/ActionOrchestration'),
-        meta: { title: '动作编排', icon: Workflow },
+        // 声明页面命名空间，语言切换时预加载列表和操作入口译文。
+        meta: { title: '动作编排', icon: Workflow, i18nNamespaces: ['action'] },
       },
       {
         id: 'axis-motor-management',
