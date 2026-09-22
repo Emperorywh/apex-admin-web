@@ -9,14 +9,14 @@ import { useRequestScope } from '@/components/RequestScopeProvider/RequestScopeC
 const IDLE_SIGNAL = new AbortController().signal
 
 export interface PageRequestScope {
-  signal: AbortSignal
-  revision: number
+	signal: AbortSignal
+	revision: number
 }
 
 export function usePageRequest(): PageRequestScope {
-  const scope = useRequestScope()
-  return {
-    signal: scope?.signal ?? IDLE_SIGNAL,
-    revision: scope?.revision ?? 0,
-  }
+	const scope = useRequestScope()
+	return {
+		signal: scope?.signal ?? IDLE_SIGNAL,
+		revision: scope?.revision ?? 0,
+	}
 }

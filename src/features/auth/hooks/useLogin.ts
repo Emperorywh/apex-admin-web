@@ -9,27 +9,30 @@ import { sessionReady } from '@/store/slices/authSlice'
 import type { AuthSession } from '@/types/auth/auth.types'
 
 export interface LoginInput {
-  username: string
-  password: string
+	username: string
+	password: string
 }
 
 export function useLogin() {
-  const dispatch = useAppDispatch()
-  const [submitting, setSubmitting] = useState(false)
+	const dispatch = useAppDispatch()
+	const [submitting, setSubmitting] = useState(false)
 
-  const submit = useCallback(
-    async (input: LoginInput): Promise<AuthSession> => {
-      setSubmitting(true)
-      try {
-        const session = await login({ username: input.username, password: input.password })
-        dispatch(sessionReady(session))
-        return session
-      } finally {
-        setSubmitting(false)
-      }
-    },
-    [dispatch],
-  )
+	const submit = useCallback(
+		async (input: LoginInput): Promise<AuthSession> => {
+			setSubmitting(true)
+			try {
+				const session = await login({
+					username: input.username,
+					password: input.password,
+				})
+				dispatch(sessionReady(session))
+				return session
+			} finally {
+				setSubmitting(false)
+			}
+		},
+		[dispatch],
+	)
 
-  return { submitting, submit }
+	return { submitting, submit }
 }

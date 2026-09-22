@@ -6,14 +6,14 @@
 import { createContext, useContext } from 'react'
 
 export interface RequestScopeValue {
-  signal: AbortSignal
-  revision: number
-  isActive: boolean
+	signal: AbortSignal
+	revision: number
+	isActive: boolean
 }
 
 export const RequestScopeContext = createContext<RequestScopeValue | null>(null)
 
 /** 无 Provider 场景（登录页等）返回 null */
 export function useRequestScope(): RequestScopeValue | null {
-  return useContext(RequestScopeContext)
+	return useContext(RequestScopeContext)
 }

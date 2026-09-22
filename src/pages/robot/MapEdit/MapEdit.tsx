@@ -1,3 +1,3 @@
 export default function MapEdit() {
-  return null
+	return null
 }

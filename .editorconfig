@@ -1,0 +1,21 @@
+# 项目统一使用 Tab 缩进，每个 Tab 显示为 4 列，避免编辑器采用个人缩进设置。
+root = true
+
+[*]
+charset = utf-8
+indent_style = tab
+indent_size = 4
+tab_width = 4
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# YAML 语法禁止使用 Tab 缩进，锁文件继续采用包管理器生成的双空格格式。
+[*.{yml,yaml}]
+indent_style = space
+indent_size = 2
+
+# Markdown 使用空格表达列表层级，并保留末尾空格表示的显式换行。
+[*.md]
+indent_style = space
+trim_trailing_whitespace = false

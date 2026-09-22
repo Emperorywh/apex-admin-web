@@ -1,26 +1,28 @@
 /* 控制条、工作区和菜单座均在布局流内，工作区独立滚动。 */
 .shell {
-  position: relative;
-  height: 100vh;
-  height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+	position: relative;
+	height: 100vh;
+	height: 100dvh;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
 }
 .workspace {
-  position: relative;
-  flex: 1;
-  min-height: 0;
-  display: grid;
-  overflow: hidden;
-  padding: 0 16px 4px;
-  border-inline: 1px solid var(--app-tech-grid);
+	position: relative;
+	flex: 1;
+	min-height: 0;
+	display: grid;
+	overflow: hidden;
+	padding: 0 16px 4px;
+	border-inline: 1px solid var(--app-tech-grid);
 }
 .workspace > * {
-  grid-area: 1 / 1;
-  min-height: 0;
-  min-width: 0;
+	grid-area: 1 / 1;
+	min-height: 0;
+	min-width: 0;
 }
 @media (max-width: 760px) {
-  .workspace { padding-inline: 10px; }
+	.workspace {
+		padding-inline: 10px;
+	}
 }

@@ -9,9 +9,12 @@ import { ROUTE_PATHS } from '@/router/definitions'
 export const ROOT_REDIRECT_TARGET = ROUTE_PATHS['robot-monitor']
 
 /** 登录页地址；携带回跳参数以登录后返回原页面 */
-export function buildLoginPath(fromPathname: string, fromSearch: string): string {
-  const redirect = `${fromPathname}${fromSearch}`
-  if (redirect === ROUTE_PATHS.root) return ROUTE_PATHS['auth-login']
-  const params = new URLSearchParams({ [LOGIN_REDIRECT_QUERY_KEY]: redirect })
-  return `${ROUTE_PATHS['auth-login']}?${params.toString()}`
+export function buildLoginPath(
+	fromPathname: string,
+	fromSearch: string,
+): string {
+	const redirect = `${fromPathname}${fromSearch}`
+	if (redirect === ROUTE_PATHS.root) return ROUTE_PATHS['auth-login']
+	const params = new URLSearchParams({ [LOGIN_REDIRECT_QUERY_KEY]: redirect })
+	return `${ROUTE_PATHS['auth-login']}?${params.toString()}`
 }

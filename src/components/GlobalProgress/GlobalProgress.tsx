@@ -10,19 +10,28 @@ import styles from '@/components/GlobalProgress/GlobalProgress.module.css'
 const GLOBAL_PROGRESS_DELAY_MS = 120
 
 export function GlobalProgress() {
-  const navigation = useNavigation()
-  const busy = navigation.state !== 'idle'
-  const [visible, setVisible] = useState(false)
+	const navigation = useNavigation()
+	const busy = navigation.state !== 'idle'
+	const [visible, setVisible] = useState(false)
 
-  useEffect(() => {
-    if (!busy) {
-      setVisible(false)
-      return
-    }
-    const timer = setTimeout(() => setVisible(true), GLOBAL_PROGRESS_DELAY_MS)
-    return () => clearTimeout(timer)
-  }, [busy])
+	useEffect(() => {
+		if (!busy) {
+			setVisible(false)
+			return
+		}
+		const timer = setTimeout(
+			() => setVisible(true),
+			GLOBAL_PROGRESS_DELAY_MS,
+		)
+		return () => clearTimeout(timer)
+	}, [busy])
 
-  if (!visible) return null
-  return <div className={styles.bar} role="progressbar" aria-label="页面加载中" />
+	if (!visible) return null
+	return (
+		<div
+			className={styles.bar}
+			role="progressbar"
+			aria-label="页面加载中"
+		/>
+	)
 }

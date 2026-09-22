@@ -8,12 +8,20 @@ import { App, Dropdown, Popover, type MenuProps } from 'antd'
 import dayjs from 'dayjs'
 import { Languages, LogOut, Monitor, Moon, Sun, Wifi } from 'lucide-react'
 import { logout } from '@/services/auth/auth.service'
-import { getRequestHealth, subscribeRequestHealth, type RequestHealth } from '@/services/request/request'
+import {
+	getRequestHealth,
+	subscribeRequestHealth,
+	type RequestHealth,
+} from '@/services/request/request'
 import { useAppDispatch } from '@/hooks/useAppDispatch'
 import { useAppSelector } from '@/hooks/useAppSelector'
 import { useAuth } from '@/hooks/useAuth'
 import { sessionExpired } from '@/store/slices/authSlice'
-import { localeChanged, themeChanged, type AppTheme } from '@/store/slices/settingsSlice'
+import {
+	localeChanged,
+	themeChanged,
+	type AppTheme,
+} from '@/store/slices/settingsSlice'
 import type { AppLanguage } from '@/i18n/i18n'
 import { TabsBar } from '@/layouts/BasicLayout/components/TabsBar/TabsBar'
 import styles from '@/layouts/BasicLayout/components/Header/Header.module.css'
@@ -22,36 +30,45 @@ import styles from '@/layouts/BasicLayout/components/Header/Header.module.css'
 const CLOCK_TICK_INTERVAL_MS = 1_000
 
 export function Header() {
-  const { t } = useTranslation('common')
+	const { t } = useTranslation('common')
 
-  return (
-    <header className={styles.topbar}>
-      <div className={styles.brand}>
-        <img className={styles.brandIcon} src="/favicon.ico" alt="" aria-hidden="true" />
-        <span className={styles.brandCopy}>
-          <span className={styles.brandName} title={t('机器人系统')}>{t('机器人系统')}</span>
-          {/* 英文副标题与机器人本体控制的产品定位保持一致。 */}
-          <span className={styles.brandCaption}>AGV CONTROL SYSTEM</span>
-        </span>
-      </div>
+	return (
+		<header className={styles.topbar}>
+			<div className={styles.brand}>
+				<img
+					className={styles.brandIcon}
+					src="/favicon.ico"
+					alt=""
+					aria-hidden="true"
+				/>
+				<span className={styles.brandCopy}>
+					<span className={styles.brandName} title={t('机器人系统')}>
+						{t('机器人系统')}
+					</span>
+					{/* 英文副标题与机器人本体控制的产品定位保持一致。 */}
+					<span className={styles.brandCaption}>
+						AGV CONTROL SYSTEM
+					</span>
+				</span>
+			</div>
 
-      <span className={styles.divider} aria-hidden="true" />
+			<span className={styles.divider} aria-hidden="true" />
 
-      <div className={styles.tabs}>
-        <TabsBar />
-      </div>
+			<div className={styles.tabs}>
+				<TabsBar />
+			</div>
 
-      <span className={styles.divider} aria-hidden="true" />
+			<span className={styles.divider} aria-hidden="true" />
 
-      <div className={styles.actions}>
-        <ThemeButton />
-        <LanguageButton />
-        <NetworkButton />
-        <ClockText />
-        <AvatarMenu />
-      </div>
-    </header>
-  )
+			<div className={styles.actions}>
+				<ThemeButton />
+				<LanguageButton />
+				<NetworkButton />
+				<ClockText />
+				<AvatarMenu />
+			</div>
+		</header>
+	)
 }
 
 /* -------------------------------------------------------------------------- */
@@ -61,153 +78,193 @@ export function Header() {
 const THEME_ICONS = { light: Sun, dark: Moon, system: Monitor } as const
 
 function ThemeButton() {
-  const { t } = useTranslation('common')
-  const dispatch = useAppDispatch()
-  const theme = useAppSelector((state) => state.settings.theme)
-  const ThemeIcon = THEME_ICONS[theme]
+	const { t } = useTranslation('common')
+	const dispatch = useAppDispatch()
+	const theme = useAppSelector((state) => state.settings.theme)
+	const ThemeIcon = THEME_ICONS[theme]
 
-  const items: MenuProps['items'] = [
-    { key: 'light', icon: <Sun size={15} />, label: t('浅色') },
-    { key: 'dark', icon: <Moon size={15} />, label: t('深色') },
-    { key: 'system', icon: <Monitor size={15} />, label: t('跟随系统') },
-  ]
+	const items: MenuProps['items'] = [
+		{ key: 'light', icon: <Sun size={15} />, label: t('浅色') },
+		{ key: 'dark', icon: <Moon size={15} />, label: t('深色') },
+		{ key: 'system', icon: <Monitor size={15} />, label: t('跟随系统') },
+	]
 
-  return (
-    <Dropdown
-      menu={{
-        items,
-        selectable: true,
-        selectedKeys: [theme],
-        onClick: ({ key }) => {
-          if (key !== theme) dispatch(themeChanged(key as AppTheme))
-        },
-      }}
-      trigger={['click']}
-      placement="bottomRight"
-    >
-      <button type="button" className={styles.iconBtn} title={t('切换主题')}>
-        <ThemeIcon size={17} />
-      </button>
-    </Dropdown>
-  )
+	return (
+		<Dropdown
+			menu={{
+				items,
+				selectable: true,
+				selectedKeys: [theme],
+				onClick: ({ key }) => {
+					if (key !== theme) dispatch(themeChanged(key as AppTheme))
+				},
+			}}
+			trigger={['click']}
+			placement="bottomRight"
+		>
+			<button
+				type="button"
+				className={styles.iconBtn}
+				title={t('切换主题')}
+			>
+				<ThemeIcon size={17} />
+			</button>
+		</Dropdown>
+	)
 }
 
 function LanguageButton() {
-  const { t } = useTranslation('common')
-  const dispatch = useAppDispatch()
-  const locale = useAppSelector((state) => state.settings.locale)
+	const { t } = useTranslation('common')
+	const dispatch = useAppDispatch()
+	const locale = useAppSelector((state) => state.settings.locale)
 
-  const items: MenuProps['items'] = [
-    { key: 'zh-CN', label: '中文' },
-    { key: 'en-US', label: 'English' },
-  ]
+	const items: MenuProps['items'] = [
+		{ key: 'zh-CN', label: '中文' },
+		{ key: 'en-US', label: 'English' },
+	]
 
-  return (
-    <Dropdown
-      menu={{
-        items,
-        selectable: true,
-        selectedKeys: [locale],
-        onClick: ({ key }) => {
-          if (key !== locale) dispatch(localeChanged(key as AppLanguage))
-        },
-      }}
-      trigger={['click']}
-      placement="bottomRight"
-    >
-      <button type="button" className={styles.iconBtn} title={t('切换语言')}>
-        <Languages size={17} />
-      </button>
-    </Dropdown>
-  )
+	return (
+		<Dropdown
+			menu={{
+				items,
+				selectable: true,
+				selectedKeys: [locale],
+				onClick: ({ key }) => {
+					if (key !== locale)
+						dispatch(localeChanged(key as AppLanguage))
+				},
+			}}
+			trigger={['click']}
+			placement="bottomRight"
+		>
+			<button
+				type="button"
+				className={styles.iconBtn}
+				title={t('切换语言')}
+			>
+				<Languages size={17} />
+			</button>
+		</Dropdown>
+	)
 }
 
 function NetworkButton() {
-  const { t } = useTranslation('common')
-  const [health, setHealth] = useState<RequestHealth>(() => getRequestHealth())
-  useEffect(() => subscribeRequestHealth(setHealth), [])
-  const ok = health.consecutiveFailures < 2
-  return (
-    <Popover
-      trigger="click"
-      placement="bottomRight"
-      content={
-        <div className={styles.popList}>
-          <div className={styles.popItem}>
-            <strong>{ok ? t('网络连接正常') : t('网络连接异常')}</strong>
-            <span>
-              {t('连续失败请求')}: {health.consecutiveFailures}
-            </span>
-            <span>
-              {t('最近检查')}: {health.lastCheckedAt === 0 ? '—' : dayjs(health.lastCheckedAt).format('HH:mm:ss')}
-            </span>
-          </div>
-        </div>
-      }
-    >
-      <button type="button" className={styles.iconBtn} title={t('网络')} style={{ color: ok ? undefined : 'var(--app-red)' }}>
-        <Wifi size={17} />
-      </button>
-    </Popover>
-  )
+	const { t } = useTranslation('common')
+	const [health, setHealth] = useState<RequestHealth>(() =>
+		getRequestHealth(),
+	)
+	useEffect(() => subscribeRequestHealth(setHealth), [])
+	const ok = health.consecutiveFailures < 2
+	return (
+		<Popover
+			trigger="click"
+			placement="bottomRight"
+			content={
+				<div className={styles.popList}>
+					<div className={styles.popItem}>
+						<strong>
+							{ok ? t('网络连接正常') : t('网络连接异常')}
+						</strong>
+						<span>
+							{t('连续失败请求')}: {health.consecutiveFailures}
+						</span>
+						<span>
+							{t('最近检查')}:{' '}
+							{health.lastCheckedAt === 0
+								? '—'
+								: dayjs(health.lastCheckedAt).format(
+										'HH:mm:ss',
+									)}
+						</span>
+					</div>
+				</div>
+			}
+		>
+			<button
+				type="button"
+				className={styles.iconBtn}
+				title={t('网络')}
+				style={{ color: ok ? undefined : 'var(--app-red)' }}
+			>
+				<Wifi size={17} />
+			</button>
+		</Popover>
+	)
 }
 
 function ClockText() {
-  const { i18n, t } = useTranslation('common')
-  const [now, setNow] = useState(() => dayjs())
-  useEffect(() => {
-    const timer = setInterval(() => setNow(dayjs()), CLOCK_TICK_INTERVAL_MS)
-    return () => clearInterval(timer)
-  }, [])
-  const zh = i18n.language === 'zh-CN'
-  return (
-    <div className={styles.time} title={t('当前时间')}>
-      {zh ? now.format('M月D日 ddd　HH:mm') : now.format('MMM D ddd HH:mm')}
-    </div>
-  )
+	const { i18n, t } = useTranslation('common')
+	const [now, setNow] = useState(() => dayjs())
+	useEffect(() => {
+		const timer = setInterval(() => setNow(dayjs()), CLOCK_TICK_INTERVAL_MS)
+		return () => clearInterval(timer)
+	}, [])
+	const zh = i18n.language === 'zh-CN'
+	return (
+		<div className={styles.time} title={t('当前时间')}>
+			{zh
+				? now.format('M月D日 ddd　HH:mm')
+				: now.format('MMM D ddd HH:mm')}
+		</div>
+	)
 }
 
 function AvatarMenu() {
-  const { t } = useTranslation('common')
-  const { user } = useAuth()
-  const dispatch = useAppDispatch()
-  const { modal } = App.useApp()
+	const { t } = useTranslation('common')
+	const { user } = useAuth()
+	const dispatch = useAppDispatch()
+	const { modal } = App.useApp()
 
-  const items: MenuProps['items'] = [
-    {
-      key: 'header',
-      label: (
-        <span className={styles.avatarHeader}>
-          <strong>{user?.displayName ?? '—'}</strong>
-          <span>{user?.roleNames.join(' / ') ?? t('未分配角色')}</span>
-        </span>
-      ),
-      disabled: true,
-    },
-    { type: 'divider' },
-    { key: 'logout', icon: <LogOut size={15} />, label: t('退出登录'), danger: true },
-  ]
+	const items: MenuProps['items'] = [
+		{
+			key: 'header',
+			label: (
+				<span className={styles.avatarHeader}>
+					<strong>{user?.displayName ?? '—'}</strong>
+					<span>
+						{user?.roleNames.join(' / ') ?? t('未分配角色')}
+					</span>
+				</span>
+			),
+			disabled: true,
+		},
+		{ type: 'divider' },
+		{
+			key: 'logout',
+			icon: <LogOut size={15} />,
+			label: t('退出登录'),
+			danger: true,
+		},
+	]
 
-  const onClick: MenuProps['onClick'] = ({ key }) => {
-    if (key === 'logout') {
-      modal.confirm({
-        title: t('确认退出登录？'),
-        content: t('退出后需要重新输入账号密码。'),
-        okText: t('退出'),
-        cancelText: t('取消'),
-        onOk: async () => {
-          await logout()
-          dispatch(sessionExpired())
-        },
-      })
-    }
-  }
+	const onClick: MenuProps['onClick'] = ({ key }) => {
+		if (key === 'logout') {
+			modal.confirm({
+				title: t('确认退出登录？'),
+				content: t('退出后需要重新输入账号密码。'),
+				okText: t('退出'),
+				cancelText: t('取消'),
+				onOk: async () => {
+					await logout()
+					dispatch(sessionExpired())
+				},
+			})
+		}
+	}
 
-  return (
-    <Dropdown menu={{ items, onClick }} trigger={['click']} placement="bottomRight">
-      <button type="button" className={styles.avatar} title={user?.displayName ?? t('用户')}>
-        {user?.initials ?? '—'}
-      </button>
-    </Dropdown>
-  )
+	return (
+		<Dropdown
+			menu={{ items, onClick }}
+			trigger={['click']}
+			placement="bottomRight"
+		>
+			<button
+				type="button"
+				className={styles.avatar}
+				title={user?.displayName ?? t('用户')}
+			>
+				{user?.initials ?? '—'}
+			</button>
+		</Dropdown>
+	)
 }

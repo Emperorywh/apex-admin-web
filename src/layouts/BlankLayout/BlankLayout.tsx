@@ -6,5 +6,5 @@ import type { ReactNode } from 'react'
 import styles from '@/layouts/BlankLayout/BlankLayout.module.css'
 
 export function BlankLayout({ children }: { children: ReactNode }) {
-  return <div className={styles.blank}>{children}</div>
+	return <div className={styles.blank}>{children}</div>
 }

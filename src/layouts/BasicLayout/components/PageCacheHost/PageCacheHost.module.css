@@ -4,45 +4,45 @@
    关闭：页面淡出（pageClosing），动画结束后才真正卸载。 */
 
 .pageLayer {
-  transform-origin: 50% 100%;
+	transform-origin: 50% 100%;
 }
 
 .pageOpening {
-  animation: pageOpen var(--app-dur-window) var(--app-ease-window) backwards;
+	animation: pageOpen var(--app-dur-window) var(--app-ease-window) backwards;
 }
 
 /* 关闭中的图层浮在揭示页之上、不响应指针；卸载由 pageClose 的 animationend 驱动 */
 .pageClosing {
-  z-index: 1;
-  pointer-events: none;
-  animation: pageClose var(--app-dur-window) var(--app-ease-window) forwards;
+	z-index: 1;
+	pointer-events: none;
+	animation: pageClose var(--app-dur-window) var(--app-ease-window) forwards;
 }
 
 @keyframes pageOpen {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+	from {
+		opacity: 0;
+		transform: translateY(6px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
 }
 
 @keyframes pageClose {
-  from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(6px);
-  }
+	from {
+		opacity: 1;
+		transform: translateY(0);
+	}
+	to {
+		opacity: 0;
+		transform: translateY(6px);
+	}
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pageLayer,
-  .pageClosing {
-    animation: none;
-  }
+	.pageLayer,
+	.pageClosing {
+		animation: none;
+	}
 }

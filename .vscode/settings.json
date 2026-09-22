@@ -1,0 +1,17 @@
+{
+	// 固定 Tab 宽度并关闭自动检测，让编辑器与项目格式化规则保持一致。
+	"editor.tabSize": 4,
+	"editor.insertSpaces": false,
+	"editor.detectIndentation": false,
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"editor.formatOnSave": true,
+	// YAML 使用合法的空格缩进，与包管理器生成的锁文件保持一致。
+	"[yaml]": {
+		"editor.tabSize": 2,
+		"editor.insertSpaces": true
+	},
+	// Markdown 的列表层级使用空格，避免 Tab 被解释为代码块。
+	"[markdown]": {
+		"editor.insertSpaces": true
+	}
+}

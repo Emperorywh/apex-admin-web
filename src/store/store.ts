@@ -10,8 +10,8 @@ import tabsReducer from '@/store/slices/tabsSlice'
 
 /** redux-persist 持久化 key（统一前缀 apex-admin） */
 const PERSIST_KEYS = {
-  AUTH: 'apex-admin:auth',
-  SETTINGS: 'apex-admin:settings',
+	AUTH: 'apex-admin:auth',
+	SETTINGS: 'apex-admin:settings',
 } as const
 
 /** 持久化 schema 版本；结构不兼容变更时递增并补 migration */
@@ -23,49 +23,51 @@ const PERSIST_SCHEMA_VERSION = 1
  * redux-persist 要求各方法返回 Promise。
  */
 const localStorageAdapter = {
-  getItem: (key: string): Promise<string | null> => Promise.resolve(localStorage.getItem(key)),
-  setItem: (key: string, value: string): Promise<void> =>
-    Promise.resolve(localStorage.setItem(key, value)),
-  removeItem: (key: string): Promise<void> => Promise.resolve(localStorage.removeItem(key)),
+	getItem: (key: string): Promise<string | null> =>
+		Promise.resolve(localStorage.getItem(key)),
+	setItem: (key: string, value: string): Promise<void> =>
+		Promise.resolve(localStorage.setItem(key, value)),
+	removeItem: (key: string): Promise<void> =>
+		Promise.resolve(localStorage.removeItem(key)),
 }
 
 /** 字段级白名单：auth 只持久化 user（令牌只在内存） */
 const persistedAuth = persistReducer(
-  {
-    key: PERSIST_KEYS.AUTH,
-    storage: localStorageAdapter,
-    version: PERSIST_SCHEMA_VERSION,
-    whitelist: ['user'],
-  },
-  authReducer,
+	{
+		key: PERSIST_KEYS.AUTH,
+		storage: localStorageAdapter,
+		version: PERSIST_SCHEMA_VERSION,
+		whitelist: ['user'],
+	},
+	authReducer,
 )
 
 /** 字段级白名单：settings 持久化 locale 与 theme */
 const persistedSettings = persistReducer(
-  {
-    key: PERSIST_KEYS.SETTINGS,
-    storage: localStorageAdapter,
-    // 工业主题首次升级时应用深色；之后仍持久化用户主动选择的主题。
-    version: 2,
-    migrate: createMigrate({
-      2: (state) => state ? { ...state, theme: 'dark' } : state,
-    }),
-    whitelist: ['locale', 'theme'],
-  },
-  settingsReducer,
+	{
+		key: PERSIST_KEYS.SETTINGS,
+		storage: localStorageAdapter,
+		// 工业主题首次升级时应用深色；之后仍持久化用户主动选择的主题。
+		version: 2,
+		migrate: createMigrate({
+			2: (state) => (state ? { ...state, theme: 'dark' } : state),
+		}),
+		whitelist: ['locale', 'theme'],
+	},
+	settingsReducer,
 )
 
 export const store = configureStore({
-  reducer: {
-    auth: persistedAuth,
-    settings: persistedSettings,
-    tabs: tabsReducer,
-  },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      // redux-persist 的非函数值会触发序列化检查，显式放宽
-      serializableCheck: false,
-    }),
+	reducer: {
+		auth: persistedAuth,
+		settings: persistedSettings,
+		tabs: tabsReducer,
+	},
+	middleware: (getDefaultMiddleware) =>
+		getDefaultMiddleware({
+			// redux-persist 的非函数值会触发序列化检查，显式放宽
+			serializableCheck: false,
+		}),
 })
 
 export const persistor = persistStore(store)
@@ -77,14 +79,14 @@ export const persistor = persistStore(store)
  * 否则硬刷新会被误判为未登录而弹回登录页。
  */
 export const persistRehydrated = new Promise<void>((resolve) => {
-  const check = (): void => {
-    if (store.getState().auth._persist?.rehydrated === true) {
-      unsubscribe()
-      resolve()
-    }
-  }
-  const unsubscribe = store.subscribe(check)
-  check()
+	const check = (): void => {
+		if (store.getState().auth._persist?.rehydrated === true) {
+			unsubscribe()
+			resolve()
+		}
+	}
+	const unsubscribe = store.subscribe(check)
+	check()
 })
 
 export type RootState = ReturnType<typeof store.getState>

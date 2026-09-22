@@ -1,0 +1,6 @@
+# 依赖、构建产物及包管理器锁文件由对应工具维护，不参与源码格式化。
+node_modules/
+dist/
+dist-ssr/
+coverage/
+pnpm-lock.yaml

@@ -1,63 +1,185 @@
 /* 沿用项目深蓝色板；目录、编辑器与表格使用统一间距，保持工业控制台的信息密度。 */
-.page { min-height: 100%; min-width: 0; padding: 8px 4px 16px; }
-.workspace { min-width: 0; }
-.content { flex: 1; min-width: 0; }
-.hint, .dataNote { font-size: var(--app-fs-secondary); }
-.dataNote { padding-top: 4px; }
+.page {
+	min-height: 100%;
+	min-width: 0;
+	padding: 8px 4px 16px;
+}
+.workspace {
+	min-width: 0;
+}
+.content {
+	flex: 1;
+	min-width: 0;
+}
+.hint,
+.dataNote {
+	font-size: var(--app-fs-secondary);
+}
+.dataNote {
+	padding-top: 4px;
+}
 
 /* 目录限制高度并独立滚动，长名称可换行；桌面滚动表格时仍可快速切换库位。 */
-.navigation { flex: 0 0 228px; position: sticky; top: 8px; max-height: calc(100dvh - 188px); overflow-y: auto; }
-.navigation :global(.ant-card-body) { padding: 10px 8px; }
-.navigation :global(.ant-tree) { background: transparent; }
-.navigation :global(.ant-tree-treenode) { padding-block: 5px; }
-.navigation :global(.ant-tree-node-content-wrapper) { min-width: 0; }
-.navigation :global(.ant-tree-title) { white-space: normal; overflow-wrap: anywhere; }
-.navigationNote { padding: 14px 10px 4px; margin-top: 10px; border-top: 1px solid var(--app-divider); color: var(--app-text-3); font-size: var(--app-fs-secondary); line-height: 1.8; }
+.navigation {
+	flex: 0 0 228px;
+	position: sticky;
+	top: 8px;
+	max-height: calc(100dvh - 188px);
+	overflow-y: auto;
+}
+.navigation :global(.ant-card-body) {
+	padding: 10px 8px;
+}
+.navigation :global(.ant-tree) {
+	background: transparent;
+}
+.navigation :global(.ant-tree-treenode) {
+	padding-block: 5px;
+}
+.navigation :global(.ant-tree-node-content-wrapper) {
+	min-width: 0;
+}
+.navigation :global(.ant-tree-title) {
+	white-space: normal;
+	overflow-wrap: anywhere;
+}
+.navigationNote {
+	padding: 14px 10px 4px;
+	margin-top: 10px;
+	border-top: 1px solid var(--app-divider);
+	color: var(--app-text-3);
+	font-size: var(--app-fs-secondary);
+	line-height: 1.8;
+}
 
 /* 编辑区始终占满右侧宽度；表单的分隔线只划分参数层级，不增加嵌套卡片。 */
-.editorAnchor { scroll-margin-top: 12px; }
-.editorAnchor:empty { display: none; }
-.editorPanel :global(.ant-card-head) { min-height: 44px; background: var(--app-highlight-soft); }
-.editorPanel :global(.ant-card-body) { padding: 18px 20px 16px; }
-.editorPanel :global(.ant-card-head-title) { white-space: normal; }
-.editorPanel :global(.ant-badge-status-text) { font-size: var(--app-fs-secondary); color: var(--app-orange-text); }
+.editorAnchor {
+	scroll-margin-top: 12px;
+}
+.editorAnchor:empty {
+	display: none;
+}
+.editorPanel :global(.ant-card-head) {
+	min-height: 44px;
+	background: var(--app-highlight-soft);
+}
+.editorPanel :global(.ant-card-body) {
+	padding: 18px 20px 16px;
+}
+.editorPanel :global(.ant-card-head-title) {
+	white-space: normal;
+}
+.editorPanel :global(.ant-badge-status-text) {
+	font-size: var(--app-fs-secondary);
+	color: var(--app-orange-text);
+}
 /* 库位字段标签较短，统一紧凑标签列，备注也与其余输入框对齐。 */
-.form { --app-form-label-width: 96px; }
-.numberInput { width: 100%; }
-.divider { margin: 0 0 14px !important; }
-.parameterHeading { margin-bottom: 14px; }
-.formActions { margin-top: 24px; padding-top: 14px; border-top: 1px solid var(--app-divider); }
+.form {
+	--app-form-label-width: 96px;
+}
+.numberInput {
+	width: 100%;
+}
+.divider {
+	margin: 0 0 14px !important;
+}
+.parameterHeading {
+	margin-bottom: 14px;
+}
+.formActions {
+	margin-top: 24px;
+	padding-top: 14px;
+	border-top: 1px solid var(--app-divider);
+}
 
 /* 总览标题与操作对齐，筛选使用固定上限并允许窄屏换行，表格内部承担横向滚动。 */
-.overview { min-width: 0; }
-.sectionHeading { margin-bottom: 12px; flex-wrap: wrap; }
-.sectionTitle { margin: 0 !important; font-size: var(--app-fs-title) !important; font-weight: var(--app-fw-semibold) !important; }
-.filters { margin-bottom: 12px; }
-.search { width: 300px; max-width: 100%; }
-.stationFilter { width: 188px; }
-.table :global(.ant-table-cell) { overflow-wrap: anywhere; }
-.table :global(.ant-table-thead > tr > th) { padding-block: 11px; white-space: nowrap; }
-.table :global(.ant-table-tbody > tr > td) { padding-block: 10px; }
-.table :global(.ant-table-tbody > tr).selectedRow > td { background: var(--app-highlight-soft); }
-.layerTag { margin-inline-end: 0; color: var(--app-cyan); border-color: var(--app-line); background: var(--app-highlight); }
-.rowAction { padding-inline: 0; height: auto; }
+.overview {
+	min-width: 0;
+}
+.sectionHeading {
+	margin-bottom: 12px;
+	flex-wrap: wrap;
+}
+.sectionTitle {
+	margin: 0 !important;
+	font-size: var(--app-fs-title) !important;
+	font-weight: var(--app-fw-semibold) !important;
+}
+.filters {
+	margin-bottom: 12px;
+}
+.search {
+	width: 300px;
+	max-width: 100%;
+}
+.stationFilter {
+	width: 188px;
+}
+.table :global(.ant-table-cell) {
+	overflow-wrap: anywhere;
+}
+.table :global(.ant-table-thead > tr > th) {
+	padding-block: 11px;
+	white-space: nowrap;
+}
+.table :global(.ant-table-tbody > tr > td) {
+	padding-block: 10px;
+}
+.table :global(.ant-table-tbody > tr).selectedRow > td {
+	background: var(--app-highlight-soft);
+}
+.layerTag {
+	margin-inline-end: 0;
+	color: var(--app-cyan);
+	border-color: var(--app-line);
+	background: var(--app-highlight);
+}
+.rowAction {
+	padding-inline: 0;
+	height: auto;
+}
 
 /* 中等编辑区最多两列，避免四列数值控件被标签和单位挤压；更窄时共享规则切为单列。 */
 @container app-form (min-width: 580.01px) and (max-width: 1100px) {
-  .form > :global(.ant-row) > :global(.ant-col) { flex: 0 0 50%; max-width: 50%; }
+	.form > :global(.ant-row) > :global(.ant-col) {
+		flex: 0 0 50%;
+		max-width: 50%;
+	}
 }
 
 /* 平板将目录放到顶部；触屏设备不依赖悬浮才能看到操作。 */
 @media (max-width: 991px) {
-  .workspace { flex-direction: column; }
-  .navigation { position: static; flex: auto; width: 100%; max-height: 260px; }
-  .navigationNote { display: none; }
-  .content { width: 100%; }
+	.workspace {
+		flex-direction: column;
+	}
+	.navigation {
+		position: static;
+		flex: auto;
+		width: 100%;
+		max-height: 260px;
+	}
+	.navigationNote {
+		display: none;
+	}
+	.content {
+		width: 100%;
+	}
 }
 @media (max-width: 575px) {
-  .page { padding-inline: 0; }
-  .editorPanel :global(.ant-card-body) { padding: 14px 12px; }
-  .search { width: 100%; }
-  .stationFilter { flex: 1; min-width: 140px; }
-  .sectionHeading > :global(.ant-btn) { margin-inline-start: auto; }
+	.page {
+		padding-inline: 0;
+	}
+	.editorPanel :global(.ant-card-body) {
+		padding: 14px 12px;
+	}
+	.search {
+		width: 100%;
+	}
+	.stationFilter {
+		flex: 1;
+		min-width: 140px;
+	}
+	.sectionHeading > :global(.ant-btn) {
+		margin-inline-start: auto;
+	}
 }

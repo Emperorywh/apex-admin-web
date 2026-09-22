@@ -9,11 +9,27 @@
  * - 尾部「废纸篓」承载关闭全部页签并释放缓存
  */
 
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
+import {
+	useCallback,
+	useEffect,
+	useLayoutEffect,
+	useMemo,
+	useRef,
+	useState,
+	type CSSProperties,
+} from 'react'
 import { useLocation, useNavigate } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import { App } from 'antd'
-import { ArrowUpRight, Check, ChevronLeft, ChevronRight, Folder, LayoutGrid, Trash2 } from 'lucide-react'
+import {
+	ArrowUpRight,
+	Check,
+	ChevronLeft,
+	ChevronRight,
+	Folder,
+	LayoutGrid,
+	Trash2,
+} from 'lucide-react'
 import { buildMenuRoutes } from '@/router/projections'
 import type { MenuNode } from '@/router/projections'
 import { useAppDispatch } from '@/hooks/useAppDispatch'
@@ -41,30 +57,30 @@ const HOVER_CLOSE_DELAY_MS = 240
 
 /** 面板锚点：触发元素的关键位置（视口坐标） */
 interface PanelAnchor {
-  left: number
-  right: number
-  top: number
-  centerX: number
+	left: number
+	right: number
+	top: number
+	centerX: number
 }
 
 /** 展开路径记录：node 为该面板展示的分组，anchor 为触发它的元素位置 */
 interface TrailEntry {
-  node: MenuNode
-  anchor: PanelAnchor
+	node: MenuNode
+	anchor: PanelAnchor
 }
 
 function anchorOf(element: HTMLElement): PanelAnchor {
-  const rect = element.getBoundingClientRect()
-  return {
-    left: rect.left,
-    right: rect.right,
-    top: rect.top,
-    centerX: rect.left + rect.width / 2,
-  }
+	const rect = element.getBoundingClientRect()
+	return {
+		left: rect.left,
+		right: rect.right,
+		top: rect.top,
+		centerX: rect.left + rect.width / 2,
+	}
 }
 
 function clamp(value: number, min: number, max: number): number {
-  return Math.min(Math.max(value, min), Math.max(min, max))
+	return Math.min(Math.max(value, min), Math.max(min, max))
 }
 
 /**
@@ -72,8 +88,11 @@ function clamp(value: number, min: number, max: number): number {
  * 此时仅响应点击展开，避免悬停生成的子面板覆盖原点击目标而误触页面。
  */
 function hasFlyoutSpace(anchor: PanelAnchor): boolean {
-  return anchor.right + FLYOUT_GAP + PANEL_WIDTH <= window.innerWidth - VIEWPORT_PADDING
-    || anchor.left - FLYOUT_GAP - PANEL_WIDTH >= VIEWPORT_PADDING
+	return (
+		anchor.right + FLYOUT_GAP + PANEL_WIDTH <=
+			window.innerWidth - VIEWPORT_PADDING ||
+		anchor.left - FLYOUT_GAP - PANEL_WIDTH >= VIEWPORT_PADDING
+	)
 }
 
 /**
@@ -81,295 +100,385 @@ function hasFlyoutSpace(anchor: PanelAnchor): boolean {
  * 子级顶部对齐触发项，缩放原点取贴附侧边；
  * panelHeight 为面板实际高度，仅在底部放不下时按需整体上移——短面板不再被最大高度预留推向远处
  */
-function computePanelStyle(anchor: PanelAnchor, depth: number, panelHeight = PANEL_MAX_HEIGHT): CSSProperties {
-  const viewWidth = window.innerWidth
-  const viewHeight = window.innerHeight
-  /* 同时约束主菜单和子菜单，短视口仍保留滚动空间。
+function computePanelStyle(
+	anchor: PanelAnchor,
+	depth: number,
+	panelHeight = PANEL_MAX_HEIGHT,
+): CSSProperties {
+	const viewWidth = window.innerWidth
+	const viewHeight = window.innerHeight
+	/* 同时约束主菜单和子菜单，短视口仍保留滚动空间。
      子菜单沿用实际测量高度，避免按最大高度产生不必要的跳位。 */
-  const width = Math.min(PANEL_WIDTH, viewWidth - VIEWPORT_PADDING * 2)
-  const maxHeight = Math.min(PANEL_MAX_HEIGHT, depth === 0
-    ? anchor.top - PANEL_GAP - VIEWPORT_PADDING
-    : viewHeight - VIEWPORT_PADDING * 2)
-  if (depth === 0) {
-    return {
-      width,
-      maxHeight,
-      left: clamp(anchor.centerX - width / 2, VIEWPORT_PADDING, viewWidth - VIEWPORT_PADDING - width),
-      bottom: viewHeight - anchor.top + PANEL_GAP,
-      transformOrigin: '50% 100%',
-    }
-  }
-  const besideRight = anchor.right + FLYOUT_GAP
-  const flipLeft = besideRight + width > viewWidth - VIEWPORT_PADDING
-  const left = flipLeft
-    ? Math.max(VIEWPORT_PADDING, anchor.left - FLYOUT_GAP - width)
-    : besideRight
-  const maxTop = Math.max(VIEWPORT_PADDING, viewHeight - VIEWPORT_PADDING - panelHeight)
-  return {
-    width,
-    maxHeight,
-    left,
-    top: clamp(anchor.top - 6, VIEWPORT_PADDING, maxTop),
-    transformOrigin: flipLeft ? '100% 50%' : '0% 50%',
-  }
+	const width = Math.min(PANEL_WIDTH, viewWidth - VIEWPORT_PADDING * 2)
+	const maxHeight = Math.min(
+		PANEL_MAX_HEIGHT,
+		depth === 0
+			? anchor.top - PANEL_GAP - VIEWPORT_PADDING
+			: viewHeight - VIEWPORT_PADDING * 2,
+	)
+	if (depth === 0) {
+		return {
+			width,
+			maxHeight,
+			left: clamp(
+				anchor.centerX - width / 2,
+				VIEWPORT_PADDING,
+				viewWidth - VIEWPORT_PADDING - width,
+			),
+			bottom: viewHeight - anchor.top + PANEL_GAP,
+			transformOrigin: '50% 100%',
+		}
+	}
+	const besideRight = anchor.right + FLYOUT_GAP
+	const flipLeft = besideRight + width > viewWidth - VIEWPORT_PADDING
+	const left = flipLeft
+		? Math.max(VIEWPORT_PADDING, anchor.left - FLYOUT_GAP - width)
+		: besideRight
+	const maxTop = Math.max(
+		VIEWPORT_PADDING,
+		viewHeight - VIEWPORT_PADDING - panelHeight,
+	)
+	return {
+		width,
+		maxHeight,
+		left,
+		top: clamp(anchor.top - 6, VIEWPORT_PADDING, maxTop),
+		transformOrigin: flipLeft ? '100% 50%' : '0% 50%',
+	}
 }
 
 /** 判断菜单子树是否包含当前地址（分区高亮用） */
 function subtreeContains(node: MenuNode, pathname: string): boolean {
-  if (pathname === node.path || pathname.startsWith(`${node.path}/`)) return true
-  return node.children.some((child) => subtreeContains(child, pathname))
+	if (pathname === node.path || pathname.startsWith(`${node.path}/`))
+		return true
+	return node.children.some((child) => subtreeContains(child, pathname))
 }
 
 export function DockMenu() {
-  const dispatch = useAppDispatch()
-  const navigate = useNavigate()
-  const location = useLocation()
-  const { t: tCommon } = useTranslation('common')
-  const { t: tMenu } = useTranslation('menu')
-  const { message } = App.useApp()
+	const dispatch = useAppDispatch()
+	const navigate = useNavigate()
+	const location = useLocation()
+	const { t: tCommon } = useTranslation('common')
+	const { t: tMenu } = useTranslation('menu')
+	const { message } = App.useApp()
 
-  const sections = useMemo(() => buildMenuRoutes(), [])
-  const [trail, setTrail] = useState<TrailEntry[]>([])
-  /** 正在播放点击动效的分区（routeId）；动画结束由 onAnimationEnd 复位 */
-  const [launchingId, setLaunchingId] = useState<string | null>(null)
-  const openTimer = useRef<number | null>(null)
-  const closeTimer = useRef<number | null>(null)
-  /** 当前展开是否由悬停触发：悬停展开后同分区的点击应保持展开而非收起 */
-  const hoverOpenedRef = useRef(false)
+	const sections = useMemo(() => buildMenuRoutes(), [])
+	const [trail, setTrail] = useState<TrailEntry[]>([])
+	/** 正在播放点击动效的分区（routeId）；动画结束由 onAnimationEnd 复位 */
+	const [launchingId, setLaunchingId] = useState<string | null>(null)
+	const openTimer = useRef<number | null>(null)
+	const closeTimer = useRef<number | null>(null)
+	/** 当前展开是否由悬停触发：悬停展开后同分区的点击应保持展开而非收起 */
+	const hoverOpenedRef = useRef(false)
 
-  /** 点击动效：导航时让所属分区图标轻压回弹 */
-  const bounce = useCallback((routeId: string) => {
-    setLaunchingId(routeId)
-  }, [])
+	/** 点击动效：导航时让所属分区图标轻压回弹 */
+	const bounce = useCallback((routeId: string) => {
+		setLaunchingId(routeId)
+	}, [])
 
-  const clearTimers = useCallback(() => {
-    if (openTimer.current !== null) window.clearTimeout(openTimer.current)
-    if (closeTimer.current !== null) window.clearTimeout(closeTimer.current)
-    openTimer.current = null
-    closeTimer.current = null
-  }, [])
+	const clearTimers = useCallback(() => {
+		if (openTimer.current !== null) window.clearTimeout(openTimer.current)
+		if (closeTimer.current !== null) window.clearTimeout(closeTimer.current)
+		openTimer.current = null
+		closeTimer.current = null
+	}, [])
 
-  const closeAll = useCallback(() => {
-    clearTimers()
-    hoverOpenedRef.current = false
-    setTrail([])
-  }, [clearTimers])
+	const closeAll = useCallback(() => {
+		clearTimers()
+		hoverOpenedRef.current = false
+		setTrail([])
+	}, [clearTimers])
 
-  /** 悬停展开的面板不驻留：指针移到无下级的目标（叶子分区/废纸篓）时立即收起 */
-  const dismissHoverPanel = useCallback(() => {
-    if (hoverOpenedRef.current) closeAll()
-  }, [closeAll])
+	/** 悬停展开的面板不驻留：指针移到无下级的目标（叶子分区/废纸篓）时立即收起 */
+	const dismissHoverPanel = useCallback(() => {
+		if (hoverOpenedRef.current) closeAll()
+	}, [closeAll])
 
-  /** 指针离开 Dock/面板：延迟收起，期间进入其它面板则取消 */
-  const scheduleClose = useCallback(() => {
-    if (closeTimer.current !== null) window.clearTimeout(closeTimer.current)
-    closeTimer.current = window.setTimeout(() => setTrail([]), HOVER_CLOSE_DELAY_MS)
-  }, [])
+	/** 指针离开 Dock/面板：延迟收起，期间进入其它面板则取消 */
+	const scheduleClose = useCallback(() => {
+		if (closeTimer.current !== null) window.clearTimeout(closeTimer.current)
+		closeTimer.current = window.setTimeout(
+			() => setTrail([]),
+			HOVER_CLOSE_DELAY_MS,
+		)
+	}, [])
 
-  const cancelClose = useCallback(() => {
-    if (closeTimer.current !== null) window.clearTimeout(closeTimer.current)
-    closeTimer.current = null
-  }, [])
+	const cancelClose = useCallback(() => {
+		if (closeTimer.current !== null) window.clearTimeout(closeTimer.current)
+		closeTimer.current = null
+	}, [])
 
-  /* 地址变化即收起（含导航与页签激活跳转） */
-  useEffect(() => {
-    setTrail([])
-  }, [location.key])
+	/* 地址变化即收起（含导航与页签激活跳转） */
+	useEffect(() => {
+		setTrail([])
+	}, [location.key])
 
-  /* Escape / 点击面板与 Dock 以外区域 / 视口尺寸变化时收起 */
-  useEffect(() => {
-    if (trail.length === 0) return
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') closeAll()
-    }
-    const onMouseDown = (event: MouseEvent) => {
-      const target = event.target as HTMLElement | null
-      if (!target?.closest('[data-dock-menu]')) closeAll()
-    }
-    window.addEventListener('keydown', onKeyDown)
-    window.addEventListener('mousedown', onMouseDown)
-    window.addEventListener('resize', closeAll)
-    return () => {
-      window.removeEventListener('keydown', onKeyDown)
-      window.removeEventListener('mousedown', onMouseDown)
-      window.removeEventListener('resize', closeAll)
-    }
-  }, [trail.length, closeAll])
+	/* Escape / 点击面板与 Dock 以外区域 / 视口尺寸变化时收起 */
+	useEffect(() => {
+		if (trail.length === 0) return
+		const onKeyDown = (event: KeyboardEvent) => {
+			if (event.key === 'Escape') closeAll()
+		}
+		const onMouseDown = (event: MouseEvent) => {
+			const target = event.target as HTMLElement | null
+			if (!target?.closest('[data-dock-menu]')) closeAll()
+		}
+		window.addEventListener('keydown', onKeyDown)
+		window.addEventListener('mousedown', onMouseDown)
+		window.addEventListener('resize', closeAll)
+		return () => {
+			window.removeEventListener('keydown', onKeyDown)
+			window.removeEventListener('mousedown', onMouseDown)
+			window.removeEventListener('resize', closeAll)
+		}
+	}, [trail.length, closeAll])
 
-  useEffect(() => clearTimers, [clearTimers])
+	useEffect(() => clearTimers, [clearTimers])
 
-  const hoverSection = (node: MenuNode, element: HTMLElement) => {
-    /* 叶子分区没有下级面板：悬停不展开，并收起此前悬停展开的面板 */
-    if (node.children.length === 0) {
-      dismissHoverPanel()
-      return
-    }
-    if (openTimer.current !== null) window.clearTimeout(openTimer.current)
-    if (trail[0]?.node.routeId === node.routeId) return
-    openTimer.current = window.setTimeout(() => {
-      hoverOpenedRef.current = true
-      setTrail([{ node, anchor: anchorOf(element) }])
-    }, HOVER_OPEN_DELAY_MS)
-  }
+	const hoverSection = (node: MenuNode, element: HTMLElement) => {
+		/* 叶子分区没有下级面板：悬停不展开，并收起此前悬停展开的面板 */
+		if (node.children.length === 0) {
+			dismissHoverPanel()
+			return
+		}
+		if (openTimer.current !== null) window.clearTimeout(openTimer.current)
+		if (trail[0]?.node.routeId === node.routeId) return
+		openTimer.current = window.setTimeout(() => {
+			hoverOpenedRef.current = true
+			setTrail([{ node, anchor: anchorOf(element) }])
+		}, HOVER_OPEN_DELAY_MS)
+	}
 
-  const clickSection = (node: MenuNode, element: HTMLElement) => {
-    clearTimers()
-    /* 叶子分区：点击直接导航，不弹面板 */
-    if (node.children.length === 0) {
-      bounce(node.routeId)
-      navigate(node.path)
-      return
-    }
-    setTrail((prev) => {
-      const isOpen = prev[0]?.node.routeId === node.routeId
-      // 悬停刚展开同一分区时，点击视为确认而非切换，避免「悬停展开、点击又收起」
-      if (isOpen && hoverOpenedRef.current) {
-        hoverOpenedRef.current = false
-        return prev
-      }
-      hoverOpenedRef.current = false
-      return isOpen ? [] : [{ node, anchor: anchorOf(element) }]
-    })
-  }
+	const clickSection = (node: MenuNode, element: HTMLElement) => {
+		clearTimers()
+		/* 叶子分区：点击直接导航，不弹面板 */
+		if (node.children.length === 0) {
+			bounce(node.routeId)
+			navigate(node.path)
+			return
+		}
+		setTrail((prev) => {
+			const isOpen = prev[0]?.node.routeId === node.routeId
+			// 悬停刚展开同一分区时，点击视为确认而非切换，避免「悬停展开、点击又收起」
+			if (isOpen && hoverOpenedRef.current) {
+				hoverOpenedRef.current = false
+				return prev
+			}
+			hoverOpenedRef.current = false
+			return isOpen ? [] : [{ node, anchor: anchorOf(element) }]
+		})
+	}
 
-  /** 在 depth 面板中展开子分组（幂等：已展开则保持，仅收起更深层级） */
-  const expandNested = (node: MenuNode, element: HTMLElement, depth: number) => {
-    cancelClose()
-    setTrail((prev) => {
-      if (prev[depth]?.node.routeId === node.routeId) return prev
-      return [...prev.slice(0, depth), { node, anchor: anchorOf(element) }]
-    })
-  }
+	/** 在 depth 面板中展开子分组（幂等：已展开则保持，仅收起更深层级） */
+	const expandNested = (
+		node: MenuNode,
+		element: HTMLElement,
+		depth: number,
+	) => {
+		cancelClose()
+		setTrail((prev) => {
+			if (prev[depth]?.node.routeId === node.routeId) return prev
+			return [
+				...prev.slice(0, depth),
+				{ node, anchor: anchorOf(element) },
+			]
+		})
+	}
 
-  const clearTabs = () => {
-    dispatch(allTabsClosed())
-    void message.success(tCommon('已关闭全部页签，仅保留固定页'))
-  }
+	const clearTabs = () => {
+		dispatch(allTabsClosed())
+		void message.success(tCommon('已关闭全部页签，仅保留固定页'))
+	}
 
-  return (
-    <>
-      <footer className={styles.dockFrame}>
-        <svg className={styles.frameLines} viewBox="0 0 1440 52" preserveAspectRatio="none" aria-hidden="true">
-          <path className={styles.frameFill} d="M220 52 260 4H1180L1220 52Z" />
-          <path className={styles.frameOutline} d="M0 13H243L260 4H1180L1197 13H1440M0 20H247L220 52M1440 20H1193L1220 52M234 52 267 10H1173L1206 52" />
-          <path className={styles.frameAccent} d="M260 4H420M1020 4H1180M600 4H840M0 13H38M1402 13H1440" />
-        </svg>
-        {/* 底部品牌标识强调部署在机器人本体上的单机控制用途。 */}
-        <div className={styles.dockBrand}>ROBOT CONTROL<small>ONBOARD SYSTEM</small></div>
-        <nav
-          className={styles.dock}
-          data-dock-menu
-          aria-label={tCommon('主导航')}
-          onMouseEnter={cancelClose}
-          onMouseLeave={scheduleClose}
-          onScroll={closeAll}
-        >
-          {sections.map((section) => {
-            /* 每个分区以单行图标和名称展示，节省工作区高度。
+	return (
+		<>
+			<footer className={styles.dockFrame}>
+				<svg
+					className={styles.frameLines}
+					viewBox="0 0 1440 52"
+					preserveAspectRatio="none"
+					aria-hidden="true"
+				>
+					<path
+						className={styles.frameFill}
+						d="M220 52 260 4H1180L1220 52Z"
+					/>
+					<path
+						className={styles.frameOutline}
+						d="M0 13H243L260 4H1180L1197 13H1440M0 20H247L220 52M1440 20H1193L1220 52M234 52 267 10H1173L1206 52"
+					/>
+					<path
+						className={styles.frameAccent}
+						d="M260 4H420M1020 4H1180M600 4H840M0 13H38M1402 13H1440"
+					/>
+				</svg>
+				{/* 底部品牌标识强调部署在机器人本体上的单机控制用途。 */}
+				<div className={styles.dockBrand}>
+					ROBOT CONTROL<small>ONBOARD SYSTEM</small>
+				</div>
+				<nav
+					className={styles.dock}
+					data-dock-menu
+					aria-label={tCommon('主导航')}
+					onMouseEnter={cancelClose}
+					onMouseLeave={scheduleClose}
+					onScroll={closeAll}
+				>
+					{sections.map((section) => {
+						/* 每个分区以单行图标和名称展示，节省工作区高度。
                未配置图标时使用统一兜底，保证底栏各项对齐。 */
-            const Icon = section.icon ?? LayoutGrid
-            const sectionActive = subtreeContains(section, location.pathname)
-            const launching = launchingId === section.routeId
-            return (
-              <button
-                key={section.routeId}
-                type="button"
-                className={
-                  (sectionActive ? `${styles.item} ${styles.itemActive}` : styles.item) +
-                  (launching ? ` ${styles.itemLaunching}` : '')
-                }
-                title={tMenu(section.title)}
-                aria-current={sectionActive ? 'true' : undefined}
-                aria-expanded={section.children.length > 0 ? trail[0]?.node.routeId === section.routeId : undefined}
-                aria-haspopup={section.children.length > 0 ? 'menu' : undefined}
-                onMouseEnter={(event) => hoverSection(section, event.currentTarget)}
-                onMouseLeave={() => {
-                  if (openTimer.current !== null) window.clearTimeout(openTimer.current)
-                  openTimer.current = null
-                }}
-                onClick={(event) => clickSection(section, event.currentTarget)}
-                onAnimationEnd={(event) => {
-                  /* 动效作用在首元素（线性图标）上；结束即复位，便于下次点击重新触发 */
-                  if (event.target === event.currentTarget.firstElementChild) {
-                    setLaunchingId((prev) => (prev === section.routeId ? null : prev))
-                  }
-                }}
-              >
-                <span className={styles.dockIcon} aria-hidden="true">
-                  <Icon size={18} strokeWidth={1.7} />
-                </span>
-                <span className={styles.label}>{tMenu(section.title)}</span>
-              </button>
-            )
-          })}
-          <span className={styles.separator} aria-hidden="true" />
-          <button
-            type="button"
-            className={`${styles.item} ${styles.trash}`}
-            title={tCommon('关闭全部页签并清空缓存')}
-            aria-label={tCommon('关闭全部页签并清空缓存')}
-            onMouseEnter={dismissHoverPanel}
-            onClick={clearTabs}
-          >
-            <span className={styles.dockIcon} aria-hidden="true"><Trash2 size={18} strokeWidth={1.5} /></span>
-            <span className={styles.label}>{tCommon('清理页签')}</span>
-          </button>
-        </nav>
-        {/* 中英文说明统一表达 AGV 单机控制系统定位。 */}
-        <div className={styles.dockTagline}>{tCommon('AGV 单机控制系统')}<small>AGV ROBOT CONTROL SYSTEM</small></div>
-      </footer>
-      {trail.map((entry, depth) => (
-        <DockMenuPanel
-          key={entry.node.routeId}
-          node={entry.node}
-          anchor={entry.anchor}
-          depth={depth}
-          openChildId={trail[depth + 1]?.node.routeId ?? null}
-          activePathname={location.pathname}
-          onHoverGroup={(node, element) => {
-            /* 窄屏保留明确的点击展开，桌面继续支持悬停穿行。
+						const Icon = section.icon ?? LayoutGrid
+						const sectionActive = subtreeContains(
+							section,
+							location.pathname,
+						)
+						const launching = launchingId === section.routeId
+						return (
+							<button
+								key={section.routeId}
+								type="button"
+								className={
+									(sectionActive
+										? `${styles.item} ${styles.itemActive}`
+										: styles.item) +
+									(launching
+										? ` ${styles.itemLaunching}`
+										: '')
+								}
+								title={tMenu(section.title)}
+								aria-current={
+									sectionActive ? 'true' : undefined
+								}
+								aria-expanded={
+									section.children.length > 0
+										? trail[0]?.node.routeId ===
+											section.routeId
+										: undefined
+								}
+								aria-haspopup={
+									section.children.length > 0
+										? 'menu'
+										: undefined
+								}
+								onMouseEnter={(event) =>
+									hoverSection(section, event.currentTarget)
+								}
+								onMouseLeave={() => {
+									if (openTimer.current !== null)
+										window.clearTimeout(openTimer.current)
+									openTimer.current = null
+								}}
+								onClick={(event) =>
+									clickSection(section, event.currentTarget)
+								}
+								onAnimationEnd={(event) => {
+									/* 动效作用在首元素（线性图标）上；结束即复位，便于下次点击重新触发 */
+									if (
+										event.target ===
+										event.currentTarget.firstElementChild
+									) {
+										setLaunchingId((prev) =>
+											prev === section.routeId
+												? null
+												: prev,
+										)
+									}
+								}}
+							>
+								<span
+									className={styles.dockIcon}
+									aria-hidden="true"
+								>
+									<Icon size={18} strokeWidth={1.7} />
+								</span>
+								<span className={styles.label}>
+									{tMenu(section.title)}
+								</span>
+							</button>
+						)
+					})}
+					<span className={styles.separator} aria-hidden="true" />
+					<button
+						type="button"
+						className={`${styles.item} ${styles.trash}`}
+						title={tCommon('关闭全部页签并清空缓存')}
+						aria-label={tCommon('关闭全部页签并清空缓存')}
+						onMouseEnter={dismissHoverPanel}
+						onClick={clearTabs}
+					>
+						<span className={styles.dockIcon} aria-hidden="true">
+							<Trash2 size={18} strokeWidth={1.5} />
+						</span>
+						<span className={styles.label}>
+							{tCommon('清理页签')}
+						</span>
+					</button>
+				</nav>
+				{/* 中英文说明统一表达 AGV 单机控制系统定位。 */}
+				<div className={styles.dockTagline}>
+					{tCommon('AGV 单机控制系统')}
+					<small>AGV ROBOT CONTROL SYSTEM</small>
+				</div>
+			</footer>
+			{trail.map((entry, depth) => (
+				<DockMenuPanel
+					key={entry.node.routeId}
+					node={entry.node}
+					anchor={entry.anchor}
+					depth={depth}
+					openChildId={trail[depth + 1]?.node.routeId ?? null}
+					activePathname={location.pathname}
+					onHoverGroup={(node, element) => {
+						/* 窄屏保留明确的点击展开，桌面继续支持悬停穿行。
                依据实际锚点空间判断，兼容不同宽度的窗口。 */
-            if (hasFlyoutSpace(anchorOf(element))) expandNested(node, element, depth + 1)
-          }}
-          onOpenGroup={(node, element) => expandNested(node, element, depth + 1)}
-          onBack={() => setTrail((prev) => prev.slice(0, depth))}
-          onHoverLeaf={() => {
-            /* 切换到叶子项时移除之前的子分组。
+						if (hasFlyoutSpace(anchorOf(element)))
+							expandNested(node, element, depth + 1)
+					}}
+					onOpenGroup={(node, element) =>
+						expandNested(node, element, depth + 1)
+					}
+					onBack={() => setTrail((prev) => prev.slice(0, depth))}
+					onHoverLeaf={() => {
+						/* 切换到叶子项时移除之前的子分组。
                避免旧子面板遮挡当前选择，也用于滚动时清理失效锚点。 */
-            setTrail((prev) => prev.length > depth + 1 ? prev.slice(0, depth + 1) : prev)
-          }}
-          onNavigate={(node) => {
-            /* 先取面板所属分区：closeAll 清空 trail 后动效要落在所属分区图标上 */
-            const sectionId = trail[0]?.node.routeId ?? null
-            closeAll()
-            if (sectionId !== null) bounce(sectionId)
-            navigate(node.path)
-          }}
-          onMouseEnter={cancelClose}
-          onMouseLeave={scheduleClose}
-        />
-      ))}
-    </>
-  )
+						setTrail((prev) =>
+							prev.length > depth + 1
+								? prev.slice(0, depth + 1)
+								: prev,
+						)
+					}}
+					onNavigate={(node) => {
+						/* 先取面板所属分区：closeAll 清空 trail 后动效要落在所属分区图标上 */
+						const sectionId = trail[0]?.node.routeId ?? null
+						closeAll()
+						if (sectionId !== null) bounce(sectionId)
+						navigate(node.path)
+					}}
+					onMouseEnter={cancelClose}
+					onMouseLeave={scheduleClose}
+				/>
+			))}
+		</>
+	)
 }
 
 interface DockMenuPanelProps {
-  /**
-   * 分组节点同时提供标题、图标与子项。
-   * 展示信息直接来自路由树，避免维护重复的菜单元数据。
-   */
-  node: MenuNode
-  anchor: PanelAnchor
-  depth: number
-  openChildId: string | null
-  activePathname: string
-  onHoverGroup: (node: MenuNode, element: HTMLButtonElement) => void
-  onOpenGroup: (node: MenuNode, element: HTMLButtonElement) => void
-  onHoverLeaf: () => void
-  onBack: () => void
-  onNavigate: (node: MenuNode) => void
-  onMouseEnter: () => void
-  onMouseLeave: () => void
+	/**
+	 * 分组节点同时提供标题、图标与子项。
+	 * 展示信息直接来自路由树，避免维护重复的菜单元数据。
+	 */
+	node: MenuNode
+	anchor: PanelAnchor
+	depth: number
+	openChildId: string | null
+	activePathname: string
+	onHoverGroup: (node: MenuNode, element: HTMLButtonElement) => void
+	onOpenGroup: (node: MenuNode, element: HTMLButtonElement) => void
+	onHoverLeaf: () => void
+	onBack: () => void
+	onNavigate: (node: MenuNode) => void
+	onMouseEnter: () => void
+	onMouseLeave: () => void
 }
 
 /**
@@ -377,100 +486,166 @@ interface DockMenuPanelProps {
  * 叶子项与分组共用行布局，保持悬停、当前页和键盘焦点的反馈一致。
  */
 function DockMenuPanel({
-  node,
-  anchor,
-  depth,
-  openChildId,
-  activePathname,
-  onHoverGroup,
-  onOpenGroup,
-  onHoverLeaf,
-  onBack,
-  onNavigate,
-  onMouseEnter,
-  onMouseLeave,
+	node,
+	anchor,
+	depth,
+	openChildId,
+	activePathname,
+	onHoverGroup,
+	onOpenGroup,
+	onHoverLeaf,
+	onBack,
+	onNavigate,
+	onMouseEnter,
+	onMouseLeave,
 }: DockMenuPanelProps) {
-  const { t } = useTranslation('menu')
-  const { t: tCommon } = useTranslation('common')
-  const items = node.children
-  const GroupIcon = node.icon ?? Folder
-  const stacked = depth > 0 && !hasFlyoutSpace(anchor)
-  const panelRef = useRef<HTMLDivElement>(null)
-  /* 首帧按最大高度兜底定位，挂载后量取实际高度重算，使子面板贴附触发项而非按最大高度预留 */
-  const [style, setStyle] = useState(() => computePanelStyle(anchor, depth))
+	const { t } = useTranslation('menu')
+	const { t: tCommon } = useTranslation('common')
+	const items = node.children
+	const GroupIcon = node.icon ?? Folder
+	const stacked = depth > 0 && !hasFlyoutSpace(anchor)
+	const panelRef = useRef<HTMLDivElement>(null)
+	/* 首帧按最大高度兜底定位，挂载后量取实际高度重算，使子面板贴附触发项而非按最大高度预留 */
+	const [style, setStyle] = useState(() => computePanelStyle(anchor, depth))
 
-  useLayoutEffect(() => {
-    if (depth === 0) return
-    const height = panelRef.current?.offsetHeight
-    if (height === undefined) return
-    setStyle(computePanelStyle(anchor, depth, height))
-  }, [anchor, depth])
+	useLayoutEffect(() => {
+		if (depth === 0) return
+		const height = panelRef.current?.offsetHeight
+		if (height === undefined) return
+		setStyle(computePanelStyle(anchor, depth, height))
+	}, [anchor, depth])
 
-  return (
-    <div
-      ref={panelRef}
-      className={styles.panel}
-      data-dock-menu
-      style={style}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-    >
-      {/* 标题与数量保持独立于滚动列表，长菜单中也能识别当前位置。
+	return (
+		<div
+			ref={panelRef}
+			className={styles.panel}
+			data-dock-menu
+			style={style}
+			onMouseEnter={onMouseEnter}
+			onMouseLeave={onMouseLeave}
+		>
+			{/* 标题与数量保持独立于滚动列表，长菜单中也能识别当前位置。
           数量只表示实际下级入口，不混入设备在线状态等业务信息。 */}
-      <div className={styles.panelHeader}>
-        {/* 窄屏叠层可能遮挡父菜单，提供可聚焦的返回入口。
+			<div className={styles.panelHeader}>
+				{/* 窄屏叠层可能遮挡父菜单，提供可聚焦的返回入口。
             桌面侧向展开仍使用分组图标，保持紧凑布局。 */}
-        {stacked ? (
-          <button type="button" className={styles.panelBack} aria-label={tCommon('返回上级菜单')} onClick={onBack}>
-            <ChevronLeft size={19} strokeWidth={1.8} />
-          </button>
-        ) : <IconTile tone={routeIconTone(node.routeId)} size={34} radius={10}>
-          <GroupIcon size={19} strokeWidth={1.8} />
-        </IconTile>}
-        <div className={styles.panelHeading}>
-          <span className={styles.panelEyebrow}>{tCommon(depth === 0 ? '快捷导航' : '子级菜单')}</span>
-          <span className={styles.panelTitle}>{t(node.title)}</span>
-        </div>
-        <span className={styles.panelTotal} aria-label={tCommon('入口数量')}>{items.length.toString().padStart(2, '0')}</span>
-      </div>
-      <div className={styles.panelList} role="menu" aria-label={t(node.title)} onScroll={onHoverLeaf}>
-      {items.map((item) => {
-        const active = subtreeContains(item, activePathname)
-        const hasChildren = item.children.length > 0
-        const ItemIcon = item.icon ?? (hasChildren ? Folder : LayoutGrid)
-        const className = active ? `${styles.panelItem} ${styles.panelItemActive}` : styles.panelItem
-        /* 使用统一菜单行，避免有子级与无子级的图标、文本错位。
+				{stacked ? (
+					<button
+						type="button"
+						className={styles.panelBack}
+						aria-label={tCommon('返回上级菜单')}
+						onClick={onBack}
+					>
+						<ChevronLeft size={19} strokeWidth={1.8} />
+					</button>
+				) : (
+					<IconTile
+						tone={routeIconTone(node.routeId)}
+						size={34}
+						radius={10}
+					>
+						<GroupIcon size={19} strokeWidth={1.8} />
+					</IconTile>
+				)}
+				<div className={styles.panelHeading}>
+					<span className={styles.panelEyebrow}>
+						{tCommon(depth === 0 ? '快捷导航' : '子级菜单')}
+					</span>
+					<span className={styles.panelTitle}>{t(node.title)}</span>
+				</div>
+				<span
+					className={styles.panelTotal}
+					aria-label={tCommon('入口数量')}
+				>
+					{items.length.toString().padStart(2, '0')}
+				</span>
+			</div>
+			<div
+				className={styles.panelList}
+				role="menu"
+				aria-label={t(node.title)}
+				onScroll={onHoverLeaf}
+			>
+				{items.map((item) => {
+					const active = subtreeContains(item, activePathname)
+					const hasChildren = item.children.length > 0
+					const ItemIcon =
+						item.icon ?? (hasChildren ? Folder : LayoutGrid)
+					const className = active
+						? `${styles.panelItem} ${styles.panelItemActive}`
+						: styles.panelItem
+					/* 使用统一菜单行，避免有子级与无子级的图标、文本错位。
            当前页使用勾选标记，分组使用真实数量及展开箭头。 */
-        return (
-          <button
-            key={item.routeId}
-            type="button"
-            role="menuitem"
-            aria-haspopup={hasChildren ? 'menu' : undefined}
-            aria-expanded={hasChildren ? openChildId === item.routeId : undefined}
-            aria-current={active && !hasChildren ? 'page' : undefined}
-            className={className}
-            title={t(item.title)}
-            onMouseEnter={(event) => hasChildren ? onHoverGroup(item, event.currentTarget) : onHoverLeaf()}
-            onFocus={onMouseEnter}
-            onClick={(event) => hasChildren ? onOpenGroup(item, event.currentTarget) : onNavigate(item)}
-          >
-            <span className={styles.panelIcon} aria-hidden="true"><ItemIcon size={18} strokeWidth={1.7} /></span>
-            <span className={styles.panelLabel}>{t(item.title)}</span>
-            {hasChildren ? (
-              <>
-                <span className={styles.panelCount} aria-hidden="true">{item.children.length}</span>
-                <ChevronRight size={14} strokeWidth={2} className={styles.panelChevron} aria-hidden="true" />
-              </>
-            ) : active ? (
-              <Check size={15} strokeWidth={2.2} aria-hidden="true" />
-            ) : (
-              <ArrowUpRight size={15} strokeWidth={1.8} className={styles.panelLink} aria-hidden="true" />
-            )}
-          </button>
-        )
-      })}
-      </div>
-    </div>
-  )
+					return (
+						<button
+							key={item.routeId}
+							type="button"
+							role="menuitem"
+							aria-haspopup={hasChildren ? 'menu' : undefined}
+							aria-expanded={
+								hasChildren
+									? openChildId === item.routeId
+									: undefined
+							}
+							aria-current={
+								active && !hasChildren ? 'page' : undefined
+							}
+							className={className}
+							title={t(item.title)}
+							onMouseEnter={(event) =>
+								hasChildren
+									? onHoverGroup(item, event.currentTarget)
+									: onHoverLeaf()
+							}
+							onFocus={onMouseEnter}
+							onClick={(event) =>
+								hasChildren
+									? onOpenGroup(item, event.currentTarget)
+									: onNavigate(item)
+							}
+						>
+							<span
+								className={styles.panelIcon}
+								aria-hidden="true"
+							>
+								<ItemIcon size={18} strokeWidth={1.7} />
+							</span>
+							<span className={styles.panelLabel}>
+								{t(item.title)}
+							</span>
+							{hasChildren ? (
+								<>
+									<span
+										className={styles.panelCount}
+										aria-hidden="true"
+									>
+										{item.children.length}
+									</span>
+									<ChevronRight
+										size={14}
+										strokeWidth={2}
+										className={styles.panelChevron}
+										aria-hidden="true"
+									/>
+								</>
+							) : active ? (
+								<Check
+									size={15}
+									strokeWidth={2.2}
+									aria-hidden="true"
+								/>
+							) : (
+								<ArrowUpRight
+									size={15}
+									strokeWidth={1.8}
+									className={styles.panelLink}
+									aria-hidden="true"
+								/>
+							)}
+						</button>
+					)
+				})}
+			</div>
+		</div>
+	)
 }

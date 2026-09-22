@@ -22,87 +22,100 @@ const STORAGE_KEY_LANGUAGE = 'apex-admin:lang'
 export const BASE_NAMESPACES = ['common', 'menu'] as const
 
 /** en-US 命名空间懒加载表 */
-const enUsLoaders: Record<string, () => Promise<{ default: Record<string, string> }>> = {
-  common: () => import('@/i18n/locales/en-US/common'),
-  menu: () => import('@/i18n/locales/en-US/menu'),
-  auth: () => import('@/i18n/locales/en-US/auth'),
-  // 动作编排随页面按需加载，避免在其他工作区加载列表及操作文案。
-  action: () => import('@/i18n/locales/en-US/action'),
+const enUsLoaders: Record<
+	string,
+	() => Promise<{ default: Record<string, string> }>
+> = {
+	common: () => import('@/i18n/locales/en-US/common'),
+	menu: () => import('@/i18n/locales/en-US/menu'),
+	auth: () => import('@/i18n/locales/en-US/auth'),
+	// 动作编排随页面按需加载，避免在其他工作区加载列表及操作文案。
+	action: () => import('@/i18n/locales/en-US/action'),
 }
 
 /** zh-* 一律映射 zh-CN；其余未支持语言回退 zh-CN */
 export function normalizeLanguage(raw: string | null | undefined): AppLanguage {
-  if (raw?.toLowerCase().startsWith('en')) return 'en-US'
-  return 'zh-CN'
+	if (raw?.toLowerCase().startsWith('en')) return 'en-US'
+	return 'zh-CN'
 }
 
 /** 读取持久化语言偏好（无偏好或不可读时回退默认语言）；供 i18n 初始化与 settings 切片共用 */
 export function readStoredLanguage(): AppLanguage {
-  try {
-    return normalizeLanguage(localStorage.getItem(STORAGE_KEY_LANGUAGE))
-  } catch {
-    return DEFAULT_LANGUAGE
-  }
+	try {
+		return normalizeLanguage(localStorage.getItem(STORAGE_KEY_LANGUAGE))
+	} catch {
+		return DEFAULT_LANGUAGE
+	}
 }
 
 function persistLanguage(language: AppLanguage): void {
-  try {
-    localStorage.setItem(STORAGE_KEY_LANGUAGE, language)
-  } catch {
-    // 隐私模式等场景下静默失败
-  }
+	try {
+		localStorage.setItem(STORAGE_KEY_LANGUAGE, language)
+	} catch {
+		// 隐私模式等场景下静默失败
+	}
 }
 
 /** 命名空间懒加载后端：zh-CN 直接返回空资源（key 即文案） */
 const lazyBackend: BackendModule = {
-  type: 'backend',
-  init() {},
-  read(language, namespace, callback) {
-    if (language === 'zh-CN') {
-      callback(null, {})
-      return
-    }
-    const loader = enUsLoaders[namespace]
-    if (!loader) {
-      callback(new Error(`未知命名空间：${namespace}`), null)
-      return
-    }
-    loader()
-      .then((mod) => callback(null, mod.default))
-      .catch((err: unknown) => callback(err as CallbackError, null))
-  },
+	type: 'backend',
+	init() {},
+	read(language, namespace, callback) {
+		if (language === 'zh-CN') {
+			callback(null, {})
+			return
+		}
+		const loader = enUsLoaders[namespace]
+		if (!loader) {
+			callback(new Error(`未知命名空间：${namespace}`), null)
+			return
+		}
+		loader()
+			.then((mod) => callback(null, mod.default))
+			.catch((err: unknown) => callback(err as CallbackError, null))
+	},
 }
 
 const initialLanguage = readStoredLanguage()
 
 if (!i18next.isInitialized) {
-  void i18next.use(lazyBackend).use(initReactI18next).init({
-    lng: initialLanguage,
-    fallbackLng: DEFAULT_LANGUAGE,
-    supportedLngs: [...SUPPORTED_LANGUAGES],
-    ns: [...BASE_NAMESPACES],
-    defaultNS: 'common',
-    keySeparator: false,
-    nsSeparator: false,
-    interpolation: { escapeValue: false },
-    react: { useSuspense: true },
-    partialBundledLanguages: true,
-  })
-  dayjs.locale(initialLanguage === 'zh-CN' ? 'zh-cn' : 'en')
-  document.documentElement.lang = initialLanguage
+	void i18next
+		.use(lazyBackend)
+		.use(initReactI18next)
+		.init({
+			lng: initialLanguage,
+			fallbackLng: DEFAULT_LANGUAGE,
+			supportedLngs: [...SUPPORTED_LANGUAGES],
+			ns: [...BASE_NAMESPACES],
+			defaultNS: 'common',
+			keySeparator: false,
+			nsSeparator: false,
+			interpolation: { escapeValue: false },
+			react: { useSuspense: true },
+			partialBundledLanguages: true,
+		})
+	dayjs.locale(initialLanguage === 'zh-CN' ? 'zh-cn' : 'en')
+	document.documentElement.lang = initialLanguage
 }
 
 /** 预加载指定语言的命名空间集合（zh-CN 无需加载；backendConnector.load 自带缓存与去重） */
-export async function preloadNamespaces(language: AppLanguage, namespaces: readonly string[]): Promise<void> {
-  if (language === 'zh-CN') return
-  const unique = [...new Set(namespaces)]
-  if (!unique.length) return
-  await new Promise<void>((resolve, reject) => {
-    i18next.services.backendConnector.load([language], unique, (err: unknown) => {
-      if (err) reject(err)
-      else resolve()
-    })
-  })
+export async function preloadNamespaces(
+	language: AppLanguage,
+	namespaces: readonly string[],
+): Promise<void> {
+	if (language === 'zh-CN') return
+	const unique = [...new Set(namespaces)]
+	if (!unique.length) return
+	await new Promise<void>((resolve, reject) => {
+		i18next.services.backendConnector.load(
+			[language],
+			unique,
+			(err: unknown) => {
+				if (err) reject(err)
+				else resolve()
+			},
+		)
+	})
 }
 
 /**
@@ -110,14 +123,14 @@ export async function preloadNamespaces(language: AppLanguage, namespaces: reado
  * 同时切换 dayjs locale 与 document lang，避免缓存页签出现半中文半英文。
  */
 export async function changeAppLanguage(
-  language: AppLanguage,
-  extraNamespaces: readonly string[] = [],
+	language: AppLanguage,
+	extraNamespaces: readonly string[] = [],
 ): Promise<void> {
-  await preloadNamespaces(language, [...BASE_NAMESPACES, ...extraNamespaces])
-  await i18next.changeLanguage(language)
-  persistLanguage(language)
-  dayjs.locale(language === 'zh-CN' ? 'zh-cn' : 'en')
-  document.documentElement.lang = language
+	await preloadNamespaces(language, [...BASE_NAMESPACES, ...extraNamespaces])
+	await i18next.changeLanguage(language)
+	persistLanguage(language)
+	dayjs.locale(language === 'zh-CN' ? 'zh-cn' : 'en')
+	document.documentElement.lang = language
 }
 
 export default i18next

@@ -16,22 +16,22 @@ export const REFRESH_LOCK_TTL_MS = 10_000
 
 /** 协议稳定错误码（RFC 9457 problem+json body.code），<MODULE>.<REASON> 点分格式 */
 export const API_ERROR_CODES = {
-  /** 401 认证失效统一码 */
-  UNAUTHENTICATED: 'AUTH.UNAUTHENTICATED',
-  /** 422 校验失败 */
-  VALIDATION_FAILED: 'VALIDATION.FAILED',
+	/** 401 认证失效统一码 */
+	UNAUTHENTICATED: 'AUTH.UNAUTHENTICATED',
+	/** 422 校验失败 */
+	VALIDATION_FAILED: 'VALIDATION.FAILED',
 } as const
 
 /** 前端本地生成的稳定错误码（后端不会返回） */
 export const CLIENT_ERROR_CODES = {
-  /** 网络不可达 / 请求被拦截 */
-  NETWORK_ERROR: 'CLIENT.NETWORK_ERROR',
-  /** 主动取消（切换页签、刷新页签等） */
-  CANCELLED: 'CLIENT.CANCELLED',
-  /** 响应体不是合法 JSON */
-  MALFORMED_RESPONSE: 'CLIENT.MALFORMED_RESPONSE',
-  /** 未知后端错误（无 code 字段） */
-  UNKNOWN: 'CLIENT.UNKNOWN',
+	/** 网络不可达 / 请求被拦截 */
+	NETWORK_ERROR: 'CLIENT.NETWORK_ERROR',
+	/** 主动取消（切换页签、刷新页签等） */
+	CANCELLED: 'CLIENT.CANCELLED',
+	/** 响应体不是合法 JSON */
+	MALFORMED_RESPONSE: 'CLIENT.MALFORMED_RESPONSE',
+	/** 未知后端错误（无 code 字段） */
+	UNKNOWN: 'CLIENT.UNKNOWN',
 } as const
 
 /** 分页默认页大小；与后端协议一致 */

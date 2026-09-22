@@ -5,9 +5,9 @@
 import { Flex, Spin } from 'antd'
 
 export default function PageLoading() {
-  return (
-    <Flex align="center" justify="center" style={{ minHeight: 220 }}>
-      <Spin size="large" />
-    </Flex>
-  )
+	return (
+		<Flex align="center" justify="center" style={{ minHeight: 220 }}>
+			<Spin size="large" />
+		</Flex>
+	)
 }

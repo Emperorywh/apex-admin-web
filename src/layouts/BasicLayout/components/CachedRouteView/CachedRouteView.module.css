@@ -1,9 +1,9 @@
 /* 各缓存页独立滚动，顶部页签与底部菜单保持可见。 */
 .scrollHost {
-  height: 100%;
-  overflow-y: auto;
-  overflow-x: hidden;
-  overscroll-behavior: contain;
-  scrollbar-width: thin;
-  scrollbar-color: var(--app-scrollbar) transparent;
+	height: 100%;
+	overflow-y: auto;
+	overflow-x: hidden;
+	overscroll-behavior: contain;
+	scrollbar-width: thin;
+	scrollbar-color: var(--app-scrollbar) transparent;
 }

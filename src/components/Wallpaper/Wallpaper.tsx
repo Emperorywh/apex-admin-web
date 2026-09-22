@@ -5,5 +5,5 @@
 import styles from '@/components/Wallpaper/Wallpaper.module.css'
 
 export function Wallpaper() {
-  return <div className={styles.wall} aria-hidden="true" />
+	return <div className={styles.wall} aria-hidden="true" />
 }

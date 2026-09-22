@@ -10,13 +10,13 @@ import '@/styles/globals.css'
 
 // 先完成路由启动引导（基础命名空间就绪）再挂载，避免首屏文案闪空
 void bootstrapRouter().finally(() => {
-  createRoot(document.getElementById('root')!).render(
-    <StrictMode>
-      <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-          <App />
-        </PersistGate>
-      </Provider>
-    </StrictMode>,
-  )
+	createRoot(document.getElementById('root')!).render(
+		<StrictMode>
+			<Provider store={store}>
+				<PersistGate loading={null} persistor={persistor}>
+					<App />
+				</PersistGate>
+			</Provider>
+		</StrictMode>,
+	)
 })

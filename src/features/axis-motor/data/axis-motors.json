@@ -1,226 +1,226 @@
 {
-  "categories": [
-    {
-      "id": "travel",
-      "label": "行进轴电机"
-    },
-    {
-      "id": "lift",
-      "label": "顶升轴电机"
-    },
-    {
-      "id": "rotation",
-      "label": "旋转轴电机"
-    },
-    {
-      "id": "steering",
-      "label": "舵轮轴电机"
-    },
-    {
-      "id": "extension",
-      "label": "伸缩轴电机"
-    },
-    {
-      "id": "roller",
-      "label": "滚筒轴电机"
-    },
-    {
-      "id": "custom",
-      "label": "自定义轴电机"
-    }
-  ],
-  "actions": [
-    {
-      "id": "travel",
-      "categoryId": "travel",
-      "label": "行进动作",
-      "axisNumber": 2,
-      "positionLabel": "行进距离",
-      "unit": "mm",
-      "positiveLabel": "行进前进",
-      "negativeLabel": "行进后退",
-      "hasLimitSwitches": false,
-      "hasPullWireEncoder": false,
-      "hasTargetEncoder": false
-    },
-    {
-      "id": "fork-lift",
-      "categoryId": "lift",
-      "label": "叉齿轮抬升动作",
-      "axisNumber": 15,
-      "positionLabel": "顶升高度",
-      "unit": "mm",
-      "positiveLabel": "顶升上升",
-      "negativeLabel": "顶升下降",
-      "hasLimitSwitches": false,
-      "hasPullWireEncoder": true,
-      "hasTargetEncoder": false
-    },
-    {
-      "id": "lift",
-      "categoryId": "lift",
-      "label": "顶升动作",
-      "axisNumber": 1,
-      "positionLabel": "顶升高度",
-      "unit": "mm",
-      "positiveLabel": "顶升上升",
-      "negativeLabel": "顶升下降",
-      "hasLimitSwitches": true,
-      "hasPullWireEncoder": false,
-      "hasTargetEncoder": false
-    },
-    {
-      "id": "rotation",
-      "categoryId": "rotation",
-      "label": "旋转动作",
-      "axisNumber": 3,
-      "positionLabel": "旋转角度",
-      "unit": "°",
-      "positiveLabel": "顺时针旋转",
-      "negativeLabel": "逆时针旋转",
-      "hasLimitSwitches": false,
-      "hasPullWireEncoder": false,
-      "hasTargetEncoder": false
-    },
-    {
-      "id": "steering",
-      "categoryId": "steering",
-      "label": "舵轮动作",
-      "axisNumber": 4,
-      "positionLabel": "转向角度",
-      "unit": "°",
-      "positiveLabel": "舵轮左转",
-      "negativeLabel": "舵轮右转",
-      "hasLimitSwitches": false,
-      "hasPullWireEncoder": false,
-      "hasTargetEncoder": false
-    },
-    {
-      "id": "extension",
-      "categoryId": "extension",
-      "label": "伸缩动作",
-      "axisNumber": 5,
-      "positionLabel": "伸缩长度",
-      "unit": "mm",
-      "positiveLabel": "伸缩外伸",
-      "negativeLabel": "伸缩回缩",
-      "hasLimitSwitches": false,
-      "hasPullWireEncoder": false,
-      "hasTargetEncoder": true
-    },
-    {
-      "id": "roller",
-      "categoryId": "roller",
-      "label": "滚筒动作",
-      "axisNumber": 6,
-      "positionLabel": "滚筒行程",
-      "unit": "mm",
-      "positiveLabel": "滚筒正转",
-      "negativeLabel": "滚筒反转",
-      "hasLimitSwitches": false,
-      "hasPullWireEncoder": false,
-      "hasTargetEncoder": false
-    },
-    {
-      "id": "custom",
-      "categoryId": "custom",
-      "label": "自定义动作",
-      "axisNumber": 7,
-      "positionLabel": "轴行程",
-      "unit": "mm",
-      "positiveLabel": "轴正向",
-      "negativeLabel": "轴反向",
-      "hasLimitSwitches": false,
-      "hasPullWireEncoder": false,
-      "hasTargetEncoder": false
-    }
-  ],
-  "drivers": [
-    {
-      "value": 1,
-      "label": "驱动器 1"
-    },
-    {
-      "value": 2,
-      "label": "驱动器 2"
-    },
-    {
-      "value": 3,
-      "label": "驱动器 3"
-    },
-    {
-      "value": 4,
-      "label": "驱动器 4"
-    }
-  ],
-  "encoders": [
-    {
-      "value": 1,
-      "label": "编码器 1"
-    },
-    {
-      "value": 2,
-      "label": "编码器 2"
-    },
-    {
-      "value": 3,
-      "label": "编码器 3"
-    },
-    {
-      "value": 4,
-      "label": "编码器 4"
-    }
-  ],
-  "motors": [
-    {
-      "id": "motor-lift-01",
-      "name": "顶升动作",
-      "actionType": "lift",
-      "driverId": 1,
-      "encoderId": 1,
-      "parameters": {
-        "upperPosition": 1200,
-        "lowerPosition": 100,
-        "upperEncoder": 4096,
-        "lowerEncoder": 256,
-        "positiveTarget": 1200,
-        "negativeTarget": 100
-      },
-      "currentEncoder": 2048
-    },
-    {
-      "id": "motor-fork-lift-15",
-      "name": "叉车抬升动作",
-      "actionType": "fork-lift",
-      "driverId": 1,
-      "encoderId": 1,
-      "parameters": {
-        "upperPosition": 1500,
-        "lowerPosition": 100,
-        "upperEncoder": 8192,
-        "lowerEncoder": 512,
-        "pullWireEncoder": 2048,
-        "positiveTarget": 1500,
-        "negativeTarget": 100
-      },
-      "currentEncoder": 3072
-    },
-    {
-      "id": "motor-extension-05",
-      "name": "E叉车伸缩动作",
-      "actionType": "extension",
-      "driverId": 1,
-      "encoderId": 2,
-      "parameters": {
-        "upperPosition": 800,
-        "lowerPosition": 0,
-        "upperEncoder": 4096,
-        "lowerEncoder": 0,
-        "positiveTarget": 800,
-        "negativeTarget": 0,
-        "targetEncoder": 1536
-      },
-      "currentEncoder": 1536
-    }
-  ]
+	"categories": [
+		{
+			"id": "travel",
+			"label": "行进轴电机"
+		},
+		{
+			"id": "lift",
+			"label": "顶升轴电机"
+		},
+		{
+			"id": "rotation",
+			"label": "旋转轴电机"
+		},
+		{
+			"id": "steering",
+			"label": "舵轮轴电机"
+		},
+		{
+			"id": "extension",
+			"label": "伸缩轴电机"
+		},
+		{
+			"id": "roller",
+			"label": "滚筒轴电机"
+		},
+		{
+			"id": "custom",
+			"label": "自定义轴电机"
+		}
+	],
+	"actions": [
+		{
+			"id": "travel",
+			"categoryId": "travel",
+			"label": "行进动作",
+			"axisNumber": 2,
+			"positionLabel": "行进距离",
+			"unit": "mm",
+			"positiveLabel": "行进前进",
+			"negativeLabel": "行进后退",
+			"hasLimitSwitches": false,
+			"hasPullWireEncoder": false,
+			"hasTargetEncoder": false
+		},
+		{
+			"id": "fork-lift",
+			"categoryId": "lift",
+			"label": "叉齿轮抬升动作",
+			"axisNumber": 15,
+			"positionLabel": "顶升高度",
+			"unit": "mm",
+			"positiveLabel": "顶升上升",
+			"negativeLabel": "顶升下降",
+			"hasLimitSwitches": false,
+			"hasPullWireEncoder": true,
+			"hasTargetEncoder": false
+		},
+		{
+			"id": "lift",
+			"categoryId": "lift",
+			"label": "顶升动作",
+			"axisNumber": 1,
+			"positionLabel": "顶升高度",
+			"unit": "mm",
+			"positiveLabel": "顶升上升",
+			"negativeLabel": "顶升下降",
+			"hasLimitSwitches": true,
+			"hasPullWireEncoder": false,
+			"hasTargetEncoder": false
+		},
+		{
+			"id": "rotation",
+			"categoryId": "rotation",
+			"label": "旋转动作",
+			"axisNumber": 3,
+			"positionLabel": "旋转角度",
+			"unit": "°",
+			"positiveLabel": "顺时针旋转",
+			"negativeLabel": "逆时针旋转",
+			"hasLimitSwitches": false,
+			"hasPullWireEncoder": false,
+			"hasTargetEncoder": false
+		},
+		{
+			"id": "steering",
+			"categoryId": "steering",
+			"label": "舵轮动作",
+			"axisNumber": 4,
+			"positionLabel": "转向角度",
+			"unit": "°",
+			"positiveLabel": "舵轮左转",
+			"negativeLabel": "舵轮右转",
+			"hasLimitSwitches": false,
+			"hasPullWireEncoder": false,
+			"hasTargetEncoder": false
+		},
+		{
+			"id": "extension",
+			"categoryId": "extension",
+			"label": "伸缩动作",
+			"axisNumber": 5,
+			"positionLabel": "伸缩长度",
+			"unit": "mm",
+			"positiveLabel": "伸缩外伸",
+			"negativeLabel": "伸缩回缩",
+			"hasLimitSwitches": false,
+			"hasPullWireEncoder": false,
+			"hasTargetEncoder": true
+		},
+		{
+			"id": "roller",
+			"categoryId": "roller",
+			"label": "滚筒动作",
+			"axisNumber": 6,
+			"positionLabel": "滚筒行程",
+			"unit": "mm",
+			"positiveLabel": "滚筒正转",
+			"negativeLabel": "滚筒反转",
+			"hasLimitSwitches": false,
+			"hasPullWireEncoder": false,
+			"hasTargetEncoder": false
+		},
+		{
+			"id": "custom",
+			"categoryId": "custom",
+			"label": "自定义动作",
+			"axisNumber": 7,
+			"positionLabel": "轴行程",
+			"unit": "mm",
+			"positiveLabel": "轴正向",
+			"negativeLabel": "轴反向",
+			"hasLimitSwitches": false,
+			"hasPullWireEncoder": false,
+			"hasTargetEncoder": false
+		}
+	],
+	"drivers": [
+		{
+			"value": 1,
+			"label": "驱动器 1"
+		},
+		{
+			"value": 2,
+			"label": "驱动器 2"
+		},
+		{
+			"value": 3,
+			"label": "驱动器 3"
+		},
+		{
+			"value": 4,
+			"label": "驱动器 4"
+		}
+	],
+	"encoders": [
+		{
+			"value": 1,
+			"label": "编码器 1"
+		},
+		{
+			"value": 2,
+			"label": "编码器 2"
+		},
+		{
+			"value": 3,
+			"label": "编码器 3"
+		},
+		{
+			"value": 4,
+			"label": "编码器 4"
+		}
+	],
+	"motors": [
+		{
+			"id": "motor-lift-01",
+			"name": "顶升动作",
+			"actionType": "lift",
+			"driverId": 1,
+			"encoderId": 1,
+			"parameters": {
+				"upperPosition": 1200,
+				"lowerPosition": 100,
+				"upperEncoder": 4096,
+				"lowerEncoder": 256,
+				"positiveTarget": 1200,
+				"negativeTarget": 100
+			},
+			"currentEncoder": 2048
+		},
+		{
+			"id": "motor-fork-lift-15",
+			"name": "叉车抬升动作",
+			"actionType": "fork-lift",
+			"driverId": 1,
+			"encoderId": 1,
+			"parameters": {
+				"upperPosition": 1500,
+				"lowerPosition": 100,
+				"upperEncoder": 8192,
+				"lowerEncoder": 512,
+				"pullWireEncoder": 2048,
+				"positiveTarget": 1500,
+				"negativeTarget": 100
+			},
+			"currentEncoder": 3072
+		},
+		{
+			"id": "motor-extension-05",
+			"name": "E叉车伸缩动作",
+			"actionType": "extension",
+			"driverId": 1,
+			"encoderId": 2,
+			"parameters": {
+				"upperPosition": 800,
+				"lowerPosition": 0,
+				"upperEncoder": 4096,
+				"lowerEncoder": 0,
+				"positiveTarget": 800,
+				"negativeTarget": 0,
+				"targetEncoder": 1536
+			},
+			"currentEncoder": 1536
+		}
+	]
 }

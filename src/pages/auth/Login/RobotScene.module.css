@@ -1,67 +1,67 @@
 /* 场景随所在展示栏等比缩放；显式宽高比预留空间，避免装饰加载时推移表单。 */
 .scene {
-  display: block;
-  width: 100%;
-  height: auto;
-  aspect-ratio: 720 / 390;
-  overflow: visible;
-  user-select: none;
-  pointer-events: none;
+	display: block;
+	width: 100%;
+	height: auto;
+	aspect-ratio: 720 / 390;
+	overflow: visible;
+	user-select: none;
+	pointer-events: none;
 }
 
 /* 路径慢速流动形成导航方向感，短虚线控制发光密度，保留机械场景的清晰边界。 */
 .route {
-  animation: route-travel 18s linear infinite;
+	animation: route-travel 18s linear infinite;
 }
 
 /* 扫描在地面透视中展开，使用填充边界定位缩放中心，避免 SVG 默认原点偏移。 */
 .scan {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: radar-sweep 6s ease-out infinite;
+	transform-box: fill-box;
+	transform-origin: center;
+	animation: radar-sweep 6s ease-out infinite;
 }
 
 /* 工程标注统一为紧凑等宽字体，与正文分层；标注不提供可交互或实时状态语义。 */
 .annotations {
-  font-family: 'Cascadia Code', Consolas, monospace;
-  font-size: 9px;
-  letter-spacing: 1.3px;
+	font-family: 'Cascadia Code', Consolas, monospace;
+	font-size: 9px;
+	letter-spacing: 1.3px;
 }
 
 /* 页面动效开关冻结当前帧，保留完整静态路线和扫描轮廓。 */
 .scene[data-paused='true'] .route,
 .scene[data-paused='true'] .scan {
-  animation-play-state: paused;
+	animation-play-state: paused;
 }
 
 /* 位移长度为虚线周期的整数倍，循环首尾无突跳。 */
 @keyframes route-travel {
-  to {
-    stroke-dashoffset: -220;
-  }
+	to {
+		stroke-dashoffset: -220;
+	}
 }
 
 /* 单个扫描波沿地面扩散后渐隐，低对比度轮廓避免形成闪烁。 */
 @keyframes radar-sweep {
-  0% {
-    opacity: 0;
-    transform: scale(0.82);
-  }
+	0% {
+		opacity: 0;
+		transform: scale(0.82);
+	}
 
-  18% {
-    opacity: 0.65;
-  }
+	18% {
+		opacity: 0.65;
+	}
 
-  100% {
-    opacity: 0;
-    transform: scale(1.28);
-  }
+	100% {
+		opacity: 0;
+		transform: scale(1.28);
+	}
 }
 
 /* 尊重系统减少动态效果设置，即便页面开关未暂停也不运行动画。 */
 @media (prefers-reduced-motion: reduce) {
-  .route,
-  .scan {
-    animation: none;
-  }
+	.route,
+	.scan {
+		animation: none;
+	}
 }

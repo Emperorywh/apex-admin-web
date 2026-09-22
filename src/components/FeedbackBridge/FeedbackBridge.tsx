@@ -8,15 +8,15 @@ import { App } from 'antd'
 import { uiFeedback } from '@/services/feedback/uiFeedback'
 
 export function FeedbackBridge() {
-  const staticFeedback = App.useApp()
+	const staticFeedback = App.useApp()
 
-  useEffect(() => {
-    uiFeedback.setApi({
-      message: staticFeedback.message,
-      notification: staticFeedback.notification,
-      modal: staticFeedback.modal,
-    })
-  }, [staticFeedback])
+	useEffect(() => {
+		uiFeedback.setApi({
+			message: staticFeedback.message,
+			notification: staticFeedback.notification,
+			modal: staticFeedback.modal,
+		})
+	}, [staticFeedback])
 
-  return null
+	return null
 }

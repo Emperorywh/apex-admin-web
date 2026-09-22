@@ -1,72 +1,224 @@
 /* 沿用全局工业主题，Ant Design 负责页面布局与控件；这里只限定工作区密度和响应式尺寸。 */
-.page { min-height: 100%; padding: 8px 4px 16px; }
-.heading { padding: 4px 0 16px; }
-.headingTitle { margin: 0 !important; font-size: 22px !important; letter-spacing: 1px; }
-.headingSubtitle { font-size: var(--app-fs-secondary); }
-.workspace { min-width: 0; }
+.page {
+	min-height: 100%;
+	padding: 8px 4px 16px;
+}
+.heading {
+	padding: 4px 0 16px;
+}
+.headingTitle {
+	margin: 0 !important;
+	font-size: 22px !important;
+	letter-spacing: 1px;
+}
+.headingSubtitle {
+	font-size: var(--app-fs-secondary);
+}
+.workspace {
+	min-width: 0;
+}
 
 /* 分类导航固定在工作区左侧，卡片内容滚动时仍可切换类别。 */
-.navigation { flex: 0 0 220px; position: sticky; top: 8px; align-self: flex-start; max-height: calc(100dvh - 188px); overflow-y: auto; }
-.navigation :global(.ant-card-body) { padding: 10px 8px; }
-.navigation :global(.ant-tree) { background: transparent; }
-.navigation :global(.ant-tree-treenode) { padding-block: 5px; }
-.navigation :global(.ant-tree-node-content-wrapper) { min-width: 0; }
-.navigation :global(.ant-tree-title) { white-space: normal; }
-.allMotors { margin-bottom: 8px; }
-.navigationNote { margin: 14px 8px 4px; font-size: var(--app-fs-secondary); }
-.content { flex: 1; min-width: 0; }
-.toolbar { margin-bottom: 12px; min-height: 32px; }
+.navigation {
+	flex: 0 0 220px;
+	position: sticky;
+	top: 8px;
+	align-self: flex-start;
+	max-height: calc(100dvh - 188px);
+	overflow-y: auto;
+}
+.navigation :global(.ant-card-body) {
+	padding: 10px 8px;
+}
+.navigation :global(.ant-tree) {
+	background: transparent;
+}
+.navigation :global(.ant-tree-treenode) {
+	padding-block: 5px;
+}
+.navigation :global(.ant-tree-node-content-wrapper) {
+	min-width: 0;
+}
+.navigation :global(.ant-tree-title) {
+	white-space: normal;
+}
+.allMotors {
+	margin-bottom: 8px;
+}
+.navigationNote {
+	margin: 14px 8px 4px;
+	font-size: var(--app-fs-secondary);
+}
+.content {
+	flex: 1;
+	min-width: 0;
+}
+.toolbar {
+	margin-bottom: 12px;
+	min-height: 32px;
+}
 /* 将搜索和新增固定为相邻操作；空间不足时只收缩搜索框，保留按钮文字完整。 */
-.toolbarActions { margin-inline-start: auto; max-width: 100%; min-width: 0; }
-.toolbarActions > :global(.ant-btn) { flex-shrink: 0; }
-.search { width: 248px; max-width: 100%; min-width: 0; flex: 1; }
-.notice { margin-bottom: 12px; }
+.toolbarActions {
+	margin-inline-start: auto;
+	max-width: 100%;
+	min-width: 0;
+}
+.toolbarActions > :global(.ant-btn) {
+	flex-shrink: 0;
+}
+.search {
+	width: 248px;
+	max-width: 100%;
+	min-width: 0;
+	flex: 1;
+}
+.notice {
+	margin-bottom: 12px;
+}
 
 /* 两列参数卡片共享网格宽度，但保持各自自然高度，避免短卡出现大块留白。 */
-.motorCard { width: 100%; border-color: var(--app-card-line); }
-.motorCard :global(.ant-card-head) { background: var(--app-highlight-soft); min-height: 44px; }
-.motorCard :global(.ant-card-body) { padding: 14px 16px; }
-.motorCard :global(.ant-card-head-title) { white-space: normal; }
-.motorCard :global(.ant-card-extra) { margin-inline-start: 8px; }
+.motorCard {
+	width: 100%;
+	border-color: var(--app-card-line);
+}
+.motorCard :global(.ant-card-head) {
+	background: var(--app-highlight-soft);
+	min-height: 44px;
+}
+.motorCard :global(.ant-card-body) {
+	padding: 14px 16px;
+}
+.motorCard :global(.ant-card-head-title) {
+	white-space: normal;
+}
+.motorCard :global(.ant-card-extra) {
+	margin-inline-start: 8px;
+}
 /* 标定参数标签较长，统一标签列避免同一行输入框起点错位。 */
-.compactForm { --app-form-label-width: 136px; }
-.compactForm :global(.ant-form-item) { margin-bottom: 10px; }
-.numberInput { width: 100%; }
-.sectionDivider { margin: 16px 0 !important; }
-.sectionTitle { margin: 0 0 12px !important; font-size: var(--app-fs-primary) !important; }
-.hint { font-size: var(--app-fs-secondary); }
+.compactForm {
+	--app-form-label-width: 136px;
+}
+.compactForm :global(.ant-form-item) {
+	margin-bottom: 10px;
+}
+.numberInput {
+	width: 100%;
+}
+.sectionDivider {
+	margin: 16px 0 !important;
+}
+.sectionTitle {
+	margin: 0 0 12px !important;
+	font-size: var(--app-fs-primary) !important;
+}
+.hint {
+	font-size: var(--app-fs-secondary);
+}
 
 /* 参数标题占满卡片宽度以便点击；箭头和文案同步表示状态，键盘聚焦保留清晰边框。 */
-.parametersToggle { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 28px; padding: 2px 0; border: 0; border-radius: var(--app-radius-control); background: transparent; color: var(--app-text); font: inherit; font-weight: 600; text-align: left; cursor: pointer; }
-.parametersToggle:hover { background: var(--app-hover-bg); }
-.parametersToggle:focus-visible { outline: 2px solid var(--app-blue); outline-offset: 3px; }
-.parametersToggleLabel { display: inline-flex; align-items: center; gap: 8px; }
-.parametersToggleLabel svg { flex-shrink: 0; }
-.parametersToggle[aria-expanded='true'] .parametersToggleLabel svg { transform: rotate(90deg); }
+.parametersToggle {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	width: 100%;
+	min-height: 28px;
+	padding: 2px 0;
+	border: 0;
+	border-radius: var(--app-radius-control);
+	background: transparent;
+	color: var(--app-text);
+	font: inherit;
+	font-weight: 600;
+	text-align: left;
+	cursor: pointer;
+}
+.parametersToggle:hover {
+	background: var(--app-hover-bg);
+}
+.parametersToggle:focus-visible {
+	outline: 2px solid var(--app-blue);
+	outline-offset: 3px;
+}
+.parametersToggleLabel {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+}
+.parametersToggleLabel svg {
+	flex-shrink: 0;
+}
+.parametersToggle[aria-expanded='true'] .parametersToggleLabel svg {
+	transform: rotate(90deg);
+}
 /* 仅展开时显示内容；表单一直挂载，折叠不会清空未保存的参数。 */
-.parametersPanel { padding-top: 12px; }
+.parametersPanel {
+	padding-top: 12px;
+}
 
 /* 实时区用内嵌底色区分只读反馈与可编辑标定值，数值采用等宽数字便于观察变化。 */
-.telemetry { padding: 10px 12px; background: var(--app-panel-inset); border: 1px solid var(--app-divider); border-radius: var(--app-radius-control); }
-.encoderValue { color: var(--app-cyan) !important; font-variant-numeric: tabular-nums; font-size: 18px; }
-.testActions { margin-top: 14px; }
-.footerDivider { margin: 14px 0 12px !important; }
-.empty { padding: 64px 16px; border: 1px dashed var(--app-line); border-radius: var(--app-radius-panel); }
+.telemetry {
+	padding: 10px 12px;
+	background: var(--app-panel-inset);
+	border: 1px solid var(--app-divider);
+	border-radius: var(--app-radius-control);
+}
+.encoderValue {
+	color: var(--app-cyan) !important;
+	font-variant-numeric: tabular-nums;
+	font-size: 18px;
+}
+.testActions {
+	margin-top: 14px;
+}
+.footerDivider {
+	margin: 14px 0 12px !important;
+}
+.empty {
+	padding: 64px 16px;
+	border: 1px dashed var(--app-line);
+	border-radius: var(--app-radius-panel);
+}
 
 /* 平板切换为顶部分类区域，手机压缩边距；卡片列数由 antd 的 Row/Col 断点控制。 */
 @media (max-width: 991px) {
-  .workspace { flex-direction: column; }
-  .navigation { position: static; width: 100%; flex: auto; max-height: 260px; }
-  .navigation :global(.ant-tree-treenode) { max-width: 100%; }
-  .navigationNote { display: none; }
-  .content { width: 100%; }
+	.workspace {
+		flex-direction: column;
+	}
+	.navigation {
+		position: static;
+		width: 100%;
+		flex: auto;
+		max-height: 260px;
+	}
+	.navigation :global(.ant-tree-treenode) {
+		max-width: 100%;
+	}
+	.navigationNote {
+		display: none;
+	}
+	.content {
+		width: 100%;
+	}
 }
 @media (max-width: 575px) {
-  .page { padding-inline: 0; }
-  .heading { gap: 12px; }
-  /* 手机端操作组独占一行，搜索框使用新增按钮左侧的剩余宽度。 */
-  .toolbarActions { width: 100%; }
-  .motorCard :global(.ant-card-body) { padding: 12px; }
-  .motorCard :global(.ant-card-extra) { font-size: var(--app-fs-secondary); }
-  .telemetry { padding: 8px; }
+	.page {
+		padding-inline: 0;
+	}
+	.heading {
+		gap: 12px;
+	}
+	/* 手机端操作组独占一行，搜索框使用新增按钮左侧的剩余宽度。 */
+	.toolbarActions {
+		width: 100%;
+	}
+	.motorCard :global(.ant-card-body) {
+		padding: 12px;
+	}
+	.motorCard :global(.ant-card-extra) {
+		font-size: var(--app-fs-secondary);
+	}
+	.telemetry {
+		padding: 8px;
+	}
 }

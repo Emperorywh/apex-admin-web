@@ -1,3 +1,3 @@
 export default function RobotList() {
-  return null
+	return null
 }

@@ -9,27 +9,27 @@ import { readStoredLanguage, type AppLanguage } from '@/i18n/i18n'
 export type AppTheme = 'light' | 'dark' | 'system'
 
 interface SettingsState {
-  locale: AppLanguage
-  theme: AppTheme
+	locale: AppLanguage
+	theme: AppTheme
 }
 
 /** locale 取持久化偏好：与 i18next 初始语言一致，否则 App 启动即把语言拉回 zh-CN 并覆盖存储 */
 const initialState: SettingsState = {
-  locale: readStoredLanguage(),
-  theme: 'dark',
+	locale: readStoredLanguage(),
+	theme: 'dark',
 }
 
 const settingsSlice = createSlice({
-  name: 'settings',
-  initialState,
-  reducers: {
-    localeChanged(state, action: PayloadAction<AppLanguage>) {
-      state.locale = action.payload
-    },
-    themeChanged(state, action: PayloadAction<AppTheme>) {
-      state.theme = action.payload
-    },
-  },
+	name: 'settings',
+	initialState,
+	reducers: {
+		localeChanged(state, action: PayloadAction<AppLanguage>) {
+			state.locale = action.payload
+		},
+		themeChanged(state, action: PayloadAction<AppTheme>) {
+			state.theme = action.payload
+		},
+	},
 })
 
 export const { localeChanged, themeChanged } = settingsSlice.actions

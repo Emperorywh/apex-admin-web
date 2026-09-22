@@ -1,27 +1,119 @@
 {
-  "stations": [
-    { "id": "station-a", "name": "A 区 · 原料站", "points": [
-      { "id": "a-01", "name": "A-01 入库接驳点" },
-      { "id": "a-02", "name": "A-02 货架停靠点" },
-      { "id": "a-03", "name": "A-03 出库接驳点" }
-    ] },
-    { "id": "station-b", "name": "B 区 · 生产站", "points": [
-      { "id": "b-01", "name": "B-01 产线接驳点" },
-      { "id": "b-02", "name": "B-02 暂存停靠点" }
-    ] },
-    { "id": "station-c", "name": "C 区 · 成品站", "points": [
-      { "id": "c-01", "name": "C-01 成品接驳点" },
-      { "id": "c-02", "name": "C-02 出库停靠点" }
-    ] }
-  ],
-  "locations": [
-    { "id": "loc-001", "name": "A-01 原料库位", "stationId": "station-a", "pointId": "a-01", "layer": 1, "depth": 1200, "height": 800, "maxLoad": 500, "remark": "原料入库接驳，保持通道畅通。" },
-    { "id": "loc-002", "name": "A-02 原料库位", "stationId": "station-a", "pointId": "a-02", "layer": 2, "depth": 1200, "height": 800, "maxLoad": 300, "remark": "标准料箱存储。" },
-    { "id": "loc-003", "name": "A-03 备料库位", "stationId": "station-a", "pointId": "a-03", "layer": 1, "depth": 1000, "height": 600, "maxLoad": 300, "remark": "" },
-    { "id": "loc-004", "name": "B-01 线边库位", "stationId": "station-b", "pointId": "b-01", "layer": 1, "depth": 800, "height": 600, "maxLoad": 200, "remark": "用于产线物料配送。" },
-    { "id": "loc-005", "name": "B-02 暂存库位", "stationId": "station-b", "pointId": "b-02", "layer": 2, "depth": 800, "height": 600, "maxLoad": 150, "remark": "" },
-    { "id": "loc-006", "name": "C-01 成品库位", "stationId": "station-c", "pointId": "c-01", "layer": 1, "depth": 1400, "height": 1000, "maxLoad": 800, "remark": "成品托盘存储。" },
-    { "id": "loc-007", "name": "C-02 成品库位", "stationId": "station-c", "pointId": "c-01", "layer": 2, "depth": 1400, "height": 1000, "maxLoad": 500, "remark": "" },
-    { "id": "loc-008", "name": "C-03 待发库位", "stationId": "station-c", "pointId": "c-02", "layer": 1, "depth": 1400, "height": 1000, "maxLoad": 800, "remark": "出库前集中暂存。" }
-  ]
+	"stations": [
+		{
+			"id": "station-a",
+			"name": "A 区 · 原料站",
+			"points": [
+				{ "id": "a-01", "name": "A-01 入库接驳点" },
+				{ "id": "a-02", "name": "A-02 货架停靠点" },
+				{ "id": "a-03", "name": "A-03 出库接驳点" }
+			]
+		},
+		{
+			"id": "station-b",
+			"name": "B 区 · 生产站",
+			"points": [
+				{ "id": "b-01", "name": "B-01 产线接驳点" },
+				{ "id": "b-02", "name": "B-02 暂存停靠点" }
+			]
+		},
+		{
+			"id": "station-c",
+			"name": "C 区 · 成品站",
+			"points": [
+				{ "id": "c-01", "name": "C-01 成品接驳点" },
+				{ "id": "c-02", "name": "C-02 出库停靠点" }
+			]
+		}
+	],
+	"locations": [
+		{
+			"id": "loc-001",
+			"name": "A-01 原料库位",
+			"stationId": "station-a",
+			"pointId": "a-01",
+			"layer": 1,
+			"depth": 1200,
+			"height": 800,
+			"maxLoad": 500,
+			"remark": "原料入库接驳，保持通道畅通。"
+		},
+		{
+			"id": "loc-002",
+			"name": "A-02 原料库位",
+			"stationId": "station-a",
+			"pointId": "a-02",
+			"layer": 2,
+			"depth": 1200,
+			"height": 800,
+			"maxLoad": 300,
+			"remark": "标准料箱存储。"
+		},
+		{
+			"id": "loc-003",
+			"name": "A-03 备料库位",
+			"stationId": "station-a",
+			"pointId": "a-03",
+			"layer": 1,
+			"depth": 1000,
+			"height": 600,
+			"maxLoad": 300,
+			"remark": ""
+		},
+		{
+			"id": "loc-004",
+			"name": "B-01 线边库位",
+			"stationId": "station-b",
+			"pointId": "b-01",
+			"layer": 1,
+			"depth": 800,
+			"height": 600,
+			"maxLoad": 200,
+			"remark": "用于产线物料配送。"
+		},
+		{
+			"id": "loc-005",
+			"name": "B-02 暂存库位",
+			"stationId": "station-b",
+			"pointId": "b-02",
+			"layer": 2,
+			"depth": 800,
+			"height": 600,
+			"maxLoad": 150,
+			"remark": ""
+		},
+		{
+			"id": "loc-006",
+			"name": "C-01 成品库位",
+			"stationId": "station-c",
+			"pointId": "c-01",
+			"layer": 1,
+			"depth": 1400,
+			"height": 1000,
+			"maxLoad": 800,
+			"remark": "成品托盘存储。"
+		},
+		{
+			"id": "loc-007",
+			"name": "C-02 成品库位",
+			"stationId": "station-c",
+			"pointId": "c-01",
+			"layer": 2,
+			"depth": 1400,
+			"height": 1000,
+			"maxLoad": 500,
+			"remark": ""
+		},
+		{
+			"id": "loc-008",
+			"name": "C-03 待发库位",
+			"stationId": "station-c",
+			"pointId": "c-02",
+			"layer": 1,
+			"depth": 1400,
+			"height": 1000,
+			"maxLoad": 800,
+			"remark": "出库前集中暂存。"
+		}
+	]
 }

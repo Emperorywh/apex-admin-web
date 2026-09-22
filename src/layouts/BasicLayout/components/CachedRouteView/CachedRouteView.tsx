@@ -11,22 +11,22 @@ import type { TabLocationSnapshot } from '@/store/slices/tabsSlice'
 import styles from '@/layouts/BasicLayout/components/CachedRouteView/CachedRouteView.module.css'
 
 interface CachedRouteViewProps {
-  snapshot: TabLocationSnapshot
+	snapshot: TabLocationSnapshot
 }
 
 export function CachedRouteView({ snapshot }: CachedRouteViewProps) {
-  // state 固定为 null：模板业务导航禁止依赖 location.state
-  const locationArg = useMemo<Location>(
-    () => ({
-      pathname: snapshot.pathname,
-      search: snapshot.search,
-      hash: snapshot.hash,
-      key: snapshot.key,
-      state: null,
-    }),
-    [snapshot.pathname, snapshot.search, snapshot.hash, snapshot.key],
-  )
+	// state 固定为 null：模板业务导航禁止依赖 location.state
+	const locationArg = useMemo<Location>(
+		() => ({
+			pathname: snapshot.pathname,
+			search: snapshot.search,
+			hash: snapshot.hash,
+			key: snapshot.key,
+			state: null,
+		}),
+		[snapshot.pathname, snapshot.search, snapshot.hash, snapshot.key],
+	)
 
-  const element = useRoutes(renderRoutes, locationArg)
-  return <div className={styles.scrollHost}>{element}</div>
+	const element = useRoutes(renderRoutes, locationArg)
+	return <div className={styles.scrollHost}>{element}</div>
 }

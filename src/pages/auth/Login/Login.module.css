@@ -1,163 +1,580 @@
 /* 登录与工作台共用主题令牌：海军蓝承载界面、操作蓝承载按钮、亮青色强调焦点。 */
 .page {
-  position: relative;
-  min-height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  padding: 0 clamp(24px, 5.2vw, 100px);
-  isolation: isolate;
-  background:
-    radial-gradient(ellipse at 26% 46%, color-mix(in srgb, var(--app-blue) 12%, transparent), transparent 58%),
-    radial-gradient(ellipse at 78% 24%, color-mix(in srgb, var(--app-blue) 6%, transparent), transparent 45%),
-    var(--app-canvas);
-  color: var(--app-text);
+	position: relative;
+	min-height: 100dvh;
+	display: flex;
+	flex-direction: column;
+	padding: 0 clamp(24px, 5.2vw, 100px);
+	isolation: isolate;
+	background:
+		radial-gradient(
+			ellipse at 26% 46%,
+			color-mix(in srgb, var(--app-blue) 12%, transparent),
+			transparent 58%
+		),
+		radial-gradient(
+			ellipse at 78% 24%,
+			color-mix(in srgb, var(--app-blue) 6%, transparent),
+			transparent 45%
+		),
+		var(--app-canvas);
+	color: var(--app-text);
 }
 
 /* 复用控制台细网格的颜色与尺度，装饰层渐隐且不拦截输入操作。 */
 .page::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background-image:
-    linear-gradient(var(--app-tech-grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--app-tech-grid) 1px, transparent 1px);
-  background-size: 44px 44px;
-  mask-image: radial-gradient(ellipse at 40% 45%, black 15%, transparent 76%);
+	content: '';
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	pointer-events: none;
+	background-image:
+		linear-gradient(var(--app-tech-grid) 1px, transparent 1px),
+		linear-gradient(90deg, var(--app-tech-grid) 1px, transparent 1px);
+	background-size: 44px 44px;
+	mask-image: radial-gradient(ellipse at 40% 45%, black 15%, transparent 76%);
 }
 
 /* 页眉页脚不固定定位，低高度或放大文字时允许页面自然滚动。 */
-.header, .footer { width: 100%; max-width: 1440px; margin-inline: auto; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
-.header { min-height: 84px; border-bottom: 1px solid var(--app-line-soft); }
-.brand { display: flex; align-items: center; gap: 13px; }
+.header,
+.footer {
+	width: 100%;
+	max-width: 1440px;
+	margin-inline: auto;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 24px;
+}
+.header {
+	min-height: 84px;
+	border-bottom: 1px solid var(--app-line-soft);
+}
+.brand {
+	display: flex;
+	align-items: center;
+	gap: 13px;
+}
 /* 品牌图标沿用控制台原图，仅添加共享青色微光，不再包裹独立色系的图标底板。 */
-.brandMark { width: 35px; height: 40px; object-fit: contain; flex: none; filter: drop-shadow(0 0 6px var(--app-accent-glow)); }
-.brandWord { font-size: 24px; font-weight: 600; line-height: 1; letter-spacing: 3px; }
-.brandWord > span { display: block; margin-top: 5px; font-size: 7px; font-weight: 400; letter-spacing: 3.2px; color: var(--app-text-3); }
-.brandDivider { height: 26px; width: 1px; background: var(--app-divider); margin-inline: 5px; }
-.brandName { font-size: 14px; color: var(--app-text-2); letter-spacing: 2px; }
-.headerActions { display: flex; align-items: center; gap: 28px; }
-.headerCaption { font-size: 10px; letter-spacing: 2.4px; color: var(--app-text-3); }
-.languageButton { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-width: 70px; min-height: 36px; border: 1px solid var(--app-line); border-radius: 4px; background: var(--app-control-bg); color: var(--app-control-text); cursor: pointer; transition: color 180ms, border-color 180ms; }
-.languageButton:hover { color: var(--app-cyan); border-color: var(--app-cyan); }
+.brandMark {
+	width: 35px;
+	height: 40px;
+	object-fit: contain;
+	flex: none;
+	filter: drop-shadow(0 0 6px var(--app-accent-glow));
+}
+.brandWord {
+	font-size: 24px;
+	font-weight: 600;
+	line-height: 1;
+	letter-spacing: 3px;
+}
+.brandWord > span {
+	display: block;
+	margin-top: 5px;
+	font-size: 7px;
+	font-weight: 400;
+	letter-spacing: 3.2px;
+	color: var(--app-text-3);
+}
+.brandDivider {
+	height: 26px;
+	width: 1px;
+	background: var(--app-divider);
+	margin-inline: 5px;
+}
+.brandName {
+	font-size: 14px;
+	color: var(--app-text-2);
+	letter-spacing: 2px;
+}
+.headerActions {
+	display: flex;
+	align-items: center;
+	gap: 28px;
+}
+.headerCaption {
+	font-size: 10px;
+	letter-spacing: 2.4px;
+	color: var(--app-text-3);
+}
+.languageButton {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 9px;
+	min-width: 70px;
+	min-height: 36px;
+	border: 1px solid var(--app-line);
+	border-radius: 4px;
+	background: var(--app-control-bg);
+	color: var(--app-control-text);
+	cursor: pointer;
+	transition:
+		color 180ms,
+		border-color 180ms;
+}
+.languageButton:hover {
+	color: var(--app-cyan);
+	border-color: var(--app-cyan);
+}
 
 /* 非对称双栏区分场景和认证操作，表单宽度不随超宽屏无限增长。 */
-.main { width: 100%; max-width: 1280px; margin: auto; padding-block: 36px; display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(360px, 0.95fr); align-items: center; gap: clamp(48px, 6vw, 110px); }
+.main {
+	width: 100%;
+	max-width: 1280px;
+	margin: auto;
+	padding-block: 36px;
+	display: grid;
+	grid-template-columns: minmax(0, 1.45fr) minmax(360px, 0.95fr);
+	align-items: center;
+	gap: clamp(48px, 6vw, 110px);
+}
 /* DOM 优先认证区以保证手机键盘顺序；桌面用网格坐标将场景放在左侧。 */
-.showcase { min-width: 0; grid-area: 1 / 1; }
-.eyebrow { display: flex; align-items: center; gap: 11px; color: var(--app-cyan); font-size: 10px; letter-spacing: 3px; }
-.eyebrow > span { width: 21px; height: 1px; background: var(--app-cyan); }
-.headline { margin: 20px 0 16px; font-size: clamp(38px, 3.7vw, 58px); line-height: 1.25; font-weight: 600; letter-spacing: 2px; }
-.headline > span { color: var(--app-cyan); }
-.description { max-width: 480px; margin: 0; color: var(--app-text-2); font-size: 14px; line-height: 1.9; letter-spacing: 0.5px; }
+.showcase {
+	min-width: 0;
+	grid-area: 1 / 1;
+}
+.eyebrow {
+	display: flex;
+	align-items: center;
+	gap: 11px;
+	color: var(--app-cyan);
+	font-size: 10px;
+	letter-spacing: 3px;
+}
+.eyebrow > span {
+	width: 21px;
+	height: 1px;
+	background: var(--app-cyan);
+}
+.headline {
+	margin: 20px 0 16px;
+	font-size: clamp(38px, 3.7vw, 58px);
+	line-height: 1.25;
+	font-weight: 600;
+	letter-spacing: 2px;
+}
+.headline > span {
+	color: var(--app-cyan);
+}
+.description {
+	max-width: 480px;
+	margin: 0;
+	color: var(--app-text-2);
+	font-size: 14px;
+	line-height: 1.9;
+	letter-spacing: 0.5px;
+}
 
 /* 透明场景直接融入画布，细导线与说明文字组成工程视图，避免重复卡片容器。 */
-.scene { position: relative; margin: 18px -12px 16px; }
+.scene {
+	position: relative;
+	margin: 18px -12px 16px;
+}
 /* 限制插图的纵向占位，常见笔记本首屏仍能完整展示主操作。 */
-.scene > svg { max-height: 320px; }
-.sceneHeader, .sceneCaption { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-inline: 12px; }
-.sceneHeader { color: var(--app-text-3); font-size: 8px; letter-spacing: 1.7px; }
-.sceneHeader > span { display: flex; align-items: center; gap: 7px; }
-.sceneHeader i { width: 4px; height: 4px; background: var(--app-blue-2); transform: rotate(45deg); }
-.motionButton { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 28px; padding: 3px 7px; color: var(--app-text-2); border: 1px solid var(--app-line-soft); border-radius: 3px; background: transparent; font-size: 10px; cursor: pointer; }
-.motionButton:hover, .motionButton[aria-pressed='true'] { color: var(--app-cyan); border-color: var(--app-cyan); }
-.sceneCaption { margin-top: -5px; color: var(--app-text-3); font-size: 8px; letter-spacing: 1.4px; }
-.sceneCaption > span:last-child { display: flex; align-items: center; gap: 10px; font-size: 10px; letter-spacing: 1px; }
+.scene > svg {
+	max-height: 320px;
+}
+.sceneHeader,
+.sceneCaption {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	margin-inline: 12px;
+}
+.sceneHeader {
+	color: var(--app-text-3);
+	font-size: 8px;
+	letter-spacing: 1.7px;
+}
+.sceneHeader > span {
+	display: flex;
+	align-items: center;
+	gap: 7px;
+}
+.sceneHeader i {
+	width: 4px;
+	height: 4px;
+	background: var(--app-blue-2);
+	transform: rotate(45deg);
+}
+.motionButton {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+	min-height: 28px;
+	padding: 3px 7px;
+	color: var(--app-text-2);
+	border: 1px solid var(--app-line-soft);
+	border-radius: 3px;
+	background: transparent;
+	font-size: 10px;
+	cursor: pointer;
+}
+.motionButton:hover,
+.motionButton[aria-pressed='true'] {
+	color: var(--app-cyan);
+	border-color: var(--app-cyan);
+}
+.sceneCaption {
+	margin-top: -5px;
+	color: var(--app-text-3);
+	font-size: 8px;
+	letter-spacing: 1.4px;
+}
+.sceneCaption > span:last-child {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	font-size: 10px;
+	letter-spacing: 1px;
+}
 
 /* 功能带使用分隔线和序号呼应控制台仪表，内容不具备点击行为。 */
-.capabilities { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 25px 0 0; padding: 23px 0 0; list-style: none; border-top: 1px solid var(--app-divider); }
-.capabilities > li { display: flex; align-items: flex-start; gap: 10px; padding-inline: 17px; border-left: 1px solid var(--app-divider); }
-.capabilities > li:first-child { padding-left: 0; border-left: 0; }
-.capabilities > li:last-child { padding-right: 0; }
-.capabilities svg { flex-shrink: 0; margin-top: 1px; color: var(--app-blue-2); }
-.capabilities strong { display: block; font-size: 12px; font-weight: 500; color: var(--app-text); }
-.capabilities div > span { display: block; margin-top: 6px; font-size: 10px; color: var(--app-text-3); }
-.capabilities small { margin-left: auto; font-size: 8px; color: var(--app-text-3); }
+.capabilities {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	margin: 25px 0 0;
+	padding: 23px 0 0;
+	list-style: none;
+	border-top: 1px solid var(--app-divider);
+}
+.capabilities > li {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	padding-inline: 17px;
+	border-left: 1px solid var(--app-divider);
+}
+.capabilities > li:first-child {
+	padding-left: 0;
+	border-left: 0;
+}
+.capabilities > li:last-child {
+	padding-right: 0;
+}
+.capabilities svg {
+	flex-shrink: 0;
+	margin-top: 1px;
+	color: var(--app-blue-2);
+}
+.capabilities strong {
+	display: block;
+	font-size: 12px;
+	font-weight: 500;
+	color: var(--app-text);
+}
+.capabilities div > span {
+	display: block;
+	margin-top: 6px;
+	font-size: 10px;
+	color: var(--app-text-3);
+}
+.capabilities small {
+	margin-left: auto;
+	font-size: 8px;
+	color: var(--app-text-3);
+}
 
 /* 认证面板复用工作台卡片的底色、边线与阴影；青色顶部切线与控制台选中页签一致。 */
-.accessPanel { position: relative; grid-area: 1 / 2; border: 1px solid var(--app-card-line); border-radius: 8px; background: var(--app-card-surface); box-shadow: var(--app-panel-shadow); }
-.accessPanel::before { content: ''; position: absolute; top: -1px; left: 32px; width: 66px; height: 2px; background: var(--app-cyan); box-shadow: 0 0 16px var(--app-accent-glow); }
-.panelTopline { display: flex; justify-content: space-between; gap: 15px; padding: 14px 23px; background: var(--app-highlight-soft); border-bottom: 1px solid var(--app-divider); color: var(--app-text-3); font-size: 8px; letter-spacing: 1.5px; }
-.panelTopline > span:last-child { color: var(--app-text-3); }
-.panelBody { padding: 32px clamp(26px, 3vw, 45px) 24px; }
-.loginEyebrow { display: flex; align-items: center; gap: 10px; font-size: 9px; letter-spacing: 2.5px; color: var(--app-blue-text); }
-.loginEyebrow svg { color: var(--app-cyan); }
-.panelBody h2 { margin: 12px 0 10px; font-size: clamp(23px, 2vw, 29px); font-weight: 500; line-height: 1.4; letter-spacing: 0.5px; }
-.loginDescription { margin: 0 0 26px; color: var(--app-text-2); font-size: 12px; line-height: 1.8; }
-.accountNote { display: flex; align-items: center; gap: 13px; margin-top: 23px; font-size: 10px; color: var(--app-text-3); }
-.noteLine { flex: 1; height: 1px; background: var(--app-divider); }
-.accountHelp { margin: 13px 0 0; text-align: center; color: var(--app-text-2); font-size: 11px; line-height: 1.9; }
-.accountHelp > span { color: var(--app-text-3); }
-.panelFooter { display: flex; align-items: center; justify-content: center; gap: 9px; padding: 12px 20px; background: var(--app-panel-inset); border-top: 1px solid var(--app-divider); color: var(--app-text-3); font-size: 10px; letter-spacing: 1px; }
-.panelFooter svg:first-child { color: var(--app-blue-2); }
-.panelFooter svg:last-child { margin-left: auto; }
-.panelFooter > span { margin-right: auto; }
-.footer { min-height: 54px; border-top: 1px solid var(--app-line-soft); font-size: 9px; letter-spacing: 1.4px; color: var(--app-text-3); }
-.footerSeparator { margin-inline: 13px; color: var(--app-line); }
-.footer > span:last-child { font-size: 8px; letter-spacing: 1.5px; }
+.accessPanel {
+	position: relative;
+	grid-area: 1 / 2;
+	border: 1px solid var(--app-card-line);
+	border-radius: 8px;
+	background: var(--app-card-surface);
+	box-shadow: var(--app-panel-shadow);
+}
+.accessPanel::before {
+	content: '';
+	position: absolute;
+	top: -1px;
+	left: 32px;
+	width: 66px;
+	height: 2px;
+	background: var(--app-cyan);
+	box-shadow: 0 0 16px var(--app-accent-glow);
+}
+.panelTopline {
+	display: flex;
+	justify-content: space-between;
+	gap: 15px;
+	padding: 14px 23px;
+	background: var(--app-highlight-soft);
+	border-bottom: 1px solid var(--app-divider);
+	color: var(--app-text-3);
+	font-size: 8px;
+	letter-spacing: 1.5px;
+}
+.panelTopline > span:last-child {
+	color: var(--app-text-3);
+}
+.panelBody {
+	padding: 32px clamp(26px, 3vw, 45px) 24px;
+}
+.loginEyebrow {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	font-size: 9px;
+	letter-spacing: 2.5px;
+	color: var(--app-blue-text);
+}
+.loginEyebrow svg {
+	color: var(--app-cyan);
+}
+.panelBody h2 {
+	margin: 12px 0 10px;
+	font-size: clamp(23px, 2vw, 29px);
+	font-weight: 500;
+	line-height: 1.4;
+	letter-spacing: 0.5px;
+}
+.loginDescription {
+	margin: 0 0 26px;
+	color: var(--app-text-2);
+	font-size: 12px;
+	line-height: 1.8;
+}
+.accountNote {
+	display: flex;
+	align-items: center;
+	gap: 13px;
+	margin-top: 23px;
+	font-size: 10px;
+	color: var(--app-text-3);
+}
+.noteLine {
+	flex: 1;
+	height: 1px;
+	background: var(--app-divider);
+}
+.accountHelp {
+	margin: 13px 0 0;
+	text-align: center;
+	color: var(--app-text-2);
+	font-size: 11px;
+	line-height: 1.9;
+}
+.accountHelp > span {
+	color: var(--app-text-3);
+}
+.panelFooter {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 9px;
+	padding: 12px 20px;
+	background: var(--app-panel-inset);
+	border-top: 1px solid var(--app-divider);
+	color: var(--app-text-3);
+	font-size: 10px;
+	letter-spacing: 1px;
+}
+.panelFooter svg:first-child {
+	color: var(--app-blue-2);
+}
+.panelFooter svg:last-child {
+	margin-left: auto;
+}
+.panelFooter > span {
+	margin-right: auto;
+}
+.footer {
+	min-height: 54px;
+	border-top: 1px solid var(--app-line-soft);
+	font-size: 9px;
+	letter-spacing: 1.4px;
+	color: var(--app-text-3);
+}
+.footerSeparator {
+	margin-inline: 13px;
+	color: var(--app-line);
+}
+.footer > span:last-child {
+	font-size: 8px;
+	letter-spacing: 1.5px;
+}
 
 /* 首次进入时轻量上浮；场景持续动效由场景组件负责，表单无循环动画。 */
-.showcase, .accessPanel { animation: arrive 650ms ease-out both; }
-.accessPanel { animation-delay: 100ms; }
-@keyframes arrive { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+.showcase,
+.accessPanel {
+	animation: arrive 650ms ease-out both;
+}
+.accessPanel {
+	animation-delay: 100ms;
+}
+@keyframes arrive {
+	from {
+		opacity: 0;
+		transform: translateY(12px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
 
 /* 平板保留双栏并缩减场景边距，英文长句允许自然换行。 */
 @media (max-width: 1100px) {
-  .page { padding-inline: 32px; }
-  .main { gap: 36px; grid-template-columns: minmax(0, 1fr) minmax(340px, 0.95fr); padding-block: 40px; }
-  .headline { font-size: 40px; }
-  .panelBody { padding-inline: 28px; }
-  .capabilities > li { padding-inline: 10px; gap: 7px; }
-  .capabilities small { display: none; }
+	.page {
+		padding-inline: 32px;
+	}
+	.main {
+		gap: 36px;
+		grid-template-columns: minmax(0, 1fr) minmax(340px, 0.95fr);
+		padding-block: 40px;
+	}
+	.headline {
+		font-size: 40px;
+	}
+	.panelBody {
+		padding-inline: 28px;
+	}
+	.capabilities > li {
+		padding-inline: 10px;
+		gap: 7px;
+	}
+	.capabilities small {
+		display: none;
+	}
 }
 
 /* 笔记本矮屏收紧装饰留白，保留输入触控尺寸，使主要操作完整留在首屏。 */
 @media (min-width: 761px) and (max-height: 820px) {
-  .header { min-height: 72px; }
-  .main { padding-block: 16px; }
-  .headline { font-size: 42px; margin-block: 16px 12px; }
-  .scene { margin-block: 13px 12px; }
-  .scene > svg { max-height: 240px; }
-  .capabilities { margin-top: 19px; padding-top: 18px; }
-  .panelTopline { padding-block: 10px; }
-  .panelBody { padding-block: 24px 20px; }
-  .loginDescription { margin-bottom: 20px; }
-  .accountNote { margin-top: 18px; }
-  .accountHelp { margin-top: 10px; line-height: 1.7; }
-  .panelFooter { padding-block: 10px; }
-  .footer { min-height: 42px; }
+	.header {
+		min-height: 72px;
+	}
+	.main {
+		padding-block: 16px;
+	}
+	.headline {
+		font-size: 42px;
+		margin-block: 16px 12px;
+	}
+	.scene {
+		margin-block: 13px 12px;
+	}
+	.scene > svg {
+		max-height: 240px;
+	}
+	.capabilities {
+		margin-top: 19px;
+		padding-top: 18px;
+	}
+	.panelTopline {
+		padding-block: 10px;
+	}
+	.panelBody {
+		padding-block: 24px 20px;
+	}
+	.loginDescription {
+		margin-bottom: 20px;
+	}
+	.accountNote {
+		margin-top: 18px;
+	}
+	.accountHelp {
+		margin-top: 10px;
+		line-height: 1.7;
+	}
+	.panelFooter {
+		padding-block: 10px;
+	}
+	.footer {
+		min-height: 42px;
+	}
 }
 
 /* 手机首先展示品牌与认证入口；场景下移，软键盘弹出时仍可正常滚动。 */
 @media (max-width: 760px) {
-  .page { padding-inline: 24px; }
-  .header { min-height: 83px; }
-  .brandName, .brandDivider, .headerCaption { display: none; }
-  .main { max-width: 480px; grid-template-columns: minmax(0, 1fr); gap: 49px; padding-block: 32px 40px; }
-  .accessPanel, .showcase { grid-area: auto; }
-  .panelBody { padding: 27px 28px; }
-  .panelBody h2 { font-size: 25px; }
-  .loginDescription { margin-bottom: 26px; }
-  .headline { font-size: 37px; margin-block: 19px 16px; }
-  .description { font-size: 13px; }
-  .scene { margin-top: 21px; }
-  .footer { flex-wrap: wrap; justify-content: center; gap: 12px; padding-block: 22px; text-align: center; }
+	.page {
+		padding-inline: 24px;
+	}
+	.header {
+		min-height: 83px;
+	}
+	.brandName,
+	.brandDivider,
+	.headerCaption {
+		display: none;
+	}
+	.main {
+		max-width: 480px;
+		grid-template-columns: minmax(0, 1fr);
+		gap: 49px;
+		padding-block: 32px 40px;
+	}
+	.accessPanel,
+	.showcase {
+		grid-area: auto;
+	}
+	.panelBody {
+		padding: 27px 28px;
+	}
+	.panelBody h2 {
+		font-size: 25px;
+	}
+	.loginDescription {
+		margin-bottom: 26px;
+	}
+	.headline {
+		font-size: 37px;
+		margin-block: 19px 16px;
+	}
+	.description {
+		font-size: 13px;
+	}
+	.scene {
+		margin-top: 21px;
+	}
+	.footer {
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 12px;
+		padding-block: 22px;
+		text-align: center;
+	}
 }
 
 /* 极窄屏保留输入空间，非必要图注与数字让位于可读性。 */
 @media (max-width: 380px) {
-  .page { padding-inline: 16px; }
-  .panelBody { padding-inline: 22px; }
-  .panelTopline { padding-inline: 18px; letter-spacing: 1px; }
-  .sceneCaption > span:first-child { letter-spacing: 0; font-size: 7px; }
-  .sceneCaption > span:last-child { font-size: 9px; gap: 4px; }
-  .capabilities svg { display: none; }
+	.page {
+		padding-inline: 16px;
+	}
+	.panelBody {
+		padding-inline: 22px;
+	}
+	.panelTopline {
+		padding-inline: 18px;
+		letter-spacing: 1px;
+	}
+	.sceneCaption > span:first-child {
+		letter-spacing: 0;
+		font-size: 7px;
+	}
+	.sceneCaption > span:last-child {
+		font-size: 9px;
+		gap: 4px;
+	}
+	.capabilities svg {
+		display: none;
+	}
 }
 
 /* 减弱动态偏好关闭入场动画及场景控制入口，避免出现无效动画操作。 */
 @media (prefers-reduced-motion: reduce) {
-  .showcase, .accessPanel { animation: none; }
-  .languageButton { transition: none; }
-  .motionButton { display: none; }
+	.showcase,
+	.accessPanel {
+		animation: none;
+	}
+	.languageButton {
+		transition: none;
+	}
+	.motionButton {
+		display: none;
+	}
 }

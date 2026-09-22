@@ -1,131 +1,139 @@
 /* 认证入口采用纵向字段，字体、间距与颜色统一复用控制台语义令牌。 */
 .form {
-  width: 100%;
-  font-family: var(--app-font);
+	width: 100%;
+	font-family: var(--app-font);
 }
 
 /* 纵向表单使用紧凑间距，覆盖大号表单默认标签高度，保证笔记本首屏能容纳主操作。 */
 .form:global(.ant-form) :global(.ant-form-item) {
-  margin-bottom: var(--app-space-5);
+	margin-bottom: var(--app-space-5);
 }
 
 .form:global(.ant-form-vertical) :global(.ant-form-item-label) {
-  padding-bottom: var(--app-space-2);
+	padding-bottom: var(--app-space-2);
 }
 
 .form:global(.ant-form-vertical) :global(.ant-form-item-label > label) {
-  height: 20px;
-  min-height: 20px;
-  line-height: 20px;
-  color: var(--app-text-2);
-  font-size: var(--app-fs-secondary);
-  font-weight: var(--app-fw-medium);
-  letter-spacing: 0.06em;
+	height: 20px;
+	min-height: 20px;
+	line-height: 20px;
+	color: var(--app-text-2);
+	font-size: var(--app-fs-secondary);
+	font-weight: var(--app-fw-medium);
+	letter-spacing: 0.06em;
 }
 
 /* 52px 触控高度适配手机，输入区域沿用控制台边框与内嵌面板底色。 */
 .form .field {
-  min-height: 52px;
-  padding-inline: var(--app-space-4);
-  border: 1px solid var(--app-line);
-  border-radius: var(--app-radius-control);
-  background: var(--app-panel-inset);
-  color: var(--app-text);
-  box-shadow: inset 0 1px 3px color-mix(in srgb, var(--app-shadow-color) 14%, transparent);
-  transition: border-color var(--app-dur-base), box-shadow var(--app-dur-base), background var(--app-dur-base);
+	min-height: 52px;
+	padding-inline: var(--app-space-4);
+	border: 1px solid var(--app-line);
+	border-radius: var(--app-radius-control);
+	background: var(--app-panel-inset);
+	color: var(--app-text);
+	box-shadow: inset 0 1px 3px
+		color-mix(in srgb, var(--app-shadow-color) 14%, transparent);
+	transition:
+		border-color var(--app-dur-base),
+		box-shadow var(--app-dur-base),
+		background var(--app-dur-base);
 }
 
 /* 图标与文本保持固定距离，密码显示按钮沿用组件库的可操作区域。 */
 .field :global(.ant-input-prefix) {
-  margin-inline-end: var(--app-space-3);
-  color: var(--app-text-3);
+	margin-inline-end: var(--app-space-3);
+	color: var(--app-text-3);
 }
 
 .field :global(.ant-input) {
-  color: var(--app-text);
-  font-size: var(--app-fs-primary);
+	color: var(--app-text);
+	font-size: var(--app-fs-primary);
 }
 
 .field :global(.ant-input::placeholder) {
-  color: var(--app-text-3);
+	color: var(--app-text-3);
 }
 
 .field :global(.ant-input-password-icon) {
-  color: var(--app-text-3);
+	color: var(--app-text-3);
 }
 
 /* 悬停沿用控制台蓝色，键盘聚焦以青色描边和主题高亮提供稳定反馈。 */
 .form .field:hover {
-  border-color: var(--app-blue);
+	border-color: var(--app-blue);
 }
 
 .form .field:focus-within {
-  border-color: var(--app-cyan);
-  background: var(--app-panel-inset);
-  box-shadow: 0 0 0 3px var(--app-highlight);
+	border-color: var(--app-cyan);
+	background: var(--app-panel-inset);
+	box-shadow: 0 0 0 3px var(--app-highlight);
 }
 
 /* 校验错误优先于普通焦点强调，让用户能直接定位需要修正的凭据。 */
 .form .field:global(.ant-input-status-error) {
-  border-color: var(--app-red-text);
+	border-color: var(--app-red-text);
 }
 
 .form .field:global(.ant-input-status-error):focus-within {
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--app-red-text) 10%, transparent);
+	box-shadow: 0 0 0 3px
+		color-mix(in srgb, var(--app-red-text) 10%, transparent);
 }
 
 .form :global(.ant-form-item-explain-error) {
-  padding-top: var(--app-space-1);
-  color: var(--app-red-text);
-  font-size: var(--app-fs-secondary);
+	padding-top: var(--app-space-1);
+	color: var(--app-red-text);
+	font-size: var(--app-fs-secondary);
 }
 
 /* 浏览器自动填充沿用内嵌面板底色与主题文字，保持和其他输入状态一致。 */
 .field :global(input:-webkit-autofill) {
-  -webkit-text-fill-color: var(--app-text);
-  box-shadow: 0 0 0 100px var(--app-panel-inset) inset;
-  caret-color: var(--app-text);
+	-webkit-text-fill-color: var(--app-text);
+	box-shadow: 0 0 0 100px var(--app-panel-inset) inset;
+	caret-color: var(--app-text);
 }
 
 /* 主操作使用工作台同款蓝底与冷白文字，弱阴影保持层次，加载中尺寸稳定。 */
 .form .submit {
-  height: 52px;
-  margin-top: var(--app-space-2);
-  border: 1px solid var(--app-primary);
-  border-radius: var(--app-radius-control);
-  background: var(--app-primary);
-  color: var(--app-text);
-  box-shadow: var(--app-shadow-1);
-  font-size: var(--app-fs-primary);
-  font-weight: var(--app-fw-semibold);
-  transition: background var(--app-dur-base), border-color var(--app-dur-base), box-shadow var(--app-dur-base);
+	height: 52px;
+	margin-top: var(--app-space-2);
+	border: 1px solid var(--app-primary);
+	border-radius: var(--app-radius-control);
+	background: var(--app-primary);
+	color: var(--app-text);
+	box-shadow: var(--app-shadow-1);
+	font-size: var(--app-fs-primary);
+	font-weight: var(--app-fw-semibold);
+	transition:
+		background var(--app-dur-base),
+		border-color var(--app-dur-base),
+		box-shadow var(--app-dur-base);
 }
 
 .form .submit:not(:disabled):hover {
-  border-color: var(--app-primary-hover);
-  background: var(--app-primary-hover);
-  color: var(--app-text);
-  box-shadow: var(--app-shadow-1);
+	border-color: var(--app-primary-hover);
+	background: var(--app-primary-hover);
+	color: var(--app-text);
+	box-shadow: var(--app-shadow-1);
 }
 
 .form .submit:not(:disabled):active {
-  border-color: var(--app-primary-active);
-  background: var(--app-primary-active);
-  color: var(--app-text);
+	border-color: var(--app-primary-active);
+	background: var(--app-primary-active);
+	color: var(--app-text);
 }
 
 /* 文案与箭头作为整体居中，翻译和加载文案变化不影响按钮宽度。 */
 .submitContent {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--app-space-3);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--app-space-3);
 }
 
 /* 尊重减少动态效果设置，字段交互仍保留即时颜色提示。 */
 @media (prefers-reduced-motion: reduce) {
-  .form .field,
-  .form .submit {
-    transition: none;
-  }
+	.form .field,
+	.form .submit {
+		transition: none;
+	}
 }

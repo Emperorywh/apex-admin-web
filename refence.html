@@ -1,399 +1,4182 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#061724">
-<title>任务管理 · 智能机器人系统</title>
-<style>
-:root{color-scheme:dark;--bg:#061724;--cyan:#00cfff;--blue:#009dff;--text:#d9edff;--muted:#83a8c2;--line:#28546b;--panel:rgba(12,34,49,.86);--font:"Bahnschrift","Microsoft YaHei UI","Microsoft YaHei","PingFang SC",sans-serif}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px var(--font);font-weight:400}button,input,select{font:inherit}button{cursor:pointer}button,a,input,select{outline:none}button{color:inherit}button:focus-visible,a:focus-visible{outline:2px solid #63e7ff;outline-offset:3px}button:disabled{cursor:default;opacity:.38}button svg{pointer-events:none}input,select{color:var(--text);min-width:0}input::placeholder{color:#718fa5}input:focus,select:focus{border-color:var(--cyan)!important;box-shadow:0 0 10px #00cfff20}button{transition:background .18s,border-color .18s,box-shadow .18s}svg{vertical-align:middle}.icon{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}.icon.small{width:15px;height:15px}.defs{position:absolute;width:0;height:0;overflow:hidden}h1,h2,p{margin:0}button{border:0;background:none}.app{height:100dvh;min-height:850px;display:flex;flex-direction:column;position:relative;isolation:isolate;overflow:hidden;background:radial-gradient(ellipse at 65% 2%,#0c31494d,transparent 50%),radial-gradient(ellipse at 43% 72%,#0066950b,transparent 65%)}.app:before{content:"";position:absolute;inset:60px 0 0;z-index:-2;pointer-events:none;background-image:radial-gradient(#23789885 .7px,transparent .9px),linear-gradient(#0e476a22 1px,transparent 1px),linear-gradient(90deg,#0e476a1a 1px,transparent 1px);background-size:24px 24px,120px 120px,120px 120px;mask-image:linear-gradient(#000a,#0003 40%,#0008)}.app:after{content:"";position:absolute;inset:62px 0 74px;z-index:-1;pointer-events:none;border-left:1px solid #04719b55;border-right:1px solid #04719b55;background:linear-gradient(90deg,transparent 10%,#00a3d810 10.05%,transparent 10.1%,transparent 88%,#00a3d811 88.05%,transparent 88.1%)}.factory{position:absolute;right:0;top:0;width:69%;height:300px;z-index:-2;opacity:.76;pointer-events:none;mask-image:linear-gradient(90deg,transparent,#000 20%),linear-gradient(#000 20%,transparent 90%);mask-composite:intersect}
-.topbar{height:62px;flex:none;display:flex;align-items:center;padding:0 30px 0 35px;gap:22px;border-bottom:1px solid #2a5f795e;background:linear-gradient(90deg,#20394c88,#0a2332a8 34%,#0c233175);position:relative;box-shadow:0 4px 22px #0003}.topbar:after{content:"";position:absolute;bottom:-2px;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent 2%,#08caff 2%,#08caff 4.5%,transparent 4.5%,transparent 15%,#00cfff99 15.1%,transparent 40%,#00cfff22 75%,transparent 90%);pointer-events:none}.brand{display:flex;align-items:center;gap:17px;white-space:nowrap;flex:none}.brand-logo{width:42px;height:43px;filter:drop-shadow(0 0 5px #007dff44)}.brand-name{font-weight:650;font-size:22px;letter-spacing:2px;text-shadow:0 0 8px #58b4ff33}.brand-en{font-size:8px;letter-spacing:2.3px;color:#88c7e8;margin-top:2px}.top-nav{display:flex;align-self:stretch;align-items:stretch;position:relative;margin-left:7px;padding:0 16px}.top-nav:before{content:"";position:absolute;inset:0 -26px 4px -13px;border:1px solid #2389b84d;transform:skewX(-39deg);border-top:0;border-radius:0 0 5px 18px;background:linear-gradient(0deg,#0081c414,transparent);pointer-events:none}.top-link{position:relative;padding:0 19px;display:flex;align-items:center;gap:9px;white-space:nowrap}.top-link+.top-link:before{content:"";position:absolute;left:0;height:20px;width:1px;background:#2960783b}.top-link.active{color:#e9fbff;text-shadow:0 0 7px #39d9ff;font-weight:600;background:radial-gradient(ellipse at bottom,#007dce44,transparent 80%)}.top-link.active:after{content:"";position:absolute;bottom:7px;left:16px;right:16px;height:3px;background:#05d7ff;box-shadow:0 0 8px #00c8ff,0 0 17px #0087ff}.top-link.active .icon{color:#00d8ff;filter:drop-shadow(0 0 4px #00aaff)}.top-spacer{flex:1}.global-search{width:312px;height:33px;border:1px solid #35607a;border-radius:20px;display:flex;align-items:center;padding:0 12px;gap:8px;box-shadow:inset 0 0 9px #001725;background:#0517277a}.global-search input{border:0;background:none;width:100%;font-size:12px;padding:0;box-shadow:none}.global-search .icon{width:16px;height:16px}.header-actions{display:flex;align-items:center;gap:19px}.icon-btn{position:relative;display:grid;place-items:center;padding:0;width:25px;height:29px;color:#b9def4}.icon-btn:hover{color:var(--cyan)}.notice-dot{position:absolute;width:7px;height:7px;background:#ff405c;border:1px solid #ff94a6;box-shadow:0 0 5px #ff324470;border-radius:50%;top:2px;right:0}.clock{font-size:14px;white-space:nowrap;letter-spacing:.4px;margin-left:2px}.user-area{border-left:1px solid #36607a55;display:flex;align-items:center;gap:12px;padding-left:20px;min-width:144px;text-align:left}.avatar{width:33px;height:33px;border:1px solid #2098ef;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 30% 20%,#26d9ff,#045dff 62%,#0344b0);box-shadow:0 0 12px #00a9ff4f;color:white;font-size:14px}.user-info strong{display:block;font-size:14px;font-weight:450}.user-info span{display:block;font-size:11px;color:#7997ae;margin-top:2px}.user-area>.icon{margin-left:8px}
-.main{flex:1;display:flex;flex-direction:column;padding:0 24px;min-height:0}.page-heading{height:71px;flex:none;display:flex;align-items:center;gap:22px;padding-left:9px;position:relative}.page-heading h1{font-size:29px;letter-spacing:1.2px;font-weight:650;text-shadow:0 0 15px #38b7ff30}.page-heading p{color:#a5c8dd;font-size:13px;letter-spacing:.35px;padding-top:9px}.slogan{margin-left:auto;padding-right:258px;color:#6fb3d5;letter-spacing:5px;font-size:13px;padding-top:5px;white-space:nowrap}.stats{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:13px;height:103px;flex:none;margin-bottom:14px}.stat{--accent:#00baff;position:relative;text-align:left;border:1px solid #327193;border-radius:6px;padding:16px 16px 12px 20px;display:flex;gap:23px;align-items:flex-start;background:linear-gradient(112deg,#112d4099,#11293bdf 80%,#153449b8);box-shadow:inset 0 0 0 3px #041621,0 0 6px #00a5fa17;overflow:hidden}.stat:before{content:"";position:absolute;inset:4px;border-top:1px solid #6dbfe12f;border-left:1px solid #79b4d022;border-radius:4px;pointer-events:none}.stat:after{content:"";position:absolute;left:0;top:7px;width:1px;height:53px;background:var(--accent);box-shadow:0 0 9px var(--accent)}.stat:hover,.stat.selected{border-color:var(--accent);box-shadow:inset 0 0 0 3px #061a25,0 0 12px #00bbff25}.stat-icon{position:relative;border:1px solid color-mix(in srgb,var(--accent) 70%,transparent);background:radial-gradient(circle,color-mix(in srgb,var(--accent) 30%,transparent),#061727 76%);border-radius:11px;width:50px;height:50px;display:grid;place-items:center;flex:none;box-shadow:inset 0 0 7px color-mix(in srgb,var(--accent) 24%,transparent),0 0 17px color-mix(in srgb,var(--accent) 12%,transparent)}.stat-icon:before{content:"";position:absolute;inset:12px;background:var(--accent);filter:blur(8px);opacity:.8}.stat-icon .icon{width:29px;height:29px;position:relative;color:#e5faff;stroke-width:2.2;filter:drop-shadow(0 0 5px var(--accent))}.stat-icon .solid-icon{width:32px;height:32px;stroke-width:1.7}.stat-copy{position:relative;z-index:1;white-space:nowrap}.stat-label{font-size:13px;margin:1px 0 6px}.stat-value{font-size:23px;line-height:25px;font-weight:500;color:var(--blue);font-variant-numeric:tabular-nums;letter-spacing:.1px}.stat-note{font-size:12px;margin-top:6px;white-space:nowrap}.stat-note .good{color:#00efb1;margin-left:3px}.stat-note .muted{color:#85a4bb}.sparkline{position:absolute;right:11px;bottom:19px;width:62px;height:41px;color:var(--accent);filter:drop-shadow(0 0 4px color-mix(in srgb,var(--accent) 35%,transparent))}.stat.completed{--accent:#00e5a3}.stat.executing{--accent:#008dff}.stat.queued{--accent:#ff981d}.stat.cancelled{--accent:#a9d7ff}.stat.cancelled .stat-value{color:#ebf3ff}.stat.failed{--accent:#ff314e}.stat.failed .stat-value{color:#ff405b}
-.tech-panel{position:relative;background:linear-gradient(110deg,#0e293cc9,#0c202edf 50%,#102b3dce);border:1px solid #397a99;border-radius:5px;box-shadow:inset 0 0 0 3px #041622,inset 0 0 24px #05659713,0 0 8px #00a5ff10}.tech-panel:before,.tech-panel:after{content:"";position:absolute;inset:-2px;pointer-events:none;z-index:2;background:linear-gradient(var(--cyan),var(--cyan)) left top/12px 2px no-repeat,linear-gradient(var(--cyan),var(--cyan)) left top/2px 12px no-repeat,linear-gradient(var(--cyan),var(--cyan)) right top/12px 2px no-repeat,linear-gradient(var(--cyan),var(--cyan)) right top/2px 12px no-repeat,linear-gradient(var(--cyan),var(--cyan)) left bottom/12px 2px no-repeat,linear-gradient(var(--cyan),var(--cyan)) left bottom/2px 12px no-repeat,linear-gradient(var(--cyan),var(--cyan)) right bottom/12px 2px no-repeat,linear-gradient(var(--cyan),var(--cyan)) right bottom/2px 12px no-repeat;clip-path:polygon(6px 0,calc(100% - 6px) 0,100% 6px,100% calc(100% - 6px),calc(100% - 6px) 100%,6px 100%,0 calc(100% - 6px),0 6px)}.tech-panel:after{inset:5px;background:linear-gradient(90deg,#00cfff70,transparent) left top/110px 1px no-repeat,linear-gradient(90deg,transparent,#00cfff70) right bottom/110px 1px no-repeat,linear-gradient(#00cfff88,transparent) left top/1px 30px no-repeat}.filters{height:152px;margin-bottom:14px;flex:none;padding:0 22px 17px 28px;transition:height .2s}.panel-heading{height:47px;display:flex;align-items:center;gap:11px}.panel-heading>.icon{color:var(--cyan)}.panel-heading h2{font-size:16px;font-weight:600;white-space:nowrap}.heading-rule{height:1px;flex:1;background:linear-gradient(90deg,#47758d33,#38657b14);margin:0 16px 0 7px}.collapse-button{display:flex;align-items:center;gap:10px;color:#00d0ff;font-size:12px;padding:4px 0 4px 20px}.filter-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px 30px}.filter-field{display:flex;align-items:center;gap:15px;min-width:0}.filter-field>label{white-space:nowrap;font-size:13px;font-weight:550;min-width:56px}.filter-field .field-box{flex:1}.field-box{height:34px;position:relative;border:1px solid #44728e;border-radius:4px;background:linear-gradient(#102537c7,#102b3ce0);box-shadow:inset 0 0 5px #0004;display:flex;align-items:center;min-width:0}.field-box input,.field-box select{border:none;background:transparent;width:100%;height:100%;padding:0 12px;font-size:12px;border-radius:4px;outline:none}.field-box:focus-within{border-color:var(--cyan);box-shadow:0 0 8px #00cfff1c}.field-box input:focus,.field-box select:focus{box-shadow:none}.field-box select{appearance:none;padding-right:25px;color:#829eb2}.field-box select.has-value{color:var(--text)}select option{background:#102a3c;color:#d5eaff}.field-box>.icon{position:absolute;right:11px;width:15px;height:15px;pointer-events:none}.date-range{flex:1;gap:8px;padding:0 10px;min-width:0}.date-range>.icon{position:static;width:16px;height:16px;flex:none}.date-range input{width:44%;padding:0;min-width:0;text-align:center;color:#9cb9ce}.date-range input::placeholder{color:#839fb5}.date-range input[type=date]{font-size:11px}.date-range input::-webkit-calendar-picker-indicator{width:11px;opacity:.6;cursor:pointer}.date-separator{font-size:18px;color:#bee9ff}.filter-actions{display:flex;gap:9px;justify-content:flex-end;min-width:0}.btn{border:1px solid #49829e;border-radius:5px;background:linear-gradient(#143346,#0b1c2a);height:36px;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:0 13px;white-space:nowrap;font-size:13px;box-shadow:inset 0 0 0 2px #041b28,0 1px 3px #0005}.btn:hover{border-color:#3adfff;background:linear-gradient(#18435a,#0c2b40);box-shadow:0 0 11px #00cfff25}.btn .icon{width:17px;height:17px}.btn.search{background:linear-gradient(120deg,#034391,#0652a0,#02244a);border-color:#00c8ff;box-shadow:inset 0 0 8px #006bfa,0 0 12px #00adff30}.btn.search .icon{color:var(--cyan)}.btn.primary{color:#001825;background:linear-gradient(110deg,#25dfff,#00b3ef);border-color:#68eeff;box-shadow:inset 0 0 5px #86f1ff88,0 0 15px #00bfff35;font-weight:600}.btn.primary:hover{background:#62e5ff}.btn.danger{border-color:#ed577270;color:#ff7990}.filters.collapsed{height:48px;padding-bottom:0}.filters.collapsed .filter-grid{display:none}.filters.collapsed .collapse-button .icon{transform:rotate(180deg)}
-.task-panel{flex:1;min-height:300px;display:flex;flex-direction:column;padding:0 8px 0;margin-bottom:0}.task-panel>.panel-heading{padding:0 9px 0 11px;height:48px;flex:none}.task-panel h2{font-size:18px}.task-panel .panel-heading>.icon{width:21px;height:21px}.record-total{font-size:13px;color:#bbd5e6;margin-left:2px;font-weight:400}.table-toolbar{margin-left:auto;display:flex;align-items:center;gap:11px}.table-toolbar .btn{height:29px;font-size:12px;padding:0 12px;border-color:#315c73}.table-toolbar .square-btn{padding:0;width:27px}.table-scroll{overflow:auto;flex:1;min-height:0;border:1px solid #25495e;border-radius:3px 3px 0 0;scrollbar-width:thin;scrollbar-color:#5186a3 #0b1e2c;position:relative;background:linear-gradient(180deg,#081d2abc,#0b2231a6)}table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:11.5px;line-height:1.2}thead{position:sticky;top:0;z-index:3;background:#19394d}th{height:32px;background:linear-gradient(#1a3b50dc,#153044);text-align:left;font-weight:500;color:#d4eaff;position:relative;border-bottom:1px solid #2d5165}th:after{content:"";position:absolute;right:0;top:9px;bottom:9px;width:1px;background:#43647b47}td,th{padding:0 11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}td{height:29.8px;border-bottom:1px solid #2c52634f;border-right:1px solid #2c52632b;font-variant-numeric:tabular-nums;color:#d4e6f3}tbody tr:nth-child(even){background:#28435740}tbody tr:hover{background:#00699630}td:first-child,th:first-child{text-align:center;padding:0 4px}td:last-child{border-right:0}.status-badge{display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(#07549b,#053666);border:1px solid #126dab66;color:#70ceff;text-shadow:0 0 5px #00b7ff88;border-radius:4px;padding:3px 9px;font-weight:550;min-width:54px;font-size:11px;line-height:15px;box-shadow:inset 0 0 8px #1084c328}.status-badge.cancel{background:linear-gradient(#893647,#612636);color:#ffb4c1;border-color:#c8556f55;text-shadow:0 0 6px #ff759399}.status-badge.done{background:#064836;color:#71e6bd;border-color:#16715b}.status-badge.queue{background:#63431b;color:#ffc173;border-color:#8f6229}.status-badge.pause{background:#524472;color:#d4b4ff;border-color:#75609f}.status-badge.fail{background:#67202e;color:#ff8a98;border-color:#983045}.priority{display:inline-grid;place-items:center;min-width:41px;height:24px;border:1px solid #37586d66;border-radius:5px;background:linear-gradient(#213e52,#163143);box-shadow:inset 0 0 5px #334f6344}.cell-muted{color:#89a8be}.row-actions{display:flex;align-items:center;gap:16px;white-space:nowrap}.text-button{font-size:11.5px;padding:3px 0;color:#00bfff;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}.text-button:hover{color:#89efff;text-shadow:0 0 8px #00bfff66}.text-button .icon{width:11px;height:11px}.pagination{height:60px;flex:none;display:flex;align-items:center;gap:12px;padding:0 10px;color:#b9d4e7}.page-size{height:32px;border:1px solid #2e5870;background:#0b2131;border-radius:4px;padding:0 9px;color:#d5eafa}.pagination-total{font-size:13px}.page-controls{display:flex;align-items:center;gap:6px;margin-left:auto;font-size:12px}.page-button{height:32px;min-width:27px;display:grid;place-items:center;border:1px solid #284e66;border-radius:5px;box-shadow:inset 0 0 0 2px #071a26;background:linear-gradient(#102a3b,#081c2a);padding:0 8px;font-size:12px}.page-button.active{border-color:#15d4ff;background:linear-gradient(#0087ff,#0758ce);box-shadow:inset 0 0 5px #03caff,0 0 11px #0088ff69;color:#fff}.page-button:hover:not(:disabled){border-color:var(--cyan)}.page-button.last{min-width:57px}.page-ellipsis{padding:0 3px}.page-jump{width:48px;height:32px;border:1px solid #345d75;border-radius:5px;background:#0a1f2d;text-align:center;font-size:12px}.page-jump::-webkit-inner-spin-button{appearance:none}.empty-state{padding:60px 12px;text-align:center;color:#89adbf;font-size:14px}.empty-state .icon{width:38px;height:38px;display:block;margin:0 auto 15px;color:#47788f}.table-fullscreen{position:fixed;inset:20px;z-index:30;background:#091e2d}.hidden-column{display:none!important}
-.bottom-bar{height:87px;flex:none;position:relative;margin-top:0;display:flex;align-items:flex-end;justify-content:center;padding-bottom:10px;background:linear-gradient(180deg,transparent,#071923 36%)}.dock-decoration{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}.dock-brand{position:absolute;bottom:16px;left:38px;color:#7faeca;font-size:12px;letter-spacing:1.8px}.dock-brand small{display:block;font-size:8px;letter-spacing:2.6px;margin-top:5px}.dock-tagline{position:absolute;right:28px;bottom:28px;color:#648ea8;font-size:10px;letter-spacing:1px;white-space:nowrap}.dock-tagline small{font-size:7px;letter-spacing:.5px;margin-left:10px}.dock{position:relative;display:flex;height:72px;align-items:stretch;gap:1px;padding:0 16px}.dock-item{width:81px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;position:relative;border:1px solid transparent;border-radius:8px 8px 5px 5px;font-size:12px;white-space:nowrap;background:linear-gradient(180deg,#07365422,transparent)}.dock-item:after{content:"";position:absolute;right:0;top:15px;bottom:15px;width:1px;background:linear-gradient(transparent,#27657d44,transparent)}.dock-item .icon{color:#54d7ff;width:23px;height:23px;filter:drop-shadow(0 0 5px #009dff25)}.dock-item:hover{background:linear-gradient(#00578455,#09213344);color:white}.dock-item.active{background:radial-gradient(ellipse at top,#06beff4d,transparent 68%),linear-gradient(#04507a60,#0c2b49);border:1px solid #099bc7;box-shadow:inset 0 0 0 3px #0095e313,inset 0 0 16px #008de14d,0 0 13px #0076dd22;text-shadow:0 0 7px #72bfff;font-weight:650}.dock-item.active:before{content:"";position:absolute;top:0;left:21px;right:21px;height:2px;background:#2df7ff;box-shadow:0 0 12px #00cfff,0 0 20px #00cfff}.dock-item.active .icon{color:#10d6ff;filter:drop-shadow(0 0 5px #00cfff)}.dock-item.trash{width:59px;margin-left:7px}.dock-item.trash .icon{color:#c0e7fc}
-/* The dialog and menus use the same design tokens as the dashboard. */
-.toast-region{position:fixed;top:78px;left:50%;transform:translateX(-50%);z-index:100;pointer-events:none;display:flex;flex-direction:column;gap:9px}.toast{padding:12px 22px;background:#12364ff2;border:1px solid #27a6d0;border-radius:6px;box-shadow:0 8px 30px #0008,0 0 16px #00aaff18;display:flex;align-items:center;gap:10px;animation:toast-in .2s ease-out;font-size:13px}.toast .icon{color:#00dfad}.toast.error{border-color:#e96b78}.toast.error .icon{color:#ff8291}@keyframes toast-in{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}dialog{padding:0;border:1px solid #3283a6;border-radius:9px;background:linear-gradient(135deg,#132f44,#081d2d);color:var(--text);width:560px;max-width:calc(100vw - 30px);max-height:88dvh;box-shadow:0 20px 100px #000c,0 0 30px #009fff25}dialog::backdrop{background:#000d1dcc;backdrop-filter:blur(5px)}.dialog-heading{height:61px;display:flex;align-items:center;gap:12px;padding:0 24px;border-bottom:1px solid #33597066;background:linear-gradient(90deg,#12476b60,transparent)}.dialog-heading>.icon{color:var(--cyan)}.dialog-heading h2{font-size:18px;font-weight:550}.dialog-heading .icon-btn{margin-left:auto}.dialog-body{padding:25px}.dialog-footer{display:flex;justify-content:flex-end;gap:11px;padding:16px 25px;border-top:1px solid #33597066;background:#061c2b77}.form-layout{display:grid;grid-template-columns:1fr 1fr;gap:20px}.form-group{display:flex;flex-direction:column;gap:9px;font-size:13px;color:#bad8eb}.form-group.full{grid-column:1/-1}.form-group input,.form-group select{border:1px solid #386781;background:#0a2131;height:39px;border-radius:4px;padding:0 11px;width:100%;font-size:13px}.required{color:#03caff}.form-hint{font-size:12px;color:#85a5bc;line-height:1.8;grid-column:1/-1}.detail-grid{display:grid;grid-template-columns:100px 1fr;gap:17px;font-size:13px}.detail-grid dt{color:#7fa6bf}.detail-grid dd{margin:0;overflow-wrap:anywhere}.detail-timeline{margin-top:24px;border-top:1px solid #2d566c66;padding-top:20px;display:flex;justify-content:space-between;font-size:12px;color:#83a9c0}.timeline-step{display:flex;flex-direction:column;align-items:center;gap:8px}.timeline-step i{width:9px;height:9px;background:#00c9ff;border:2px solid #80e9ff;border-radius:50%;box-shadow:0 0 10px #00c9ff70}.timeline-step.inactive i{background:#2a4659;border-color:#567186;box-shadow:none}.floating-menu{position:fixed;z-index:50;background:linear-gradient(#15384f,#0b2335);border:1px solid #337b9d;border-radius:6px;padding:6px;box-shadow:0 10px 35px #0009;min-width:146px}.floating-menu button{display:flex;align-items:center;gap:9px;text-align:left;padding:9px 12px;width:100%;font-size:12px;border-radius:4px}.floating-menu button:hover{background:#07609266;color:var(--cyan)}.floating-menu button .icon{width:16px;height:16px}.column-list{display:grid;grid-template-columns:1fr 1fr;gap:15px}.column-list label{display:flex;align-items:center;gap:9px;font-size:13px}.column-list input{accent-color:#00b7f1;width:15px;height:15px}.notification-item{border-left:2px solid #00baff;padding:0 0 0 16px;margin-bottom:24px}.notification-item strong{font-size:14px;font-weight:500}.notification-item p{font-size:12px;line-height:1.8;margin-top:7px;color:#8bacbf}.notification-item time{display:block;font-size:11px;color:#668aa3;margin-top:7px}.module-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.module-metric{padding:15px;background:#0a2135;border:1px solid #2a526a;border-radius:4px}.module-metric b{display:block;color:#00c8ff;font-size:27px;font-weight:500;margin:10px 0}.module-metric small{color:#80a4bb}.module-note{line-height:1.8;color:#95b8cd;font-size:13px}.monitor-map{background:linear-gradient(90deg,#0a526626 1px,transparent 1px),linear-gradient(#0a526626 1px,transparent 1px),#071c2a;background-size:30px 30px;border:1px solid #2b5b75;padding:15px;margin-top:16px;border-radius:5px}.monitor-map svg{width:100%;height:180px}.compact td{height:25px}.low-glow .stat-icon,.low-glow .dock-item,.low-glow .top-link{filter:none;box-shadow:none}.low-glow .factory{opacity:.35}.switch-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;font-size:14px}.switch-row input{accent-color:#00cfff;width:17px;height:17px}.subtext{color:#829fb4;font-size:12px;margin-top:7px}
-@media(min-width:1850px){.stat{gap:26px;padding-left:24px}.sparkline{width:82px}.top-spacer{min-width:50px}table{font-size:12px}td{height:calc((100dvh - 642px)/10 + 29px)}}
-@media(max-width:1500px) and (min-width:1051px){.topbar{padding-left:24px;padding-right:24px;gap:15px}.brand-name{font-size:19px}.brand{gap:12px}.top-link{padding:0 13px}.global-search{width:260px}.header-actions{gap:12px}.user-area{padding-left:12px;gap:9px;min-width:118px}.clock{font-size:12px}.stat{gap:15px;padding-left:15px}.stat-icon{width:45px;height:48px}.stat-value{font-size:21px}.sparkline{width:46px;right:8px}.stat-note{font-size:11px}.filter-grid{gap:14px 20px}.filter-field{gap:10px}.filters{padding-left:24px;padding-right:19px}.filter-actions{gap:6px}.filter-actions .btn{padding:0 9px;font-size:12px}.dock{gap:0}.dock-item{width:73px}.dock-brand{left:25px;font-size:10px}.dock-tagline{right:20px;font-size:8px}.dock-tagline small{display:none}.slogan{padding-right:210px}.table-scroll table{min-width:1320px}}
-@media(max-width:1250px) and (min-width:1051px){.global-search{width:220px}.topbar{gap:9px}.brand-name{font-size:17px}.brand-en{font-size:6px}.brand-logo{width:35px}.top-link{padding:0 10px;font-size:12px}.header-actions{gap:7px}.clock{font-size:11px}.user-info{display:none}.user-area{min-width:60px;padding-left:10px}.user-area>.icon{display:none}.stats{gap:9px}.stat{gap:11px;padding-left:11px}.stat-icon{width:38px;height:45px}.stat-value{font-size:19px}.stat-label{font-size:12px}.sparkline{width:32px;opacity:.6}.filters{height:195px}.filter-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 20px}.filter-actions{grid-column:2/4}.filter-field:nth-child(4){grid-row:2;grid-column:1}.filter-field:nth-child(7){grid-row:3;grid-column:1}.dock-item{width:68px;font-size:11px}.dock-tagline{display:none}.dock-brand{max-width:145px;font-size:8px}.dock-brand small{font-size:6px}}
-@media(max-width:1050px){.app{height:auto;min-height:100dvh;overflow:hidden}.topbar{height:62px;padding:0 18px;gap:12px}.brand-logo{width:34px}.brand-name{font-size:19px}.brand-en{font-size:6px}.top-nav,.global-search,.clock,.header-actions>button:nth-child(2),.header-actions>button:nth-child(3){display:none}.top-spacer{display:block}.header-actions{gap:10px}.user-area{min-width:0;padding-left:12px}.user-info{display:none}.user-area>.icon{margin-left:0}.main{padding:0 17px}.page-heading{height:80px;padding-left:0;gap:15px}.page-heading h1{font-size:25px}.page-heading p{font-size:12px;max-width:330px}.slogan{display:none}.stats{grid-template-columns:repeat(3,minmax(0,1fr));height:auto;gap:12px;margin-bottom:16px}.stat{height:103px;gap:20px}.filters{height:auto;padding:0 18px 20px}.filter-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 20px}.filter-actions{grid-column:1/-1;justify-content:flex-end}.filter-field>label{font-size:12px}.task-panel{min-height:447px;flex:auto}.table-scroll{height:334px;flex:auto}.table-scroll table{min-width:1550px}.pagination{gap:10px;padding:0 5px}.record-total{font-size:11px}.table-toolbar{gap:7px}.bottom-bar{height:90px;margin-top:10px;justify-content:flex-start;overflow-x:auto;overflow-y:hidden;scrollbar-width:none}.dock{padding:0 17px;margin:auto}.dock-item{width:72px;flex:none}.dock-brand,.dock-tagline{display:none}.dock-decoration{min-width:1100px}.factory{width:100%;height:300px}.task-panel.table-fullscreen .table-scroll{height:auto;flex:1}.table-fullscreen{inset:14px}}
-@media(max-width:580px){.brand-name{font-size:17px;letter-spacing:1px}.brand{gap:10px}.topbar{padding:0 13px}.user-area{gap:5px;padding-left:10px}.header-actions{gap:5px}.page-heading{height:82px;flex-wrap:wrap;align-content:center;gap:5px}.page-heading h1{font-size:25px;width:100%}.page-heading p{font-size:11px;padding-top:0}.main{padding:0 12px}.stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.stat{padding:13px 9px;height:96px;gap:12px}.stat-icon{width:39px;height:44px;border-radius:9px}.stat-icon .icon{width:26px;height:26px}.stat-label{font-size:11px}.stat-value{font-size:20px}.stat-note{font-size:10px}.sparkline{right:6px;width:27px;height:27px;bottom:24px;opacity:.6}.filters{padding:0 13px 16px}.filter-grid{grid-template-columns:1fr;gap:13px}.filter-field{gap:14px}.filter-field>label{width:79px;min-width:79px}.field-box{height:36px}.filter-actions{justify-content:space-between;gap:6px;margin-top:2px;flex-wrap:wrap}.filter-actions .btn{font-size:11px;padding:0 9px;gap:4px;flex:1}.filter-actions .icon{width:14px;height:14px}.panel-heading h2{font-size:14px}.task-panel>.panel-heading{gap:7px;padding:0 3px}.task-panel h2{font-size:15px}.record-total{font-size:10px}.table-toolbar .btn{padding:0 7px}.table-toolbar .btn span{display:none}.table-toolbar .square-btn{width:28px}.table-toolbar{gap:5px}.pagination{flex-wrap:wrap;height:auto;min-height:97px;padding:11px 5px;gap:12px}.pagination-total{font-size:12px}.page-controls{width:100%;margin:0;justify-content:flex-end;gap:5px}.page-button{min-width:27px;height:30px;padding:0 6px}.page-jump{height:30px;width:37px}.page-button.last{min-width:49px}.task-panel{min-height:472px}.table-scroll{height:332px}.form-layout{grid-template-columns:1fr}.form-group.full{grid-column:1}.form-hint{grid-column:1}.dialog-body{padding:20px}.module-grid{gap:7px}.module-metric{padding:11px;font-size:11px}.module-metric b{font-size:24px}.column-list{gap:13px}.toast-region{width:calc(100% - 30px)}.toast{padding:12px 15px;font-size:12px}.table-fullscreen .pagination{flex:none}.detail-grid{grid-template-columns:80px 1fr;gap:14px;font-size:12px}}
-/* Optical adjustments for the reference's thin industrial typography and spacing. */
-:root{--font:"Segoe UI","Microsoft YaHei","PingFang SC",sans-serif}
-.brand-name{font-family:"Microsoft YaHei","PingFang SC",sans-serif;font-weight:550;font-size:22px;letter-spacing:1.8px}.brand-en{font-family:"Segoe UI",sans-serif;font-weight:400}.page-heading h1{font-family:"Microsoft YaHei","PingFang SC",sans-serif;font-weight:550}.stat-value{font-family:"Segoe UI",sans-serif;font-weight:500}.stat-note{font-weight:400}.stat{border-color:#337da0;box-shadow:inset 0 0 0 3px #041621,inset 0 6px 12px #5cb6f008,0 0 6px #00a5fa17}.stat:before{border-top-color:#6dbfe13d}.factory{opacity:.49}.topbar{background:linear-gradient(90deg,#20394c88,#0a2332bc 34%,#0c233198)}.filter-field>label{font-weight:400}.filters .panel-heading{height:50px}.filters.collapsed .panel-heading{height:46px}.tech-panel{box-shadow:inset 0 0 0 3px #041622,inset 0 10px 24px #2185b30b,0 0 8px #00a5ff10}.panel-heading h2{font-weight:500}td{font-family:"Segoe UI","Microsoft YaHei",sans-serif;font-weight:400;font-size:11.5px}.table-scroll{scrollbar-width:thin}.status-badge{font-weight:500}.dock{transform:translateX(10px)}.top-link{font-size:14px}.btn{font-weight:400}.btn.primary{font-weight:550}
-@media(min-width:1251px){.stats{grid-template-columns:1.05fr repeat(4,minmax(0,1fr)) 1.05fr}.filter-grid{grid-template-columns:1.1fr 1.02fr 1fr 1.1fr}.filter-field:first-child>label{min-width:92px}.filter-field:nth-child(2)>label,.filter-field:nth-child(3)>label{min-width:58px}.filter-field:nth-child(4){gap:14px}.filter-field:nth-child(4)>label{min-width:54px}}
-@media(max-width:1050px){.dock{transform:none}.brand-name{font-size:19px}}
-@media(max-width:580px){.brand-name{font-size:17px}.filters .panel-heading{height:47px}}
-td:has(.status-badge){padding:0 8px}.cell-date{padding:0 8px;font-family:"Arial","Microsoft YaHei",sans-serif;font-size:11.5px;letter-spacing:-.15px}.tech-panel:before{filter:drop-shadow(0 0 2px #00cfff66)}
-.page-controls>span{white-space:nowrap}
-.task-panel>.panel-heading{height:46px}.pagination{height:58px}
-@media(max-width:580px){.pagination{height:auto}}
-@media(min-width:1850px){td{height:max(29.8px,calc((100dvh - 643px)/10))}}
-@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-</style>
-</head>
-<body>
-<!-- All graphics below are editable vector code. No reference image is embedded. -->
-<svg class="defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
-<symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="7.5"/><path d="m16 16 5 5"/></symbol>
-<symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
-<symbol id="i-up" viewBox="0 0 24 24"><path d="m6 15 6-6 6 6"/></symbol>
-<symbol id="i-left" viewBox="0 0 24 24"><path d="m14 6-6 6 6 6"/></symbol>
-<symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
-<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 4v16M4 12h16"/></symbol>
-<symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 4h16l-6 8v7l-4 2V12Z"/></symbol>
-<symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18"/></symbol>
-<symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 8V3m0 5h-5M20 8a9 9 0 1 0 1 7"/></symbol>
-<symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m-4-4 4 4 4-4M4 14v6h16v-6"/></symbol>
-<symbol id="i-fullscreen" viewBox="0 0 24 24"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></symbol>
-<symbol id="i-task" viewBox="0 0 24 24"><rect x="4" y="2.5" width="16" height="19" rx="2"/><path d="M8 7h1m3 0h4M8 12h1m3 0h4M8 17h1m3 0h4"/></symbol>
-<symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7V4a1 1 0 0 1 1-1h5l3 3h8a1 1 0 0 1 1 1v13H3Z"/><path d="M3 10h18M7 14h4m-4 3h9m-3-4h4"/></symbol>
-<symbol id="i-document" viewBox="0 0 24 24"><path d="M5 3h10l4 4v14H5Z"/><path d="M14 3v5h5M8 11h8m-8 4h8m-8 3h5"/></symbol>
-<symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="currentColor" stroke="none"/><path d="m7.5 12 3 3 6-6" stroke="#00b681" stroke-width="2"/></symbol>
-<symbol id="i-play" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#056dff" stroke="none"/><path d="m9 6 9 6-9 6Z" fill="#e5faff" stroke="#e5faff"/><path d="m12 10 3 2-3 2" stroke="#87d9ff" stroke-width=".8"/></symbol>
-<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="currentColor" stroke="none"/><path d="M12 6v6l4 2" stroke="#ed851c" stroke-width="2.1"/></symbol>
-<symbol id="i-cancel" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="currentColor" stroke="none"/><path d="m9 9 6 6m0-6-6 6" stroke="#365a75" stroke-width="2.2"/></symbol>
-<symbol id="i-warning" viewBox="0 0 24 24"><path d="M10 4a2.3 2.3 0 0 1 4 0l8 15a2 2 0 0 1-2 3H4a2 2 0 0 1-2-3Z" fill="currentColor" stroke="none"/><path d="M12 8v6m0 3v1" stroke="#ff3851" stroke-width="2.2"/></symbol>
-<symbol id="i-bell" viewBox="0 0 24 24"><path d="M5 10a7 7 0 0 1 14 0v7l2 2H3l2-2Zm5 12h4M12 1v2"/></symbol>
-<symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 1v2m0 18v2M1 12h2m18 0h2M4.2 4.2l1.5 1.5m12.6 12.6 1.5 1.5M4.2 19.8l1.5-1.5M18.3 5.7l1.5-1.5"/></symbol>
-<symbol id="i-settings" viewBox="0 0 24 24"><path d="m9 3 1-2h4l1 2 2 1 3-.2 2 3-1.5 2v3L22 14l-2 3-3-.2-2 1-1 3h-4l-1-3-2-1-3 .2-2-3L3.5 12V9L2 7l2-3L7 4Z" transform="translate(0 1) scale(1 .96)"/><circle cx="12" cy="11.8" r="3.4"/></symbol>
-<symbol id="i-dashboard" viewBox="0 0 24 24"><circle cx="7" cy="7" r="3.5"/><circle cx="17" cy="7" r="3.5"/><circle cx="7" cy="17" r="3.5"/><circle cx="17" cy="17" r="3.5"/></symbol>
-<symbol id="i-gauge" viewBox="0 0 24 24"><path d="M5 20a10 10 0 1 1 14 0h-5v-5h-4v5Z"/><path d="m8 6 1 2m-5 4h2m12 0h2m-5-6-1 2m-2 4 4-3"/></symbol>
-<symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="6" height="6" rx="1.4"/><rect x="15" y="3" width="6" height="6" rx="1.4"/><rect x="3" y="15" width="6" height="6" rx="1.4"/><rect x="15" y="15" width="6" height="6" rx="1.4"/></symbol>
-<symbol id="i-monitor" viewBox="0 0 24 24"><circle cx="7" cy="6" r="3"/><circle cx="17" cy="6" r="3"/><circle cx="17" cy="17" r="3"/><path d="M3 13v6h7m-3-7v6h5m4-8v2"/></symbol>
-<symbol id="i-car" viewBox="0 0 24 24"><path d="m3 11 3-5h10l4 5h2v7h-3m-14 0H2v-7Zm1 0h14M9 6V3h5"/><circle cx="7" cy="18" r="3"/><circle cx="17" cy="18" r="3"/><path d="M10 18h4m6-15 1 1m0 3h2"/></symbol>
-<symbol id="i-map" viewBox="0 0 24 24"><path d="m2 5 6-3 8 3 6-3v17l-6 3-8-3-6 3Zm6-3v17m8-14v17"/><path d="m11 8 2 2-2 3 3 3"/></symbol>
-<symbol id="i-center" viewBox="0 0 24 24"><path d="M3 5 8 2l4 3 4-3 5 3v14l-5 3-4-3-4 3-5-3Zm9 0v14M8 2v9l-2-1m10-8v9l2-1"/></symbol>
-<symbol id="i-connection" viewBox="0 0 24 24"><circle cx="8" cy="6" r="3"/><circle cx="17" cy="16" r="5"/><path d="M11 20H3v-5a4 4 0 0 1 6-3m8 1v3l2 1m-2-13h3v3"/></symbol>
-<symbol id="i-process" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="3" r="2"/><circle cx="3" cy="12" r="2"/><circle cx="12" cy="21" r="2"/><circle cx="21" cy="12" r="2"/><path d="M8 3H5a2 2 0 0 0-2 2v3m0 8v3a2 2 0 0 0 2 2h3m8 0h3a2 2 0 0 0 2-2v-3m0-8V5a2 2 0 0 0-2-2h-3"/></symbol>
-<symbol id="i-shield" viewBox="0 0 24 24"><path d="m12 2 8 3v7c0 5-8 10-8 10S4 17 4 12V5Z"/><path d="M12 6v10m-2-10h4m-4 10h4"/></symbol>
-<symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 22h19M5 18v-6m5 6V8m5 10V4m5 14V1"/></symbol>
-<symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M5 6v16h14V6M8 6V2h8v4M9 10v8m6-8v8"/></symbol>
-<symbol id="i-pause" viewBox="0 0 24 24"><path d="M7 4v16M17 4v16" stroke-width="4"/></symbol>
-<symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 8V3H3v13h5"/></symbol>
-<symbol id="i-empty" viewBox="0 0 24 24"><path d="m3 9 5-6h8l5 6v12H3Zm0 0h6v4h6V9h6"/></symbol>
-</defs></svg>
-<div class="app" id="app">
-  <svg class="factory" viewBox="0 0 1150 300" preserveAspectRatio="xMaxYMin slice" aria-hidden="true">
-    <defs>
-      <linearGradient id="warehouse-wall" x2="0" y2="1"><stop stop-color="#1b3a4d"/><stop offset="1" stop-color="#081c2b"/></linearGradient>
-      <linearGradient id="warehouse-floor" x2="0" y2="1"><stop stop-color="#0e2e42"/><stop offset=".25" stop-color="#174664"/><stop offset="1" stop-color="#061925"/></linearGradient>
-      <linearGradient id="steel" x2="1" y2="0"><stop stop-color="#0b1e2a"/><stop offset=".45" stop-color="#39596e"/><stop offset=".6" stop-color="#142f41"/><stop offset="1" stop-color="#081d2b"/></linearGradient>
-      <linearGradient id="agv-top" x2="0" y2="1"><stop stop-color="#658aa3"/><stop offset="1" stop-color="#24475e"/></linearGradient>
-      <radialGradient id="floor-light"><stop stop-color="#00abff" stop-opacity=".55"/><stop offset="1" stop-color="#008aff" stop-opacity="0"/></radialGradient>
-      <filter id="soft-light"><feGaussianBlur stdDeviation="3"/></filter>
-      <g id="rack"><rect width="125" height="102" fill="#071d2b" stroke="#2c4a5c"/><path d="M3 0v103m9-103v103M116 0v103m7-103v103M0 28h125M0 70h125M14 0l102 103m0-103L14 103" stroke="#365063" stroke-width="2" opacity=".6"/><path d="M0 31h125M0 73h125" stroke="#08121c" stroke-width="4"/><g fill="#142e3e" stroke="#213d50"><path d="M17 6h23v20H17Zm29 2h31v18H46Zm39-4h24v22H85ZM17 37h38v29H17Zm45 3h45v26H62ZM16 78h22v22H16Zm28 0h31v22H44Zm40 1h23v21H84Z"/></g></g>
-    </defs>
-    <path d="M0 0H1150V162L585 193 140 126Z" fill="url(#warehouse-wall)"/>
-    <path d="M0 98 622 117 1150 95v205H0Z" fill="url(#warehouse-floor)"/>
-    <g opacity=".44" fill="none" stroke="#375468"><path d="M0 1h1150M0 36h1150M0 61h1150M0 96h1150M292 0l260 119M742 0 655 118M1118 0 725 117M510 0l81 119"/><path d="M-130 300 599 115 280 300M538 300l74-184m196 184L657 116m440 184L675 116m475 100L694 116M0 173h1150M0 235h1150" opacity=".4"/></g>
-    <g opacity=".62"><use href="#rack" x="155" y="0"/><use href="#rack" x="284" y="0"/><use href="#rack" x="413" y="0"/><use href="#rack" x="690" y="1"/><use href="#rack" x="819" y="1"/><use href="#rack" x="948" y="1"/></g>
-    <g fill="url(#steel)" stroke="#38556a" stroke-opacity=".5"><path d="M169 0h14v123h-14ZM358 0h13v123h-13ZM529 0h10v130h-10ZM764 0h14v123h-14ZM921 0h13v122h-13ZM1090 0h17v142h-17Z"/><path d="M921 62h44v48h-44Z" fill="#2a4f68"/><path d="M928 67h31v27h-31" fill="#26455e"/></g>
-    <g opacity=".65"><path d="m40 74 430 44v16L40 88Z" fill="#143a53" stroke="#24465f"/><path d="m40 81 430 46" stroke="#0089c7" stroke-width="2"/><g fill="#1cc0ff"><path d="m92 86 12 1.5v4L92 90Zm36 4 12 1.5v4L128 94Zm36 4 12 1.5v4L164 98Zm36 4 12 1.5v4L200 102Zm36 4 12 1.5v4L236 106Zm36 4 12 1.5v4L272 110Zm36 4 12 1.5v4L308 114Zm36 4 12 1.5v4L344 118Z"/></g></g>
-    <ellipse cx="1001" cy="128" rx="113" ry="24" fill="url(#floor-light)"/><ellipse cx="533" cy="139" rx="99" ry="19" fill="url(#floor-light)"/>
-    <g transform="translate(948 95)"><ellipse cx="37" cy="31" rx="45" ry="10" fill="#001321"/><path d="m5 9 48-2 13 9-2 13-49 4-13-9Z" fill="#102837" stroke="#315c77"/><path d="m5 9 47-3 14 10-49 4Z" fill="url(#agv-top)"/><path d="m18 21 44-4v10l-44 3Z" fill="#092131"/><path d="m6 17 8 4v7l-8-4Z" fill="#277c9b"/><path d="m24 22 9-.8m16-1.5 7-.7" stroke="#00d7ff" stroke-width="3"/><path d="m23 8 25-1 5 4-25 2Z" fill="#092438"/><path d="M35 1v6" stroke="#56b9d8"/><circle cx="35" cy="0" r="2" fill="#00cfff"/><path d="M21 33h34" stroke="#008dcc" stroke-width="2" filter="url(#soft-light)"/></g>
-    <!-- 背景装饰文字表达机器人本体控制与状态监测用途。 -->
-    <g fill="#649cb6" font-family="Bahnschrift, sans-serif" font-size="6" letter-spacing="1.3"><text x="1059" y="85">ROBOT CONTROL</text><text x="1059" y="97">ONBOARD</text><text x="1059" y="109">LIVE MONITORING</text></g>
-    <path d="M481 126h40m445 14h95" stroke="#00c9ff" opacity=".65" stroke-width="2"/>
-  </svg>
-  <header class="topbar">
-    <!-- 品牌副标题与 AGV 单机控制系统定位保持一致。 -->
-    <div class="brand" aria-label="智能机器人系统 AGV CONTROL SYSTEM">
-      <svg class="brand-logo" viewBox="0 0 44 44" aria-hidden="true"><defs><linearGradient id="logo" x2="1" y2="1"><stop stop-color="#8fbbff"/><stop offset=".5" stop-color="#3982cb"/><stop offset="1" stop-color="#08d3ff"/></linearGradient></defs><path d="M4 38V6h16c16 0 15 18 1 18h-6l15 14h-9L10 26V17h12c5 0 5-6 0-6H9v27Z" fill="url(#logo)" stroke="#83bbed" stroke-width=".7"/><path d="m36 5-9 15 10 18h-6L22 22l10-17Z" fill="#2871af"/><path d="M41 4 30 21l10 18M38 4 27 20" fill="none" stroke="#56c7ff" stroke-width="1.2"/></svg>
-      <div><div class="brand-name">智能机器人系统</div><div class="brand-en">AGV CONTROL SYSTEM</div></div>
-    </div>
-    <nav class="top-nav" aria-label="顶部导航">
-      <button class="top-link" data-module="仪表盘"><svg class="icon"><use href="#i-gauge"/></svg>仪表盘</button>
-      <button class="top-link" data-module="调度监控"><svg class="icon"><use href="#i-monitor"/></svg>调度监控</button>
-      <button class="top-link active" data-module="任务管理" aria-current="page"><svg class="icon"><use href="#i-folder"/></svg>任务管理</button>
-    </nav>
-    <div class="top-spacer"></div>
-    <form class="global-search" id="globalSearch"><svg class="icon"><use href="#i-search"/></svg><input id="globalQuery" aria-label="全局搜索" placeholder="全局搜索：任务编号 / 车辆 / 地点 / 站点..."></form>
-    <div class="header-actions">
-      <button class="icon-btn" id="notificationsBtn" title="消息通知" aria-label="消息通知"><svg class="icon"><use href="#i-bell"/></svg><span class="notice-dot" id="noticeDot"></span></button>
-      <button class="icon-btn" id="settingsBtn" title="系统设置" aria-label="系统设置"><svg class="icon"><use href="#i-settings"/></svg></button>
-      <button class="icon-btn" id="appearanceBtn" title="切换光效" aria-label="切换光效"><svg class="icon"><use href="#i-sun"/></svg></button>
-    </div>
-    <time class="clock" datetime="2026-09-20T17:58:00" title="演示系统时间">9月20日 周日&nbsp; 17:58</time>
-    <button class="user-area" id="profileBtn" aria-label="管理员信息"><span class="avatar">R0</span><span class="user-info"><strong>Admin</strong><span>系统管理员</span></span><svg class="icon small"><use href="#i-down"/></svg></button>
-  </header>
-  <main class="main">
-    <section class="page-heading"><h1>任务管理</h1><p>统一管理调度任务，提升执行效率与资源利用率</p><span class="slogan">智能 · 高效 · 安全 · 跨越未来</span></section>
-    <section class="stats" id="stats" aria-label="任务统计"></section>
-    <section class="tech-panel filters" id="filterPanel" aria-labelledby="filterTitle">
-      <div class="panel-heading"><svg class="icon"><use href="#i-filter"/></svg><h2 id="filterTitle">筛选条件</h2><span class="heading-rule"></span><button class="collapse-button" id="collapseBtn" aria-expanded="true" aria-controls="filterForm"><span>收起</span><svg class="icon small"><use href="#i-up"/></svg></button></div>
-      <form class="filter-grid" id="filterForm">
-        <div class="filter-field"><label for="taskQuery">任务名称/编号</label><div class="field-box"><input id="taskQuery" name="query" placeholder="请输入任务名称或编号" autocomplete="off"><svg class="icon"><use href="#i-search"/></svg></div></div>
-        <div class="filter-field"><label for="taskType">任务类型</label><div class="field-box"><select id="taskType" name="type"><option value="">请选择任务类型</option><option value="运输任务">运输任务</option><option value="充电任务">充电任务</option><option value="泊车任务">泊车任务</option></select><svg class="icon"><use href="#i-down"/></svg></div></div>
-        <div class="filter-field"><label for="taskStatus">任务状态</label><div class="field-box"><select id="taskStatus" name="status"><option value="">请选择任务状态</option><option value="执行中">执行中</option><option value="已完成">已完成</option><option value="排队中">排队中</option><option value="已取消">已取消</option><option value="已挂起">已挂起</option><option value="已失败">已失败</option></select><svg class="icon"><use href="#i-down"/></svg></div></div>
-        <div class="filter-field"><label for="taskVehicle">任务车辆</label><div class="field-box"><select id="taskVehicle" name="vehicle"><option value="">请选择任务车辆</option><option>AGV-8888</option><option>AGV-6666</option><option>AGV-3333</option><option>AGV-7777</option><option>AGV-12345</option><option>AGV-54321</option><option>AGV-98765</option><option>AGV-24680</option><option>AGV-13579</option><option>AGV-0001</option></select><svg class="icon"><use href="#i-down"/></svg></div></div>
-        <div class="filter-field"><label>创建时间</label><div class="field-box date-range"><svg class="icon"><use href="#i-calendar"/></svg><input name="createdStart" aria-label="创建开始日期" placeholder="开始日期" data-date><span class="date-separator">→</span><input name="createdEnd" aria-label="创建结束日期" placeholder="结束日期" data-date></div></div>
-        <div class="filter-field"><label>执行时间</label><div class="field-box date-range"><svg class="icon"><use href="#i-calendar"/></svg><input name="startedStart" aria-label="执行开始日期" placeholder="开始日期" data-date><span class="date-separator">→</span><input name="startedEnd" aria-label="执行结束日期" placeholder="结束日期" data-date></div></div>
-        <div class="filter-field"><label>终止时间</label><div class="field-box date-range"><svg class="icon"><use href="#i-calendar"/></svg><input name="endedStart" aria-label="终止开始日期" placeholder="开始日期" data-date><span class="date-separator">→</span><input name="endedEnd" aria-label="终止结束日期" placeholder="结束日期" data-date></div></div>
-        <div class="filter-actions"><button class="btn search" type="submit" id="searchBtn"><svg class="icon"><use href="#i-search"/></svg><span>查询</span></button><button class="btn" type="reset"><svg class="icon"><use href="#i-refresh"/></svg>重置</button><button class="btn primary" type="button" id="createBtn"><svg class="icon"><use href="#i-plus"/></svg>创建任务</button><button class="btn" type="button" id="exportBtn"><svg class="icon"><use href="#i-download"/></svg>导出 Excel</button></div>
-      </form>
-    </section>
-    <section class="tech-panel task-panel" id="taskPanel" aria-labelledby="listTitle">
-      <div class="panel-heading"><svg class="icon"><use href="#i-folder"/></svg><h2 id="listTitle">任务列表</h2><span class="record-total" id="recordTotal">（共 581,506 条）</span><span class="heading-rule"></span><div class="table-toolbar"><button class="btn" id="columnsBtn"><svg class="icon"><use href="#i-settings"/></svg><span>列设置</span></button><button class="btn" id="refreshBtn" aria-label="刷新任务列表"><svg class="icon"><use href="#i-refresh"/></svg><span>刷新</span></button><button class="btn square-btn" id="fullscreenBtn" title="展开任务列表" aria-label="展开任务列表" aria-pressed="false"><svg class="icon"><use href="#i-fullscreen"/></svg></button></div></div>
-      <div class="table-scroll" id="tableScroll"><table aria-label="调度任务列表"><colgroup id="tableCols"></colgroup><thead id="tableHead"></thead><tbody id="tableBody"></tbody></table></div>
-      <div class="pagination"><select class="page-size" id="pageSize" aria-label="每页条数"><option value="10">10 条/页</option><option value="20">20 条/页</option><option value="50">50 条/页</option></select><span class="pagination-total" id="paginationTotal">共 581,506 条</span><div class="page-controls" id="pageControls"></div></div>
-    </section>
-  </main>
-  <footer class="bottom-bar">
-    <svg class="dock-decoration" viewBox="0 0 1672 87" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="dock-fill" x2="0" y2="1"><stop stop-color="#124a6a" stop-opacity=".45"/><stop offset="1" stop-color="#071c2b" stop-opacity=".2"/></linearGradient><linearGradient id="dock-line"><stop stop-color="#1c566f"/><stop offset=".2" stop-color="#21bcff"/><stop offset=".5" stop-color="#00bfff"/><stop offset=".8" stop-color="#21bcff"/><stop offset="1" stop-color="#1c566f"/></linearGradient><filter id="dock-glow"><feGaussianBlur stdDeviation="3"/></filter></defs><path d="M0 15h274l55-10h1007l36 10h300M0 26h278l-64 61M1672 26h-279l65 61" fill="none" stroke="#1f678e"/><path d="M240 87 327 7l18-2h977l20 4 92 78" fill="url(#dock-fill)" stroke="url(#dock-line)"/><path d="m262 87 74-74h992l80 74M0 8l15 9h284l-66 64M1672 8l-14 9h-285l68 64" fill="none" stroke="#0c87ba" stroke-opacity=".7"/><path d="m300 66 28-30m-1-10 12-11h174m169-10h284m360 9 8 1 24 27m-2 0 26 24M0 15h33m1606 0h33" stroke="#00bfff" fill="none"/><path d="M511 5h645" stroke="#00bcff" stroke-width="3" filter="url(#dock-glow)"/><path d="M782 5h102" stroke="#87f7ff" stroke-width="1.4"/><path d="M16 20h47m-26 4h90M1545 20h88" stroke="#237597"/></svg>
-    <!-- 底部中英文品牌文案统一说明机器人单机控制用途。 -->
-    <div class="dock-brand">ROBOT CONTROL<small>ONBOARD SYSTEM</small></div>
-    <nav class="dock" id="dock" aria-label="系统模块导航"></nav>
-    <!-- 说明控制系统部署在单台 AGV 机器人本体上。 -->
-    <div class="dock-tagline">AGV 单机控制系统<small>/ &nbsp;AGV ROBOT CONTROL SYSTEM</small></div>
-  </footer>
-</div>
-<div class="toast-region" id="toasts" role="status" aria-live="polite"></div>
-<dialog id="modal" aria-labelledby="modalTitle"><div class="dialog-heading"><svg class="icon" id="modalIcon"><use href="#i-task"/></svg><h2 id="modalTitle"></h2><button class="icon-btn" id="closeModal" aria-label="关闭弹窗"><svg class="icon"><use href="#i-close"/></svg></button></div><div id="modalContent"></div></dialog>
-<script>
-'use strict';
-/* A self-contained prototype: generated local records, no network requests. */
-const $ = id => document.getElementById(id);
-const icon = (name, cls = '') => `<svg class="icon ${cls}" aria-hidden="true"><use href="#i-${name}"/></svg>`;
-const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const format = value => value.toLocaleString('en-US');
-const BASE_TOTAL = 581506;
-const STORE_KEY = 'agv-dispatch-prototype-v1';
-let saved = {};
-try { saved = JSON.parse(localStorage.getItem(STORE_KEY) || '{}') || {}; } catch (_) { /* File mode can restrict local storage. */ }
-let newTasks = Array.isArray(saved.tasks) ? saved.tasks : [];
-let overrides = saved.overrides && typeof saved.overrides === 'object' ? saved.overrides : {};
-const state = {page:1, size:10, filtered:null, filters:{}, filterTicket:0, hidden:new Set(), menu:null};
-const vehicles = ['AGV-8888','AGV-6666','AGV-3333','AGV-7777','AGV-12345','AGV-54321','AGV-98765','AGV-24680','AGV-13579','AGV-0001'];
-const sampleIds = ['cde8c3d40e640d79','3268763fa3a84b6d','3e6e4c73d3a245ef','ed0fd819388b4235','59980efc5f0c4a1a','ab4c3bb358e34ecc','fd675f3b21f647cc','b6c1c8d286fb412a','ae85e669cb4c4c3f','park-611f1316bab9'];
-const sampleNames = ['mock-c7a1701e9f8b','mock-6f172b2d09aa','mock-b302665125e2','mock-cdaadb458d39','mock-8a22b9cee1ef','mock-a53f28770bb1','mock-7d8120f1c94d','mock-0827e82fa39e','mock-27f9786bb876','park-611f1316bab9'];
-const statuses = {'执行中':'','已完成':'done','排队中':'queue','已取消':'cancel','已挂起':'pause','已失败':'fail'};
-const columns = [
-  ['number','#',40],['code','任务编号',118],['name','任务名称',124],['status','任务状态',75],['taskId','任务ID',99],['type','任务类型',72],['assigned','指定车辆',120],['group','指定车组',80],['vehicle','执行车辆',94],['priority','优先级',75],['started','开始执行时间',148],['ended','结束执行时间',120],['created','创建时间',141],['failure','失败原因',96],['suspended','挂起原因',88],['actions','操作',115]
-];
-function persist(){try {localStorage.setItem(STORE_KEY, JSON.stringify({tasks:newTasks,overrides}));}catch(_){toast('浏览器限制本地存储，本次更改在当前页面有效');}}
-function baseStatus(n){return n < 9 || (n >= 10 && n < 55) ? '执行中' : n === 9 || n < 50088 ? '已取消' : '已完成';}
-function hex(n){return (Math.imul(n + 1771, 2654435761) >>> 0).toString(16).padStart(8,'0');}
-function getBaseTask(n){
-  const key = 'base-' + n;
-  const status = baseStatus(n);
-  const day = n < 55 ? '20' : String(20 - Math.floor(n / 30000) % 20).padStart(2,'0');
-  const date = '2026-09-' + day;
-  const seconds = [9,0,0,59,58,53,59,54,53,52];
-  const task = {key,code:sampleIds[n] || hex(n) + hex(n + 173) + hex(n + 31),name:sampleNames[n] || (n % 31 === 0 ? 'charge-' : n % 47 === 0 ? 'park-' : 'mock-') + hex(n+888) + hex(n+16),status,taskId:n<10?'ID-209317259':'ID-'+(209317259+n),type:n<10?'运输任务':n%31===0?'充电任务':n%47===0?'泊车任务':'运输任务',assigned:'测试大地图-209317259',group:'A组',vehicle:vehicles[n%10],priority:0,created:date+' 17:57:'+(n<3?'59':'52'),started:date+' 17:'+(n<3?'58:':'57:')+String(seconds[n%10]).padStart(2,'0'),ended:status==='执行中'?'—':date+' 17:57:53',failure:'—',suspended:'—'};
-  if(n===3) task.ended='2026-09-20 17:57:52';
-  return Object.assign(task,overrides[key] || {});
-}
-function getTask(key){if(key.startsWith('base-'))return getBaseTask(Number(key.slice(5)));return newTasks.find(t=>t.key===key);}
-function keyAt(index){return state.filtered ? state.filtered[index] : index<newTasks.length ? newTasks[index].key : 'base-'+(index-newTasks.length);}
-function totalRows(){return state.filtered ? state.filtered.length : BASE_TOTAL+newTasks.length;}
-function counts(){const c={'全部':BASE_TOTAL,'已完成':531418,'执行中':54,'排队中':0,'已取消':50034,'已失败':0,'已挂起':0};for(const t of newTasks){c['全部']++;c[t.status]++;}for(const [key,v]of Object.entries(overrides)){if(v.status && key.startsWith('base-')){c[baseStatus(Number(key.slice(5)))]--;c[v.status]++;}}return c;}
-function badge(status){return `<span class="status-badge ${statuses[status] || ''}">${escapeHTML(status)}</span>`;}
-function renderStats(){
-  const c=counts();
-  const configs=[['','任务总数','document','', '较昨日 <span class="good">−12.6% ↓</span>','2,31 9,29 17,25 26,19 32,21 40,15 49,18 62,12'],['已完成','已完成','check','completed',`${(c['已完成']/c['全部']*100).toFixed(1)}% 完成率`,'2,31 9,28 18,19 24,21 31,25 40,20 46,20 55,11 62,10'],['执行中','执行中','play','executing','较昨日 <span class="good">−8.1% ↓</span>','2,31 10,29 18,22 25,16 32,13 40,19 48,25 55,22 62,15 68,13'],['排队中','排队中','clock','queued','<span class="muted">—</span> 较昨日持平','2,31 11,24 17,19 25,25 31,22 39,17 45,18 54,10 61,13 68,15'],['已取消','已取消','cancel','cancelled',`${(c['已取消']/c['全部']*100).toFixed(1)}% 占比`,'2,31 8,29 17,19 22,20 29,25 37,20 43,22 51,17 59,11 65,12 69,11'],['已失败','已失败','warning','failed','<span class="muted">—</span> 较昨日持平','2,31 10,29 18,25 25,20 31,19 39,13 46,14 53,18 59,13 66,7']];
-  $('stats').innerHTML=configs.map(([status,label,ic,cls,note,points],i)=>`<button class="stat ${cls} ${state.filters.status===status&&status?'selected':''}" data-status="${status}" aria-label="${label} ${format(c[status||'全部'])}，点击筛选"><span class="stat-icon">${icon(ic, i>0?'solid-icon':'')}</span><span class="stat-copy"><span class="stat-label" style="display:block">${label}</span><span class="stat-value" style="display:block">${format(c[status||'全部'])}</span><span class="stat-note" style="display:block">${note}</span></span><svg class="sparkline" viewBox="0 0 70 45" aria-hidden="true"><defs><linearGradient id="spark-${i}" x2="0" y2="1"><stop stop-color="currentColor" stop-opacity=".2"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></linearGradient></defs><polygon points="${points} 69,45 2,45" fill="url(#spark-${i})"/><polyline points="${points}" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/></svg></button>`).join('');
-}
-function renderTable(){
-  const visible=columns.filter(c=>!state.hidden.has(c[0]));
-  const width=visible.reduce((s,c)=>s+c[2],0);
-  $('tableCols').innerHTML=visible.map(c=>`<col style="width:${c[2]/width*100}%">`).join('');
-  $('tableHead').innerHTML='<tr>'+visible.map(c=>`<th scope="col">${c[1]}</th>`).join('')+'</tr>';
-  const total=totalRows();
-  state.page=Math.max(1,Math.min(state.page,Math.ceil(total/state.size)||1));
-  const start=(state.page-1)*state.size,end=Math.min(start+state.size,total);
-  let html='';
-  for(let i=start;i<end;i++){
-    const row=getTask(keyAt(i));
-    html+='<tr data-key="'+escapeHTML(row.key)+'">'+visible.map(c=>{
-      const k=c[0],v=row[k];
-      if(k==='number')return `<td>${i+1}</td>`;
-      if(k==='status')return `<td>${badge(v)}</td>`;
-      if(k==='priority')return `<td><span class="priority">${escapeHTML(v)}</span></td>`;
-      if(k==='actions')return `<td><div class="row-actions"><button class="text-button" data-action="detail" aria-label="查看任务 ${escapeHTML(row.name)} 的详情">详情</button><button class="text-button" data-action="more" aria-label="任务 ${escapeHTML(row.name)} 的更多操作" aria-expanded="false">更多${icon('down')}</button></div></td>`;
-      return `<td class="${v==='—'?'cell-muted':''} ${['started','ended','created'].includes(k)?'cell-date':''}" title="${escapeHTML(v)}">${escapeHTML(v)}</td>`;
-    }).join('')+'</tr>';
-  }
-  if(!total)html=`<tr><td colspan="${visible.length}" class="empty-state">${icon('empty')}没有找到符合条件的任务<br><span style="font-size:12px;display:block;margin-top:10px">请调整筛选条件，或点击“重置”查看全部任务</span></td></tr>`;
-  $('tableBody').innerHTML=html;
-  $('recordTotal').textContent=`（共 ${format(total)} 条）`;
-  $('paginationTotal').textContent=`共 ${format(total)} 条`;
-  renderPagination();
-}
-function renderPagination(){
-  const pages=Math.max(1,Math.ceil(totalRows()/state.size));
-  let list=[];
-  if(pages<=6)list=Array.from({length:pages},(_,i)=>i+1);
-  else if(state.page<5)list=[1,2,3,4,5,'…',pages];
-  else if(state.page>pages-4)list=[1,'…',pages-4,pages-3,pages-2,pages-1,pages];
-  else list=[1,'…',state.page-1,state.page,state.page+1,'…',pages];
-  $('pageControls').innerHTML=`<button class="page-button" data-page="${state.page-1}" aria-label="上一页" ${state.page===1?'disabled':''}>${icon('left','small')}</button>`+list.map(p=>p==='…'?'<span class="page-ellipsis">···</span>':`<button class="page-button ${p===state.page?'active':''} ${p===pages&&pages>6?'last':''}" data-page="${p}" aria-label="第 ${p} 页" ${p===state.page?'aria-current="page"':''}>${p}</button>`).join('')+`<span style="margin-left:5px">跳至</span><input class="page-jump" id="pageJump" aria-label="跳转页码" type="number" min="1" max="${pages}" value="${state.page}"><span>页</span>`;
-}
-function matches(task,f){
-  if(f.status&&task.status!==f.status)return false;
-  if(f.type&&task.type!==f.type)return false;
-  if(f.vehicle&&task.vehicle!==f.vehicle)return false;
-  if(f.query&&!([task.name,task.code,task.taskId,task.vehicle,task.assigned].join(' ').toLowerCase().includes(f.query.toLowerCase())))return false;
-  for(const field of ['created','started','ended']){
-    const start=f[field+'Start'],end=f[field+'End'];
-    if((start||end)&&(!task[field]||task[field]==='—'))return false;
-    const date=(task[field]||'').slice(0,10);
-    if(start&&date<start||end&&date>end)return false;
-  }
-  return true;
-}
-async function applyFilters(notify=false){
-  const f=Object.fromEntries(new FormData($('filterForm')));f.query=f.query.trim();
-  for(const field of ['created','started','ended'])if(f[field+'Start']&&f[field+'End']&&f[field+'Start']>f[field+'End']){toast('开始日期不能晚于结束日期',true);return;}
-  const ticket=++state.filterTicket;
-  state.filters=f;state.page=1;closeMenu();
-  const hasFilters=Object.values(f).some(Boolean);
-  if(!hasFilters){state.filtered=null;renderStats();renderTable();$('searchBtn').disabled=false;$('searchBtn').querySelector('span').textContent='查询';if(notify)toast('已显示全部任务');return;}
-  $('searchBtn').disabled=true;$('searchBtn').querySelector('span').textContent='查询中';
-  const keys=newTasks.filter(t=>matches(t,f)).map(t=>t.key);
-  const statusOnly=!!f.status&&!Object.entries(f).some(([k,v])=>k!=='status'&&v);
-  for(let n=0;n<BASE_TOTAL;n++){
-    const key='base-'+n;
-    if(f.status&&(overrides[key]?.status||baseStatus(n))!==f.status)continue;
-    if(statusOnly||matches(getBaseTask(n),f))keys.push(key);
-    if(n%18000===0){await new Promise(r=>setTimeout(r,0));if(ticket!==state.filterTicket)return;}
-  }
-  if(ticket!==state.filterTicket)return;
-  state.filtered=keys;renderStats();renderTable();$('searchBtn').disabled=false;$('searchBtn').querySelector('span').textContent='查询';
-  if(notify)toast(`已找到 ${format(keys.length)} 条任务`);
-}
-function toast(message,error=false){const el=document.createElement('div');el.className='toast'+(error?' error':'');el.innerHTML=icon(error?'warning':'check')+'<span>'+escapeHTML(message)+'</span>';$('toasts').append(el);setTimeout(()=>el.remove(),3300);}
-function openModal(title,content,ic='task'){closeMenu();$('modalTitle').textContent=title;$('modalIcon').innerHTML=`<use href="#i-${ic}"/>`;$('modalContent').innerHTML=content;if(!$('modal').open)$('modal').showModal();}
-function closeModal(){$('modal').close();}
-function footer(html=''){return `<div class="dialog-footer">${html||'<button class="btn" data-close>关闭</button>'}</div>`;}
-function showDetail(key){
-  const row=getTask(key);
-  const fields=[['任务名称',row.name],['任务编号',row.code],['任务状态',badge(row.status)],['任务类型',row.type],['执行车辆',row.vehicle],['指定车组',row.group],['优先级',row.priority],['创建时间',row.created],['开始执行',row.started],['结束执行',row.ended]];
-  openModal('任务详情',`<div class="dialog-body"><dl class="detail-grid">${fields.map(([label,value])=>`<dt>${label}</dt><dd>${label==='任务状态'?value:escapeHTML(value)}</dd>`).join('')}</dl><div class="detail-timeline"><div class="timeline-step"><i></i><span>任务创建</span></div><div class="timeline-step ${row.status==='排队中'?'inactive':''}"><i></i><span>分配车辆</span></div><div class="timeline-step ${row.status==='排队中'?'inactive':''}"><i></i><span>执行任务</span></div><div class="timeline-step ${['已完成','已取消','已失败'].includes(row.status)?'':'inactive'}"><i></i><span>${row.status==='已取消'?'任务取消':'任务结束'}</span></div></div></div>${footer()}`,'folder');
-}
-function showCreate(source){
-  openModal(source?'复制任务':'创建任务',`<form id="createForm"><div class="dialog-body form-layout"><label class="form-group full">任务名称 <span class="required" style="display:none">*</span><input name="name" aria-label="新任务名称" placeholder="请输入任务名称" required maxlength="80" value="${source?escapeHTML(source.name+'-副本'):''}"></label><label class="form-group">任务类型<select name="type" aria-label="新任务类型"><option>运输任务</option><option>充电任务</option><option>泊车任务</option></select></label><label class="form-group">执行车辆<select name="vehicle" aria-label="新任务车辆">${vehicles.map(v=>`<option ${source?.vehicle===v?'selected':''}>${v}</option>`).join('')}</select></label><label class="form-group">指定车组<select name="group"><option>A组</option><option>B组</option><option>C组</option></select></label><label class="form-group">优先级<input name="priority" type="number" min="0" max="99" value="${source?.priority||0}" required></label><label class="form-group full">目标站点<input name="station" placeholder="例如：成品库 A-01" value="${source?escapeHTML(source.assigned):'测试大地图-209317259'}" required maxlength="80"></label><p class="form-hint">创建后任务将进入调度队列，可在任务列表中查看详情或启动执行。</p></div>${footer('<button class="btn" type="button" data-close>取消</button><button class="btn primary" type="submit">'+icon('plus')+'创建任务</button>')}</form>`,'plus');
-}
-function changeStatus(key,status){
-  const task=getTask(key);
-  const values={status,suspended:status==='已挂起'?'手动挂起':'—'};
-  if(status==='已取消'||status==='已完成')values.ended=timestamp();
-  if(status==='执行中'){values.started=timestamp();values.ended='—';}
-  if(key.startsWith('base-'))overrides[key]=Object.assign(overrides[key]||{},values);else Object.assign(task,values);
-  persist();closeMenu();applyFilters();toast(`任务${status==='执行中'?'已开始执行':status}`);
-}
-function timestamp(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;}
-function closeMenu(){if(state.menu){state.menu.remove();state.menu=null;}document.querySelectorAll('[data-action="more"]').forEach(b=>b.setAttribute('aria-expanded','false'));}
-function showRowMenu(button,key){
-  closeMenu();const task=getTask(key);const menu=document.createElement('div');menu.className='floating-menu';menu.setAttribute('role','menu');
-  let options=[['copy','copy','复制任务']];
-  if(['排队中','已挂起'].includes(task.status))options.push(['run','play','开始执行']);
-  if(task.status==='执行中')options.push(['pause','pause','挂起任务'],['finish','check','完成任务']);
-  if(['排队中','执行中','已挂起'].includes(task.status))options.push(['cancel','cancel','取消任务']);
-  menu.innerHTML=options.map(([action,ic,label])=>`<button role="menuitem" data-menu-action="${action}">${icon(ic)}${label}</button>`).join('');
-  document.body.append(menu);const r=button.getBoundingClientRect();menu.style.left=Math.max(8,Math.min(r.right-menu.offsetWidth,innerWidth-menu.offsetWidth-8))+'px';menu.style.top=Math.min(r.bottom+5,innerHeight-menu.offsetHeight-12)+'px';state.menu=menu;button.setAttribute('aria-expanded','true');
-  menu.addEventListener('click',e=>{const b=e.target.closest('[data-menu-action]');if(!b)return;const action=b.dataset.menuAction;if(action==='copy'){showCreate(task);return;}if(action==='cancel'){openModal('取消任务',`<div class="dialog-body"><p class="module-note">确认取消任务 <strong style="color:#d9eeff">${escapeHTML(task.name)}</strong>？取消后，该任务将停止调度。</p></div>${footer('<button class="btn" data-close>返回</button><button class="btn danger" id="confirmCancel">确认取消</button>')}`,'warning');$('confirmCancel').onclick=()=>{changeStatus(key,'已取消');closeModal();};return;}changeStatus(key,{run:'执行中',pause:'已挂起',finish:'已完成'}[action]);});
-}
-const modules=[['仪表盘','dashboard'],['调度监控','grid'],['任务管理','task'],['车辆管理','car'],['地图管理','map'],['调度中心','center'],['三方资源','connection'],['工艺配置','process'],['系统管理','settings'],['权限管理','shield'],['数据统计','chart']];
-$('dock').innerHTML=modules.map(([name,ic])=>`<button class="dock-item ${name==='任务管理'?'active':''}" data-module="${name}" ${name==='任务管理'?'aria-current="page"':''}>${icon(ic)}<span>${name}</span></button>`).join('')+`<button class="dock-item trash" id="cancelledTasks" title="查看已取消任务" aria-label="查看已取消任务">${icon('trash')}</button>`;
-function mapGraphic(){return `<div class="monitor-map"><svg viewBox="0 0 460 180" aria-label="AGV 调度地图示意"><g stroke="#42687d" fill="#163b50"><path d="M20 18h85v42H20Zm112 0h85v42h-85Zm112 0h85v42h-85Zm112 0h85v42h-85ZM20 121h85v42H20Zm112 0h85v42h-85Zm112 0h85v42h-85Zm112 0h85v42h-85Z"/></g><g fill="#82b6d0" font-family="Microsoft YaHei,sans-serif" font-size="11"><text x="42" y="44">入库区</text><text x="155" y="44">存储区 A</text><text x="268" y="44">存储区 B</text><text x="378" y="44">出库区</text><text x="38" y="147">充电站 01</text><text x="150" y="147">充电站 02</text><text x="265" y="147">装配站点</text><text x="376" y="147">暂存区域</text></g><path d="M35 92h387M64 62v28m224-28v28m-110 2v27m219-27v27" stroke="#00b7e9" stroke-width="2" fill="none" stroke-dasharray="7 5"/><g fill="#0ae5ff" stroke="#bbf7ff"><rect x="130" y="85" width="23" height="13" rx="4"/><rect x="306" y="85" width="23" height="13" rx="4"/><rect x="55" y="73" width="19" height="12" rx="3"/></g><g fill="#34ddad"><circle cx="57" cy="110" r="3"/><circle cx="170" cy="110" r="3"/></g></svg></div>`;}
-function showModule(name){
-  if(name==='任务管理'){document.querySelector('.task-panel').scrollIntoView({block:'nearest',behavior:'smooth'});return;}
-  const c=counts();let body='';
-  if(name==='仪表盘'||name==='数据统计')body=`<div class="module-grid"><div class="module-metric">任务总数<b>${format(c['全部'])}</b><small>累计调度任务</small></div><div class="module-metric">执行中<b>${format(c['执行中'])}</b><small>实时任务状态</small></div><div class="module-metric">完成率<b>${(c['已完成']/c['全部']*100).toFixed(1)}%</b><small>已完成 / 全部任务</small></div></div><div style="margin-top:24px"><p class="module-note">任务状态分布</p><div style="height:12px;border-radius:4px;overflow:hidden;display:flex;margin:14px 0"><span style="width:91.4%;background:#00ceab"></span><span style="flex:1;background:#437a9e"></span></div><p class="module-note">已完成 ${format(c['已完成'])}　·　已取消 ${format(c['已取消'])}　·　执行中 ${c['执行中']}</p></div>`;
-  else if(['调度监控','地图管理','调度中心'].includes(name))body=`<p class="module-note">测试大地图-209317259 <span style="float:right;color:#00dbad">● 调度运行中</span></p>${mapGraphic()}<p class="module-note" style="margin-top:14px">A组 · ${vehicles.length} 台车辆　　执行中任务 ${c['执行中']} 条</p>`;
-  else if(name==='车辆管理')body=`<div style="max-height:440px;overflow:auto"><table style="font-size:12px;table-layout:auto"><thead><tr><th>车辆编号</th><th>指定车组</th><th>车辆状态</th><th>电量</th></tr></thead><tbody>${vehicles.map((v,i)=>`<tr><td style="height:35px">${v}</td><td>A组</td><td style="color:${i===9?'#7da4ba':'#08d6a7'}">${i===9?'空闲':'运行中'}</td><td>${[86,92,74,81,95,78,83,69,96,100][i]}%</td></tr>`).join('')}</tbody></table></div>`;
-  else if(name==='系统管理'){showSettings();return;}
-  else if(name==='权限管理')body=`<dl class="detail-grid"><dt>当前用户</dt><dd>Admin</dd><dt>角色</dt><dd>系统管理员</dd><dt>任务权限</dt><dd>查看 · 创建 · 调度 · 导出</dd><dt>车辆权限</dt><dd>查看 · 调度</dd><dt>管理范围</dt><dd>全部车组与站点</dd></dl>`;
-  else if(name==='工艺配置')body=`<dl class="detail-grid"><dt>当前工艺</dt><dd>标准物料搬运</dd><dt>执行流程</dt><dd>取货站点 → 运输 → 卸货站点 → 任务完成</dd><dt>分配规则</dt><dd>优先级优先 · 就近分配</dd><dt>异常处理</dt><dd>任务挂起，等待人工处理</dd></dl>`;
-  // 资源名称使用机器人设备术语，与单机控制系统定位一致。
-  else body=`<dl class="detail-grid"><dt>资源名称</dt><dd>机器人设备资源</dd><dt>车辆组</dt><dd>A组 / B组 / C组</dd><dt>地图资源</dt><dd>测试大地图-209317259</dd><dt>任务类型</dt><dd>运输任务 · 充电任务 · 泊车任务</dd></dl>`;
-  openModal(name,`<div class="dialog-body">${body}</div>${footer()}`,modules.find(m=>m[0]===name)?.[1]||'grid');
-}
-function showSettings(){openModal('系统设置',`<div class="dialog-body"><label class="switch-row"><span>紧凑表格<div class="subtext">缩小行高，在一屏内显示更多任务</div></span><input type="checkbox" id="compactSetting" ${$('app').classList.contains('compact')?'checked':''}></label><label class="switch-row" style="margin-bottom:0"><span>柔和光效<div class="subtext">降低装饰光效和背景亮度</div></span><input type="checkbox" id="glowSetting" ${$('app').classList.contains('low-glow')?'checked':''}></label></div>${footer('<button class="btn primary" data-close>完成</button>')}`,'settings');$('compactSetting').onchange=e=>$('app').classList.toggle('compact',e.target.checked);$('glowSetting').onchange=e=>$('app').classList.toggle('low-glow',e.target.checked);}
-document.addEventListener('click',e=>{const module=e.target.closest('[data-module]');if(module)showModule(module.dataset.module);if(e.target.closest('[data-close]'))closeModal();if(state.menu&&!state.menu.contains(e.target)&&!e.target.closest('[data-action="more"]'))closeMenu();});
-$('closeModal').onclick=closeModal;
-$('modal').addEventListener('click',e=>{if(e.target===$('modal')){const r=$('modal').getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)closeModal();}});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeMenu();if(!$('modal').open){$('taskPanel').classList.remove('table-fullscreen');$('fullscreenBtn').setAttribute('aria-pressed','false');}}});
-$('collapseBtn').onclick=()=>{const collapsed=$('filterPanel').classList.toggle('collapsed');$('collapseBtn').setAttribute('aria-expanded',String(!collapsed));$('collapseBtn').querySelector('span').textContent=collapsed?'展开':'收起';};
-$('filterForm').onsubmit=e=>{e.preventDefault();applyFilters(true);};
-$('filterForm').onreset=()=>{++state.filterTicket;setTimeout(()=>{document.querySelectorAll('[data-date]').forEach(input=>input.type='text');document.querySelectorAll('.field-box select').forEach(s=>s.classList.remove('has-value'));$('globalQuery').value='';applyFilters();},0);};
-document.querySelectorAll('.field-box select').forEach(s=>s.onchange=()=>s.classList.toggle('has-value',!!s.value));
-document.querySelectorAll('[data-date]').forEach(input=>{input.addEventListener('focus',()=>{input.type='date';});input.addEventListener('blur',()=>{if(!input.value)input.type='text';});});
-$('globalSearch').onsubmit=e=>{e.preventDefault();$('taskQuery').value=$('globalQuery').value;applyFilters(true);};
-$('stats').onclick=e=>{const card=e.target.closest('[data-status]');if(!card)return;$('taskStatus').value=card.dataset.status;$('taskStatus').classList.toggle('has-value',!!card.dataset.status);applyFilters();};
-$('cancelledTasks').onclick=()=>{$('taskStatus').value='已取消';$('taskStatus').classList.add('has-value');applyFilters(true);};
-$('pageSize').onchange=e=>{state.size=Number(e.target.value);state.page=1;renderTable();};
-$('pageControls').onclick=e=>{const b=e.target.closest('[data-page]');if(b&&!b.disabled){state.page=Number(b.dataset.page);renderTable();$('tableScroll').scrollTop=0;closeMenu();}};
-function jumpPage(input){const pages=Math.max(1,Math.ceil(totalRows()/state.size));const num=Number(input.value);if(!Number.isInteger(num)||num<1||num>pages){toast(`请输入 1 到 ${pages} 之间的页码`,true);input.value=state.page;return;}state.page=num;renderTable();$('tableScroll').scrollTop=0;}
-$('pageControls').addEventListener('change',e=>{if(e.target.id==='pageJump')jumpPage(e.target);});
-$('pageControls').addEventListener('keydown',e=>{if(e.target.id==='pageJump'&&e.key==='Enter'){e.preventDefault();jumpPage(e.target);}});
-$('tableBody').onclick=e=>{const b=e.target.closest('[data-action]');if(!b)return;const key=b.closest('tr').dataset.key;if(b.dataset.action==='detail')showDetail(key);else showRowMenu(b,key);};
-$('refreshBtn').onclick=async()=>{await applyFilters();toast('任务列表已刷新');};
-$('fullscreenBtn').onclick=()=>{const active=$('taskPanel').classList.toggle('table-fullscreen');$('fullscreenBtn').setAttribute('aria-pressed',String(active));$('fullscreenBtn').setAttribute('aria-label',active?'还原任务列表':'展开任务列表');closeMenu();};
-$('createBtn').onclick=()=>showCreate();
-$('modal').addEventListener('submit',e=>{
-  if(e.target.id!=='createForm')return;e.preventDefault();const f=Object.fromEntries(new FormData(e.target));
-  if(!f.name.trim()){toast('请输入任务名称',true);return;}
-  const id=(typeof crypto.randomUUID==='function'?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2));
-  const task={key:'new-'+id,code:id,name:f.name.trim(),status:'排队中',taskId:'ID-'+Date.now().toString().slice(-9),type:f.type,assigned:f.station.trim(),group:f.group,vehicle:f.vehicle,priority:Number(f.priority),started:'—',ended:'—',created:timestamp(),failure:'—',suspended:'—'};
-  newTasks.unshift(task);persist();closeModal();$('filterForm').reset();toast('任务已创建，已加入调度队列');
-});
-$('columnsBtn').onclick=()=>{openModal('列设置',`<div class="dialog-body"><p class="module-note" style="margin-bottom:20px">选择任务列表中需要显示的字段</p><div class="column-list">${columns.filter(c=>!['number','actions'].includes(c[0])).map(c=>`<label><input type="checkbox" value="${c[0]}" ${state.hidden.has(c[0])?'':'checked'} data-column>${c[1]}</label>`).join('')}</div></div>${footer('<button class="btn" id="resetColumns">恢复默认</button><button class="btn primary" data-close>完成</button>')}`,'settings');document.querySelectorAll('[data-column]').forEach(c=>c.onchange=()=>{if(c.checked)state.hidden.delete(c.value);else state.hidden.add(c.value);renderTable();});$('resetColumns').onclick=()=>{state.hidden.clear();document.querySelectorAll('[data-column]').forEach(c=>c.checked=true);renderTable();};};
-$('notificationsBtn').onclick=()=>{$('noticeDot').style.display='none';openModal('消息通知',`<div class="dialog-body"><article class="notification-item"><strong>调度任务已启动</strong><p>AGV-8888 已接收运输任务，正在前往目标站点。</p><time>09-20 17:58:09</time></article><article class="notification-item"><strong>任务已取消</strong><p>泊车任务 park-611f1316bab9 已由管理员取消。</p><time>09-20 17:57:53</time></article><article class="notification-item" style="margin-bottom:0"><strong>系统运行正常</strong><p>调度引擎已就绪，所有站点资源加载完成。</p><time>09-20 17:50:00</time></article></div>${footer()}`,'bell');};
-$('settingsBtn').onclick=showSettings;
-$('appearanceBtn').onclick=()=>{const low=$('app').classList.toggle('low-glow');toast(low?'已切换为柔和光效':'已恢复标准光效');};
-$('profileBtn').onclick=()=>openModal('管理员信息',`<div class="dialog-body"><div style="display:flex;align-items:center;gap:18px;margin-bottom:26px"><span class="avatar" style="width:52px;height:52px;font-size:21px">R0</span><div><strong style="font-size:20px;font-weight:500">Admin</strong><p class="subtext">系统管理员</p></div></div><dl class="detail-grid"><dt>账号</dt><dd>admin</dd><dt>权限</dt><dd>全部任务与车组管理权限</dd><dt>所属系统</dt><dd>AGV 智能机器人系统</dd></dl></div>${footer()}`,'shield');
-/* Minimal OOXML + ZIP writer. The exported file is a real .xlsx, not a renamed CSV. */
-const encoder=new TextEncoder();
-const crcTable=Array.from({length:256},(_,n)=>{for(let i=0;i<8;i++)n=n&1?0xedb88320^(n>>>1):n>>>1;return n>>>0;});
-function crc32(data){let crc=0xffffffff;for(const byte of data)crc=crcTable[(crc^byte)&255]^(crc>>>8);return (crc^0xffffffff)>>>0;}
-function zip(files){
-  const local=[],central=[];let offset=0;
-  for(const [path,text]of files){
-    const name=encoder.encode(path),data=encoder.encode(text),crc=crc32(data);
-    const header=new Uint8Array(30+name.length),v=new DataView(header.buffer);
-    v.setUint32(0,0x04034b50,true);v.setUint16(4,20,true);v.setUint32(14,crc,true);v.setUint32(18,data.length,true);v.setUint32(22,data.length,true);v.setUint16(26,name.length,true);header.set(name,30);local.push(header,data);
-    const directory=new Uint8Array(46+name.length),d=new DataView(directory.buffer);
-    d.setUint32(0,0x02014b50,true);d.setUint16(4,20,true);d.setUint16(6,20,true);d.setUint32(16,crc,true);d.setUint32(20,data.length,true);d.setUint32(24,data.length,true);d.setUint16(28,name.length,true);d.setUint32(42,offset,true);directory.set(name,46);central.push(directory);offset+=header.length+data.length;
-  }
-  const length=central.reduce((n,a)=>n+a.length,0),end=new Uint8Array(22),v=new DataView(end.buffer);v.setUint32(0,0x06054b50,true);v.setUint16(8,files.length,true);v.setUint16(10,files.length,true);v.setUint32(12,length,true);v.setUint32(16,offset,true);
-  return new Blob([...local,...central,end],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-}
-function excelColumn(n){let result='';while(n>=0){result=String.fromCharCode(n%26+65)+result;n=Math.floor(n/26)-1;}return result;}
-function xlsx(rows){
-  const cols=columns.filter(c=>!['number','actions'].includes(c[0])&&!state.hidden.has(c[0]));
-  const safe=v=>escapeHTML(String(v??'').replace(/[\x00-\x08\x0b\x0c\x0e-\x1f]/g,''));
-  const cell=(v,x,y,style)=>`<c r="${excelColumn(x)}${y}" t="inlineStr"${style?' s="1"':''}><is><t xml:space="preserve">${safe(v)}</t></is></c>`;
-  let body='<row r="1" ht="28" customHeight="1">'+cols.map((c,x)=>cell(c[1],x,1,true)).join('')+'</row>';
-  body+=rows.map((row,y)=>`<row r="${y+2}">`+cols.map((c,x)=>cell(row[c[0]],x,y+2,false)).join('')+'</row>').join('');
-  const declaration='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
-  return zip([
-    ['[Content_Types].xml',declaration+'<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>'],
-    ['_rels/.rels',declaration+'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>'],
-    ['xl/workbook.xml',declaration+'<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="任务列表" sheetId="1" r:id="rId1"/></sheets></workbook>'],
-    ['xl/_rels/workbook.xml.rels',declaration+'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>'],
-    ['xl/styles.xml',declaration+'<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="2"><font><sz val="11"/><name val="Microsoft YaHei"/></font><font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Microsoft YaHei"/></font></fonts><fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF15364D"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="1"><border/></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="2"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFill="1" applyFont="1"/></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>'],
-    ['xl/worksheets/sheet1.xml',declaration+`<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews><cols>${cols.map((c,i)=>`<col min="${i+1}" max="${i+1}" width="${['name','code','assigned'].includes(c[0])?30:['started','ended','created'].includes(c[0])?23:15}" customWidth="1"/>`).join('')}</cols><sheetData>${body}</sheetData><autoFilter ref="A1:${excelColumn(cols.length-1)}${rows.length+1}"/></worksheet>`]
-  ]);
-}
-$('exportBtn').onclick=()=>{
-  const total=totalRows(),pageCount=Math.min(state.size,total-(state.page-1)*state.size);
-  if(!total){toast('没有可导出的任务',true);return;}
-  openModal('导出任务',`<div class="dialog-body"><label class="form-group">导出范围<select id="exportRange"><option value="page">当前页（${pageCount} 条）</option><option value="1000">当前结果前 ${Math.min(total,1000)} 条</option>${total>1000?'<option value="10000">当前结果前 '+Math.min(total,10000)+' 条</option>':''}</select></label><p class="form-hint" style="margin-top:16px">导出当前筛选结果及所选列，生成 Excel 工作簿（.xlsx）。<br>单次最多导出 10,000 条；可先筛选任务，缩小导出范围。</p></div>${footer('<button class="btn" data-close>取消</button><button class="btn primary" id="downloadExcel">'+icon('download')+'确认导出</button>')}`,'download');
-  $('downloadExcel').onclick=async()=>{
-    const selected=$('exportRange').value,start=selected==='page'?(state.page-1)*state.size:0,count=selected==='page'?pageCount:Math.min(Number(selected),total);
-    if(columns.filter(c=>!['number','actions'].includes(c[0])&&!state.hidden.has(c[0])).length===0){toast('请至少选择一个导出列',true);return;}
-    $('downloadExcel').disabled=true;$('downloadExcel').textContent='正在生成…';await new Promise(r=>setTimeout(r,20));
-    try{const rows=Array.from({length:count},(_,i)=>getTask(keyAt(start+i)));const blob=xlsx(rows),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='调度任务_'+new Date().toISOString().slice(0,10)+'.xlsx';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);closeModal();toast(`已导出 ${format(count)} 条任务`);}catch(err){$('downloadExcel').disabled=false;$('downloadExcel').textContent='重新导出';toast('导出未完成，请减少导出数量后重试',true);}
-  };
-};
-window.addEventListener('resize',closeMenu);
-$('tableScroll').addEventListener('scroll',closeMenu);
-renderStats();
-renderTable();
-</script>
-</body>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="theme-color" content="#061724" />
+		<title>任务管理 · 智能机器人系统</title>
+		<style>
+			:root {
+				color-scheme: dark;
+				--bg: #061724;
+				--cyan: #00cfff;
+				--blue: #009dff;
+				--text: #d9edff;
+				--muted: #83a8c2;
+				--line: #28546b;
+				--panel: rgba(12, 34, 49, 0.86);
+				--font:
+					'Bahnschrift', 'Microsoft YaHei UI', 'Microsoft YaHei',
+					'PingFang SC', sans-serif;
+			}
+			* {
+				box-sizing: border-box;
+			}
+			body {
+				margin: 0;
+				background: var(--bg);
+				color: var(--text);
+				font: 14px var(--font);
+				font-weight: 400;
+			}
+			button,
+			input,
+			select {
+				font: inherit;
+			}
+			button {
+				cursor: pointer;
+			}
+			button,
+			a,
+			input,
+			select {
+				outline: none;
+			}
+			button {
+				color: inherit;
+			}
+			button:focus-visible,
+			a:focus-visible {
+				outline: 2px solid #63e7ff;
+				outline-offset: 3px;
+			}
+			button:disabled {
+				cursor: default;
+				opacity: 0.38;
+			}
+			button svg {
+				pointer-events: none;
+			}
+			input,
+			select {
+				color: var(--text);
+				min-width: 0;
+			}
+			input::placeholder {
+				color: #718fa5;
+			}
+			input:focus,
+			select:focus {
+				border-color: var(--cyan) !important;
+				box-shadow: 0 0 10px #00cfff20;
+			}
+			button {
+				transition:
+					background 0.18s,
+					border-color 0.18s,
+					box-shadow 0.18s;
+			}
+			svg {
+				vertical-align: middle;
+			}
+			.icon {
+				width: 20px;
+				height: 20px;
+				fill: none;
+				stroke: currentColor;
+				stroke-width: 1.7;
+				stroke-linecap: round;
+				stroke-linejoin: round;
+				flex: none;
+			}
+			.icon.small {
+				width: 15px;
+				height: 15px;
+			}
+			.defs {
+				position: absolute;
+				width: 0;
+				height: 0;
+				overflow: hidden;
+			}
+			h1,
+			h2,
+			p {
+				margin: 0;
+			}
+			button {
+				border: 0;
+				background: none;
+			}
+			.app {
+				height: 100dvh;
+				min-height: 850px;
+				display: flex;
+				flex-direction: column;
+				position: relative;
+				isolation: isolate;
+				overflow: hidden;
+				background:
+					radial-gradient(
+						ellipse at 65% 2%,
+						#0c31494d,
+						transparent 50%
+					),
+					radial-gradient(
+						ellipse at 43% 72%,
+						#0066950b,
+						transparent 65%
+					);
+			}
+			.app:before {
+				content: '';
+				position: absolute;
+				inset: 60px 0 0;
+				z-index: -2;
+				pointer-events: none;
+				background-image:
+					radial-gradient(#23789885 0.7px, transparent 0.9px),
+					linear-gradient(#0e476a22 1px, transparent 1px),
+					linear-gradient(90deg, #0e476a1a 1px, transparent 1px);
+				background-size:
+					24px 24px,
+					120px 120px,
+					120px 120px;
+				mask-image: linear-gradient(#000a, #0003 40%, #0008);
+			}
+			.app:after {
+				content: '';
+				position: absolute;
+				inset: 62px 0 74px;
+				z-index: -1;
+				pointer-events: none;
+				border-left: 1px solid #04719b55;
+				border-right: 1px solid #04719b55;
+				background: linear-gradient(
+					90deg,
+					transparent 10%,
+					#00a3d810 10.05%,
+					transparent 10.1%,
+					transparent 88%,
+					#00a3d811 88.05%,
+					transparent 88.1%
+				);
+			}
+			.factory {
+				position: absolute;
+				right: 0;
+				top: 0;
+				width: 69%;
+				height: 300px;
+				z-index: -2;
+				opacity: 0.76;
+				pointer-events: none;
+				mask-image:
+					linear-gradient(90deg, transparent, #000 20%),
+					linear-gradient(#000 20%, transparent 90%);
+				mask-composite: intersect;
+			}
+			.topbar {
+				height: 62px;
+				flex: none;
+				display: flex;
+				align-items: center;
+				padding: 0 30px 0 35px;
+				gap: 22px;
+				border-bottom: 1px solid #2a5f795e;
+				background: linear-gradient(
+					90deg,
+					#20394c88,
+					#0a2332a8 34%,
+					#0c233175
+				);
+				position: relative;
+				box-shadow: 0 4px 22px #0003;
+			}
+			.topbar:after {
+				content: '';
+				position: absolute;
+				bottom: -2px;
+				left: 0;
+				right: 0;
+				height: 3px;
+				background: linear-gradient(
+					90deg,
+					transparent 2%,
+					#08caff 2%,
+					#08caff 4.5%,
+					transparent 4.5%,
+					transparent 15%,
+					#00cfff99 15.1%,
+					transparent 40%,
+					#00cfff22 75%,
+					transparent 90%
+				);
+				pointer-events: none;
+			}
+			.brand {
+				display: flex;
+				align-items: center;
+				gap: 17px;
+				white-space: nowrap;
+				flex: none;
+			}
+			.brand-logo {
+				width: 42px;
+				height: 43px;
+				filter: drop-shadow(0 0 5px #007dff44);
+			}
+			.brand-name {
+				font-weight: 650;
+				font-size: 22px;
+				letter-spacing: 2px;
+				text-shadow: 0 0 8px #58b4ff33;
+			}
+			.brand-en {
+				font-size: 8px;
+				letter-spacing: 2.3px;
+				color: #88c7e8;
+				margin-top: 2px;
+			}
+			.top-nav {
+				display: flex;
+				align-self: stretch;
+				align-items: stretch;
+				position: relative;
+				margin-left: 7px;
+				padding: 0 16px;
+			}
+			.top-nav:before {
+				content: '';
+				position: absolute;
+				inset: 0 -26px 4px -13px;
+				border: 1px solid #2389b84d;
+				transform: skewX(-39deg);
+				border-top: 0;
+				border-radius: 0 0 5px 18px;
+				background: linear-gradient(0deg, #0081c414, transparent);
+				pointer-events: none;
+			}
+			.top-link {
+				position: relative;
+				padding: 0 19px;
+				display: flex;
+				align-items: center;
+				gap: 9px;
+				white-space: nowrap;
+			}
+			.top-link + .top-link:before {
+				content: '';
+				position: absolute;
+				left: 0;
+				height: 20px;
+				width: 1px;
+				background: #2960783b;
+			}
+			.top-link.active {
+				color: #e9fbff;
+				text-shadow: 0 0 7px #39d9ff;
+				font-weight: 600;
+				background: radial-gradient(
+					ellipse at bottom,
+					#007dce44,
+					transparent 80%
+				);
+			}
+			.top-link.active:after {
+				content: '';
+				position: absolute;
+				bottom: 7px;
+				left: 16px;
+				right: 16px;
+				height: 3px;
+				background: #05d7ff;
+				box-shadow:
+					0 0 8px #00c8ff,
+					0 0 17px #0087ff;
+			}
+			.top-link.active .icon {
+				color: #00d8ff;
+				filter: drop-shadow(0 0 4px #00aaff);
+			}
+			.top-spacer {
+				flex: 1;
+			}
+			.global-search {
+				width: 312px;
+				height: 33px;
+				border: 1px solid #35607a;
+				border-radius: 20px;
+				display: flex;
+				align-items: center;
+				padding: 0 12px;
+				gap: 8px;
+				box-shadow: inset 0 0 9px #001725;
+				background: #0517277a;
+			}
+			.global-search input {
+				border: 0;
+				background: none;
+				width: 100%;
+				font-size: 12px;
+				padding: 0;
+				box-shadow: none;
+			}
+			.global-search .icon {
+				width: 16px;
+				height: 16px;
+			}
+			.header-actions {
+				display: flex;
+				align-items: center;
+				gap: 19px;
+			}
+			.icon-btn {
+				position: relative;
+				display: grid;
+				place-items: center;
+				padding: 0;
+				width: 25px;
+				height: 29px;
+				color: #b9def4;
+			}
+			.icon-btn:hover {
+				color: var(--cyan);
+			}
+			.notice-dot {
+				position: absolute;
+				width: 7px;
+				height: 7px;
+				background: #ff405c;
+				border: 1px solid #ff94a6;
+				box-shadow: 0 0 5px #ff324470;
+				border-radius: 50%;
+				top: 2px;
+				right: 0;
+			}
+			.clock {
+				font-size: 14px;
+				white-space: nowrap;
+				letter-spacing: 0.4px;
+				margin-left: 2px;
+			}
+			.user-area {
+				border-left: 1px solid #36607a55;
+				display: flex;
+				align-items: center;
+				gap: 12px;
+				padding-left: 20px;
+				min-width: 144px;
+				text-align: left;
+			}
+			.avatar {
+				width: 33px;
+				height: 33px;
+				border: 1px solid #2098ef;
+				border-radius: 50%;
+				display: grid;
+				place-items: center;
+				background: radial-gradient(
+					circle at 30% 20%,
+					#26d9ff,
+					#045dff 62%,
+					#0344b0
+				);
+				box-shadow: 0 0 12px #00a9ff4f;
+				color: white;
+				font-size: 14px;
+			}
+			.user-info strong {
+				display: block;
+				font-size: 14px;
+				font-weight: 450;
+			}
+			.user-info span {
+				display: block;
+				font-size: 11px;
+				color: #7997ae;
+				margin-top: 2px;
+			}
+			.user-area > .icon {
+				margin-left: 8px;
+			}
+			.main {
+				flex: 1;
+				display: flex;
+				flex-direction: column;
+				padding: 0 24px;
+				min-height: 0;
+			}
+			.page-heading {
+				height: 71px;
+				flex: none;
+				display: flex;
+				align-items: center;
+				gap: 22px;
+				padding-left: 9px;
+				position: relative;
+			}
+			.page-heading h1 {
+				font-size: 29px;
+				letter-spacing: 1.2px;
+				font-weight: 650;
+				text-shadow: 0 0 15px #38b7ff30;
+			}
+			.page-heading p {
+				color: #a5c8dd;
+				font-size: 13px;
+				letter-spacing: 0.35px;
+				padding-top: 9px;
+			}
+			.slogan {
+				margin-left: auto;
+				padding-right: 258px;
+				color: #6fb3d5;
+				letter-spacing: 5px;
+				font-size: 13px;
+				padding-top: 5px;
+				white-space: nowrap;
+			}
+			.stats {
+				display: grid;
+				grid-template-columns: repeat(6, minmax(0, 1fr));
+				gap: 13px;
+				height: 103px;
+				flex: none;
+				margin-bottom: 14px;
+			}
+			.stat {
+				--accent: #00baff;
+				position: relative;
+				text-align: left;
+				border: 1px solid #327193;
+				border-radius: 6px;
+				padding: 16px 16px 12px 20px;
+				display: flex;
+				gap: 23px;
+				align-items: flex-start;
+				background: linear-gradient(
+					112deg,
+					#112d4099,
+					#11293bdf 80%,
+					#153449b8
+				);
+				box-shadow:
+					inset 0 0 0 3px #041621,
+					0 0 6px #00a5fa17;
+				overflow: hidden;
+			}
+			.stat:before {
+				content: '';
+				position: absolute;
+				inset: 4px;
+				border-top: 1px solid #6dbfe12f;
+				border-left: 1px solid #79b4d022;
+				border-radius: 4px;
+				pointer-events: none;
+			}
+			.stat:after {
+				content: '';
+				position: absolute;
+				left: 0;
+				top: 7px;
+				width: 1px;
+				height: 53px;
+				background: var(--accent);
+				box-shadow: 0 0 9px var(--accent);
+			}
+			.stat:hover,
+			.stat.selected {
+				border-color: var(--accent);
+				box-shadow:
+					inset 0 0 0 3px #061a25,
+					0 0 12px #00bbff25;
+			}
+			.stat-icon {
+				position: relative;
+				border: 1px solid
+					color-mix(in srgb, var(--accent) 70%, transparent);
+				background: radial-gradient(
+					circle,
+					color-mix(in srgb, var(--accent) 30%, transparent),
+					#061727 76%
+				);
+				border-radius: 11px;
+				width: 50px;
+				height: 50px;
+				display: grid;
+				place-items: center;
+				flex: none;
+				box-shadow:
+					inset 0 0 7px
+						color-mix(in srgb, var(--accent) 24%, transparent),
+					0 0 17px color-mix(in srgb, var(--accent) 12%, transparent);
+			}
+			.stat-icon:before {
+				content: '';
+				position: absolute;
+				inset: 12px;
+				background: var(--accent);
+				filter: blur(8px);
+				opacity: 0.8;
+			}
+			.stat-icon .icon {
+				width: 29px;
+				height: 29px;
+				position: relative;
+				color: #e5faff;
+				stroke-width: 2.2;
+				filter: drop-shadow(0 0 5px var(--accent));
+			}
+			.stat-icon .solid-icon {
+				width: 32px;
+				height: 32px;
+				stroke-width: 1.7;
+			}
+			.stat-copy {
+				position: relative;
+				z-index: 1;
+				white-space: nowrap;
+			}
+			.stat-label {
+				font-size: 13px;
+				margin: 1px 0 6px;
+			}
+			.stat-value {
+				font-size: 23px;
+				line-height: 25px;
+				font-weight: 500;
+				color: var(--blue);
+				font-variant-numeric: tabular-nums;
+				letter-spacing: 0.1px;
+			}
+			.stat-note {
+				font-size: 12px;
+				margin-top: 6px;
+				white-space: nowrap;
+			}
+			.stat-note .good {
+				color: #00efb1;
+				margin-left: 3px;
+			}
+			.stat-note .muted {
+				color: #85a4bb;
+			}
+			.sparkline {
+				position: absolute;
+				right: 11px;
+				bottom: 19px;
+				width: 62px;
+				height: 41px;
+				color: var(--accent);
+				filter: drop-shadow(
+					0 0 4px color-mix(in srgb, var(--accent) 35%, transparent)
+				);
+			}
+			.stat.completed {
+				--accent: #00e5a3;
+			}
+			.stat.executing {
+				--accent: #008dff;
+			}
+			.stat.queued {
+				--accent: #ff981d;
+			}
+			.stat.cancelled {
+				--accent: #a9d7ff;
+			}
+			.stat.cancelled .stat-value {
+				color: #ebf3ff;
+			}
+			.stat.failed {
+				--accent: #ff314e;
+			}
+			.stat.failed .stat-value {
+				color: #ff405b;
+			}
+			.tech-panel {
+				position: relative;
+				background: linear-gradient(
+					110deg,
+					#0e293cc9,
+					#0c202edf 50%,
+					#102b3dce
+				);
+				border: 1px solid #397a99;
+				border-radius: 5px;
+				box-shadow:
+					inset 0 0 0 3px #041622,
+					inset 0 0 24px #05659713,
+					0 0 8px #00a5ff10;
+			}
+			.tech-panel:before,
+			.tech-panel:after {
+				content: '';
+				position: absolute;
+				inset: -2px;
+				pointer-events: none;
+				z-index: 2;
+				background:
+					linear-gradient(var(--cyan), var(--cyan)) left top/12px 2px
+						no-repeat,
+					linear-gradient(var(--cyan), var(--cyan)) left top/2px 12px
+						no-repeat,
+					linear-gradient(var(--cyan), var(--cyan)) right top/12px 2px
+						no-repeat,
+					linear-gradient(var(--cyan), var(--cyan)) right top/2px 12px
+						no-repeat,
+					linear-gradient(var(--cyan), var(--cyan)) left bottom/12px
+						2px no-repeat,
+					linear-gradient(var(--cyan), var(--cyan)) left bottom/2px
+						12px no-repeat,
+					linear-gradient(var(--cyan), var(--cyan)) right bottom/12px
+						2px no-repeat,
+					linear-gradient(var(--cyan), var(--cyan)) right bottom/2px
+						12px no-repeat;
+				clip-path: polygon(
+					6px 0,
+					calc(100% - 6px) 0,
+					100% 6px,
+					100% calc(100% - 6px),
+					calc(100% - 6px) 100%,
+					6px 100%,
+					0 calc(100% - 6px),
+					0 6px
+				);
+			}
+			.tech-panel:after {
+				inset: 5px;
+				background:
+					linear-gradient(90deg, #00cfff70, transparent) left
+						top/110px 1px no-repeat,
+					linear-gradient(90deg, transparent, #00cfff70) right
+						bottom/110px 1px no-repeat,
+					linear-gradient(#00cfff88, transparent) left top/1px 30px
+						no-repeat;
+			}
+			.filters {
+				height: 152px;
+				margin-bottom: 14px;
+				flex: none;
+				padding: 0 22px 17px 28px;
+				transition: height 0.2s;
+			}
+			.panel-heading {
+				height: 47px;
+				display: flex;
+				align-items: center;
+				gap: 11px;
+			}
+			.panel-heading > .icon {
+				color: var(--cyan);
+			}
+			.panel-heading h2 {
+				font-size: 16px;
+				font-weight: 600;
+				white-space: nowrap;
+			}
+			.heading-rule {
+				height: 1px;
+				flex: 1;
+				background: linear-gradient(90deg, #47758d33, #38657b14);
+				margin: 0 16px 0 7px;
+			}
+			.collapse-button {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+				color: #00d0ff;
+				font-size: 12px;
+				padding: 4px 0 4px 20px;
+			}
+			.filter-grid {
+				display: grid;
+				grid-template-columns: repeat(4, minmax(0, 1fr));
+				gap: 14px 30px;
+			}
+			.filter-field {
+				display: flex;
+				align-items: center;
+				gap: 15px;
+				min-width: 0;
+			}
+			.filter-field > label {
+				white-space: nowrap;
+				font-size: 13px;
+				font-weight: 550;
+				min-width: 56px;
+			}
+			.filter-field .field-box {
+				flex: 1;
+			}
+			.field-box {
+				height: 34px;
+				position: relative;
+				border: 1px solid #44728e;
+				border-radius: 4px;
+				background: linear-gradient(#102537c7, #102b3ce0);
+				box-shadow: inset 0 0 5px #0004;
+				display: flex;
+				align-items: center;
+				min-width: 0;
+			}
+			.field-box input,
+			.field-box select {
+				border: none;
+				background: transparent;
+				width: 100%;
+				height: 100%;
+				padding: 0 12px;
+				font-size: 12px;
+				border-radius: 4px;
+				outline: none;
+			}
+			.field-box:focus-within {
+				border-color: var(--cyan);
+				box-shadow: 0 0 8px #00cfff1c;
+			}
+			.field-box input:focus,
+			.field-box select:focus {
+				box-shadow: none;
+			}
+			.field-box select {
+				appearance: none;
+				padding-right: 25px;
+				color: #829eb2;
+			}
+			.field-box select.has-value {
+				color: var(--text);
+			}
+			select option {
+				background: #102a3c;
+				color: #d5eaff;
+			}
+			.field-box > .icon {
+				position: absolute;
+				right: 11px;
+				width: 15px;
+				height: 15px;
+				pointer-events: none;
+			}
+			.date-range {
+				flex: 1;
+				gap: 8px;
+				padding: 0 10px;
+				min-width: 0;
+			}
+			.date-range > .icon {
+				position: static;
+				width: 16px;
+				height: 16px;
+				flex: none;
+			}
+			.date-range input {
+				width: 44%;
+				padding: 0;
+				min-width: 0;
+				text-align: center;
+				color: #9cb9ce;
+			}
+			.date-range input::placeholder {
+				color: #839fb5;
+			}
+			.date-range input[type='date'] {
+				font-size: 11px;
+			}
+			.date-range input::-webkit-calendar-picker-indicator {
+				width: 11px;
+				opacity: 0.6;
+				cursor: pointer;
+			}
+			.date-separator {
+				font-size: 18px;
+				color: #bee9ff;
+			}
+			.filter-actions {
+				display: flex;
+				gap: 9px;
+				justify-content: flex-end;
+				min-width: 0;
+			}
+			.btn {
+				border: 1px solid #49829e;
+				border-radius: 5px;
+				background: linear-gradient(#143346, #0b1c2a);
+				height: 36px;
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				gap: 7px;
+				padding: 0 13px;
+				white-space: nowrap;
+				font-size: 13px;
+				box-shadow:
+					inset 0 0 0 2px #041b28,
+					0 1px 3px #0005;
+			}
+			.btn:hover {
+				border-color: #3adfff;
+				background: linear-gradient(#18435a, #0c2b40);
+				box-shadow: 0 0 11px #00cfff25;
+			}
+			.btn .icon {
+				width: 17px;
+				height: 17px;
+			}
+			.btn.search {
+				background: linear-gradient(120deg, #034391, #0652a0, #02244a);
+				border-color: #00c8ff;
+				box-shadow:
+					inset 0 0 8px #006bfa,
+					0 0 12px #00adff30;
+			}
+			.btn.search .icon {
+				color: var(--cyan);
+			}
+			.btn.primary {
+				color: #001825;
+				background: linear-gradient(110deg, #25dfff, #00b3ef);
+				border-color: #68eeff;
+				box-shadow:
+					inset 0 0 5px #86f1ff88,
+					0 0 15px #00bfff35;
+				font-weight: 600;
+			}
+			.btn.primary:hover {
+				background: #62e5ff;
+			}
+			.btn.danger {
+				border-color: #ed577270;
+				color: #ff7990;
+			}
+			.filters.collapsed {
+				height: 48px;
+				padding-bottom: 0;
+			}
+			.filters.collapsed .filter-grid {
+				display: none;
+			}
+			.filters.collapsed .collapse-button .icon {
+				transform: rotate(180deg);
+			}
+			.task-panel {
+				flex: 1;
+				min-height: 300px;
+				display: flex;
+				flex-direction: column;
+				padding: 0 8px 0;
+				margin-bottom: 0;
+			}
+			.task-panel > .panel-heading {
+				padding: 0 9px 0 11px;
+				height: 48px;
+				flex: none;
+			}
+			.task-panel h2 {
+				font-size: 18px;
+			}
+			.task-panel .panel-heading > .icon {
+				width: 21px;
+				height: 21px;
+			}
+			.record-total {
+				font-size: 13px;
+				color: #bbd5e6;
+				margin-left: 2px;
+				font-weight: 400;
+			}
+			.table-toolbar {
+				margin-left: auto;
+				display: flex;
+				align-items: center;
+				gap: 11px;
+			}
+			.table-toolbar .btn {
+				height: 29px;
+				font-size: 12px;
+				padding: 0 12px;
+				border-color: #315c73;
+			}
+			.table-toolbar .square-btn {
+				padding: 0;
+				width: 27px;
+			}
+			.table-scroll {
+				overflow: auto;
+				flex: 1;
+				min-height: 0;
+				border: 1px solid #25495e;
+				border-radius: 3px 3px 0 0;
+				scrollbar-width: thin;
+				scrollbar-color: #5186a3 #0b1e2c;
+				position: relative;
+				background: linear-gradient(180deg, #081d2abc, #0b2231a6);
+			}
+			table {
+				width: 100%;
+				border-collapse: collapse;
+				table-layout: fixed;
+				font-size: 11.5px;
+				line-height: 1.2;
+			}
+			thead {
+				position: sticky;
+				top: 0;
+				z-index: 3;
+				background: #19394d;
+			}
+			th {
+				height: 32px;
+				background: linear-gradient(#1a3b50dc, #153044);
+				text-align: left;
+				font-weight: 500;
+				color: #d4eaff;
+				position: relative;
+				border-bottom: 1px solid #2d5165;
+			}
+			th:after {
+				content: '';
+				position: absolute;
+				right: 0;
+				top: 9px;
+				bottom: 9px;
+				width: 1px;
+				background: #43647b47;
+			}
+			td,
+			th {
+				padding: 0 11px;
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+			td {
+				height: 29.8px;
+				border-bottom: 1px solid #2c52634f;
+				border-right: 1px solid #2c52632b;
+				font-variant-numeric: tabular-nums;
+				color: #d4e6f3;
+			}
+			tbody tr:nth-child(even) {
+				background: #28435740;
+			}
+			tbody tr:hover {
+				background: #00699630;
+			}
+			td:first-child,
+			th:first-child {
+				text-align: center;
+				padding: 0 4px;
+			}
+			td:last-child {
+				border-right: 0;
+			}
+			.status-badge {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				background: linear-gradient(#07549b, #053666);
+				border: 1px solid #126dab66;
+				color: #70ceff;
+				text-shadow: 0 0 5px #00b7ff88;
+				border-radius: 4px;
+				padding: 3px 9px;
+				font-weight: 550;
+				min-width: 54px;
+				font-size: 11px;
+				line-height: 15px;
+				box-shadow: inset 0 0 8px #1084c328;
+			}
+			.status-badge.cancel {
+				background: linear-gradient(#893647, #612636);
+				color: #ffb4c1;
+				border-color: #c8556f55;
+				text-shadow: 0 0 6px #ff759399;
+			}
+			.status-badge.done {
+				background: #064836;
+				color: #71e6bd;
+				border-color: #16715b;
+			}
+			.status-badge.queue {
+				background: #63431b;
+				color: #ffc173;
+				border-color: #8f6229;
+			}
+			.status-badge.pause {
+				background: #524472;
+				color: #d4b4ff;
+				border-color: #75609f;
+			}
+			.status-badge.fail {
+				background: #67202e;
+				color: #ff8a98;
+				border-color: #983045;
+			}
+			.priority {
+				display: inline-grid;
+				place-items: center;
+				min-width: 41px;
+				height: 24px;
+				border: 1px solid #37586d66;
+				border-radius: 5px;
+				background: linear-gradient(#213e52, #163143);
+				box-shadow: inset 0 0 5px #334f6344;
+			}
+			.cell-muted {
+				color: #89a8be;
+			}
+			.row-actions {
+				display: flex;
+				align-items: center;
+				gap: 16px;
+				white-space: nowrap;
+			}
+			.text-button {
+				font-size: 11.5px;
+				padding: 3px 0;
+				color: #00bfff;
+				display: inline-flex;
+				align-items: center;
+				gap: 4px;
+				white-space: nowrap;
+			}
+			.text-button:hover {
+				color: #89efff;
+				text-shadow: 0 0 8px #00bfff66;
+			}
+			.text-button .icon {
+				width: 11px;
+				height: 11px;
+			}
+			.pagination {
+				height: 60px;
+				flex: none;
+				display: flex;
+				align-items: center;
+				gap: 12px;
+				padding: 0 10px;
+				color: #b9d4e7;
+			}
+			.page-size {
+				height: 32px;
+				border: 1px solid #2e5870;
+				background: #0b2131;
+				border-radius: 4px;
+				padding: 0 9px;
+				color: #d5eafa;
+			}
+			.pagination-total {
+				font-size: 13px;
+			}
+			.page-controls {
+				display: flex;
+				align-items: center;
+				gap: 6px;
+				margin-left: auto;
+				font-size: 12px;
+			}
+			.page-button {
+				height: 32px;
+				min-width: 27px;
+				display: grid;
+				place-items: center;
+				border: 1px solid #284e66;
+				border-radius: 5px;
+				box-shadow: inset 0 0 0 2px #071a26;
+				background: linear-gradient(#102a3b, #081c2a);
+				padding: 0 8px;
+				font-size: 12px;
+			}
+			.page-button.active {
+				border-color: #15d4ff;
+				background: linear-gradient(#0087ff, #0758ce);
+				box-shadow:
+					inset 0 0 5px #03caff,
+					0 0 11px #0088ff69;
+				color: #fff;
+			}
+			.page-button:hover:not(:disabled) {
+				border-color: var(--cyan);
+			}
+			.page-button.last {
+				min-width: 57px;
+			}
+			.page-ellipsis {
+				padding: 0 3px;
+			}
+			.page-jump {
+				width: 48px;
+				height: 32px;
+				border: 1px solid #345d75;
+				border-radius: 5px;
+				background: #0a1f2d;
+				text-align: center;
+				font-size: 12px;
+			}
+			.page-jump::-webkit-inner-spin-button {
+				appearance: none;
+			}
+			.empty-state {
+				padding: 60px 12px;
+				text-align: center;
+				color: #89adbf;
+				font-size: 14px;
+			}
+			.empty-state .icon {
+				width: 38px;
+				height: 38px;
+				display: block;
+				margin: 0 auto 15px;
+				color: #47788f;
+			}
+			.table-fullscreen {
+				position: fixed;
+				inset: 20px;
+				z-index: 30;
+				background: #091e2d;
+			}
+			.hidden-column {
+				display: none !important;
+			}
+			.bottom-bar {
+				height: 87px;
+				flex: none;
+				position: relative;
+				margin-top: 0;
+				display: flex;
+				align-items: flex-end;
+				justify-content: center;
+				padding-bottom: 10px;
+				background: linear-gradient(180deg, transparent, #071923 36%);
+			}
+			.dock-decoration {
+				position: absolute;
+				inset: 0;
+				width: 100%;
+				height: 100%;
+				pointer-events: none;
+			}
+			.dock-brand {
+				position: absolute;
+				bottom: 16px;
+				left: 38px;
+				color: #7faeca;
+				font-size: 12px;
+				letter-spacing: 1.8px;
+			}
+			.dock-brand small {
+				display: block;
+				font-size: 8px;
+				letter-spacing: 2.6px;
+				margin-top: 5px;
+			}
+			.dock-tagline {
+				position: absolute;
+				right: 28px;
+				bottom: 28px;
+				color: #648ea8;
+				font-size: 10px;
+				letter-spacing: 1px;
+				white-space: nowrap;
+			}
+			.dock-tagline small {
+				font-size: 7px;
+				letter-spacing: 0.5px;
+				margin-left: 10px;
+			}
+			.dock {
+				position: relative;
+				display: flex;
+				height: 72px;
+				align-items: stretch;
+				gap: 1px;
+				padding: 0 16px;
+			}
+			.dock-item {
+				width: 81px;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				gap: 7px;
+				position: relative;
+				border: 1px solid transparent;
+				border-radius: 8px 8px 5px 5px;
+				font-size: 12px;
+				white-space: nowrap;
+				background: linear-gradient(180deg, #07365422, transparent);
+			}
+			.dock-item:after {
+				content: '';
+				position: absolute;
+				right: 0;
+				top: 15px;
+				bottom: 15px;
+				width: 1px;
+				background: linear-gradient(
+					transparent,
+					#27657d44,
+					transparent
+				);
+			}
+			.dock-item .icon {
+				color: #54d7ff;
+				width: 23px;
+				height: 23px;
+				filter: drop-shadow(0 0 5px #009dff25);
+			}
+			.dock-item:hover {
+				background: linear-gradient(#00578455, #09213344);
+				color: white;
+			}
+			.dock-item.active {
+				background:
+					radial-gradient(ellipse at top, #06beff4d, transparent 68%),
+					linear-gradient(#04507a60, #0c2b49);
+				border: 1px solid #099bc7;
+				box-shadow:
+					inset 0 0 0 3px #0095e313,
+					inset 0 0 16px #008de14d,
+					0 0 13px #0076dd22;
+				text-shadow: 0 0 7px #72bfff;
+				font-weight: 650;
+			}
+			.dock-item.active:before {
+				content: '';
+				position: absolute;
+				top: 0;
+				left: 21px;
+				right: 21px;
+				height: 2px;
+				background: #2df7ff;
+				box-shadow:
+					0 0 12px #00cfff,
+					0 0 20px #00cfff;
+			}
+			.dock-item.active .icon {
+				color: #10d6ff;
+				filter: drop-shadow(0 0 5px #00cfff);
+			}
+			.dock-item.trash {
+				width: 59px;
+				margin-left: 7px;
+			}
+			.dock-item.trash .icon {
+				color: #c0e7fc;
+			}
+			/* The dialog and menus use the same design tokens as the dashboard. */
+			.toast-region {
+				position: fixed;
+				top: 78px;
+				left: 50%;
+				transform: translateX(-50%);
+				z-index: 100;
+				pointer-events: none;
+				display: flex;
+				flex-direction: column;
+				gap: 9px;
+			}
+			.toast {
+				padding: 12px 22px;
+				background: #12364ff2;
+				border: 1px solid #27a6d0;
+				border-radius: 6px;
+				box-shadow:
+					0 8px 30px #0008,
+					0 0 16px #00aaff18;
+				display: flex;
+				align-items: center;
+				gap: 10px;
+				animation: toast-in 0.2s ease-out;
+				font-size: 13px;
+			}
+			.toast .icon {
+				color: #00dfad;
+			}
+			.toast.error {
+				border-color: #e96b78;
+			}
+			.toast.error .icon {
+				color: #ff8291;
+			}
+			@keyframes toast-in {
+				from {
+					opacity: 0;
+					transform: translateY(-10px);
+				}
+				to {
+					opacity: 1;
+					transform: none;
+				}
+			}
+			dialog {
+				padding: 0;
+				border: 1px solid #3283a6;
+				border-radius: 9px;
+				background: linear-gradient(135deg, #132f44, #081d2d);
+				color: var(--text);
+				width: 560px;
+				max-width: calc(100vw - 30px);
+				max-height: 88dvh;
+				box-shadow:
+					0 20px 100px #000c,
+					0 0 30px #009fff25;
+			}
+			dialog::backdrop {
+				background: #000d1dcc;
+				backdrop-filter: blur(5px);
+			}
+			.dialog-heading {
+				height: 61px;
+				display: flex;
+				align-items: center;
+				gap: 12px;
+				padding: 0 24px;
+				border-bottom: 1px solid #33597066;
+				background: linear-gradient(90deg, #12476b60, transparent);
+			}
+			.dialog-heading > .icon {
+				color: var(--cyan);
+			}
+			.dialog-heading h2 {
+				font-size: 18px;
+				font-weight: 550;
+			}
+			.dialog-heading .icon-btn {
+				margin-left: auto;
+			}
+			.dialog-body {
+				padding: 25px;
+			}
+			.dialog-footer {
+				display: flex;
+				justify-content: flex-end;
+				gap: 11px;
+				padding: 16px 25px;
+				border-top: 1px solid #33597066;
+				background: #061c2b77;
+			}
+			.form-layout {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 20px;
+			}
+			.form-group {
+				display: flex;
+				flex-direction: column;
+				gap: 9px;
+				font-size: 13px;
+				color: #bad8eb;
+			}
+			.form-group.full {
+				grid-column: 1/-1;
+			}
+			.form-group input,
+			.form-group select {
+				border: 1px solid #386781;
+				background: #0a2131;
+				height: 39px;
+				border-radius: 4px;
+				padding: 0 11px;
+				width: 100%;
+				font-size: 13px;
+			}
+			.required {
+				color: #03caff;
+			}
+			.form-hint {
+				font-size: 12px;
+				color: #85a5bc;
+				line-height: 1.8;
+				grid-column: 1/-1;
+			}
+			.detail-grid {
+				display: grid;
+				grid-template-columns: 100px 1fr;
+				gap: 17px;
+				font-size: 13px;
+			}
+			.detail-grid dt {
+				color: #7fa6bf;
+			}
+			.detail-grid dd {
+				margin: 0;
+				overflow-wrap: anywhere;
+			}
+			.detail-timeline {
+				margin-top: 24px;
+				border-top: 1px solid #2d566c66;
+				padding-top: 20px;
+				display: flex;
+				justify-content: space-between;
+				font-size: 12px;
+				color: #83a9c0;
+			}
+			.timeline-step {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				gap: 8px;
+			}
+			.timeline-step i {
+				width: 9px;
+				height: 9px;
+				background: #00c9ff;
+				border: 2px solid #80e9ff;
+				border-radius: 50%;
+				box-shadow: 0 0 10px #00c9ff70;
+			}
+			.timeline-step.inactive i {
+				background: #2a4659;
+				border-color: #567186;
+				box-shadow: none;
+			}
+			.floating-menu {
+				position: fixed;
+				z-index: 50;
+				background: linear-gradient(#15384f, #0b2335);
+				border: 1px solid #337b9d;
+				border-radius: 6px;
+				padding: 6px;
+				box-shadow: 0 10px 35px #0009;
+				min-width: 146px;
+			}
+			.floating-menu button {
+				display: flex;
+				align-items: center;
+				gap: 9px;
+				text-align: left;
+				padding: 9px 12px;
+				width: 100%;
+				font-size: 12px;
+				border-radius: 4px;
+			}
+			.floating-menu button:hover {
+				background: #07609266;
+				color: var(--cyan);
+			}
+			.floating-menu button .icon {
+				width: 16px;
+				height: 16px;
+			}
+			.column-list {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 15px;
+			}
+			.column-list label {
+				display: flex;
+				align-items: center;
+				gap: 9px;
+				font-size: 13px;
+			}
+			.column-list input {
+				accent-color: #00b7f1;
+				width: 15px;
+				height: 15px;
+			}
+			.notification-item {
+				border-left: 2px solid #00baff;
+				padding: 0 0 0 16px;
+				margin-bottom: 24px;
+			}
+			.notification-item strong {
+				font-size: 14px;
+				font-weight: 500;
+			}
+			.notification-item p {
+				font-size: 12px;
+				line-height: 1.8;
+				margin-top: 7px;
+				color: #8bacbf;
+			}
+			.notification-item time {
+				display: block;
+				font-size: 11px;
+				color: #668aa3;
+				margin-top: 7px;
+			}
+			.module-grid {
+				display: grid;
+				grid-template-columns: repeat(3, 1fr);
+				gap: 12px;
+			}
+			.module-metric {
+				padding: 15px;
+				background: #0a2135;
+				border: 1px solid #2a526a;
+				border-radius: 4px;
+			}
+			.module-metric b {
+				display: block;
+				color: #00c8ff;
+				font-size: 27px;
+				font-weight: 500;
+				margin: 10px 0;
+			}
+			.module-metric small {
+				color: #80a4bb;
+			}
+			.module-note {
+				line-height: 1.8;
+				color: #95b8cd;
+				font-size: 13px;
+			}
+			.monitor-map {
+				background:
+					linear-gradient(90deg, #0a526626 1px, transparent 1px),
+					linear-gradient(#0a526626 1px, transparent 1px), #071c2a;
+				background-size: 30px 30px;
+				border: 1px solid #2b5b75;
+				padding: 15px;
+				margin-top: 16px;
+				border-radius: 5px;
+			}
+			.monitor-map svg {
+				width: 100%;
+				height: 180px;
+			}
+			.compact td {
+				height: 25px;
+			}
+			.low-glow .stat-icon,
+			.low-glow .dock-item,
+			.low-glow .top-link {
+				filter: none;
+				box-shadow: none;
+			}
+			.low-glow .factory {
+				opacity: 0.35;
+			}
+			.switch-row {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				margin-bottom: 24px;
+				font-size: 14px;
+			}
+			.switch-row input {
+				accent-color: #00cfff;
+				width: 17px;
+				height: 17px;
+			}
+			.subtext {
+				color: #829fb4;
+				font-size: 12px;
+				margin-top: 7px;
+			}
+			@media (min-width: 1850px) {
+				.stat {
+					gap: 26px;
+					padding-left: 24px;
+				}
+				.sparkline {
+					width: 82px;
+				}
+				.top-spacer {
+					min-width: 50px;
+				}
+				table {
+					font-size: 12px;
+				}
+				td {
+					height: calc((100dvh - 642px) / 10 + 29px);
+				}
+			}
+			@media (max-width: 1500px) and (min-width: 1051px) {
+				.topbar {
+					padding-left: 24px;
+					padding-right: 24px;
+					gap: 15px;
+				}
+				.brand-name {
+					font-size: 19px;
+				}
+				.brand {
+					gap: 12px;
+				}
+				.top-link {
+					padding: 0 13px;
+				}
+				.global-search {
+					width: 260px;
+				}
+				.header-actions {
+					gap: 12px;
+				}
+				.user-area {
+					padding-left: 12px;
+					gap: 9px;
+					min-width: 118px;
+				}
+				.clock {
+					font-size: 12px;
+				}
+				.stat {
+					gap: 15px;
+					padding-left: 15px;
+				}
+				.stat-icon {
+					width: 45px;
+					height: 48px;
+				}
+				.stat-value {
+					font-size: 21px;
+				}
+				.sparkline {
+					width: 46px;
+					right: 8px;
+				}
+				.stat-note {
+					font-size: 11px;
+				}
+				.filter-grid {
+					gap: 14px 20px;
+				}
+				.filter-field {
+					gap: 10px;
+				}
+				.filters {
+					padding-left: 24px;
+					padding-right: 19px;
+				}
+				.filter-actions {
+					gap: 6px;
+				}
+				.filter-actions .btn {
+					padding: 0 9px;
+					font-size: 12px;
+				}
+				.dock {
+					gap: 0;
+				}
+				.dock-item {
+					width: 73px;
+				}
+				.dock-brand {
+					left: 25px;
+					font-size: 10px;
+				}
+				.dock-tagline {
+					right: 20px;
+					font-size: 8px;
+				}
+				.dock-tagline small {
+					display: none;
+				}
+				.slogan {
+					padding-right: 210px;
+				}
+				.table-scroll table {
+					min-width: 1320px;
+				}
+			}
+			@media (max-width: 1250px) and (min-width: 1051px) {
+				.global-search {
+					width: 220px;
+				}
+				.topbar {
+					gap: 9px;
+				}
+				.brand-name {
+					font-size: 17px;
+				}
+				.brand-en {
+					font-size: 6px;
+				}
+				.brand-logo {
+					width: 35px;
+				}
+				.top-link {
+					padding: 0 10px;
+					font-size: 12px;
+				}
+				.header-actions {
+					gap: 7px;
+				}
+				.clock {
+					font-size: 11px;
+				}
+				.user-info {
+					display: none;
+				}
+				.user-area {
+					min-width: 60px;
+					padding-left: 10px;
+				}
+				.user-area > .icon {
+					display: none;
+				}
+				.stats {
+					gap: 9px;
+				}
+				.stat {
+					gap: 11px;
+					padding-left: 11px;
+				}
+				.stat-icon {
+					width: 38px;
+					height: 45px;
+				}
+				.stat-value {
+					font-size: 19px;
+				}
+				.stat-label {
+					font-size: 12px;
+				}
+				.sparkline {
+					width: 32px;
+					opacity: 0.6;
+				}
+				.filters {
+					height: 195px;
+				}
+				.filter-grid {
+					grid-template-columns: repeat(3, minmax(0, 1fr));
+					gap: 12px 20px;
+				}
+				.filter-actions {
+					grid-column: 2/4;
+				}
+				.filter-field:nth-child(4) {
+					grid-row: 2;
+					grid-column: 1;
+				}
+				.filter-field:nth-child(7) {
+					grid-row: 3;
+					grid-column: 1;
+				}
+				.dock-item {
+					width: 68px;
+					font-size: 11px;
+				}
+				.dock-tagline {
+					display: none;
+				}
+				.dock-brand {
+					max-width: 145px;
+					font-size: 8px;
+				}
+				.dock-brand small {
+					font-size: 6px;
+				}
+			}
+			@media (max-width: 1050px) {
+				.app {
+					height: auto;
+					min-height: 100dvh;
+					overflow: hidden;
+				}
+				.topbar {
+					height: 62px;
+					padding: 0 18px;
+					gap: 12px;
+				}
+				.brand-logo {
+					width: 34px;
+				}
+				.brand-name {
+					font-size: 19px;
+				}
+				.brand-en {
+					font-size: 6px;
+				}
+				.top-nav,
+				.global-search,
+				.clock,
+				.header-actions > button:nth-child(2),
+				.header-actions > button:nth-child(3) {
+					display: none;
+				}
+				.top-spacer {
+					display: block;
+				}
+				.header-actions {
+					gap: 10px;
+				}
+				.user-area {
+					min-width: 0;
+					padding-left: 12px;
+				}
+				.user-info {
+					display: none;
+				}
+				.user-area > .icon {
+					margin-left: 0;
+				}
+				.main {
+					padding: 0 17px;
+				}
+				.page-heading {
+					height: 80px;
+					padding-left: 0;
+					gap: 15px;
+				}
+				.page-heading h1 {
+					font-size: 25px;
+				}
+				.page-heading p {
+					font-size: 12px;
+					max-width: 330px;
+				}
+				.slogan {
+					display: none;
+				}
+				.stats {
+					grid-template-columns: repeat(3, minmax(0, 1fr));
+					height: auto;
+					gap: 12px;
+					margin-bottom: 16px;
+				}
+				.stat {
+					height: 103px;
+					gap: 20px;
+				}
+				.filters {
+					height: auto;
+					padding: 0 18px 20px;
+				}
+				.filter-grid {
+					grid-template-columns: repeat(2, minmax(0, 1fr));
+					gap: 14px 20px;
+				}
+				.filter-actions {
+					grid-column: 1/-1;
+					justify-content: flex-end;
+				}
+				.filter-field > label {
+					font-size: 12px;
+				}
+				.task-panel {
+					min-height: 447px;
+					flex: auto;
+				}
+				.table-scroll {
+					height: 334px;
+					flex: auto;
+				}
+				.table-scroll table {
+					min-width: 1550px;
+				}
+				.pagination {
+					gap: 10px;
+					padding: 0 5px;
+				}
+				.record-total {
+					font-size: 11px;
+				}
+				.table-toolbar {
+					gap: 7px;
+				}
+				.bottom-bar {
+					height: 90px;
+					margin-top: 10px;
+					justify-content: flex-start;
+					overflow-x: auto;
+					overflow-y: hidden;
+					scrollbar-width: none;
+				}
+				.dock {
+					padding: 0 17px;
+					margin: auto;
+				}
+				.dock-item {
+					width: 72px;
+					flex: none;
+				}
+				.dock-brand,
+				.dock-tagline {
+					display: none;
+				}
+				.dock-decoration {
+					min-width: 1100px;
+				}
+				.factory {
+					width: 100%;
+					height: 300px;
+				}
+				.task-panel.table-fullscreen .table-scroll {
+					height: auto;
+					flex: 1;
+				}
+				.table-fullscreen {
+					inset: 14px;
+				}
+			}
+			@media (max-width: 580px) {
+				.brand-name {
+					font-size: 17px;
+					letter-spacing: 1px;
+				}
+				.brand {
+					gap: 10px;
+				}
+				.topbar {
+					padding: 0 13px;
+				}
+				.user-area {
+					gap: 5px;
+					padding-left: 10px;
+				}
+				.header-actions {
+					gap: 5px;
+				}
+				.page-heading {
+					height: 82px;
+					flex-wrap: wrap;
+					align-content: center;
+					gap: 5px;
+				}
+				.page-heading h1 {
+					font-size: 25px;
+					width: 100%;
+				}
+				.page-heading p {
+					font-size: 11px;
+					padding-top: 0;
+				}
+				.main {
+					padding: 0 12px;
+				}
+				.stats {
+					grid-template-columns: repeat(2, minmax(0, 1fr));
+					gap: 10px;
+				}
+				.stat {
+					padding: 13px 9px;
+					height: 96px;
+					gap: 12px;
+				}
+				.stat-icon {
+					width: 39px;
+					height: 44px;
+					border-radius: 9px;
+				}
+				.stat-icon .icon {
+					width: 26px;
+					height: 26px;
+				}
+				.stat-label {
+					font-size: 11px;
+				}
+				.stat-value {
+					font-size: 20px;
+				}
+				.stat-note {
+					font-size: 10px;
+				}
+				.sparkline {
+					right: 6px;
+					width: 27px;
+					height: 27px;
+					bottom: 24px;
+					opacity: 0.6;
+				}
+				.filters {
+					padding: 0 13px 16px;
+				}
+				.filter-grid {
+					grid-template-columns: 1fr;
+					gap: 13px;
+				}
+				.filter-field {
+					gap: 14px;
+				}
+				.filter-field > label {
+					width: 79px;
+					min-width: 79px;
+				}
+				.field-box {
+					height: 36px;
+				}
+				.filter-actions {
+					justify-content: space-between;
+					gap: 6px;
+					margin-top: 2px;
+					flex-wrap: wrap;
+				}
+				.filter-actions .btn {
+					font-size: 11px;
+					padding: 0 9px;
+					gap: 4px;
+					flex: 1;
+				}
+				.filter-actions .icon {
+					width: 14px;
+					height: 14px;
+				}
+				.panel-heading h2 {
+					font-size: 14px;
+				}
+				.task-panel > .panel-heading {
+					gap: 7px;
+					padding: 0 3px;
+				}
+				.task-panel h2 {
+					font-size: 15px;
+				}
+				.record-total {
+					font-size: 10px;
+				}
+				.table-toolbar .btn {
+					padding: 0 7px;
+				}
+				.table-toolbar .btn span {
+					display: none;
+				}
+				.table-toolbar .square-btn {
+					width: 28px;
+				}
+				.table-toolbar {
+					gap: 5px;
+				}
+				.pagination {
+					flex-wrap: wrap;
+					height: auto;
+					min-height: 97px;
+					padding: 11px 5px;
+					gap: 12px;
+				}
+				.pagination-total {
+					font-size: 12px;
+				}
+				.page-controls {
+					width: 100%;
+					margin: 0;
+					justify-content: flex-end;
+					gap: 5px;
+				}
+				.page-button {
+					min-width: 27px;
+					height: 30px;
+					padding: 0 6px;
+				}
+				.page-jump {
+					height: 30px;
+					width: 37px;
+				}
+				.page-button.last {
+					min-width: 49px;
+				}
+				.task-panel {
+					min-height: 472px;
+				}
+				.table-scroll {
+					height: 332px;
+				}
+				.form-layout {
+					grid-template-columns: 1fr;
+				}
+				.form-group.full {
+					grid-column: 1;
+				}
+				.form-hint {
+					grid-column: 1;
+				}
+				.dialog-body {
+					padding: 20px;
+				}
+				.module-grid {
+					gap: 7px;
+				}
+				.module-metric {
+					padding: 11px;
+					font-size: 11px;
+				}
+				.module-metric b {
+					font-size: 24px;
+				}
+				.column-list {
+					gap: 13px;
+				}
+				.toast-region {
+					width: calc(100% - 30px);
+				}
+				.toast {
+					padding: 12px 15px;
+					font-size: 12px;
+				}
+				.table-fullscreen .pagination {
+					flex: none;
+				}
+				.detail-grid {
+					grid-template-columns: 80px 1fr;
+					gap: 14px;
+					font-size: 12px;
+				}
+			}
+			/* Optical adjustments for the reference's thin industrial typography and spacing. */
+			:root {
+				--font:
+					'Segoe UI', 'Microsoft YaHei', 'PingFang SC', sans-serif;
+			}
+			.brand-name {
+				font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+				font-weight: 550;
+				font-size: 22px;
+				letter-spacing: 1.8px;
+			}
+			.brand-en {
+				font-family: 'Segoe UI', sans-serif;
+				font-weight: 400;
+			}
+			.page-heading h1 {
+				font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+				font-weight: 550;
+			}
+			.stat-value {
+				font-family: 'Segoe UI', sans-serif;
+				font-weight: 500;
+			}
+			.stat-note {
+				font-weight: 400;
+			}
+			.stat {
+				border-color: #337da0;
+				box-shadow:
+					inset 0 0 0 3px #041621,
+					inset 0 6px 12px #5cb6f008,
+					0 0 6px #00a5fa17;
+			}
+			.stat:before {
+				border-top-color: #6dbfe13d;
+			}
+			.factory {
+				opacity: 0.49;
+			}
+			.topbar {
+				background: linear-gradient(
+					90deg,
+					#20394c88,
+					#0a2332bc 34%,
+					#0c233198
+				);
+			}
+			.filter-field > label {
+				font-weight: 400;
+			}
+			.filters .panel-heading {
+				height: 50px;
+			}
+			.filters.collapsed .panel-heading {
+				height: 46px;
+			}
+			.tech-panel {
+				box-shadow:
+					inset 0 0 0 3px #041622,
+					inset 0 10px 24px #2185b30b,
+					0 0 8px #00a5ff10;
+			}
+			.panel-heading h2 {
+				font-weight: 500;
+			}
+			td {
+				font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+				font-weight: 400;
+				font-size: 11.5px;
+			}
+			.table-scroll {
+				scrollbar-width: thin;
+			}
+			.status-badge {
+				font-weight: 500;
+			}
+			.dock {
+				transform: translateX(10px);
+			}
+			.top-link {
+				font-size: 14px;
+			}
+			.btn {
+				font-weight: 400;
+			}
+			.btn.primary {
+				font-weight: 550;
+			}
+			@media (min-width: 1251px) {
+				.stats {
+					grid-template-columns:
+						1.05fr repeat(4, minmax(0, 1fr))
+						1.05fr;
+				}
+				.filter-grid {
+					grid-template-columns: 1.1fr 1.02fr 1fr 1.1fr;
+				}
+				.filter-field:first-child > label {
+					min-width: 92px;
+				}
+				.filter-field:nth-child(2) > label,
+				.filter-field:nth-child(3) > label {
+					min-width: 58px;
+				}
+				.filter-field:nth-child(4) {
+					gap: 14px;
+				}
+				.filter-field:nth-child(4) > label {
+					min-width: 54px;
+				}
+			}
+			@media (max-width: 1050px) {
+				.dock {
+					transform: none;
+				}
+				.brand-name {
+					font-size: 19px;
+				}
+			}
+			@media (max-width: 580px) {
+				.brand-name {
+					font-size: 17px;
+				}
+				.filters .panel-heading {
+					height: 47px;
+				}
+			}
+			td:has(.status-badge) {
+				padding: 0 8px;
+			}
+			.cell-date {
+				padding: 0 8px;
+				font-family: 'Arial', 'Microsoft YaHei', sans-serif;
+				font-size: 11.5px;
+				letter-spacing: -0.15px;
+			}
+			.tech-panel:before {
+				filter: drop-shadow(0 0 2px #00cfff66);
+			}
+			.page-controls > span {
+				white-space: nowrap;
+			}
+			.task-panel > .panel-heading {
+				height: 46px;
+			}
+			.pagination {
+				height: 58px;
+			}
+			@media (max-width: 580px) {
+				.pagination {
+					height: auto;
+				}
+			}
+			@media (min-width: 1850px) {
+				td {
+					height: max(29.8px, calc((100dvh - 643px) / 10));
+				}
+			}
+			@media (prefers-reduced-motion: reduce) {
+				* {
+					animation: none !important;
+					transition: none !important;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<!-- All graphics below are editable vector code. No reference image is embedded. -->
+		<svg class="defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+			<defs>
+				<symbol id="i-search" viewBox="0 0 24 24">
+					<circle cx="10.5" cy="10.5" r="7.5" />
+					<path d="m16 16 5 5" />
+				</symbol>
+				<symbol id="i-down" viewBox="0 0 24 24">
+					<path d="m6 9 6 6 6-6" />
+				</symbol>
+				<symbol id="i-up" viewBox="0 0 24 24">
+					<path d="m6 15 6-6 6 6" />
+				</symbol>
+				<symbol id="i-left" viewBox="0 0 24 24">
+					<path d="m14 6-6 6 6 6" />
+				</symbol>
+				<symbol id="i-close" viewBox="0 0 24 24">
+					<path d="m6 6 12 12M18 6 6 18" />
+				</symbol>
+				<symbol id="i-plus" viewBox="0 0 24 24">
+					<path d="M12 4v16M4 12h16" />
+				</symbol>
+				<symbol id="i-filter" viewBox="0 0 24 24">
+					<path d="M4 4h16l-6 8v7l-4 2V12Z" />
+				</symbol>
+				<symbol id="i-calendar" viewBox="0 0 24 24">
+					<rect x="3" y="5" width="18" height="16" rx="2" />
+					<path d="M7 3v4M17 3v4M3 10h18" />
+				</symbol>
+				<symbol id="i-refresh" viewBox="0 0 24 24">
+					<path d="M20 8V3m0 5h-5M20 8a9 9 0 1 0 1 7" />
+				</symbol>
+				<symbol id="i-download" viewBox="0 0 24 24">
+					<path d="M12 3v12m-4-4 4 4 4-4M4 14v6h16v-6" />
+				</symbol>
+				<symbol id="i-fullscreen" viewBox="0 0 24 24">
+					<path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5" />
+				</symbol>
+				<symbol id="i-task" viewBox="0 0 24 24">
+					<rect x="4" y="2.5" width="16" height="19" rx="2" />
+					<path d="M8 7h1m3 0h4M8 12h1m3 0h4M8 17h1m3 0h4" />
+				</symbol>
+				<symbol id="i-folder" viewBox="0 0 24 24">
+					<path
+						d="M3 7V4a1 1 0 0 1 1-1h5l3 3h8a1 1 0 0 1 1 1v13H3Z"
+					/>
+					<path d="M3 10h18M7 14h4m-4 3h9m-3-4h4" />
+				</symbol>
+				<symbol id="i-document" viewBox="0 0 24 24">
+					<path d="M5 3h10l4 4v14H5Z" />
+					<path d="M14 3v5h5M8 11h8m-8 4h8m-8 3h5" />
+				</symbol>
+				<symbol id="i-check" viewBox="0 0 24 24">
+					<circle
+						cx="12"
+						cy="12"
+						r="9"
+						fill="currentColor"
+						stroke="none"
+					/>
+					<path
+						d="m7.5 12 3 3 6-6"
+						stroke="#00b681"
+						stroke-width="2"
+					/>
+				</symbol>
+				<symbol id="i-play" viewBox="0 0 24 24">
+					<circle
+						cx="12"
+						cy="12"
+						r="11"
+						fill="#056dff"
+						stroke="none"
+					/>
+					<path d="m9 6 9 6-9 6Z" fill="#e5faff" stroke="#e5faff" />
+					<path
+						d="m12 10 3 2-3 2"
+						stroke="#87d9ff"
+						stroke-width=".8"
+					/>
+				</symbol>
+				<symbol id="i-clock" viewBox="0 0 24 24">
+					<circle
+						cx="12"
+						cy="12"
+						r="9"
+						fill="currentColor"
+						stroke="none"
+					/>
+					<path d="M12 6v6l4 2" stroke="#ed851c" stroke-width="2.1" />
+				</symbol>
+				<symbol id="i-cancel" viewBox="0 0 24 24">
+					<circle
+						cx="12"
+						cy="12"
+						r="9"
+						fill="currentColor"
+						stroke="none"
+					/>
+					<path
+						d="m9 9 6 6m0-6-6 6"
+						stroke="#365a75"
+						stroke-width="2.2"
+					/>
+				</symbol>
+				<symbol id="i-warning" viewBox="0 0 24 24">
+					<path
+						d="M10 4a2.3 2.3 0 0 1 4 0l8 15a2 2 0 0 1-2 3H4a2 2 0 0 1-2-3Z"
+						fill="currentColor"
+						stroke="none"
+					/>
+					<path
+						d="M12 8v6m0 3v1"
+						stroke="#ff3851"
+						stroke-width="2.2"
+					/>
+				</symbol>
+				<symbol id="i-bell" viewBox="0 0 24 24">
+					<path d="M5 10a7 7 0 0 1 14 0v7l2 2H3l2-2Zm5 12h4M12 1v2" />
+				</symbol>
+				<symbol id="i-sun" viewBox="0 0 24 24">
+					<circle cx="12" cy="12" r="4" />
+					<path
+						d="M12 1v2m0 18v2M1 12h2m18 0h2M4.2 4.2l1.5 1.5m12.6 12.6 1.5 1.5M4.2 19.8l1.5-1.5M18.3 5.7l1.5-1.5"
+					/>
+				</symbol>
+				<symbol id="i-settings" viewBox="0 0 24 24">
+					<path
+						d="m9 3 1-2h4l1 2 2 1 3-.2 2 3-1.5 2v3L22 14l-2 3-3-.2-2 1-1 3h-4l-1-3-2-1-3 .2-2-3L3.5 12V9L2 7l2-3L7 4Z"
+						transform="translate(0 1) scale(1 .96)"
+					/>
+					<circle cx="12" cy="11.8" r="3.4" />
+				</symbol>
+				<symbol id="i-dashboard" viewBox="0 0 24 24">
+					<circle cx="7" cy="7" r="3.5" />
+					<circle cx="17" cy="7" r="3.5" />
+					<circle cx="7" cy="17" r="3.5" />
+					<circle cx="17" cy="17" r="3.5" />
+				</symbol>
+				<symbol id="i-gauge" viewBox="0 0 24 24">
+					<path d="M5 20a10 10 0 1 1 14 0h-5v-5h-4v5Z" />
+					<path d="m8 6 1 2m-5 4h2m12 0h2m-5-6-1 2m-2 4 4-3" />
+				</symbol>
+				<symbol id="i-grid" viewBox="0 0 24 24">
+					<rect x="3" y="3" width="6" height="6" rx="1.4" />
+					<rect x="15" y="3" width="6" height="6" rx="1.4" />
+					<rect x="3" y="15" width="6" height="6" rx="1.4" />
+					<rect x="15" y="15" width="6" height="6" rx="1.4" />
+				</symbol>
+				<symbol id="i-monitor" viewBox="0 0 24 24">
+					<circle cx="7" cy="6" r="3" />
+					<circle cx="17" cy="6" r="3" />
+					<circle cx="17" cy="17" r="3" />
+					<path d="M3 13v6h7m-3-7v6h5m4-8v2" />
+				</symbol>
+				<symbol id="i-car" viewBox="0 0 24 24">
+					<path
+						d="m3 11 3-5h10l4 5h2v7h-3m-14 0H2v-7Zm1 0h14M9 6V3h5"
+					/>
+					<circle cx="7" cy="18" r="3" />
+					<circle cx="17" cy="18" r="3" />
+					<path d="M10 18h4m6-15 1 1m0 3h2" />
+				</symbol>
+				<symbol id="i-map" viewBox="0 0 24 24">
+					<path
+						d="m2 5 6-3 8 3 6-3v17l-6 3-8-3-6 3Zm6-3v17m8-14v17"
+					/>
+					<path d="m11 8 2 2-2 3 3 3" />
+				</symbol>
+				<symbol id="i-center" viewBox="0 0 24 24">
+					<path
+						d="M3 5 8 2l4 3 4-3 5 3v14l-5 3-4-3-4 3-5-3Zm9 0v14M8 2v9l-2-1m10-8v9l2-1"
+					/>
+				</symbol>
+				<symbol id="i-connection" viewBox="0 0 24 24">
+					<circle cx="8" cy="6" r="3" />
+					<circle cx="17" cy="16" r="5" />
+					<path d="M11 20H3v-5a4 4 0 0 1 6-3m8 1v3l2 1m-2-13h3v3" />
+				</symbol>
+				<symbol id="i-process" viewBox="0 0 24 24">
+					<circle cx="12" cy="12" r="3" />
+					<circle cx="12" cy="3" r="2" />
+					<circle cx="3" cy="12" r="2" />
+					<circle cx="12" cy="21" r="2" />
+					<circle cx="21" cy="12" r="2" />
+					<path
+						d="M8 3H5a2 2 0 0 0-2 2v3m0 8v3a2 2 0 0 0 2 2h3m8 0h3a2 2 0 0 0 2-2v-3m0-8V5a2 2 0 0 0-2-2h-3"
+					/>
+				</symbol>
+				<symbol id="i-shield" viewBox="0 0 24 24">
+					<path d="m12 2 8 3v7c0 5-8 10-8 10S4 17 4 12V5Z" />
+					<path d="M12 6v10m-2-10h4m-4 10h4" />
+				</symbol>
+				<symbol id="i-chart" viewBox="0 0 24 24">
+					<path d="M3 22h19M5 18v-6m5 6V8m5 10V4m5 14V1" />
+				</symbol>
+				<symbol id="i-trash" viewBox="0 0 24 24">
+					<path d="M3 6h18M5 6v16h14V6M8 6V2h8v4M9 10v8m6-8v8" />
+				</symbol>
+				<symbol id="i-pause" viewBox="0 0 24 24">
+					<path d="M7 4v16M17 4v16" stroke-width="4" />
+				</symbol>
+				<symbol id="i-copy" viewBox="0 0 24 24">
+					<rect x="8" y="8" width="13" height="13" rx="2" />
+					<path d="M16 8V3H3v13h5" />
+				</symbol>
+				<symbol id="i-empty" viewBox="0 0 24 24">
+					<path d="m3 9 5-6h8l5 6v12H3Zm0 0h6v4h6V9h6" />
+				</symbol>
+			</defs>
+		</svg>
+		<div class="app" id="app">
+			<svg
+				class="factory"
+				viewBox="0 0 1150 300"
+				preserveAspectRatio="xMaxYMin slice"
+				aria-hidden="true"
+			>
+				<defs>
+					<linearGradient id="warehouse-wall" x2="0" y2="1">
+						<stop stop-color="#1b3a4d" />
+						<stop offset="1" stop-color="#081c2b" />
+					</linearGradient>
+					<linearGradient id="warehouse-floor" x2="0" y2="1">
+						<stop stop-color="#0e2e42" />
+						<stop offset=".25" stop-color="#174664" />
+						<stop offset="1" stop-color="#061925" />
+					</linearGradient>
+					<linearGradient id="steel" x2="1" y2="0">
+						<stop stop-color="#0b1e2a" />
+						<stop offset=".45" stop-color="#39596e" />
+						<stop offset=".6" stop-color="#142f41" />
+						<stop offset="1" stop-color="#081d2b" />
+					</linearGradient>
+					<linearGradient id="agv-top" x2="0" y2="1">
+						<stop stop-color="#658aa3" />
+						<stop offset="1" stop-color="#24475e" />
+					</linearGradient>
+					<radialGradient id="floor-light">
+						<stop stop-color="#00abff" stop-opacity=".55" />
+						<stop
+							offset="1"
+							stop-color="#008aff"
+							stop-opacity="0"
+						/>
+					</radialGradient>
+					<filter id="soft-light">
+						<feGaussianBlur stdDeviation="3" />
+					</filter>
+					<g id="rack">
+						<rect
+							width="125"
+							height="102"
+							fill="#071d2b"
+							stroke="#2c4a5c"
+						/>
+						<path
+							d="M3 0v103m9-103v103M116 0v103m7-103v103M0 28h125M0 70h125M14 0l102 103m0-103L14 103"
+							stroke="#365063"
+							stroke-width="2"
+							opacity=".6"
+						/>
+						<path
+							d="M0 31h125M0 73h125"
+							stroke="#08121c"
+							stroke-width="4"
+						/>
+						<g fill="#142e3e" stroke="#213d50">
+							<path
+								d="M17 6h23v20H17Zm29 2h31v18H46Zm39-4h24v22H85ZM17 37h38v29H17Zm45 3h45v26H62ZM16 78h22v22H16Zm28 0h31v22H44Zm40 1h23v21H84Z"
+							/>
+						</g>
+					</g>
+				</defs>
+				<path
+					d="M0 0H1150V162L585 193 140 126Z"
+					fill="url(#warehouse-wall)"
+				/>
+				<path
+					d="M0 98 622 117 1150 95v205H0Z"
+					fill="url(#warehouse-floor)"
+				/>
+				<g opacity=".44" fill="none" stroke="#375468">
+					<path
+						d="M0 1h1150M0 36h1150M0 61h1150M0 96h1150M292 0l260 119M742 0 655 118M1118 0 725 117M510 0l81 119"
+					/>
+					<path
+						d="M-130 300 599 115 280 300M538 300l74-184m196 184L657 116m440 184L675 116m475 100L694 116M0 173h1150M0 235h1150"
+						opacity=".4"
+					/>
+				</g>
+				<g opacity=".62">
+					<use href="#rack" x="155" y="0" />
+					<use href="#rack" x="284" y="0" />
+					<use href="#rack" x="413" y="0" />
+					<use href="#rack" x="690" y="1" />
+					<use href="#rack" x="819" y="1" />
+					<use href="#rack" x="948" y="1" />
+				</g>
+				<g fill="url(#steel)" stroke="#38556a" stroke-opacity=".5">
+					<path
+						d="M169 0h14v123h-14ZM358 0h13v123h-13ZM529 0h10v130h-10ZM764 0h14v123h-14ZM921 0h13v122h-13ZM1090 0h17v142h-17Z"
+					/>
+					<path d="M921 62h44v48h-44Z" fill="#2a4f68" />
+					<path d="M928 67h31v27h-31" fill="#26455e" />
+				</g>
+				<g opacity=".65">
+					<path
+						d="m40 74 430 44v16L40 88Z"
+						fill="#143a53"
+						stroke="#24465f"
+					/>
+					<path d="m40 81 430 46" stroke="#0089c7" stroke-width="2" />
+					<g fill="#1cc0ff">
+						<path
+							d="m92 86 12 1.5v4L92 90Zm36 4 12 1.5v4L128 94Zm36 4 12 1.5v4L164 98Zm36 4 12 1.5v4L200 102Zm36 4 12 1.5v4L236 106Zm36 4 12 1.5v4L272 110Zm36 4 12 1.5v4L308 114Zm36 4 12 1.5v4L344 118Z"
+						/>
+					</g>
+				</g>
+				<ellipse
+					cx="1001"
+					cy="128"
+					rx="113"
+					ry="24"
+					fill="url(#floor-light)"
+				/>
+				<ellipse
+					cx="533"
+					cy="139"
+					rx="99"
+					ry="19"
+					fill="url(#floor-light)"
+				/>
+				<g transform="translate(948 95)">
+					<ellipse cx="37" cy="31" rx="45" ry="10" fill="#001321" />
+					<path
+						d="m5 9 48-2 13 9-2 13-49 4-13-9Z"
+						fill="#102837"
+						stroke="#315c77"
+					/>
+					<path d="m5 9 47-3 14 10-49 4Z" fill="url(#agv-top)" />
+					<path d="m18 21 44-4v10l-44 3Z" fill="#092131" />
+					<path d="m6 17 8 4v7l-8-4Z" fill="#277c9b" />
+					<path
+						d="m24 22 9-.8m16-1.5 7-.7"
+						stroke="#00d7ff"
+						stroke-width="3"
+					/>
+					<path d="m23 8 25-1 5 4-25 2Z" fill="#092438" />
+					<path d="M35 1v6" stroke="#56b9d8" />
+					<circle cx="35" cy="0" r="2" fill="#00cfff" />
+					<path
+						d="M21 33h34"
+						stroke="#008dcc"
+						stroke-width="2"
+						filter="url(#soft-light)"
+					/>
+				</g>
+				<!-- 背景装饰文字表达机器人本体控制与状态监测用途。 -->
+				<g
+					fill="#649cb6"
+					font-family="Bahnschrift, sans-serif"
+					font-size="6"
+					letter-spacing="1.3"
+				>
+					<text x="1059" y="85">ROBOT CONTROL</text>
+					<text x="1059" y="97">ONBOARD</text>
+					<text x="1059" y="109">LIVE MONITORING</text>
+				</g>
+				<path
+					d="M481 126h40m445 14h95"
+					stroke="#00c9ff"
+					opacity=".65"
+					stroke-width="2"
+				/>
+			</svg>
+			<header class="topbar">
+				<!-- 品牌副标题与 AGV 单机控制系统定位保持一致。 -->
+				<div
+					class="brand"
+					aria-label="智能机器人系统 AGV CONTROL SYSTEM"
+				>
+					<svg
+						class="brand-logo"
+						viewBox="0 0 44 44"
+						aria-hidden="true"
+					>
+						<defs>
+							<linearGradient id="logo" x2="1" y2="1">
+								<stop stop-color="#8fbbff" />
+								<stop offset=".5" stop-color="#3982cb" />
+								<stop offset="1" stop-color="#08d3ff" />
+							</linearGradient>
+						</defs>
+						<path
+							d="M4 38V6h16c16 0 15 18 1 18h-6l15 14h-9L10 26V17h12c5 0 5-6 0-6H9v27Z"
+							fill="url(#logo)"
+							stroke="#83bbed"
+							stroke-width=".7"
+						/>
+						<path
+							d="m36 5-9 15 10 18h-6L22 22l10-17Z"
+							fill="#2871af"
+						/>
+						<path
+							d="M41 4 30 21l10 18M38 4 27 20"
+							fill="none"
+							stroke="#56c7ff"
+							stroke-width="1.2"
+						/>
+					</svg>
+					<div>
+						<div class="brand-name">智能机器人系统</div>
+						<div class="brand-en">AGV CONTROL SYSTEM</div>
+					</div>
+				</div>
+				<nav class="top-nav" aria-label="顶部导航">
+					<button class="top-link" data-module="仪表盘">
+						<svg class="icon"><use href="#i-gauge" /></svg>仪表盘
+					</button>
+					<button class="top-link" data-module="调度监控">
+						<svg class="icon"><use href="#i-monitor" /></svg
+						>调度监控
+					</button>
+					<button
+						class="top-link active"
+						data-module="任务管理"
+						aria-current="page"
+					>
+						<svg class="icon"><use href="#i-folder" /></svg>任务管理
+					</button>
+				</nav>
+				<div class="top-spacer"></div>
+				<form class="global-search" id="globalSearch">
+					<svg class="icon"><use href="#i-search" /></svg
+					><input
+						id="globalQuery"
+						aria-label="全局搜索"
+						placeholder="全局搜索：任务编号 / 车辆 / 地点 / 站点..."
+					/>
+				</form>
+				<div class="header-actions">
+					<button
+						class="icon-btn"
+						id="notificationsBtn"
+						title="消息通知"
+						aria-label="消息通知"
+					>
+						<svg class="icon"><use href="#i-bell" /></svg
+						><span class="notice-dot" id="noticeDot"></span>
+					</button>
+					<button
+						class="icon-btn"
+						id="settingsBtn"
+						title="系统设置"
+						aria-label="系统设置"
+					>
+						<svg class="icon"><use href="#i-settings" /></svg>
+					</button>
+					<button
+						class="icon-btn"
+						id="appearanceBtn"
+						title="切换光效"
+						aria-label="切换光效"
+					>
+						<svg class="icon"><use href="#i-sun" /></svg>
+					</button>
+				</div>
+				<time
+					class="clock"
+					datetime="2026-09-20T17:58:00"
+					title="演示系统时间"
+					>9月20日 周日&nbsp; 17:58</time
+				>
+				<button
+					class="user-area"
+					id="profileBtn"
+					aria-label="管理员信息"
+				>
+					<span class="avatar">R0</span
+					><span class="user-info"
+						><strong>Admin</strong><span>系统管理员</span></span
+					><svg class="icon small"><use href="#i-down" /></svg>
+				</button>
+			</header>
+			<main class="main">
+				<section class="page-heading">
+					<h1>任务管理</h1>
+					<p>统一管理调度任务，提升执行效率与资源利用率</p>
+					<span class="slogan">智能 · 高效 · 安全 · 跨越未来</span>
+				</section>
+				<section
+					class="stats"
+					id="stats"
+					aria-label="任务统计"
+				></section>
+				<section
+					class="tech-panel filters"
+					id="filterPanel"
+					aria-labelledby="filterTitle"
+				>
+					<div class="panel-heading">
+						<svg class="icon"><use href="#i-filter" /></svg>
+						<h2 id="filterTitle">筛选条件</h2>
+						<span class="heading-rule"></span
+						><button
+							class="collapse-button"
+							id="collapseBtn"
+							aria-expanded="true"
+							aria-controls="filterForm"
+						>
+							<span>收起</span
+							><svg class="icon small"><use href="#i-up" /></svg>
+						</button>
+					</div>
+					<form class="filter-grid" id="filterForm">
+						<div class="filter-field">
+							<label for="taskQuery">任务名称/编号</label>
+							<div class="field-box">
+								<input
+									id="taskQuery"
+									name="query"
+									placeholder="请输入任务名称或编号"
+									autocomplete="off"
+								/><svg class="icon">
+									<use href="#i-search" />
+								</svg>
+							</div>
+						</div>
+						<div class="filter-field">
+							<label for="taskType">任务类型</label>
+							<div class="field-box">
+								<select id="taskType" name="type">
+									<option value="">请选择任务类型</option>
+									<option value="运输任务">运输任务</option>
+									<option value="充电任务">充电任务</option>
+									<option value="泊车任务">
+										泊车任务
+									</option></select
+								><svg class="icon"><use href="#i-down" /></svg>
+							</div>
+						</div>
+						<div class="filter-field">
+							<label for="taskStatus">任务状态</label>
+							<div class="field-box">
+								<select id="taskStatus" name="status">
+									<option value="">请选择任务状态</option>
+									<option value="执行中">执行中</option>
+									<option value="已完成">已完成</option>
+									<option value="排队中">排队中</option>
+									<option value="已取消">已取消</option>
+									<option value="已挂起">已挂起</option>
+									<option value="已失败">
+										已失败
+									</option></select
+								><svg class="icon"><use href="#i-down" /></svg>
+							</div>
+						</div>
+						<div class="filter-field">
+							<label for="taskVehicle">任务车辆</label>
+							<div class="field-box">
+								<select id="taskVehicle" name="vehicle">
+									<option value="">请选择任务车辆</option>
+									<option>AGV-8888</option>
+									<option>AGV-6666</option>
+									<option>AGV-3333</option>
+									<option>AGV-7777</option>
+									<option>AGV-12345</option>
+									<option>AGV-54321</option>
+									<option>AGV-98765</option>
+									<option>AGV-24680</option>
+									<option>AGV-13579</option>
+									<option>AGV-0001</option></select
+								><svg class="icon"><use href="#i-down" /></svg>
+							</div>
+						</div>
+						<div class="filter-field">
+							<label>创建时间</label>
+							<div class="field-box date-range">
+								<svg class="icon">
+									<use href="#i-calendar" /></svg
+								><input
+									name="createdStart"
+									aria-label="创建开始日期"
+									placeholder="开始日期"
+									data-date
+								/><span class="date-separator">→</span
+								><input
+									name="createdEnd"
+									aria-label="创建结束日期"
+									placeholder="结束日期"
+									data-date
+								/>
+							</div>
+						</div>
+						<div class="filter-field">
+							<label>执行时间</label>
+							<div class="field-box date-range">
+								<svg class="icon">
+									<use href="#i-calendar" /></svg
+								><input
+									name="startedStart"
+									aria-label="执行开始日期"
+									placeholder="开始日期"
+									data-date
+								/><span class="date-separator">→</span
+								><input
+									name="startedEnd"
+									aria-label="执行结束日期"
+									placeholder="结束日期"
+									data-date
+								/>
+							</div>
+						</div>
+						<div class="filter-field">
+							<label>终止时间</label>
+							<div class="field-box date-range">
+								<svg class="icon">
+									<use href="#i-calendar" /></svg
+								><input
+									name="endedStart"
+									aria-label="终止开始日期"
+									placeholder="开始日期"
+									data-date
+								/><span class="date-separator">→</span
+								><input
+									name="endedEnd"
+									aria-label="终止结束日期"
+									placeholder="结束日期"
+									data-date
+								/>
+							</div>
+						</div>
+						<div class="filter-actions">
+							<button
+								class="btn search"
+								type="submit"
+								id="searchBtn"
+							>
+								<svg class="icon"><use href="#i-search" /></svg
+								><span>查询</span></button
+							><button class="btn" type="reset">
+								<svg class="icon"><use href="#i-refresh" /></svg
+								>重置</button
+							><button
+								class="btn primary"
+								type="button"
+								id="createBtn"
+							>
+								<svg class="icon"><use href="#i-plus" /></svg
+								>创建任务</button
+							><button class="btn" type="button" id="exportBtn">
+								<svg class="icon">
+									<use href="#i-download" /></svg
+								>导出 Excel
+							</button>
+						</div>
+					</form>
+				</section>
+				<section
+					class="tech-panel task-panel"
+					id="taskPanel"
+					aria-labelledby="listTitle"
+				>
+					<div class="panel-heading">
+						<svg class="icon"><use href="#i-folder" /></svg>
+						<h2 id="listTitle">任务列表</h2>
+						<span class="record-total" id="recordTotal"
+							>（共 581,506 条）</span
+						><span class="heading-rule"></span>
+						<div class="table-toolbar">
+							<button class="btn" id="columnsBtn">
+								<svg class="icon">
+									<use href="#i-settings" /></svg
+								><span>列设置</span></button
+							><button
+								class="btn"
+								id="refreshBtn"
+								aria-label="刷新任务列表"
+							>
+								<svg class="icon"><use href="#i-refresh" /></svg
+								><span>刷新</span></button
+							><button
+								class="btn square-btn"
+								id="fullscreenBtn"
+								title="展开任务列表"
+								aria-label="展开任务列表"
+								aria-pressed="false"
+							>
+								<svg class="icon">
+									<use href="#i-fullscreen" />
+								</svg>
+							</button>
+						</div>
+					</div>
+					<div class="table-scroll" id="tableScroll">
+						<table aria-label="调度任务列表">
+							<colgroup id="tableCols"></colgroup>
+							<thead id="tableHead"></thead>
+							<tbody id="tableBody"></tbody>
+						</table>
+					</div>
+					<div class="pagination">
+						<select
+							class="page-size"
+							id="pageSize"
+							aria-label="每页条数"
+						>
+							<option value="10">10 条/页</option>
+							<option value="20">20 条/页</option>
+							<option value="50">50 条/页</option></select
+						><span class="pagination-total" id="paginationTotal"
+							>共 581,506 条</span
+						>
+						<div class="page-controls" id="pageControls"></div>
+					</div>
+				</section>
+			</main>
+			<footer class="bottom-bar">
+				<svg
+					class="dock-decoration"
+					viewBox="0 0 1672 87"
+					preserveAspectRatio="none"
+					aria-hidden="true"
+				>
+					<defs>
+						<linearGradient id="dock-fill" x2="0" y2="1">
+							<stop stop-color="#124a6a" stop-opacity=".45" />
+							<stop
+								offset="1"
+								stop-color="#071c2b"
+								stop-opacity=".2"
+							/>
+						</linearGradient>
+						<linearGradient id="dock-line">
+							<stop stop-color="#1c566f" />
+							<stop offset=".2" stop-color="#21bcff" />
+							<stop offset=".5" stop-color="#00bfff" />
+							<stop offset=".8" stop-color="#21bcff" />
+							<stop offset="1" stop-color="#1c566f" />
+						</linearGradient>
+						<filter id="dock-glow">
+							<feGaussianBlur stdDeviation="3" />
+						</filter>
+					</defs>
+					<path
+						d="M0 15h274l55-10h1007l36 10h300M0 26h278l-64 61M1672 26h-279l65 61"
+						fill="none"
+						stroke="#1f678e"
+					/>
+					<path
+						d="M240 87 327 7l18-2h977l20 4 92 78"
+						fill="url(#dock-fill)"
+						stroke="url(#dock-line)"
+					/>
+					<path
+						d="m262 87 74-74h992l80 74M0 8l15 9h284l-66 64M1672 8l-14 9h-285l68 64"
+						fill="none"
+						stroke="#0c87ba"
+						stroke-opacity=".7"
+					/>
+					<path
+						d="m300 66 28-30m-1-10 12-11h174m169-10h284m360 9 8 1 24 27m-2 0 26 24M0 15h33m1606 0h33"
+						stroke="#00bfff"
+						fill="none"
+					/>
+					<path
+						d="M511 5h645"
+						stroke="#00bcff"
+						stroke-width="3"
+						filter="url(#dock-glow)"
+					/>
+					<path d="M782 5h102" stroke="#87f7ff" stroke-width="1.4" />
+					<path d="M16 20h47m-26 4h90M1545 20h88" stroke="#237597" />
+				</svg>
+				<!-- 底部中英文品牌文案统一说明机器人单机控制用途。 -->
+				<div class="dock-brand">
+					ROBOT CONTROL<small>ONBOARD SYSTEM</small>
+				</div>
+				<nav class="dock" id="dock" aria-label="系统模块导航"></nav>
+				<!-- 说明控制系统部署在单台 AGV 机器人本体上。 -->
+				<div class="dock-tagline">
+					AGV 单机控制系统<small
+						>/ &nbsp;AGV ROBOT CONTROL SYSTEM</small
+					>
+				</div>
+			</footer>
+		</div>
+		<div
+			class="toast-region"
+			id="toasts"
+			role="status"
+			aria-live="polite"
+		></div>
+		<dialog id="modal" aria-labelledby="modalTitle">
+			<div class="dialog-heading">
+				<svg class="icon" id="modalIcon"><use href="#i-task" /></svg>
+				<h2 id="modalTitle"></h2>
+				<button class="icon-btn" id="closeModal" aria-label="关闭弹窗">
+					<svg class="icon"><use href="#i-close" /></svg>
+				</button>
+			</div>
+			<div id="modalContent"></div>
+		</dialog>
+		<script>
+			'use strict'
+			/* A self-contained prototype: generated local records, no network requests. */
+			const $ = (id) => document.getElementById(id)
+			const icon = (name, cls = '') =>
+				`<svg class="icon ${cls}" aria-hidden="true"><use href="#i-${name}"/></svg>`
+			const escapeHTML = (value) =>
+				String(value ?? '').replace(
+					/[&<>"']/g,
+					(c) =>
+						({
+							'&': '&amp;',
+							'<': '&lt;',
+							'>': '&gt;',
+							'"': '&quot;',
+							"'": '&#39;',
+						})[c],
+				)
+			const format = (value) => value.toLocaleString('en-US')
+			const BASE_TOTAL = 581506
+			const STORE_KEY = 'agv-dispatch-prototype-v1'
+			let saved = {}
+			try {
+				saved =
+					JSON.parse(localStorage.getItem(STORE_KEY) || '{}') || {}
+			} catch (_) {
+				/* File mode can restrict local storage. */
+			}
+			let newTasks = Array.isArray(saved.tasks) ? saved.tasks : []
+			let overrides =
+				saved.overrides && typeof saved.overrides === 'object'
+					? saved.overrides
+					: {}
+			const state = {
+				page: 1,
+				size: 10,
+				filtered: null,
+				filters: {},
+				filterTicket: 0,
+				hidden: new Set(),
+				menu: null,
+			}
+			const vehicles = [
+				'AGV-8888',
+				'AGV-6666',
+				'AGV-3333',
+				'AGV-7777',
+				'AGV-12345',
+				'AGV-54321',
+				'AGV-98765',
+				'AGV-24680',
+				'AGV-13579',
+				'AGV-0001',
+			]
+			const sampleIds = [
+				'cde8c3d40e640d79',
+				'3268763fa3a84b6d',
+				'3e6e4c73d3a245ef',
+				'ed0fd819388b4235',
+				'59980efc5f0c4a1a',
+				'ab4c3bb358e34ecc',
+				'fd675f3b21f647cc',
+				'b6c1c8d286fb412a',
+				'ae85e669cb4c4c3f',
+				'park-611f1316bab9',
+			]
+			const sampleNames = [
+				'mock-c7a1701e9f8b',
+				'mock-6f172b2d09aa',
+				'mock-b302665125e2',
+				'mock-cdaadb458d39',
+				'mock-8a22b9cee1ef',
+				'mock-a53f28770bb1',
+				'mock-7d8120f1c94d',
+				'mock-0827e82fa39e',
+				'mock-27f9786bb876',
+				'park-611f1316bab9',
+			]
+			const statuses = {
+				执行中: '',
+				已完成: 'done',
+				排队中: 'queue',
+				已取消: 'cancel',
+				已挂起: 'pause',
+				已失败: 'fail',
+			}
+			const columns = [
+				['number', '#', 40],
+				['code', '任务编号', 118],
+				['name', '任务名称', 124],
+				['status', '任务状态', 75],
+				['taskId', '任务ID', 99],
+				['type', '任务类型', 72],
+				['assigned', '指定车辆', 120],
+				['group', '指定车组', 80],
+				['vehicle', '执行车辆', 94],
+				['priority', '优先级', 75],
+				['started', '开始执行时间', 148],
+				['ended', '结束执行时间', 120],
+				['created', '创建时间', 141],
+				['failure', '失败原因', 96],
+				['suspended', '挂起原因', 88],
+				['actions', '操作', 115],
+			]
+			function persist() {
+				try {
+					localStorage.setItem(
+						STORE_KEY,
+						JSON.stringify({ tasks: newTasks, overrides }),
+					)
+				} catch (_) {
+					toast('浏览器限制本地存储，本次更改在当前页面有效')
+				}
+			}
+			function baseStatus(n) {
+				return n < 9 || (n >= 10 && n < 55)
+					? '执行中'
+					: n === 9 || n < 50088
+						? '已取消'
+						: '已完成'
+			}
+			function hex(n) {
+				return (Math.imul(n + 1771, 2654435761) >>> 0)
+					.toString(16)
+					.padStart(8, '0')
+			}
+			function getBaseTask(n) {
+				const key = 'base-' + n
+				const status = baseStatus(n)
+				const day =
+					n < 55
+						? '20'
+						: String(20 - (Math.floor(n / 30000) % 20)).padStart(
+								2,
+								'0',
+							)
+				const date = '2026-09-' + day
+				const seconds = [9, 0, 0, 59, 58, 53, 59, 54, 53, 52]
+				const task = {
+					key,
+					code: sampleIds[n] || hex(n) + hex(n + 173) + hex(n + 31),
+					name:
+						sampleNames[n] ||
+						(n % 31 === 0
+							? 'charge-'
+							: n % 47 === 0
+								? 'park-'
+								: 'mock-') +
+							hex(n + 888) +
+							hex(n + 16),
+					status,
+					taskId: n < 10 ? 'ID-209317259' : 'ID-' + (209317259 + n),
+					type:
+						n < 10
+							? '运输任务'
+							: n % 31 === 0
+								? '充电任务'
+								: n % 47 === 0
+									? '泊车任务'
+									: '运输任务',
+					assigned: '测试大地图-209317259',
+					group: 'A组',
+					vehicle: vehicles[n % 10],
+					priority: 0,
+					created: date + ' 17:57:' + (n < 3 ? '59' : '52'),
+					started:
+						date +
+						' 17:' +
+						(n < 3 ? '58:' : '57:') +
+						String(seconds[n % 10]).padStart(2, '0'),
+					ended: status === '执行中' ? '—' : date + ' 17:57:53',
+					failure: '—',
+					suspended: '—',
+				}
+				if (n === 3) task.ended = '2026-09-20 17:57:52'
+				return Object.assign(task, overrides[key] || {})
+			}
+			function getTask(key) {
+				if (key.startsWith('base-'))
+					return getBaseTask(Number(key.slice(5)))
+				return newTasks.find((t) => t.key === key)
+			}
+			function keyAt(index) {
+				return state.filtered
+					? state.filtered[index]
+					: index < newTasks.length
+						? newTasks[index].key
+						: 'base-' + (index - newTasks.length)
+			}
+			function totalRows() {
+				return state.filtered
+					? state.filtered.length
+					: BASE_TOTAL + newTasks.length
+			}
+			function counts() {
+				const c = {
+					全部: BASE_TOTAL,
+					已完成: 531418,
+					执行中: 54,
+					排队中: 0,
+					已取消: 50034,
+					已失败: 0,
+					已挂起: 0,
+				}
+				for (const t of newTasks) {
+					c['全部']++
+					c[t.status]++
+				}
+				for (const [key, v] of Object.entries(overrides)) {
+					if (v.status && key.startsWith('base-')) {
+						c[baseStatus(Number(key.slice(5)))]--
+						c[v.status]++
+					}
+				}
+				return c
+			}
+			function badge(status) {
+				return `<span class="status-badge ${statuses[status] || ''}">${escapeHTML(status)}</span>`
+			}
+			function renderStats() {
+				const c = counts()
+				const configs = [
+					[
+						'',
+						'任务总数',
+						'document',
+						'',
+						'较昨日 <span class="good">−12.6% ↓</span>',
+						'2,31 9,29 17,25 26,19 32,21 40,15 49,18 62,12',
+					],
+					[
+						'已完成',
+						'已完成',
+						'check',
+						'completed',
+						`${((c['已完成'] / c['全部']) * 100).toFixed(1)}% 完成率`,
+						'2,31 9,28 18,19 24,21 31,25 40,20 46,20 55,11 62,10',
+					],
+					[
+						'执行中',
+						'执行中',
+						'play',
+						'executing',
+						'较昨日 <span class="good">−8.1% ↓</span>',
+						'2,31 10,29 18,22 25,16 32,13 40,19 48,25 55,22 62,15 68,13',
+					],
+					[
+						'排队中',
+						'排队中',
+						'clock',
+						'queued',
+						'<span class="muted">—</span> 较昨日持平',
+						'2,31 11,24 17,19 25,25 31,22 39,17 45,18 54,10 61,13 68,15',
+					],
+					[
+						'已取消',
+						'已取消',
+						'cancel',
+						'cancelled',
+						`${((c['已取消'] / c['全部']) * 100).toFixed(1)}% 占比`,
+						'2,31 8,29 17,19 22,20 29,25 37,20 43,22 51,17 59,11 65,12 69,11',
+					],
+					[
+						'已失败',
+						'已失败',
+						'warning',
+						'failed',
+						'<span class="muted">—</span> 较昨日持平',
+						'2,31 10,29 18,25 25,20 31,19 39,13 46,14 53,18 59,13 66,7',
+					],
+				]
+				$('stats').innerHTML = configs
+					.map(
+						([status, label, ic, cls, note, points], i) =>
+							`<button class="stat ${cls} ${state.filters.status === status && status ? 'selected' : ''}" data-status="${status}" aria-label="${label} ${format(c[status || '全部'])}，点击筛选"><span class="stat-icon">${icon(ic, i > 0 ? 'solid-icon' : '')}</span><span class="stat-copy"><span class="stat-label" style="display:block">${label}</span><span class="stat-value" style="display:block">${format(c[status || '全部'])}</span><span class="stat-note" style="display:block">${note}</span></span><svg class="sparkline" viewBox="0 0 70 45" aria-hidden="true"><defs><linearGradient id="spark-${i}" x2="0" y2="1"><stop stop-color="currentColor" stop-opacity=".2"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></linearGradient></defs><polygon points="${points} 69,45 2,45" fill="url(#spark-${i})"/><polyline points="${points}" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/></svg></button>`,
+					)
+					.join('')
+			}
+			function renderTable() {
+				const visible = columns.filter((c) => !state.hidden.has(c[0]))
+				const width = visible.reduce((s, c) => s + c[2], 0)
+				$('tableCols').innerHTML = visible
+					.map((c) => `<col style="width:${(c[2] / width) * 100}%">`)
+					.join('')
+				$('tableHead').innerHTML =
+					'<tr>' +
+					visible
+						.map((c) => `<th scope="col">${c[1]}</th>`)
+						.join('') +
+					'</tr>'
+				const total = totalRows()
+				state.page = Math.max(
+					1,
+					Math.min(state.page, Math.ceil(total / state.size) || 1),
+				)
+				const start = (state.page - 1) * state.size,
+					end = Math.min(start + state.size, total)
+				let html = ''
+				for (let i = start; i < end; i++) {
+					const row = getTask(keyAt(i))
+					html +=
+						'<tr data-key="' +
+						escapeHTML(row.key) +
+						'">' +
+						visible
+							.map((c) => {
+								const k = c[0],
+									v = row[k]
+								if (k === 'number') return `<td>${i + 1}</td>`
+								if (k === 'status')
+									return `<td>${badge(v)}</td>`
+								if (k === 'priority')
+									return `<td><span class="priority">${escapeHTML(v)}</span></td>`
+								if (k === 'actions')
+									return `<td><div class="row-actions"><button class="text-button" data-action="detail" aria-label="查看任务 ${escapeHTML(row.name)} 的详情">详情</button><button class="text-button" data-action="more" aria-label="任务 ${escapeHTML(row.name)} 的更多操作" aria-expanded="false">更多${icon('down')}</button></div></td>`
+								return `<td class="${v === '—' ? 'cell-muted' : ''} ${['started', 'ended', 'created'].includes(k) ? 'cell-date' : ''}" title="${escapeHTML(v)}">${escapeHTML(v)}</td>`
+							})
+							.join('') +
+						'</tr>'
+				}
+				if (!total)
+					html = `<tr><td colspan="${visible.length}" class="empty-state">${icon('empty')}没有找到符合条件的任务<br><span style="font-size:12px;display:block;margin-top:10px">请调整筛选条件，或点击“重置”查看全部任务</span></td></tr>`
+				$('tableBody').innerHTML = html
+				$('recordTotal').textContent = `（共 ${format(total)} 条）`
+				$('paginationTotal').textContent = `共 ${format(total)} 条`
+				renderPagination()
+			}
+			function renderPagination() {
+				const pages = Math.max(1, Math.ceil(totalRows() / state.size))
+				let list = []
+				if (pages <= 6)
+					list = Array.from({ length: pages }, (_, i) => i + 1)
+				else if (state.page < 5) list = [1, 2, 3, 4, 5, '…', pages]
+				else if (state.page > pages - 4)
+					list = [
+						1,
+						'…',
+						pages - 4,
+						pages - 3,
+						pages - 2,
+						pages - 1,
+						pages,
+					]
+				else
+					list = [
+						1,
+						'…',
+						state.page - 1,
+						state.page,
+						state.page + 1,
+						'…',
+						pages,
+					]
+				$('pageControls').innerHTML =
+					`<button class="page-button" data-page="${state.page - 1}" aria-label="上一页" ${state.page === 1 ? 'disabled' : ''}>${icon('left', 'small')}</button>` +
+					list
+						.map((p) =>
+							p === '…'
+								? '<span class="page-ellipsis">···</span>'
+								: `<button class="page-button ${p === state.page ? 'active' : ''} ${p === pages && pages > 6 ? 'last' : ''}" data-page="${p}" aria-label="第 ${p} 页" ${p === state.page ? 'aria-current="page"' : ''}>${p}</button>`,
+						)
+						.join('') +
+					`<span style="margin-left:5px">跳至</span><input class="page-jump" id="pageJump" aria-label="跳转页码" type="number" min="1" max="${pages}" value="${state.page}"><span>页</span>`
+			}
+			function matches(task, f) {
+				if (f.status && task.status !== f.status) return false
+				if (f.type && task.type !== f.type) return false
+				if (f.vehicle && task.vehicle !== f.vehicle) return false
+				if (
+					f.query &&
+					![
+						task.name,
+						task.code,
+						task.taskId,
+						task.vehicle,
+						task.assigned,
+					]
+						.join(' ')
+						.toLowerCase()
+						.includes(f.query.toLowerCase())
+				)
+					return false
+				for (const field of ['created', 'started', 'ended']) {
+					const start = f[field + 'Start'],
+						end = f[field + 'End']
+					if ((start || end) && (!task[field] || task[field] === '—'))
+						return false
+					const date = (task[field] || '').slice(0, 10)
+					if ((start && date < start) || (end && date > end))
+						return false
+				}
+				return true
+			}
+			async function applyFilters(notify = false) {
+				const f = Object.fromEntries(new FormData($('filterForm')))
+				f.query = f.query.trim()
+				for (const field of ['created', 'started', 'ended'])
+					if (
+						f[field + 'Start'] &&
+						f[field + 'End'] &&
+						f[field + 'Start'] > f[field + 'End']
+					) {
+						toast('开始日期不能晚于结束日期', true)
+						return
+					}
+				const ticket = ++state.filterTicket
+				state.filters = f
+				state.page = 1
+				closeMenu()
+				const hasFilters = Object.values(f).some(Boolean)
+				if (!hasFilters) {
+					state.filtered = null
+					renderStats()
+					renderTable()
+					$('searchBtn').disabled = false
+					$('searchBtn').querySelector('span').textContent = '查询'
+					if (notify) toast('已显示全部任务')
+					return
+				}
+				$('searchBtn').disabled = true
+				$('searchBtn').querySelector('span').textContent = '查询中'
+				const keys = newTasks
+					.filter((t) => matches(t, f))
+					.map((t) => t.key)
+				const statusOnly =
+					!!f.status &&
+					!Object.entries(f).some(([k, v]) => k !== 'status' && v)
+				for (let n = 0; n < BASE_TOTAL; n++) {
+					const key = 'base-' + n
+					if (
+						f.status &&
+						(overrides[key]?.status || baseStatus(n)) !== f.status
+					)
+						continue
+					if (statusOnly || matches(getBaseTask(n), f)) keys.push(key)
+					if (n % 18000 === 0) {
+						await new Promise((r) => setTimeout(r, 0))
+						if (ticket !== state.filterTicket) return
+					}
+				}
+				if (ticket !== state.filterTicket) return
+				state.filtered = keys
+				renderStats()
+				renderTable()
+				$('searchBtn').disabled = false
+				$('searchBtn').querySelector('span').textContent = '查询'
+				if (notify) toast(`已找到 ${format(keys.length)} 条任务`)
+			}
+			function toast(message, error = false) {
+				const el = document.createElement('div')
+				el.className = 'toast' + (error ? ' error' : '')
+				el.innerHTML =
+					icon(error ? 'warning' : 'check') +
+					'<span>' +
+					escapeHTML(message) +
+					'</span>'
+				$('toasts').append(el)
+				setTimeout(() => el.remove(), 3300)
+			}
+			function openModal(title, content, ic = 'task') {
+				closeMenu()
+				$('modalTitle').textContent = title
+				$('modalIcon').innerHTML = `<use href="#i-${ic}"/>`
+				$('modalContent').innerHTML = content
+				if (!$('modal').open) $('modal').showModal()
+			}
+			function closeModal() {
+				$('modal').close()
+			}
+			function footer(html = '') {
+				return `<div class="dialog-footer">${html || '<button class="btn" data-close>关闭</button>'}</div>`
+			}
+			function showDetail(key) {
+				const row = getTask(key)
+				const fields = [
+					['任务名称', row.name],
+					['任务编号', row.code],
+					['任务状态', badge(row.status)],
+					['任务类型', row.type],
+					['执行车辆', row.vehicle],
+					['指定车组', row.group],
+					['优先级', row.priority],
+					['创建时间', row.created],
+					['开始执行', row.started],
+					['结束执行', row.ended],
+				]
+				openModal(
+					'任务详情',
+					`<div class="dialog-body"><dl class="detail-grid">${fields.map(([label, value]) => `<dt>${label}</dt><dd>${label === '任务状态' ? value : escapeHTML(value)}</dd>`).join('')}</dl><div class="detail-timeline"><div class="timeline-step"><i></i><span>任务创建</span></div><div class="timeline-step ${row.status === '排队中' ? 'inactive' : ''}"><i></i><span>分配车辆</span></div><div class="timeline-step ${row.status === '排队中' ? 'inactive' : ''}"><i></i><span>执行任务</span></div><div class="timeline-step ${['已完成', '已取消', '已失败'].includes(row.status) ? '' : 'inactive'}"><i></i><span>${row.status === '已取消' ? '任务取消' : '任务结束'}</span></div></div></div>${footer()}`,
+					'folder',
+				)
+			}
+			function showCreate(source) {
+				openModal(
+					source ? '复制任务' : '创建任务',
+					`<form id="createForm"><div class="dialog-body form-layout"><label class="form-group full">任务名称 <span class="required" style="display:none">*</span><input name="name" aria-label="新任务名称" placeholder="请输入任务名称" required maxlength="80" value="${source ? escapeHTML(source.name + '-副本') : ''}"></label><label class="form-group">任务类型<select name="type" aria-label="新任务类型"><option>运输任务</option><option>充电任务</option><option>泊车任务</option></select></label><label class="form-group">执行车辆<select name="vehicle" aria-label="新任务车辆">${vehicles.map((v) => `<option ${source?.vehicle === v ? 'selected' : ''}>${v}</option>`).join('')}</select></label><label class="form-group">指定车组<select name="group"><option>A组</option><option>B组</option><option>C组</option></select></label><label class="form-group">优先级<input name="priority" type="number" min="0" max="99" value="${source?.priority || 0}" required></label><label class="form-group full">目标站点<input name="station" placeholder="例如：成品库 A-01" value="${source ? escapeHTML(source.assigned) : '测试大地图-209317259'}" required maxlength="80"></label><p class="form-hint">创建后任务将进入调度队列，可在任务列表中查看详情或启动执行。</p></div>${footer('<button class="btn" type="button" data-close>取消</button><button class="btn primary" type="submit">' + icon('plus') + '创建任务</button>')}</form>`,
+					'plus',
+				)
+			}
+			function changeStatus(key, status) {
+				const task = getTask(key)
+				const values = {
+					status,
+					suspended: status === '已挂起' ? '手动挂起' : '—',
+				}
+				if (status === '已取消' || status === '已完成')
+					values.ended = timestamp()
+				if (status === '执行中') {
+					values.started = timestamp()
+					values.ended = '—'
+				}
+				if (key.startsWith('base-'))
+					overrides[key] = Object.assign(overrides[key] || {}, values)
+				else Object.assign(task, values)
+				persist()
+				closeMenu()
+				applyFilters()
+				toast(`任务${status === '执行中' ? '已开始执行' : status}`)
+			}
+			function timestamp() {
+				const d = new Date()
+				return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`
+			}
+			function closeMenu() {
+				if (state.menu) {
+					state.menu.remove()
+					state.menu = null
+				}
+				document
+					.querySelectorAll('[data-action="more"]')
+					.forEach((b) => b.setAttribute('aria-expanded', 'false'))
+			}
+			function showRowMenu(button, key) {
+				closeMenu()
+				const task = getTask(key)
+				const menu = document.createElement('div')
+				menu.className = 'floating-menu'
+				menu.setAttribute('role', 'menu')
+				let options = [['copy', 'copy', '复制任务']]
+				if (['排队中', '已挂起'].includes(task.status))
+					options.push(['run', 'play', '开始执行'])
+				if (task.status === '执行中')
+					options.push(
+						['pause', 'pause', '挂起任务'],
+						['finish', 'check', '完成任务'],
+					)
+				if (['排队中', '执行中', '已挂起'].includes(task.status))
+					options.push(['cancel', 'cancel', '取消任务'])
+				menu.innerHTML = options
+					.map(
+						([action, ic, label]) =>
+							`<button role="menuitem" data-menu-action="${action}">${icon(ic)}${label}</button>`,
+					)
+					.join('')
+				document.body.append(menu)
+				const r = button.getBoundingClientRect()
+				menu.style.left =
+					Math.max(
+						8,
+						Math.min(
+							r.right - menu.offsetWidth,
+							innerWidth - menu.offsetWidth - 8,
+						),
+					) + 'px'
+				menu.style.top =
+					Math.min(
+						r.bottom + 5,
+						innerHeight - menu.offsetHeight - 12,
+					) + 'px'
+				state.menu = menu
+				button.setAttribute('aria-expanded', 'true')
+				menu.addEventListener('click', (e) => {
+					const b = e.target.closest('[data-menu-action]')
+					if (!b) return
+					const action = b.dataset.menuAction
+					if (action === 'copy') {
+						showCreate(task)
+						return
+					}
+					if (action === 'cancel') {
+						openModal(
+							'取消任务',
+							`<div class="dialog-body"><p class="module-note">确认取消任务 <strong style="color:#d9eeff">${escapeHTML(task.name)}</strong>？取消后，该任务将停止调度。</p></div>${footer('<button class="btn" data-close>返回</button><button class="btn danger" id="confirmCancel">确认取消</button>')}`,
+							'warning',
+						)
+						$('confirmCancel').onclick = () => {
+							changeStatus(key, '已取消')
+							closeModal()
+						}
+						return
+					}
+					changeStatus(
+						key,
+						{ run: '执行中', pause: '已挂起', finish: '已完成' }[
+							action
+						],
+					)
+				})
+			}
+			const modules = [
+				['仪表盘', 'dashboard'],
+				['调度监控', 'grid'],
+				['任务管理', 'task'],
+				['车辆管理', 'car'],
+				['地图管理', 'map'],
+				['调度中心', 'center'],
+				['三方资源', 'connection'],
+				['工艺配置', 'process'],
+				['系统管理', 'settings'],
+				['权限管理', 'shield'],
+				['数据统计', 'chart'],
+			]
+			$('dock').innerHTML =
+				modules
+					.map(
+						([name, ic]) =>
+							`<button class="dock-item ${name === '任务管理' ? 'active' : ''}" data-module="${name}" ${name === '任务管理' ? 'aria-current="page"' : ''}>${icon(ic)}<span>${name}</span></button>`,
+					)
+					.join('') +
+				`<button class="dock-item trash" id="cancelledTasks" title="查看已取消任务" aria-label="查看已取消任务">${icon('trash')}</button>`
+			function mapGraphic() {
+				return `<div class="monitor-map"><svg viewBox="0 0 460 180" aria-label="AGV 调度地图示意"><g stroke="#42687d" fill="#163b50"><path d="M20 18h85v42H20Zm112 0h85v42h-85Zm112 0h85v42h-85Zm112 0h85v42h-85ZM20 121h85v42H20Zm112 0h85v42h-85Zm112 0h85v42h-85Zm112 0h85v42h-85Z"/></g><g fill="#82b6d0" font-family="Microsoft YaHei,sans-serif" font-size="11"><text x="42" y="44">入库区</text><text x="155" y="44">存储区 A</text><text x="268" y="44">存储区 B</text><text x="378" y="44">出库区</text><text x="38" y="147">充电站 01</text><text x="150" y="147">充电站 02</text><text x="265" y="147">装配站点</text><text x="376" y="147">暂存区域</text></g><path d="M35 92h387M64 62v28m224-28v28m-110 2v27m219-27v27" stroke="#00b7e9" stroke-width="2" fill="none" stroke-dasharray="7 5"/><g fill="#0ae5ff" stroke="#bbf7ff"><rect x="130" y="85" width="23" height="13" rx="4"/><rect x="306" y="85" width="23" height="13" rx="4"/><rect x="55" y="73" width="19" height="12" rx="3"/></g><g fill="#34ddad"><circle cx="57" cy="110" r="3"/><circle cx="170" cy="110" r="3"/></g></svg></div>`
+			}
+			function showModule(name) {
+				if (name === '任务管理') {
+					document.querySelector('.task-panel').scrollIntoView({
+						block: 'nearest',
+						behavior: 'smooth',
+					})
+					return
+				}
+				const c = counts()
+				let body = ''
+				if (name === '仪表盘' || name === '数据统计')
+					body = `<div class="module-grid"><div class="module-metric">任务总数<b>${format(c['全部'])}</b><small>累计调度任务</small></div><div class="module-metric">执行中<b>${format(c['执行中'])}</b><small>实时任务状态</small></div><div class="module-metric">完成率<b>${((c['已完成'] / c['全部']) * 100).toFixed(1)}%</b><small>已完成 / 全部任务</small></div></div><div style="margin-top:24px"><p class="module-note">任务状态分布</p><div style="height:12px;border-radius:4px;overflow:hidden;display:flex;margin:14px 0"><span style="width:91.4%;background:#00ceab"></span><span style="flex:1;background:#437a9e"></span></div><p class="module-note">已完成 ${format(c['已完成'])}　·　已取消 ${format(c['已取消'])}　·　执行中 ${c['执行中']}</p></div>`
+				else if (['调度监控', '地图管理', '调度中心'].includes(name))
+					body = `<p class="module-note">测试大地图-209317259 <span style="float:right;color:#00dbad">● 调度运行中</span></p>${mapGraphic()}<p class="module-note" style="margin-top:14px">A组 · ${vehicles.length} 台车辆　　执行中任务 ${c['执行中']} 条</p>`
+				else if (name === '车辆管理')
+					body = `<div style="max-height:440px;overflow:auto"><table style="font-size:12px;table-layout:auto"><thead><tr><th>车辆编号</th><th>指定车组</th><th>车辆状态</th><th>电量</th></tr></thead><tbody>${vehicles.map((v, i) => `<tr><td style="height:35px">${v}</td><td>A组</td><td style="color:${i === 9 ? '#7da4ba' : '#08d6a7'}">${i === 9 ? '空闲' : '运行中'}</td><td>${[86, 92, 74, 81, 95, 78, 83, 69, 96, 100][i]}%</td></tr>`).join('')}</tbody></table></div>`
+				else if (name === '系统管理') {
+					showSettings()
+					return
+				} else if (name === '权限管理')
+					body = `<dl class="detail-grid"><dt>当前用户</dt><dd>Admin</dd><dt>角色</dt><dd>系统管理员</dd><dt>任务权限</dt><dd>查看 · 创建 · 调度 · 导出</dd><dt>车辆权限</dt><dd>查看 · 调度</dd><dt>管理范围</dt><dd>全部车组与站点</dd></dl>`
+				else if (name === '工艺配置')
+					body = `<dl class="detail-grid"><dt>当前工艺</dt><dd>标准物料搬运</dd><dt>执行流程</dt><dd>取货站点 → 运输 → 卸货站点 → 任务完成</dd><dt>分配规则</dt><dd>优先级优先 · 就近分配</dd><dt>异常处理</dt><dd>任务挂起，等待人工处理</dd></dl>`
+				// 资源名称使用机器人设备术语，与单机控制系统定位一致。
+				else
+					body = `<dl class="detail-grid"><dt>资源名称</dt><dd>机器人设备资源</dd><dt>车辆组</dt><dd>A组 / B组 / C组</dd><dt>地图资源</dt><dd>测试大地图-209317259</dd><dt>任务类型</dt><dd>运输任务 · 充电任务 · 泊车任务</dd></dl>`
+				openModal(
+					name,
+					`<div class="dialog-body">${body}</div>${footer()}`,
+					modules.find((m) => m[0] === name)?.[1] || 'grid',
+				)
+			}
+			function showSettings() {
+				openModal(
+					'系统设置',
+					`<div class="dialog-body"><label class="switch-row"><span>紧凑表格<div class="subtext">缩小行高，在一屏内显示更多任务</div></span><input type="checkbox" id="compactSetting" ${$('app').classList.contains('compact') ? 'checked' : ''}></label><label class="switch-row" style="margin-bottom:0"><span>柔和光效<div class="subtext">降低装饰光效和背景亮度</div></span><input type="checkbox" id="glowSetting" ${$('app').classList.contains('low-glow') ? 'checked' : ''}></label></div>${footer('<button class="btn primary" data-close>完成</button>')}`,
+					'settings',
+				)
+				$('compactSetting').onchange = (e) =>
+					$('app').classList.toggle('compact', e.target.checked)
+				$('glowSetting').onchange = (e) =>
+					$('app').classList.toggle('low-glow', e.target.checked)
+			}
+			document.addEventListener('click', (e) => {
+				const module = e.target.closest('[data-module]')
+				if (module) showModule(module.dataset.module)
+				if (e.target.closest('[data-close]')) closeModal()
+				if (
+					state.menu &&
+					!state.menu.contains(e.target) &&
+					!e.target.closest('[data-action="more"]')
+				)
+					closeMenu()
+			})
+			$('closeModal').onclick = closeModal
+			$('modal').addEventListener('click', (e) => {
+				if (e.target === $('modal')) {
+					const r = $('modal').getBoundingClientRect()
+					if (
+						e.clientX < r.left ||
+						e.clientX > r.right ||
+						e.clientY < r.top ||
+						e.clientY > r.bottom
+					)
+						closeModal()
+				}
+			})
+			document.addEventListener('keydown', (e) => {
+				if (e.key === 'Escape') {
+					closeMenu()
+					if (!$('modal').open) {
+						$('taskPanel').classList.remove('table-fullscreen')
+						$('fullscreenBtn').setAttribute('aria-pressed', 'false')
+					}
+				}
+			})
+			$('collapseBtn').onclick = () => {
+				const collapsed = $('filterPanel').classList.toggle('collapsed')
+				$('collapseBtn').setAttribute(
+					'aria-expanded',
+					String(!collapsed),
+				)
+				$('collapseBtn').querySelector('span').textContent = collapsed
+					? '展开'
+					: '收起'
+			}
+			$('filterForm').onsubmit = (e) => {
+				e.preventDefault()
+				applyFilters(true)
+			}
+			$('filterForm').onreset = () => {
+				++state.filterTicket
+				setTimeout(() => {
+					document
+						.querySelectorAll('[data-date]')
+						.forEach((input) => (input.type = 'text'))
+					document
+						.querySelectorAll('.field-box select')
+						.forEach((s) => s.classList.remove('has-value'))
+					$('globalQuery').value = ''
+					applyFilters()
+				}, 0)
+			}
+			document
+				.querySelectorAll('.field-box select')
+				.forEach(
+					(s) =>
+						(s.onchange = () =>
+							s.classList.toggle('has-value', !!s.value)),
+				)
+			document.querySelectorAll('[data-date]').forEach((input) => {
+				input.addEventListener('focus', () => {
+					input.type = 'date'
+				})
+				input.addEventListener('blur', () => {
+					if (!input.value) input.type = 'text'
+				})
+			})
+			$('globalSearch').onsubmit = (e) => {
+				e.preventDefault()
+				$('taskQuery').value = $('globalQuery').value
+				applyFilters(true)
+			}
+			$('stats').onclick = (e) => {
+				const card = e.target.closest('[data-status]')
+				if (!card) return
+				$('taskStatus').value = card.dataset.status
+				$('taskStatus').classList.toggle(
+					'has-value',
+					!!card.dataset.status,
+				)
+				applyFilters()
+			}
+			$('cancelledTasks').onclick = () => {
+				$('taskStatus').value = '已取消'
+				$('taskStatus').classList.add('has-value')
+				applyFilters(true)
+			}
+			$('pageSize').onchange = (e) => {
+				state.size = Number(e.target.value)
+				state.page = 1
+				renderTable()
+			}
+			$('pageControls').onclick = (e) => {
+				const b = e.target.closest('[data-page]')
+				if (b && !b.disabled) {
+					state.page = Number(b.dataset.page)
+					renderTable()
+					$('tableScroll').scrollTop = 0
+					closeMenu()
+				}
+			}
+			function jumpPage(input) {
+				const pages = Math.max(1, Math.ceil(totalRows() / state.size))
+				const num = Number(input.value)
+				if (!Number.isInteger(num) || num < 1 || num > pages) {
+					toast(`请输入 1 到 ${pages} 之间的页码`, true)
+					input.value = state.page
+					return
+				}
+				state.page = num
+				renderTable()
+				$('tableScroll').scrollTop = 0
+			}
+			$('pageControls').addEventListener('change', (e) => {
+				if (e.target.id === 'pageJump') jumpPage(e.target)
+			})
+			$('pageControls').addEventListener('keydown', (e) => {
+				if (e.target.id === 'pageJump' && e.key === 'Enter') {
+					e.preventDefault()
+					jumpPage(e.target)
+				}
+			})
+			$('tableBody').onclick = (e) => {
+				const b = e.target.closest('[data-action]')
+				if (!b) return
+				const key = b.closest('tr').dataset.key
+				if (b.dataset.action === 'detail') showDetail(key)
+				else showRowMenu(b, key)
+			}
+			$('refreshBtn').onclick = async () => {
+				await applyFilters()
+				toast('任务列表已刷新')
+			}
+			$('fullscreenBtn').onclick = () => {
+				const active =
+					$('taskPanel').classList.toggle('table-fullscreen')
+				$('fullscreenBtn').setAttribute('aria-pressed', String(active))
+				$('fullscreenBtn').setAttribute(
+					'aria-label',
+					active ? '还原任务列表' : '展开任务列表',
+				)
+				closeMenu()
+			}
+			$('createBtn').onclick = () => showCreate()
+			$('modal').addEventListener('submit', (e) => {
+				if (e.target.id !== 'createForm') return
+				e.preventDefault()
+				const f = Object.fromEntries(new FormData(e.target))
+				if (!f.name.trim()) {
+					toast('请输入任务名称', true)
+					return
+				}
+				const id =
+					typeof crypto.randomUUID === 'function'
+						? crypto.randomUUID()
+						: Date.now().toString(36) +
+							Math.random().toString(36).slice(2)
+				const task = {
+					key: 'new-' + id,
+					code: id,
+					name: f.name.trim(),
+					status: '排队中',
+					taskId: 'ID-' + Date.now().toString().slice(-9),
+					type: f.type,
+					assigned: f.station.trim(),
+					group: f.group,
+					vehicle: f.vehicle,
+					priority: Number(f.priority),
+					started: '—',
+					ended: '—',
+					created: timestamp(),
+					failure: '—',
+					suspended: '—',
+				}
+				newTasks.unshift(task)
+				persist()
+				closeModal()
+				$('filterForm').reset()
+				toast('任务已创建，已加入调度队列')
+			})
+			$('columnsBtn').onclick = () => {
+				openModal(
+					'列设置',
+					`<div class="dialog-body"><p class="module-note" style="margin-bottom:20px">选择任务列表中需要显示的字段</p><div class="column-list">${columns
+						.filter((c) => !['number', 'actions'].includes(c[0]))
+						.map(
+							(c) =>
+								`<label><input type="checkbox" value="${c[0]}" ${state.hidden.has(c[0]) ? '' : 'checked'} data-column>${c[1]}</label>`,
+						)
+						.join(
+							'',
+						)}</div></div>${footer('<button class="btn" id="resetColumns">恢复默认</button><button class="btn primary" data-close>完成</button>')}`,
+					'settings',
+				)
+				document.querySelectorAll('[data-column]').forEach(
+					(c) =>
+						(c.onchange = () => {
+							if (c.checked) state.hidden.delete(c.value)
+							else state.hidden.add(c.value)
+							renderTable()
+						}),
+				)
+				$('resetColumns').onclick = () => {
+					state.hidden.clear()
+					document
+						.querySelectorAll('[data-column]')
+						.forEach((c) => (c.checked = true))
+					renderTable()
+				}
+			}
+			$('notificationsBtn').onclick = () => {
+				$('noticeDot').style.display = 'none'
+				openModal(
+					'消息通知',
+					`<div class="dialog-body"><article class="notification-item"><strong>调度任务已启动</strong><p>AGV-8888 已接收运输任务，正在前往目标站点。</p><time>09-20 17:58:09</time></article><article class="notification-item"><strong>任务已取消</strong><p>泊车任务 park-611f1316bab9 已由管理员取消。</p><time>09-20 17:57:53</time></article><article class="notification-item" style="margin-bottom:0"><strong>系统运行正常</strong><p>调度引擎已就绪，所有站点资源加载完成。</p><time>09-20 17:50:00</time></article></div>${footer()}`,
+					'bell',
+				)
+			}
+			$('settingsBtn').onclick = showSettings
+			$('appearanceBtn').onclick = () => {
+				const low = $('app').classList.toggle('low-glow')
+				toast(low ? '已切换为柔和光效' : '已恢复标准光效')
+			}
+			$('profileBtn').onclick = () =>
+				openModal(
+					'管理员信息',
+					`<div class="dialog-body"><div style="display:flex;align-items:center;gap:18px;margin-bottom:26px"><span class="avatar" style="width:52px;height:52px;font-size:21px">R0</span><div><strong style="font-size:20px;font-weight:500">Admin</strong><p class="subtext">系统管理员</p></div></div><dl class="detail-grid"><dt>账号</dt><dd>admin</dd><dt>权限</dt><dd>全部任务与车组管理权限</dd><dt>所属系统</dt><dd>AGV 智能机器人系统</dd></dl></div>${footer()}`,
+					'shield',
+				)
+			/* Minimal OOXML + ZIP writer. The exported file is a real .xlsx, not a renamed CSV. */
+			const encoder = new TextEncoder()
+			const crcTable = Array.from({ length: 256 }, (_, n) => {
+				for (let i = 0; i < 8; i++)
+					n = n & 1 ? 0xedb88320 ^ (n >>> 1) : n >>> 1
+				return n >>> 0
+			})
+			function crc32(data) {
+				let crc = 0xffffffff
+				for (const byte of data)
+					crc = crcTable[(crc ^ byte) & 255] ^ (crc >>> 8)
+				return (crc ^ 0xffffffff) >>> 0
+			}
+			function zip(files) {
+				const local = [],
+					central = []
+				let offset = 0
+				for (const [path, text] of files) {
+					const name = encoder.encode(path),
+						data = encoder.encode(text),
+						crc = crc32(data)
+					const header = new Uint8Array(30 + name.length),
+						v = new DataView(header.buffer)
+					v.setUint32(0, 0x04034b50, true)
+					v.setUint16(4, 20, true)
+					v.setUint32(14, crc, true)
+					v.setUint32(18, data.length, true)
+					v.setUint32(22, data.length, true)
+					v.setUint16(26, name.length, true)
+					header.set(name, 30)
+					local.push(header, data)
+					const directory = new Uint8Array(46 + name.length),
+						d = new DataView(directory.buffer)
+					d.setUint32(0, 0x02014b50, true)
+					d.setUint16(4, 20, true)
+					d.setUint16(6, 20, true)
+					d.setUint32(16, crc, true)
+					d.setUint32(20, data.length, true)
+					d.setUint32(24, data.length, true)
+					d.setUint16(28, name.length, true)
+					d.setUint32(42, offset, true)
+					directory.set(name, 46)
+					central.push(directory)
+					offset += header.length + data.length
+				}
+				const length = central.reduce((n, a) => n + a.length, 0),
+					end = new Uint8Array(22),
+					v = new DataView(end.buffer)
+				v.setUint32(0, 0x06054b50, true)
+				v.setUint16(8, files.length, true)
+				v.setUint16(10, files.length, true)
+				v.setUint32(12, length, true)
+				v.setUint32(16, offset, true)
+				return new Blob([...local, ...central, end], {
+					type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+				})
+			}
+			function excelColumn(n) {
+				let result = ''
+				while (n >= 0) {
+					result = String.fromCharCode((n % 26) + 65) + result
+					n = Math.floor(n / 26) - 1
+				}
+				return result
+			}
+			function xlsx(rows) {
+				const cols = columns.filter(
+					(c) =>
+						!['number', 'actions'].includes(c[0]) &&
+						!state.hidden.has(c[0]),
+				)
+				const safe = (v) =>
+					escapeHTML(
+						String(v ?? '').replace(
+							/[\x00-\x08\x0b\x0c\x0e-\x1f]/g,
+							'',
+						),
+					)
+				const cell = (v, x, y, style) =>
+					`<c r="${excelColumn(x)}${y}" t="inlineStr"${style ? ' s="1"' : ''}><is><t xml:space="preserve">${safe(v)}</t></is></c>`
+				let body =
+					'<row r="1" ht="28" customHeight="1">' +
+					cols.map((c, x) => cell(c[1], x, 1, true)).join('') +
+					'</row>'
+				body += rows
+					.map(
+						(row, y) =>
+							`<row r="${y + 2}">` +
+							cols
+								.map((c, x) => cell(row[c[0]], x, y + 2, false))
+								.join('') +
+							'</row>',
+					)
+					.join('')
+				const declaration =
+					'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+				return zip([
+					[
+						'[Content_Types].xml',
+						declaration +
+							'<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>',
+					],
+					[
+						'_rels/.rels',
+						declaration +
+							'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>',
+					],
+					[
+						'xl/workbook.xml',
+						declaration +
+							'<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="任务列表" sheetId="1" r:id="rId1"/></sheets></workbook>',
+					],
+					[
+						'xl/_rels/workbook.xml.rels',
+						declaration +
+							'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>',
+					],
+					[
+						'xl/styles.xml',
+						declaration +
+							'<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="2"><font><sz val="11"/><name val="Microsoft YaHei"/></font><font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Microsoft YaHei"/></font></fonts><fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF15364D"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="1"><border/></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="2"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFill="1" applyFont="1"/></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>',
+					],
+					[
+						'xl/worksheets/sheet1.xml',
+						declaration +
+							`<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews><cols>${cols.map((c, i) => `<col min="${i + 1}" max="${i + 1}" width="${['name', 'code', 'assigned'].includes(c[0]) ? 30 : ['started', 'ended', 'created'].includes(c[0]) ? 23 : 15}" customWidth="1"/>`).join('')}</cols><sheetData>${body}</sheetData><autoFilter ref="A1:${excelColumn(cols.length - 1)}${rows.length + 1}"/></worksheet>`,
+					],
+				])
+			}
+			$('exportBtn').onclick = () => {
+				const total = totalRows(),
+					pageCount = Math.min(
+						state.size,
+						total - (state.page - 1) * state.size,
+					)
+				if (!total) {
+					toast('没有可导出的任务', true)
+					return
+				}
+				openModal(
+					'导出任务',
+					`<div class="dialog-body"><label class="form-group">导出范围<select id="exportRange"><option value="page">当前页（${pageCount} 条）</option><option value="1000">当前结果前 ${Math.min(total, 1000)} 条</option>${total > 1000 ? '<option value="10000">当前结果前 ' + Math.min(total, 10000) + ' 条</option>' : ''}</select></label><p class="form-hint" style="margin-top:16px">导出当前筛选结果及所选列，生成 Excel 工作簿（.xlsx）。<br>单次最多导出 10,000 条；可先筛选任务，缩小导出范围。</p></div>${footer('<button class="btn" data-close>取消</button><button class="btn primary" id="downloadExcel">' + icon('download') + '确认导出</button>')}`,
+					'download',
+				)
+				$('downloadExcel').onclick = async () => {
+					const selected = $('exportRange').value,
+						start =
+							selected === 'page'
+								? (state.page - 1) * state.size
+								: 0,
+						count =
+							selected === 'page'
+								? pageCount
+								: Math.min(Number(selected), total)
+					if (
+						columns.filter(
+							(c) =>
+								!['number', 'actions'].includes(c[0]) &&
+								!state.hidden.has(c[0]),
+						).length === 0
+					) {
+						toast('请至少选择一个导出列', true)
+						return
+					}
+					$('downloadExcel').disabled = true
+					$('downloadExcel').textContent = '正在生成…'
+					await new Promise((r) => setTimeout(r, 20))
+					try {
+						const rows = Array.from({ length: count }, (_, i) =>
+							getTask(keyAt(start + i)),
+						)
+						const blob = xlsx(rows),
+							url = URL.createObjectURL(blob),
+							a = document.createElement('a')
+						a.href = url
+						a.download =
+							'调度任务_' +
+							new Date().toISOString().slice(0, 10) +
+							'.xlsx'
+						document.body.append(a)
+						a.click()
+						a.remove()
+						setTimeout(() => URL.revokeObjectURL(url), 30000)
+						closeModal()
+						toast(`已导出 ${format(count)} 条任务`)
+					} catch (err) {
+						$('downloadExcel').disabled = false
+						$('downloadExcel').textContent = '重新导出'
+						toast('导出未完成，请减少导出数量后重试', true)
+					}
+				}
+			}
+			window.addEventListener('resize', closeMenu)
+			$('tableScroll').addEventListener('scroll', closeMenu)
+			renderStats()
+			renderTable()
+		</script>
+	</body>
 </html>

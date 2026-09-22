@@ -1,215 +1,1319 @@
 /* 石墨色工作台采用独立局部令牌，让地图与遥测在原有系统导航内形成连续视野。 */
 .monitor {
-  --monitor-bg: #0c131f;
-  --monitor-panel: #101b29;
-  --monitor-line: #243347;
-  --monitor-muted: #7d91a9;
-  --monitor-text: #e1ebf5;
-  --monitor-cyan: #64d6f5;
-  --monitor-green: #53d9b1;
-  display: flex; flex-direction: column; height: 100%; min-height: 600px; padding: 0 4px;
-  color: var(--monitor-text); font-family: 'Bahnschrift', 'Microsoft YaHei UI', sans-serif;
+	--monitor-bg: #0c131f;
+	--monitor-panel: #101b29;
+	--monitor-line: #243347;
+	--monitor-muted: #7d91a9;
+	--monitor-text: #e1ebf5;
+	--monitor-cyan: #64d6f5;
+	--monitor-green: #53d9b1;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	min-height: 600px;
+	padding: 0 4px;
+	color: var(--monitor-text);
+	font-family: 'Bahnschrift', 'Microsoft YaHei UI', sans-serif;
 }
-.monitor:fullscreen { background: var(--monitor-bg); padding: 0 22px; overflow: auto; }
-.monitor button, .monitor select { font-family: inherit; }
-.monitor button { cursor: pointer; transition: background .18s, border-color .18s, color .18s; }
-.monitor button:disabled { opacity: .38; cursor: not-allowed; }
-.monitor button:focus-visible, .monitor select:focus-visible { outline: 2px solid var(--monitor-cyan); outline-offset: 3px; }
-.heading { min-height: 78px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
-.titleBlock { display: flex; align-items: center; gap: 12px; }
-.titleIcon { display: grid; place-items: center; width: 42px; height: 42px; color: var(--monitor-cyan); border: 1px solid #33506a; border-radius: 7px; background: #17334966; }
-.eyebrow { color: #839bb4; font-size: 9px; letter-spacing: 2.6px; margin-bottom: 5px; }
-.heading h1 { font-size: 23px; line-height: 1.1; font-weight: 600; margin: 0; letter-spacing: 1.5px; display: flex; align-items: center; gap: 14px; }
-.version { font-size: 11px; font-weight: 400; color: var(--monitor-muted); letter-spacing: 1px; border-left: 1px solid #344053; padding-left: 14px; }
-.headingActions { display: flex; align-items: center; gap: 20px; }
-.demoBadge { display: inline-flex; align-items: center; gap: 7px; color: #d2b477; font-size: 10px; padding: 4px 8px; background: #bd945210; border: 1px solid #ad8b3c36; border-radius: 4px; }
-.demoBadge > span { width: 4px; height: 4px; border-radius: 50%; background: #d2b477; }
-.connection { display: flex; align-items: center; gap: 7px; font-size: 11px; color: #a3b4c8; }
-.connection svg { color: var(--monitor-green); }
-.iconButton { width: 30px; height: 30px; display: grid; place-items: center; padding: 0; color: #9caec3; background: #132132; border: 1px solid var(--monitor-line); border-radius: 4px; }
-.iconButton:hover { color: var(--monitor-cyan); border-color: #527995; }
+.monitor:fullscreen {
+	background: var(--monitor-bg);
+	padding: 0 22px;
+	overflow: auto;
+}
+.monitor button,
+.monitor select {
+	font-family: inherit;
+}
+.monitor button {
+	cursor: pointer;
+	transition:
+		background 0.18s,
+		border-color 0.18s,
+		color 0.18s;
+}
+.monitor button:disabled {
+	opacity: 0.38;
+	cursor: not-allowed;
+}
+.monitor button:focus-visible,
+.monitor select:focus-visible {
+	outline: 2px solid var(--monitor-cyan);
+	outline-offset: 3px;
+}
+.heading {
+	min-height: 78px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 16px;
+}
+.titleBlock {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+.titleIcon {
+	display: grid;
+	place-items: center;
+	width: 42px;
+	height: 42px;
+	color: var(--monitor-cyan);
+	border: 1px solid #33506a;
+	border-radius: 7px;
+	background: #17334966;
+}
+.eyebrow {
+	color: #839bb4;
+	font-size: 9px;
+	letter-spacing: 2.6px;
+	margin-bottom: 5px;
+}
+.heading h1 {
+	font-size: 23px;
+	line-height: 1.1;
+	font-weight: 600;
+	margin: 0;
+	letter-spacing: 1.5px;
+	display: flex;
+	align-items: center;
+	gap: 14px;
+}
+.version {
+	font-size: 11px;
+	font-weight: 400;
+	color: var(--monitor-muted);
+	letter-spacing: 1px;
+	border-left: 1px solid #344053;
+	padding-left: 14px;
+}
+.headingActions {
+	display: flex;
+	align-items: center;
+	gap: 20px;
+}
+.demoBadge {
+	display: inline-flex;
+	align-items: center;
+	gap: 7px;
+	color: #d2b477;
+	font-size: 10px;
+	padding: 4px 8px;
+	background: #bd945210;
+	border: 1px solid #ad8b3c36;
+	border-radius: 4px;
+}
+.demoBadge > span {
+	width: 4px;
+	height: 4px;
+	border-radius: 50%;
+	background: #d2b477;
+}
+.connection {
+	display: flex;
+	align-items: center;
+	gap: 7px;
+	font-size: 11px;
+	color: #a3b4c8;
+}
+.connection svg {
+	color: var(--monitor-green);
+}
+.iconButton {
+	width: 30px;
+	height: 30px;
+	display: grid;
+	place-items: center;
+	padding: 0;
+	color: #9caec3;
+	background: #132132;
+	border: 1px solid var(--monitor-line);
+	border-radius: 4px;
+}
+.iconButton:hover {
+	color: var(--monitor-cyan);
+	border-color: #527995;
+}
 
 /* 关键数字采用固定宽度数字；单条分割带比多层卡片更适合高密度监控。 */
-.telemetry { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); background: linear-gradient(110deg, #122337, #111d2c); border: 1px solid var(--monitor-line); border-radius: 6px; margin-bottom: 14px; min-height: 90px; }
-.metric { display: flex; gap: 17px; align-items: center; padding: 17px 24px; position: relative; min-width: 0; }
-.metric + .metric::before { content: ''; position: absolute; left: 0; top: 22px; bottom: 22px; width: 1px; background: var(--monitor-line); }
-.metricIcon { color: #89a6c0; flex: none; }
-.metric > div { flex: 1; min-width: 0; }
-.metricLabel { display: flex; align-items: center; gap: 9px; font-size: 11px; color: #a5b5c8; white-space: nowrap; }
-.metricEnglish { color: #69809a; letter-spacing: 1px; font-size: 8px; }
-.metricValue { display: flex; align-items: baseline; gap: 8px; margin-top: 7px; font-size: 30px; line-height: 1; font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.metricValue small { font-size: 12px; color: #89a0b9; font-weight: 400; }
-.metric:first-child .metricValue { font-size: 23px; }
-.statusDot { width: 7px; height: 7px; background: currentColor; border-radius: 50%; box-shadow: 0 0 12px currentColor; align-self: center; margin-right: 2px; }
-.metricHint { border: 1px solid #325048; color: #97b6ae; font-size: 10px; font-weight: 400; padding: 4px 6px; align-self: center; margin-left: auto; border-radius: 3px; }
-.good { color: var(--monitor-green) !important; }
-.danger { color: #ff7c88 !important; }
-.sparkline { margin-left: auto; width: 80px; height: 26px; align-self: center; }
-.sparkline svg { width: 100%; height: 100%; }
-.sparkline path { stroke: var(--monitor-cyan); stroke-width: 1.5; fill: none; }
-.batteryBars { display: flex; align-self: center; gap: 3px; margin-left: auto; }
-.batteryBars i { display: block; width: 5px; height: 18px; background: #284139; border-radius: 1px; }
-.batteryBars .batteryFilled { background: var(--monitor-green); }
-.stableBadge { color: #82bcb2; font-size: 10px; display: flex; align-items: center; gap: 3px; margin-left: auto; font-weight: 400; }
+.telemetry {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	background: linear-gradient(110deg, #122337, #111d2c);
+	border: 1px solid var(--monitor-line);
+	border-radius: 6px;
+	margin-bottom: 14px;
+	min-height: 90px;
+}
+.metric {
+	display: flex;
+	gap: 17px;
+	align-items: center;
+	padding: 17px 24px;
+	position: relative;
+	min-width: 0;
+}
+.metric + .metric::before {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 22px;
+	bottom: 22px;
+	width: 1px;
+	background: var(--monitor-line);
+}
+.metricIcon {
+	color: #89a6c0;
+	flex: none;
+}
+.metric > div {
+	flex: 1;
+	min-width: 0;
+}
+.metricLabel {
+	display: flex;
+	align-items: center;
+	gap: 9px;
+	font-size: 11px;
+	color: #a5b5c8;
+	white-space: nowrap;
+}
+.metricEnglish {
+	color: #69809a;
+	letter-spacing: 1px;
+	font-size: 8px;
+}
+.metricValue {
+	display: flex;
+	align-items: baseline;
+	gap: 8px;
+	margin-top: 7px;
+	font-size: 30px;
+	line-height: 1;
+	font-weight: 500;
+	font-variant-numeric: tabular-nums;
+	white-space: nowrap;
+}
+.metricValue small {
+	font-size: 12px;
+	color: #89a0b9;
+	font-weight: 400;
+}
+.metric:first-child .metricValue {
+	font-size: 23px;
+}
+.statusDot {
+	width: 7px;
+	height: 7px;
+	background: currentColor;
+	border-radius: 50%;
+	box-shadow: 0 0 12px currentColor;
+	align-self: center;
+	margin-right: 2px;
+}
+.metricHint {
+	border: 1px solid #325048;
+	color: #97b6ae;
+	font-size: 10px;
+	font-weight: 400;
+	padding: 4px 6px;
+	align-self: center;
+	margin-left: auto;
+	border-radius: 3px;
+}
+.good {
+	color: var(--monitor-green) !important;
+}
+.danger {
+	color: #ff7c88 !important;
+}
+.sparkline {
+	margin-left: auto;
+	width: 80px;
+	height: 26px;
+	align-self: center;
+}
+.sparkline svg {
+	width: 100%;
+	height: 100%;
+}
+.sparkline path {
+	stroke: var(--monitor-cyan);
+	stroke-width: 1.5;
+	fill: none;
+}
+.batteryBars {
+	display: flex;
+	align-self: center;
+	gap: 3px;
+	margin-left: auto;
+}
+.batteryBars i {
+	display: block;
+	width: 5px;
+	height: 18px;
+	background: #284139;
+	border-radius: 1px;
+}
+.batteryBars .batteryFilled {
+	background: var(--monitor-green);
+}
+.stableBadge {
+	color: #82bcb2;
+	font-size: 10px;
+	display: flex;
+	align-items: center;
+	gap: 3px;
+	margin-left: auto;
+	font-weight: 400;
+}
 
 /* 桌面右侧属性栏固定宽度，地图取得其余空间；纵向随可用窗口增长。 */
-.workspace { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 14px; flex: 1; min-height: 0; }
-.mapColumn { display: flex; flex-direction: column; gap: 14px; min-width: 0; min-height: 0; }
-.mapPanel, .taskPanel, .inspector { border: 1px solid var(--monitor-line); background: var(--monitor-panel); border-radius: 6px; overflow: hidden; }
-.mapPanel { flex: 1; display: flex; flex-direction: column; min-height: 0; }
-.panelHeader { height: 45px; padding: 0 17px; display: flex; justify-content: space-between; align-items: center; flex: none; border-bottom: 1px solid var(--monitor-line); background: #13203155; gap: 12px; }
-.panelHeader h2, .taskHeading h2 { display: flex; align-items: center; gap: 8px; font-size: 13px; margin: 0; font-weight: 500; white-space: nowrap; }
-.panelHeader h2 > svg, .taskHeading h2 > svg { color: #8ba9c4; }
-.panelHeader h2 > span { color: #617790; font-size: 8px; letter-spacing: 1.5px; margin-left: 4px; }
-.mapName { display: flex; align-items: center; gap: 8px; color: #a6b7ca; font-size: 10px; }
-.mapName > span:first-child { width: 5px; height: 5px; background: var(--monitor-cyan); border-radius: 50%; }
-.mapVersion { color: #6a839e; font-size: 9px; }
-.mapToolbar { min-height: 40px; display: flex; justify-content: space-between; align-items: center; padding: 5px 14px; gap: 10px; border-bottom: 1px solid #1d2c3e; background: #0f1a28; flex: none; }
-.layerGroup { display: flex; align-items: center; gap: 13px; color: #6e849e; }
-.layerGroup > svg { margin-right: 1px; }
-.layerToggle { padding: 3px 0; display: flex; align-items: center; gap: 6px; color: #798ca2; font-size: 10px; background: none; border: none; }
-.layerActive { color: #afc5db; }
-.toggleTrack { display: flex; align-items: center; width: 22px; height: 12px; border-radius: 10px; background: #304155; padding: 2px; }
-.toggleTrack i { width: 8px; height: 8px; border-radius: 50%; background: #7890aa; transition: transform .2s; }
-.layerActive .toggleTrack { background: #25617a; }
-.layerActive .toggleTrack i { transform: translateX(10px); background: #7adef6; }
-.mapMode { display: flex; align-items: center; gap: 6px; font-size: 10px; color: #8195aa; }
-.mapMode span { width: 4px; height: 4px; border-radius: 50%; background: #7b91ac; }
-.mapCanvas { flex: 1; min-height: 0; position: relative; display: flex; }
-.mapCanvas > * { flex: 1; width: 100%; min-width: 0; }
-.mapFooter { display: flex; align-items: center; min-height: 31px; padding: 0 15px; gap: 20px; border-top: 1px solid #1d2c3e; font-size: 9px; color: #8b9eb4; flex: none; }
-.mapFooter > span { display: inline-flex; align-items: center; gap: 6px; }
-.legendRobot { width: 6px; height: 6px; border-radius: 2px; background: var(--monitor-cyan); }
-.legendRoute { width: 14px; height: 0; border-top: 2px dashed var(--monitor-cyan); }
-.legendStation { width: 6px; height: 6px; border: 1px solid #8ca2bb; border-radius: 50%; }
-.mapHelp { margin-left: auto; color: #72849c; }
+.workspace {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 320px;
+	gap: 14px;
+	flex: 1;
+	min-height: 0;
+}
+.mapColumn {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+	min-width: 0;
+	min-height: 0;
+}
+.mapPanel,
+.taskPanel,
+.inspector {
+	border: 1px solid var(--monitor-line);
+	background: var(--monitor-panel);
+	border-radius: 6px;
+	overflow: hidden;
+}
+.mapPanel {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+}
+.panelHeader {
+	height: 45px;
+	padding: 0 17px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	flex: none;
+	border-bottom: 1px solid var(--monitor-line);
+	background: #13203155;
+	gap: 12px;
+}
+.panelHeader h2,
+.taskHeading h2 {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 13px;
+	margin: 0;
+	font-weight: 500;
+	white-space: nowrap;
+}
+.panelHeader h2 > svg,
+.taskHeading h2 > svg {
+	color: #8ba9c4;
+}
+.panelHeader h2 > span {
+	color: #617790;
+	font-size: 8px;
+	letter-spacing: 1.5px;
+	margin-left: 4px;
+}
+.mapName {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	color: #a6b7ca;
+	font-size: 10px;
+}
+.mapName > span:first-child {
+	width: 5px;
+	height: 5px;
+	background: var(--monitor-cyan);
+	border-radius: 50%;
+}
+.mapVersion {
+	color: #6a839e;
+	font-size: 9px;
+}
+.mapToolbar {
+	min-height: 40px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 5px 14px;
+	gap: 10px;
+	border-bottom: 1px solid #1d2c3e;
+	background: #0f1a28;
+	flex: none;
+}
+.layerGroup {
+	display: flex;
+	align-items: center;
+	gap: 13px;
+	color: #6e849e;
+}
+.layerGroup > svg {
+	margin-right: 1px;
+}
+.layerToggle {
+	padding: 3px 0;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	color: #798ca2;
+	font-size: 10px;
+	background: none;
+	border: none;
+}
+.layerActive {
+	color: #afc5db;
+}
+.toggleTrack {
+	display: flex;
+	align-items: center;
+	width: 22px;
+	height: 12px;
+	border-radius: 10px;
+	background: #304155;
+	padding: 2px;
+}
+.toggleTrack i {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: #7890aa;
+	transition: transform 0.2s;
+}
+.layerActive .toggleTrack {
+	background: #25617a;
+}
+.layerActive .toggleTrack i {
+	transform: translateX(10px);
+	background: #7adef6;
+}
+.mapMode {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 10px;
+	color: #8195aa;
+}
+.mapMode span {
+	width: 4px;
+	height: 4px;
+	border-radius: 50%;
+	background: #7b91ac;
+}
+.mapCanvas {
+	flex: 1;
+	min-height: 0;
+	position: relative;
+	display: flex;
+}
+.mapCanvas > * {
+	flex: 1;
+	width: 100%;
+	min-width: 0;
+}
+.mapFooter {
+	display: flex;
+	align-items: center;
+	min-height: 31px;
+	padding: 0 15px;
+	gap: 20px;
+	border-top: 1px solid #1d2c3e;
+	font-size: 9px;
+	color: #8b9eb4;
+	flex: none;
+}
+.mapFooter > span {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+}
+.legendRobot {
+	width: 6px;
+	height: 6px;
+	border-radius: 2px;
+	background: var(--monitor-cyan);
+}
+.legendRoute {
+	width: 14px;
+	height: 0;
+	border-top: 2px dashed var(--monitor-cyan);
+}
+.legendStation {
+	width: 6px;
+	height: 6px;
+	border: 1px solid #8ca2bb;
+	border-radius: 50%;
+}
+.mapHelp {
+	margin-left: auto;
+	color: #72849c;
+}
 
 /* 底部时间线将任务目标与站点进度排在同一阅读线上，站点按钮可定位地图。 */
-.taskPanel { padding: 14px 18px 15px; flex: none; }
-.taskHeading { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-.taskHeading h2 { font-size: 12px; }
-.taskId { font-size: 9px; font-weight: 400; letter-spacing: .5px; color: #829ab4; margin-left: 4px; }
-.taskStatus { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--monitor-green); }
-.taskStatus > span { width: 4px; height: 4px; border-radius: 50%; background: currentColor; }
-.taskContent { display: grid; grid-template-columns: minmax(170px, .9fr) minmax(170px, 1fr); gap: 38px; padding-top: 15px; }
-.taskDescription { display: flex; flex-direction: column; gap: 7px; }
-.taskDescription strong { display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 500; }
-.taskDescription strong > svg { color: #63869e; }
-.taskDescription strong > span { font-size: 12px; color: #b1c3d6; }
-.taskDescription > span { font-size: 10px; color: #90a5bb; }
-.taskMeta { display: flex; align-items: center; gap: 5px; font-size: 9px; color: #8093a8; }
-.taskMeta > span { margin-left: 9px; padding-left: 12px; border-left: 1px solid #344456; }
-.taskProgress { padding-top: 2px; }
-.progressHeading { display: flex; justify-content: space-between; align-items: baseline; font-size: 10px; color: #8fa7bf; }
-.progressHeading strong { font-size: 22px; color: var(--monitor-cyan); font-weight: 400; font-variant-numeric: tabular-nums; }
-.progressHeading small { font-size: 11px; padding-left: 2px; }
-.progressTrack { height: 4px; border-radius: 2px; background: #23384a; margin-top: 7px; overflow: hidden; }
-.progressTrack > i { height: 100%; display: block; background: linear-gradient(90deg, #369bbd, #67dcf1); box-shadow: 0 0 8px #65d9f766; transition: width .25s linear; }
-.stationTrack { display: flex; justify-content: space-between; margin-top: 10px; }
-.stationTrack button { border: none; background: none; padding: 0; display: flex; align-items: center; gap: 4px; color: #6a8099; font-size: 9px; }
-.stationTrack button > i { width: 4px; height: 4px; border: 1px solid #698199; border-radius: 50%; }
-.stationTrack .stationReached { color: #6cd6ed; }
-.stationReached > i { background: #6cd6ed; border-color: #6cd6ed !important; }
+.taskPanel {
+	padding: 14px 18px 15px;
+	flex: none;
+}
+.taskHeading {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 10px;
+}
+.taskHeading h2 {
+	font-size: 12px;
+}
+.taskId {
+	font-size: 9px;
+	font-weight: 400;
+	letter-spacing: 0.5px;
+	color: #829ab4;
+	margin-left: 4px;
+}
+.taskStatus {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 10px;
+	color: var(--monitor-green);
+}
+.taskStatus > span {
+	width: 4px;
+	height: 4px;
+	border-radius: 50%;
+	background: currentColor;
+}
+.taskContent {
+	display: grid;
+	grid-template-columns: minmax(170px, 0.9fr) minmax(170px, 1fr);
+	gap: 38px;
+	padding-top: 15px;
+}
+.taskDescription {
+	display: flex;
+	flex-direction: column;
+	gap: 7px;
+}
+.taskDescription strong {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	font-size: 14px;
+	font-weight: 500;
+}
+.taskDescription strong > svg {
+	color: #63869e;
+}
+.taskDescription strong > span {
+	font-size: 12px;
+	color: #b1c3d6;
+}
+.taskDescription > span {
+	font-size: 10px;
+	color: #90a5bb;
+}
+.taskMeta {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	font-size: 9px;
+	color: #8093a8;
+}
+.taskMeta > span {
+	margin-left: 9px;
+	padding-left: 12px;
+	border-left: 1px solid #344456;
+}
+.taskProgress {
+	padding-top: 2px;
+}
+.progressHeading {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	font-size: 10px;
+	color: #8fa7bf;
+}
+.progressHeading strong {
+	font-size: 22px;
+	color: var(--monitor-cyan);
+	font-weight: 400;
+	font-variant-numeric: tabular-nums;
+}
+.progressHeading small {
+	font-size: 11px;
+	padding-left: 2px;
+}
+.progressTrack {
+	height: 4px;
+	border-radius: 2px;
+	background: #23384a;
+	margin-top: 7px;
+	overflow: hidden;
+}
+.progressTrack > i {
+	height: 100%;
+	display: block;
+	background: linear-gradient(90deg, #369bbd, #67dcf1);
+	box-shadow: 0 0 8px #65d9f766;
+	transition: width 0.25s linear;
+}
+.stationTrack {
+	display: flex;
+	justify-content: space-between;
+	margin-top: 10px;
+}
+.stationTrack button {
+	border: none;
+	background: none;
+	padding: 0;
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	color: #6a8099;
+	font-size: 9px;
+}
+.stationTrack button > i {
+	width: 4px;
+	height: 4px;
+	border: 1px solid #698199;
+	border-radius: 50%;
+}
+.stationTrack .stationReached {
+	color: #6cd6ed;
+}
+.stationReached > i {
+	background: #6cd6ed;
+	border-color: #6cd6ed !important;
+}
 
 /* 属性侧栏用设备图、参数表和固定操作区形成明确层次，日志复用中间区域。 */
-.inspector { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
-.singleDevice { font-size: 9px; color: #758ba3; letter-spacing: 1px; }
-.robotIdentity { display: flex; justify-content: space-between; align-items: center; padding: 17px 18px 0; }
-.robotIdentity > div { display: flex; flex-direction: column; gap: 5px; }
-.robotIdentity strong { display: flex; align-items: center; gap: 8px; font-size: 20px; font-weight: 500; letter-spacing: .7px; }
-.robotIdentity strong > span { border: 1px solid #35475c; border-radius: 3px; padding: 2px 5px; font-size: 9px; color: #9db4cb; }
-.robotIdentity > div > span { color: #8198af; font-size: 10px; }
-.onlineBadge { display: flex; align-items: center; gap: 5px; padding: 4px 7px; border: 1px solid #2e594d; background: #2c685217; color: var(--monitor-green); font-size: 9px; border-radius: 3px; }
-.onlineBadge i { width: 4px; height: 4px; background: currentColor; border-radius: 50%; }
-.robotVisual { height: 134px; position: relative; margin: 0 12px; overflow: hidden; flex: none; }
-.visualGrid { position: absolute; inset: 32px 10px -18px; background-image: linear-gradient(#6b9fb20c 1px, transparent 1px), linear-gradient(90deg, #6b9fb20c 1px, transparent 1px); background-size: 21px 21px; transform: perspective(140px) rotateX(40deg); mask-image: radial-gradient(ellipse, black, transparent 72%); }
-.robotIllustration { display: block; position: relative; width: 100%; height: 138px; filter: drop-shadow(0 8px 10px #03091399); }
-.robotSerial { position: absolute; bottom: 5px; left: 6px; color: #5f7891; font-size: 7px; letter-spacing: 1px; }
-.robotWeight { position: absolute; bottom: 5px; right: 6px; font-size: 15px; color: #8a9bb0; }
-.robotWeight > span { margin-left: 3px; font-size: 8px; color: #60768e; }
-.inspectorTabs { display: flex; padding: 0 17px; border-bottom: 1px solid var(--monitor-line); gap: 23px; margin-top: 5px; flex: none; }
-.inspectorTabs button { border: none; border-bottom: 2px solid transparent; display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: transparent; color: #839ab3; font-size: 11px; padding: 10px 0 11px; }
-.inspectorTabs button[aria-selected='true'] { border-bottom-color: var(--monitor-cyan); color: var(--monitor-cyan); }
-.inspectorTabs button > span { font-size: 8px; background: #253448; padding: 1px 4px; border-radius: 3px; color: #a4b6ca; }
+.inspector {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	min-height: 0;
+}
+.singleDevice {
+	font-size: 9px;
+	color: #758ba3;
+	letter-spacing: 1px;
+}
+.robotIdentity {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 17px 18px 0;
+}
+.robotIdentity > div {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+}
+.robotIdentity strong {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 20px;
+	font-weight: 500;
+	letter-spacing: 0.7px;
+}
+.robotIdentity strong > span {
+	border: 1px solid #35475c;
+	border-radius: 3px;
+	padding: 2px 5px;
+	font-size: 9px;
+	color: #9db4cb;
+}
+.robotIdentity > div > span {
+	color: #8198af;
+	font-size: 10px;
+}
+.onlineBadge {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	padding: 4px 7px;
+	border: 1px solid #2e594d;
+	background: #2c685217;
+	color: var(--monitor-green);
+	font-size: 9px;
+	border-radius: 3px;
+}
+.onlineBadge i {
+	width: 4px;
+	height: 4px;
+	background: currentColor;
+	border-radius: 50%;
+}
+.robotVisual {
+	height: 134px;
+	position: relative;
+	margin: 0 12px;
+	overflow: hidden;
+	flex: none;
+}
+.visualGrid {
+	position: absolute;
+	inset: 32px 10px -18px;
+	background-image:
+		linear-gradient(#6b9fb20c 1px, transparent 1px),
+		linear-gradient(90deg, #6b9fb20c 1px, transparent 1px);
+	background-size: 21px 21px;
+	transform: perspective(140px) rotateX(40deg);
+	mask-image: radial-gradient(ellipse, black, transparent 72%);
+}
+.robotIllustration {
+	display: block;
+	position: relative;
+	width: 100%;
+	height: 138px;
+	filter: drop-shadow(0 8px 10px #03091399);
+}
+.robotSerial {
+	position: absolute;
+	bottom: 5px;
+	left: 6px;
+	color: #5f7891;
+	font-size: 7px;
+	letter-spacing: 1px;
+}
+.robotWeight {
+	position: absolute;
+	bottom: 5px;
+	right: 6px;
+	font-size: 15px;
+	color: #8a9bb0;
+}
+.robotWeight > span {
+	margin-left: 3px;
+	font-size: 8px;
+	color: #60768e;
+}
+.inspectorTabs {
+	display: flex;
+	padding: 0 17px;
+	border-bottom: 1px solid var(--monitor-line);
+	gap: 23px;
+	margin-top: 5px;
+	flex: none;
+}
+.inspectorTabs button {
+	border: none;
+	border-bottom: 2px solid transparent;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+	background: transparent;
+	color: #839ab3;
+	font-size: 11px;
+	padding: 10px 0 11px;
+}
+.inspectorTabs button[aria-selected='true'] {
+	border-bottom-color: var(--monitor-cyan);
+	color: var(--monitor-cyan);
+}
+.inspectorTabs button > span {
+	font-size: 8px;
+	background: #253448;
+	padding: 1px 4px;
+	border-radius: 3px;
+	color: #a4b6ca;
+}
 /* 高度不足时只滚动属性明细，保留设备身份、状态页签和急停操作。 */
-.inspectorBody { padding: 14px 17px 12px; flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: thin; }
-.sectionCaption { display: flex; justify-content: space-between; color: #9aacc0; font-size: 10px; letter-spacing: .5px; }
-.sectionCaption > span { color: #5f7791; font-size: 8px; letter-spacing: 1px; }
-.parameters { margin: 9px 0 15px; }
-.parameter { display: flex; align-items: center; justify-content: space-between; gap: 7px; min-height: 29px; border-bottom: 1px solid #24324688; font-size: 10px; }
-.parameter:last-child { border-bottom: none; }
-.parameter dt { color: #7c91a9; flex: none; }
-.parameter dd { display: flex; align-items: center; gap: 4px; margin: 0; font-size: 10px; color: #c8d6e5; font-variant-numeric: tabular-nums; }
-.parameter small { font-size: 8px; color: #7088a2; }
-.parameter em { color: #526a83; font-style: normal; margin: 0 2px; }
-.coordinates { font-size: 11px; color: #a8d6ee; }
-.inlineBadge { font-size: 7px; padding: 2px 3px; border-radius: 2px; background: #2a3d53; color: #95adc6; margin-left: 3px; }
-.healthSensors { display: flex; gap: 10px; justify-content: space-between; margin: 12px 0 16px; }
-.healthSensors > span { display: flex; align-items: center; gap: 4px; font-size: 9px; color: #9bb1c5; }
-.healthSensors svg { color: #759bb8; }
-.healthSensors i { width: 4px; height: 4px; background: var(--monitor-green); border-radius: 50%; }
+.inspectorBody {
+	padding: 14px 17px 12px;
+	flex: 1;
+	min-height: 0;
+	overflow-y: auto;
+	scrollbar-width: thin;
+}
+.sectionCaption {
+	display: flex;
+	justify-content: space-between;
+	color: #9aacc0;
+	font-size: 10px;
+	letter-spacing: 0.5px;
+}
+.sectionCaption > span {
+	color: #5f7791;
+	font-size: 8px;
+	letter-spacing: 1px;
+}
+.parameters {
+	margin: 9px 0 15px;
+}
+.parameter {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 7px;
+	min-height: 29px;
+	border-bottom: 1px solid #24324688;
+	font-size: 10px;
+}
+.parameter:last-child {
+	border-bottom: none;
+}
+.parameter dt {
+	color: #7c91a9;
+	flex: none;
+}
+.parameter dd {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	margin: 0;
+	font-size: 10px;
+	color: #c8d6e5;
+	font-variant-numeric: tabular-nums;
+}
+.parameter small {
+	font-size: 8px;
+	color: #7088a2;
+}
+.parameter em {
+	color: #526a83;
+	font-style: normal;
+	margin: 0 2px;
+}
+.coordinates {
+	font-size: 11px;
+	color: #a8d6ee;
+}
+.inlineBadge {
+	font-size: 7px;
+	padding: 2px 3px;
+	border-radius: 2px;
+	background: #2a3d53;
+	color: #95adc6;
+	margin-left: 3px;
+}
+.healthSensors {
+	display: flex;
+	gap: 10px;
+	justify-content: space-between;
+	margin: 12px 0 16px;
+}
+.healthSensors > span {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	font-size: 9px;
+	color: #9bb1c5;
+}
+.healthSensors svg {
+	color: #759bb8;
+}
+.healthSensors i {
+	width: 4px;
+	height: 4px;
+	background: var(--monitor-green);
+	border-radius: 50%;
+}
 /* 重定位也使用左标签、右控件；状态提示留在标签列，窄侧栏仍能完整显示操作。 */
-.relocation { display: grid; grid-template-columns: 82px minmax(0, 1fr); align-items: center; gap: 8px; padding-top: 12px; border-top: 1px solid var(--monitor-line); }
-.relocation > label { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; font-size: 10px; color: #a1b3c8; }
-.relocation label > span { flex-basis: 100%; color: #687f98; font-size: 9px; }
-.relocation > div { display: flex; min-width: 0; gap: 7px; }
-.relocation select { width: 0; flex: 1; min-width: 0; padding: 7px 6px; background: #152334; color: #9ab0c7; border: 1px solid #2a3d53; border-radius: 3px; font-size: 10px; }
-.relocation button { display: flex; align-items: center; gap: 4px; border: 1px solid #35556e; border-radius: 3px; background: #1b384d; color: #9fdaf0; padding: 0 10px; font-size: 10px; }
-.eventPanel { overflow-y: auto; }
-.eventList { list-style: none; padding: 0; margin: 16px 0 0; }
-.eventList li { display: flex; position: relative; gap: 12px; padding: 0 0 20px 3px; }
-.eventList li:not(:last-child)::before { position: absolute; content: ''; left: 5px; top: 10px; bottom: 0; width: 1px; background: #2a3f53; }
-.eventList li > i { flex: none; height: 5px; width: 5px; margin-top: 4px; border-radius: 50%; background: #71bce4; }
-.eventList li[data-tone='danger'] > i { background: #ff7c88; }
-.eventList li[data-tone='warning'] > i { background: #d7b67b; }
-.eventList li[data-tone='success'] > i { background: var(--monitor-green); }
-.eventList time { color: #718ca7; font-size: 9px; }
-.eventList p { font-size: 11px; line-height: 1.7; color: #c0d0e2; margin: 4px 0 0; }
-.controls { border-top: 1px solid var(--monitor-line); padding: 13px 16px; margin-top: auto; background: #13213255; flex: none; }
-.controlRow { display: flex; gap: 9px; margin-bottom: 9px; }
-.controlRow > button { flex: 1; display: flex; justify-content: center; align-items: center; gap: 6px; border-radius: 4px; height: 33px; font-size: 11px; }
-.primaryButton { border: 1px solid #64caeb; background: #65cfee; color: #0d2b3b; font-weight: 600; }
-.primaryButton:hover:not(:disabled) { background: #8de5ff; }
-.secondaryButton { border: 1px solid #34516a; background: #192e42; color: #afc8de; }
-.secondaryButton:hover:not(:disabled) { border-color: #689dbd; background: #23415a; }
-.emergencyButton { display: flex; align-items: center; justify-content: center; gap: 7px; width: 100%; height: 33px; border: 1px solid #7c3e49; background: #3c232c; color: #f08a94; font-size: 11px; border-radius: 4px; }
-.emergencyButton span { font-size: 8px; letter-spacing: 1.2px; margin-left: 3px; opacity: .7; }
-.emergencyButton:hover, .emergencyActive { border-color: #f07786; background: #612d3b; color: #ffd9df; }
+.relocation {
+	display: grid;
+	grid-template-columns: 82px minmax(0, 1fr);
+	align-items: center;
+	gap: 8px;
+	padding-top: 12px;
+	border-top: 1px solid var(--monitor-line);
+}
+.relocation > label {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 5px;
+	font-size: 10px;
+	color: #a1b3c8;
+}
+.relocation label > span {
+	flex-basis: 100%;
+	color: #687f98;
+	font-size: 9px;
+}
+.relocation > div {
+	display: flex;
+	min-width: 0;
+	gap: 7px;
+}
+.relocation select {
+	width: 0;
+	flex: 1;
+	min-width: 0;
+	padding: 7px 6px;
+	background: #152334;
+	color: #9ab0c7;
+	border: 1px solid #2a3d53;
+	border-radius: 3px;
+	font-size: 10px;
+}
+.relocation button {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	border: 1px solid #35556e;
+	border-radius: 3px;
+	background: #1b384d;
+	color: #9fdaf0;
+	padding: 0 10px;
+	font-size: 10px;
+}
+.eventPanel {
+	overflow-y: auto;
+}
+.eventList {
+	list-style: none;
+	padding: 0;
+	margin: 16px 0 0;
+}
+.eventList li {
+	display: flex;
+	position: relative;
+	gap: 12px;
+	padding: 0 0 20px 3px;
+}
+.eventList li:not(:last-child)::before {
+	position: absolute;
+	content: '';
+	left: 5px;
+	top: 10px;
+	bottom: 0;
+	width: 1px;
+	background: #2a3f53;
+}
+.eventList li > i {
+	flex: none;
+	height: 5px;
+	width: 5px;
+	margin-top: 4px;
+	border-radius: 50%;
+	background: #71bce4;
+}
+.eventList li[data-tone='danger'] > i {
+	background: #ff7c88;
+}
+.eventList li[data-tone='warning'] > i {
+	background: #d7b67b;
+}
+.eventList li[data-tone='success'] > i {
+	background: var(--monitor-green);
+}
+.eventList time {
+	color: #718ca7;
+	font-size: 9px;
+}
+.eventList p {
+	font-size: 11px;
+	line-height: 1.7;
+	color: #c0d0e2;
+	margin: 4px 0 0;
+}
+.controls {
+	border-top: 1px solid var(--monitor-line);
+	padding: 13px 16px;
+	margin-top: auto;
+	background: #13213255;
+	flex: none;
+}
+.controlRow {
+	display: flex;
+	gap: 9px;
+	margin-bottom: 9px;
+}
+.controlRow > button {
+	flex: 1;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 6px;
+	border-radius: 4px;
+	height: 33px;
+	font-size: 11px;
+}
+.primaryButton {
+	border: 1px solid #64caeb;
+	background: #65cfee;
+	color: #0d2b3b;
+	font-weight: 600;
+}
+.primaryButton:hover:not(:disabled) {
+	background: #8de5ff;
+}
+.secondaryButton {
+	border: 1px solid #34516a;
+	background: #192e42;
+	color: #afc8de;
+}
+.secondaryButton:hover:not(:disabled) {
+	border-color: #689dbd;
+	background: #23415a;
+}
+.emergencyButton {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 7px;
+	width: 100%;
+	height: 33px;
+	border: 1px solid #7c3e49;
+	background: #3c232c;
+	color: #f08a94;
+	font-size: 11px;
+	border-radius: 4px;
+}
+.emergencyButton span {
+	font-size: 8px;
+	letter-spacing: 1.2px;
+	margin-left: 3px;
+	opacity: 0.7;
+}
+.emergencyButton:hover,
+.emergencyActive {
+	border-color: #f07786;
+	background: #612d3b;
+	color: #ffd9df;
+}
 
 /* 系统底栏使用细进度条，将固定演示硬件读数与动态运动参数区分。 */
-.systemFooter { min-height: 35px; display: flex; align-items: center; gap: 22px; flex-wrap: wrap; color: #6f88a2; font-size: 9px; }
-.systemFooter > span { display: inline-flex; align-items: center; gap: 6px; }
-.systemFooter b { font-weight: 400; color: #9eb2c8; font-variant-numeric: tabular-nums; }
-.footerStatus { color: #96b6b3; }
-.footerStatus > i { width: 4px; height: 4px; background: var(--monitor-green); border-radius: 50%; }
-.resourceTrack { display: block; width: 36px; height: 3px; background: #27374d; border-radius: 3px; overflow: hidden; }
-.resourceTrack::before { content: ''; display: block; height: 100%; width: var(--usage); background: #568fb3; }
-.footerNote { margin-left: auto; }
-.footerVersion { color: #506780; font-size: 8px; letter-spacing: 1px; }
+.systemFooter {
+	min-height: 35px;
+	display: flex;
+	align-items: center;
+	gap: 22px;
+	flex-wrap: wrap;
+	color: #6f88a2;
+	font-size: 9px;
+}
+.systemFooter > span {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+}
+.systemFooter b {
+	font-weight: 400;
+	color: #9eb2c8;
+	font-variant-numeric: tabular-nums;
+}
+.footerStatus {
+	color: #96b6b3;
+}
+.footerStatus > i {
+	width: 4px;
+	height: 4px;
+	background: var(--monitor-green);
+	border-radius: 50%;
+}
+.resourceTrack {
+	display: block;
+	width: 36px;
+	height: 3px;
+	background: #27374d;
+	border-radius: 3px;
+	overflow: hidden;
+}
+.resourceTrack::before {
+	content: '';
+	display: block;
+	height: 100%;
+	width: var(--usage);
+	background: #568fb3;
+}
+.footerNote {
+	margin-left: auto;
+}
+.footerVersion {
+	color: #506780;
+	font-size: 8px;
+	letter-spacing: 1px;
+}
 
 /* 常见 720p/768p 桌面保留整幅地图和控制按钮，将属性明细作为局部滚动区。 */
 @media (min-width: 1001px) and (max-height: 850px) {
-  .heading { min-height: 61px; }
-  .telemetry { min-height: 72px; margin-bottom: 12px; }
-  .metric { padding-block: 11px; }
-  .metricValue { font-size: 27px; margin-top: 5px; }
-  .metric:first-child .metricValue { font-size: 21px; }
-  .robotVisual { height: 90px; }
-  .robotIllustration { height: 105px; }
-  .robotIdentity { padding-top: 12px; }
-  .robotIdentity strong { font-size: 18px; }
-  .robotIdentity > div > span { font-size: 9px; }
-  .taskPanel { padding: 10px 16px; }
-  .taskContent { padding-top: 10px; }
-  .taskDescription { gap: 6px; }
-  .systemFooter { min-height: 29px; }
+	.heading {
+		min-height: 61px;
+	}
+	.telemetry {
+		min-height: 72px;
+		margin-bottom: 12px;
+	}
+	.metric {
+		padding-block: 11px;
+	}
+	.metricValue {
+		font-size: 27px;
+		margin-top: 5px;
+	}
+	.metric:first-child .metricValue {
+		font-size: 21px;
+	}
+	.robotVisual {
+		height: 90px;
+	}
+	.robotIllustration {
+		height: 105px;
+	}
+	.robotIdentity {
+		padding-top: 12px;
+	}
+	.robotIdentity strong {
+		font-size: 18px;
+	}
+	.robotIdentity > div > span {
+		font-size: 9px;
+	}
+	.taskPanel {
+		padding: 10px 16px;
+	}
+	.taskContent {
+		padding-top: 10px;
+	}
+	.taskDescription {
+		gap: 6px;
+	}
+	.systemFooter {
+		min-height: 29px;
+	}
 }
 
 /* 在低分辨率桌面收紧读数，在平板改为纵向布局，保持地图和控制均可触达。 */
-@media (min-width: 1700px) { .workspace { grid-template-columns: minmax(0, 1fr) 354px; } .inspectorBody { padding-inline: 21px; } .parameter { min-height: 32px; font-size: 11px; } .parameter dd { font-size: 11px; } }
-@media (max-width: 1250px) { .metric { padding: 16px; gap: 12px; } .metricEnglish, .sparkline, .metricHint { display: none; } .workspace { grid-template-columns: minmax(0, 1fr) 302px; gap: 12px; } .taskContent { gap: 18px; } .stableBadge { font-size: 9px; } }
-@media (max-width: 1000px) { .monitor { height: auto; min-height: 100%; } .metricIcon { display: none; } .metric { padding-inline: 15px; } .workspace { grid-template-columns: minmax(0, 1fr) 286px; } .mapMode, .mapHelp, .panelHeader h2 > span, .footerVersion { display: none; } .mapName { gap: 5px; font-size: 9px; } .taskContent { grid-template-columns: 1fr; gap: 13px; } .taskId { font-size: 8px; } .taskPanel { padding: 12px 14px; } .mapPanel { min-height: 445px; } .mapToolbar { padding-inline: 10px; } .layerGroup { gap: 9px; } .healthSensors { gap: 5px; } .systemFooter { gap: 12px; } }
-@media (max-width: 760px) { .monitor { padding: 0; } .heading { min-height: 77px; } .heading h1 { font-size: 21px; } .headingActions { gap: 8px; } .connection, .version { display: none; } .telemetry { grid-template-columns: repeat(2, minmax(0, 1fr)); min-height: auto; gap: 0; } .metric { padding: 14px 16px; } .metric:nth-child(3), .metric:nth-child(4) { border-top: 1px solid var(--monitor-line); } .metric:nth-child(3)::before { display: none; } .metricValue { font-size: 27px; } .workspace { grid-template-columns: minmax(0, 1fr); } .mapCanvas { min-height: 365px; } .mapPanel { min-height: 482px; } .taskContent { grid-template-columns: minmax(140px, 1fr) minmax(130px, 1fr); gap: 15px; } .taskHeading h2 { gap: 6px; } .taskId { font-size: 7px; } .inspector { min-height: 660px; } .robotVisual { height: 140px; } .robotIllustration { height: 147px; } .inspectorBody { padding-inline: 20px; } .parameter { min-height: 33px; font-size: 11px; } .parameter dd { font-size: 11px; } .systemFooter { padding-block: 12px; line-height: 1.8; gap: 8px 14px; } .footerNote { margin-left: 0; } .eventPanel { min-height: 345px; } }
-@media (max-width: 420px) { .titleIcon { width: 35px; height: 35px; } .titleBlock { gap: 8px; } .eyebrow { font-size: 7px; letter-spacing: 1.6px; } .heading h1 { font-size: 20px; } .headingActions { gap: 6px; } .demoBadge { padding: 4px 6px; font-size: 9px; } .metric { padding-inline: 12px; } .stableBadge { margin-left: 1px; font-size: 8px; } .batteryBars { gap: 2px; } .batteryBars i { width: 4px; } .taskContent { grid-template-columns: 1fr; } .layerGroup > svg { display: none; } .mapName { font-size: 8px; } }
+@media (min-width: 1700px) {
+	.workspace {
+		grid-template-columns: minmax(0, 1fr) 354px;
+	}
+	.inspectorBody {
+		padding-inline: 21px;
+	}
+	.parameter {
+		min-height: 32px;
+		font-size: 11px;
+	}
+	.parameter dd {
+		font-size: 11px;
+	}
+}
+@media (max-width: 1250px) {
+	.metric {
+		padding: 16px;
+		gap: 12px;
+	}
+	.metricEnglish,
+	.sparkline,
+	.metricHint {
+		display: none;
+	}
+	.workspace {
+		grid-template-columns: minmax(0, 1fr) 302px;
+		gap: 12px;
+	}
+	.taskContent {
+		gap: 18px;
+	}
+	.stableBadge {
+		font-size: 9px;
+	}
+}
+@media (max-width: 1000px) {
+	.monitor {
+		height: auto;
+		min-height: 100%;
+	}
+	.metricIcon {
+		display: none;
+	}
+	.metric {
+		padding-inline: 15px;
+	}
+	.workspace {
+		grid-template-columns: minmax(0, 1fr) 286px;
+	}
+	.mapMode,
+	.mapHelp,
+	.panelHeader h2 > span,
+	.footerVersion {
+		display: none;
+	}
+	.mapName {
+		gap: 5px;
+		font-size: 9px;
+	}
+	.taskContent {
+		grid-template-columns: 1fr;
+		gap: 13px;
+	}
+	.taskId {
+		font-size: 8px;
+	}
+	.taskPanel {
+		padding: 12px 14px;
+	}
+	.mapPanel {
+		min-height: 445px;
+	}
+	.mapToolbar {
+		padding-inline: 10px;
+	}
+	.layerGroup {
+		gap: 9px;
+	}
+	.healthSensors {
+		gap: 5px;
+	}
+	.systemFooter {
+		gap: 12px;
+	}
+}
+@media (max-width: 760px) {
+	.monitor {
+		padding: 0;
+	}
+	.heading {
+		min-height: 77px;
+	}
+	.heading h1 {
+		font-size: 21px;
+	}
+	.headingActions {
+		gap: 8px;
+	}
+	.connection,
+	.version {
+		display: none;
+	}
+	.telemetry {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		min-height: auto;
+		gap: 0;
+	}
+	.metric {
+		padding: 14px 16px;
+	}
+	.metric:nth-child(3),
+	.metric:nth-child(4) {
+		border-top: 1px solid var(--monitor-line);
+	}
+	.metric:nth-child(3)::before {
+		display: none;
+	}
+	.metricValue {
+		font-size: 27px;
+	}
+	.workspace {
+		grid-template-columns: minmax(0, 1fr);
+	}
+	.mapCanvas {
+		min-height: 365px;
+	}
+	.mapPanel {
+		min-height: 482px;
+	}
+	.taskContent {
+		grid-template-columns: minmax(140px, 1fr) minmax(130px, 1fr);
+		gap: 15px;
+	}
+	.taskHeading h2 {
+		gap: 6px;
+	}
+	.taskId {
+		font-size: 7px;
+	}
+	.inspector {
+		min-height: 660px;
+	}
+	.robotVisual {
+		height: 140px;
+	}
+	.robotIllustration {
+		height: 147px;
+	}
+	.inspectorBody {
+		padding-inline: 20px;
+	}
+	.parameter {
+		min-height: 33px;
+		font-size: 11px;
+	}
+	.parameter dd {
+		font-size: 11px;
+	}
+	.systemFooter {
+		padding-block: 12px;
+		line-height: 1.8;
+		gap: 8px 14px;
+	}
+	.footerNote {
+		margin-left: 0;
+	}
+	.eventPanel {
+		min-height: 345px;
+	}
+}
+@media (max-width: 420px) {
+	.titleIcon {
+		width: 35px;
+		height: 35px;
+	}
+	.titleBlock {
+		gap: 8px;
+	}
+	.eyebrow {
+		font-size: 7px;
+		letter-spacing: 1.6px;
+	}
+	.heading h1 {
+		font-size: 20px;
+	}
+	.headingActions {
+		gap: 6px;
+	}
+	.demoBadge {
+		padding: 4px 6px;
+		font-size: 9px;
+	}
+	.metric {
+		padding-inline: 12px;
+	}
+	.stableBadge {
+		margin-left: 1px;
+		font-size: 8px;
+	}
+	.batteryBars {
+		gap: 2px;
+	}
+	.batteryBars i {
+		width: 4px;
+	}
+	.taskContent {
+		grid-template-columns: 1fr;
+	}
+	.layerGroup > svg {
+		display: none;
+	}
+	.mapName {
+		font-size: 8px;
+	}
+}
 /* 尊重系统减少动态效果设置，保留所有操作和状态信息。 */
-@media (prefers-reduced-motion: reduce) { .monitor *, .monitor *::before, .monitor *::after { animation: none !important; transition: none !important; } }
+@media (prefers-reduced-motion: reduce) {
+	.monitor *,
+	.monitor *::before,
+	.monitor *::after {
+		animation: none !important;
+		transition: none !important;
+	}
+}

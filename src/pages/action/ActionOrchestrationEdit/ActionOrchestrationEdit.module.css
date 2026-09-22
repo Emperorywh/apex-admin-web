@@ -1,57 +1,480 @@
 /* 画布与顶栏保留系统深色背景，以提亮的控件和青色焦点建立层次；顶栏固定，其余空间交给画布。 */
-.editor { display: flex; flex-direction: column; height: 100dvh; min-height: 420px; overflow: hidden; background: var(--app-bg); color: var(--app-text); }
-.header { position: relative; z-index: 5; display: flex; align-items: center; gap: 13px; height: 70px; flex-shrink: 0; padding: 0 20px 0 12px; border-bottom: 1px solid var(--app-line); background: var(--app-topbar-bg); }
-.brandIcon { display: grid; place-items: center; width: 38px; height: 38px; flex-shrink: 0; border: 1px solid var(--app-line); border-radius: 8px; color: var(--app-cyan); background: var(--app-highlight); }
-.documentInfo { min-width: 120px; width: 285px; }
-.documentInfo :global(.ant-input) { padding: 0; font-size: 14px; font-weight: 600; }
+.editor {
+	display: flex;
+	flex-direction: column;
+	height: 100dvh;
+	min-height: 420px;
+	overflow: hidden;
+	background: var(--app-bg);
+	color: var(--app-text);
+}
+.header {
+	position: relative;
+	z-index: 5;
+	display: flex;
+	align-items: center;
+	gap: 13px;
+	height: 70px;
+	flex-shrink: 0;
+	padding: 0 20px 0 12px;
+	border-bottom: 1px solid var(--app-line);
+	background: var(--app-topbar-bg);
+}
+.brandIcon {
+	display: grid;
+	place-items: center;
+	width: 38px;
+	height: 38px;
+	flex-shrink: 0;
+	border: 1px solid var(--app-line);
+	border-radius: 8px;
+	color: var(--app-cyan);
+	background: var(--app-highlight);
+}
+.documentInfo {
+	min-width: 120px;
+	width: 285px;
+}
+.documentInfo :global(.ant-input) {
+	padding: 0;
+	font-size: 14px;
+	font-weight: 600;
+}
 /* 状态只区分当前页面是否有修改，避免使用保存成功的绿色反馈。 */
-.editState { display: flex; align-items: center; gap: 6px; margin-top: 5px; color: var(--app-text-3); font-size: 10px; white-space: nowrap; }
-.idleDot, .warningDot { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: var(--app-text-3); flex-shrink: 0; }
-.warningDot { background: var(--app-orange); }
-.headerCenter { flex: 1; height: 100%; display: flex; justify-content: center; }
-.headerTab { display: flex; align-items: center; padding: 0 16px; border-bottom: 2px solid var(--app-cyan); color: var(--app-cyan); font-size: 12px; }
+.editState {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	margin-top: 5px;
+	color: var(--app-text-3);
+	font-size: 10px;
+	white-space: nowrap;
+}
+.idleDot,
+.warningDot {
+	display: inline-block;
+	width: 5px;
+	height: 5px;
+	border-radius: 50%;
+	background: var(--app-text-3);
+	flex-shrink: 0;
+}
+.warningDot {
+	background: var(--app-orange);
+}
+.headerCenter {
+	flex: 1;
+	height: 100%;
+	display: flex;
+	justify-content: center;
+}
+.headerTab {
+	display: flex;
+	align-items: center;
+	padding: 0 16px;
+	border-bottom: 2px solid var(--app-cyan);
+	color: var(--app-cyan);
+	font-size: 12px;
+}
 /* 操作区保留完整按钮宽度，标题区域负责收缩，避免保存入口被挤出顶栏。 */
-.headerActions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.headerActions :global(.ant-btn) { font-size: 12px; }
-.headerDivider { width: 1px; height: 22px; background: var(--app-line-soft); margin-inline: 3px; }
-.workspace { position: relative; display: flex; flex: 1; min-height: 0; overflow: hidden; }
-.canvas { position: relative; flex: 1; min-width: 0; height: 100%; }
-.canvas :global(.react-flow) { --xy-background-color: var(--app-bg-2); --xy-edge-stroke-selected: var(--app-cyan); --xy-minimap-background-color: var(--app-panel); --xy-selection-background-color: var(--app-highlight); --xy-selection-border: 1px solid var(--app-cyan); }
-.canvas :global(.react-flow__edge.selected .react-flow__edge-path) { stroke: var(--app-cyan); stroke-width: 2; }
-.canvas :global(.react-flow__attribution) { margin: 14px; padding: 3px 6px; border-radius: 4px; background: var(--app-panel); }
-.canvas :global(.react-flow__attribution a) { color: var(--app-text-4); font-size: 9px; }
-.canvas :global(.react-flow__node:focus-visible) { outline: 2px solid var(--app-cyan); outline-offset: 5px; border-radius: 9px; }
-.canvasCaption { position: absolute; left: 24px; top: 22px; display: flex; align-items: center; gap: 8px; color: var(--app-text-3); font-size: 11px; pointer-events: none; }
-.canvasCaption svg { color: var(--app-blue-2); }.captionDivider { color: var(--app-text-4); margin-inline: 3px; }
+.headerActions {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	flex-shrink: 0;
+}
+.headerActions :global(.ant-btn) {
+	font-size: 12px;
+}
+.headerDivider {
+	width: 1px;
+	height: 22px;
+	background: var(--app-line-soft);
+	margin-inline: 3px;
+}
+.workspace {
+	position: relative;
+	display: flex;
+	flex: 1;
+	min-height: 0;
+	overflow: hidden;
+}
+.canvas {
+	position: relative;
+	flex: 1;
+	min-width: 0;
+	height: 100%;
+}
+.canvas :global(.react-flow) {
+	--xy-background-color: var(--app-bg-2);
+	--xy-edge-stroke-selected: var(--app-cyan);
+	--xy-minimap-background-color: var(--app-panel);
+	--xy-selection-background-color: var(--app-highlight);
+	--xy-selection-border: 1px solid var(--app-cyan);
+}
+.canvas :global(.react-flow__edge.selected .react-flow__edge-path) {
+	stroke: var(--app-cyan);
+	stroke-width: 2;
+}
+.canvas :global(.react-flow__attribution) {
+	margin: 14px;
+	padding: 3px 6px;
+	border-radius: 4px;
+	background: var(--app-panel);
+}
+.canvas :global(.react-flow__attribution a) {
+	color: var(--app-text-4);
+	font-size: 9px;
+}
+.canvas :global(.react-flow__node:focus-visible) {
+	outline: 2px solid var(--app-cyan);
+	outline-offset: 5px;
+	border-radius: 9px;
+}
+.canvasCaption {
+	position: absolute;
+	left: 24px;
+	top: 22px;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	color: var(--app-text-3);
+	font-size: 11px;
+	pointer-events: none;
+}
+.canvasCaption svg {
+	color: var(--app-blue-2);
+}
+.captionDivider {
+	color: var(--app-text-4);
+	margin-inline: 3px;
+}
 /* 浮动工具不占用动作库侧栏空间，与底部历史和视口控制分离以保持画布完整。 */
-.toolbar { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 5px; padding: 6px; border: 1px solid var(--app-line); border-radius: 7px; background: var(--app-pop-bg); box-shadow: var(--app-shadow-2); }
-.toolbar :global(.ant-btn), .historyControls :global(.ant-btn), .zoomControls :global(.ant-btn) { color: var(--app-text-2); width: 30px; min-width: 30px; height: 30px; padding: 0; }
-.toolbar :global(.ant-btn):hover, .historyControls :global(.ant-btn):hover, .zoomControls :global(.ant-btn):hover { color: var(--app-cyan); }
-.toolbar :global(.ant-btn).activeTool, .historyControls :global(.ant-btn).activeTool { color: var(--app-cyan); background: var(--app-highlight); }
-.toolDivider { display: block; height: 1px; margin: 3px 4px; background: var(--app-line-soft); }
+.toolbar {
+	position: absolute;
+	left: 18px;
+	top: 50%;
+	transform: translateY(-50%);
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+	padding: 6px;
+	border: 1px solid var(--app-line);
+	border-radius: 7px;
+	background: var(--app-pop-bg);
+	box-shadow: var(--app-shadow-2);
+}
+.toolbar :global(.ant-btn),
+.historyControls :global(.ant-btn),
+.zoomControls :global(.ant-btn) {
+	color: var(--app-text-2);
+	width: 30px;
+	min-width: 30px;
+	height: 30px;
+	padding: 0;
+}
+.toolbar :global(.ant-btn):hover,
+.historyControls :global(.ant-btn):hover,
+.zoomControls :global(.ant-btn):hover {
+	color: var(--app-cyan);
+}
+.toolbar :global(.ant-btn).activeTool,
+.historyControls :global(.ant-btn).activeTool {
+	color: var(--app-cyan);
+	background: var(--app-highlight);
+}
+.toolDivider {
+	display: block;
+	height: 1px;
+	margin: 3px 4px;
+	background: var(--app-line-soft);
+}
 /* 浮层挂载到 body，使用专属类保持提示可见但不阻挡相邻工具点击。 */
-.toolTooltip { pointer-events: none; }
-.historyControls, .zoomControls { position: absolute; bottom: 18px; display: flex; align-items: center; gap: 3px; padding: 4px; border: 1px solid var(--app-line); border-radius: 6px; background: var(--app-pop-bg); box-shadow: var(--app-shadow-1); }
-.historyControls { left: 18px; }.zoomControls { right: 18px; }
-.verticalDivider { width: 1px; height: 16px; margin-inline: 2px; background: var(--app-line-soft); }
-.zoomValue { border: 0; background: transparent; color: var(--app-text-2); width: 44px; cursor: pointer; font-size: 11px; font-variant-numeric: tabular-nums; }
+.toolTooltip {
+	pointer-events: none;
+}
+.historyControls,
+.zoomControls {
+	position: absolute;
+	bottom: 18px;
+	display: flex;
+	align-items: center;
+	gap: 3px;
+	padding: 4px;
+	border: 1px solid var(--app-line);
+	border-radius: 6px;
+	background: var(--app-pop-bg);
+	box-shadow: var(--app-shadow-1);
+}
+.historyControls {
+	left: 18px;
+}
+.zoomControls {
+	right: 18px;
+}
+.verticalDivider {
+	width: 1px;
+	height: 16px;
+	margin-inline: 2px;
+	background: var(--app-line-soft);
+}
+.zoomValue {
+	border: 0;
+	background: transparent;
+	color: var(--app-text-2);
+	width: 44px;
+	cursor: pointer;
+	font-size: 11px;
+	font-variant-numeric: tabular-nums;
+}
 /* 缩略图保持完整不透明度，视口外区域仅由独立遮罩压暗，避免节点与边框一起发灰。 */
-.canvas .minimap { bottom: 63px; right: 18px; margin: 0; width: 159px; height: 92px; border: 1px solid var(--app-line); border-radius: 6px; overflow: hidden; box-shadow: var(--app-shadow-1); }
-.variablesButton { position: absolute; bottom: 23px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 7px; padding: 7px 12px; border: 1px solid var(--app-line-soft); border-radius: 5px; background: var(--app-panel); color: var(--app-text-2); font-size: 11px; cursor: pointer; }
-.variablesButton:hover { border-color: var(--app-cyan); color: var(--app-cyan); }
-.canvasHint { position: absolute; bottom: 79px; left: 50%; transform: translateX(-50%); color: var(--app-text-4); font-size: 10px; white-space: nowrap; pointer-events: none; }
+.canvas .minimap {
+	bottom: 63px;
+	right: 18px;
+	margin: 0;
+	width: 159px;
+	height: 92px;
+	border: 1px solid var(--app-line);
+	border-radius: 6px;
+	overflow: hidden;
+	box-shadow: var(--app-shadow-1);
+}
+.variablesButton {
+	position: absolute;
+	bottom: 23px;
+	left: 50%;
+	transform: translateX(-50%);
+	display: flex;
+	align-items: center;
+	gap: 7px;
+	padding: 7px 12px;
+	border: 1px solid var(--app-line-soft);
+	border-radius: 5px;
+	background: var(--app-panel);
+	color: var(--app-text-2);
+	font-size: 11px;
+	cursor: pointer;
+}
+.variablesButton:hover {
+	border-color: var(--app-cyan);
+	color: var(--app-cyan);
+}
+.canvasHint {
+	position: absolute;
+	bottom: 79px;
+	left: 50%;
+	transform: translateX(-50%);
+	color: var(--app-text-4);
+	font-size: 10px;
+	white-space: nowrap;
+	pointer-events: none;
+}
 /* 预览覆盖右侧配置位，独立滚动；长流程不会撑高整个页面。 */
-.preview { position: absolute; right: 10px; top: 10px; bottom: 10px; z-index: 12; width: 360px; max-width: calc(100% - 20px); background: var(--app-card-bg); border: 1px solid var(--app-line); border-radius: 9px; box-shadow: var(--app-window-shadow); display: flex; flex-direction: column; }
-.panelTitle { display: flex; align-items: center; gap: 9px; padding: 16px; border-bottom: 1px solid var(--app-line-soft); color: var(--app-cyan); }
-.panelTitle strong { flex: 1; color: var(--app-text); font-size: 14px; }.panelTitle :global(.ant-btn) { color: var(--app-text-2); }
-.previewContent { padding: 20px 16px; overflow: auto; }.previewContent h3 { font-size: 12px; margin-block: 25px 12px; }
-.panelNote { color: var(--app-text-3); font-size: 12px; line-height: 1.8; }
-.issues { display: flex; flex-direction: column; gap: 8px; }.issues button { padding: 10px; border: 1px solid color-mix(in srgb, var(--app-orange) 25%, transparent); border-radius: 4px; background: color-mix(in srgb, var(--app-orange) 6%, transparent); color: var(--app-orange-text); text-align: left; font-size: 12px; cursor: pointer; }
-.previewNodes { display: flex; flex-direction: column; gap: 7px; }.previewNodes button { display: flex; align-items: center; gap: 10px; min-height: 50px; padding: 9px; border: 1px solid var(--app-line-soft); border-radius: 5px; background: var(--app-panel-inset); color: var(--app-text); cursor: pointer; text-align: left; font-size: 12px; }.previewNodes button:hover { border-color: var(--app-cyan); }.previewNodes button > span:nth-last-child(2) { flex: 1; }.previewNodes button > svg { color: var(--app-green-text); }.nodeIndex { color: var(--app-text-4); font-size: 10px; }
-.previewFoot { display: flex; justify-content: space-between; padding-top: 22px; margin-top: 22px; border-top: 1px solid var(--app-line-soft); font-size: 11px; color: var(--app-text-3); }.previewFoot strong { color: var(--app-text-2); font-weight: 400; }
-.variableList > div { display: flex; align-items: center; gap: 12px; padding-block: 12px; border-bottom: 1px solid var(--app-line-soft); }.variableList code { flex: 1; overflow-wrap: anywhere; font-size: 12px; color: var(--app-cyan); }.variableList span { font-size: 11px; color: var(--app-text-3); }
-.shortcuts > div { display: flex; justify-content: space-between; gap: 15px; padding-block: 12px; border-bottom: 1px solid var(--app-line-soft); font-size: 12px; }.shortcuts kbd { color: var(--app-text-3); font-size: 11px; }
+.preview {
+	position: absolute;
+	right: 10px;
+	top: 10px;
+	bottom: 10px;
+	z-index: 12;
+	width: 360px;
+	max-width: calc(100% - 20px);
+	background: var(--app-card-bg);
+	border: 1px solid var(--app-line);
+	border-radius: 9px;
+	box-shadow: var(--app-window-shadow);
+	display: flex;
+	flex-direction: column;
+}
+.panelTitle {
+	display: flex;
+	align-items: center;
+	gap: 9px;
+	padding: 16px;
+	border-bottom: 1px solid var(--app-line-soft);
+	color: var(--app-cyan);
+}
+.panelTitle strong {
+	flex: 1;
+	color: var(--app-text);
+	font-size: 14px;
+}
+.panelTitle :global(.ant-btn) {
+	color: var(--app-text-2);
+}
+.previewContent {
+	padding: 20px 16px;
+	overflow: auto;
+}
+.previewContent h3 {
+	font-size: 12px;
+	margin-block: 25px 12px;
+}
+.panelNote {
+	color: var(--app-text-3);
+	font-size: 12px;
+	line-height: 1.8;
+}
+.issues {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+.issues button {
+	padding: 10px;
+	border: 1px solid color-mix(in srgb, var(--app-orange) 25%, transparent);
+	border-radius: 4px;
+	background: color-mix(in srgb, var(--app-orange) 6%, transparent);
+	color: var(--app-orange-text);
+	text-align: left;
+	font-size: 12px;
+	cursor: pointer;
+}
+.previewNodes {
+	display: flex;
+	flex-direction: column;
+	gap: 7px;
+}
+.previewNodes button {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	min-height: 50px;
+	padding: 9px;
+	border: 1px solid var(--app-line-soft);
+	border-radius: 5px;
+	background: var(--app-panel-inset);
+	color: var(--app-text);
+	cursor: pointer;
+	text-align: left;
+	font-size: 12px;
+}
+.previewNodes button:hover {
+	border-color: var(--app-cyan);
+}
+.previewNodes button > span:nth-last-child(2) {
+	flex: 1;
+}
+.previewNodes button > svg {
+	color: var(--app-green-text);
+}
+.nodeIndex {
+	color: var(--app-text-4);
+	font-size: 10px;
+}
+.previewFoot {
+	display: flex;
+	justify-content: space-between;
+	padding-top: 22px;
+	margin-top: 22px;
+	border-top: 1px solid var(--app-line-soft);
+	font-size: 11px;
+	color: var(--app-text-3);
+}
+.previewFoot strong {
+	color: var(--app-text-2);
+	font-weight: 400;
+}
+.variableList > div {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding-block: 12px;
+	border-bottom: 1px solid var(--app-line-soft);
+}
+.variableList code {
+	flex: 1;
+	overflow-wrap: anywhere;
+	font-size: 12px;
+	color: var(--app-cyan);
+}
+.variableList span {
+	font-size: 11px;
+	color: var(--app-text-3);
+}
+.shortcuts > div {
+	display: flex;
+	justify-content: space-between;
+	gap: 15px;
+	padding-block: 12px;
+	border-bottom: 1px solid var(--app-line-soft);
+	font-size: 12px;
+}
+.shortcuts kbd {
+	color: var(--app-text-3);
+	font-size: 11px;
+}
 /* 窄屏优先保留标题、预览与保存；导出收为带提示的图标按钮，避免新增保存后顶栏横向溢出。 */
-@media (max-width: 1050px) { .headerCenter { display: none; }.documentInfo { flex: 1; }.header { gap: 10px; } }
-@media (max-width: 700px) { .header { padding-inline: 8px; gap: 7px; height: 65px; }.brandIcon, .headerDivider { display: none; }.documentInfo { min-width: 0; }.documentInfo :global(.ant-input) { font-size: 12px; }.editState { max-width: 100%; overflow: hidden; font-size: 9px; }.headerActions { gap: 4px; }.headerActions > :global(.ant-btn):nth-child(2) { display: none; }.headerActions :global(.ant-btn) { padding-inline: 8px; }.headerActions .exportButton { width: 32px; padding-inline: 0; }.exportLabel { display: none; }.canvasHint { display: none; }.variablesButton { bottom: 73px; }.toolbar { left: 10px; }.historyControls { left: 10px; }.zoomControls { right: 10px; }.canvas .minimap { right: 10px; width: 130px; height: 76px; } }
-@media (prefers-reduced-motion: reduce) { .editor * { scroll-behavior: auto; } }
+@media (max-width: 1050px) {
+	.headerCenter {
+		display: none;
+	}
+	.documentInfo {
+		flex: 1;
+	}
+	.header {
+		gap: 10px;
+	}
+}
+@media (max-width: 700px) {
+	.header {
+		padding-inline: 8px;
+		gap: 7px;
+		height: 65px;
+	}
+	.brandIcon,
+	.headerDivider {
+		display: none;
+	}
+	.documentInfo {
+		min-width: 0;
+	}
+	.documentInfo :global(.ant-input) {
+		font-size: 12px;
+	}
+	.editState {
+		max-width: 100%;
+		overflow: hidden;
+		font-size: 9px;
+	}
+	.headerActions {
+		gap: 4px;
+	}
+	.headerActions > :global(.ant-btn):nth-child(2) {
+		display: none;
+	}
+	.headerActions :global(.ant-btn) {
+		padding-inline: 8px;
+	}
+	.headerActions .exportButton {
+		width: 32px;
+		padding-inline: 0;
+	}
+	.exportLabel {
+		display: none;
+	}
+	.canvasHint {
+		display: none;
+	}
+	.variablesButton {
+		bottom: 73px;
+	}
+	.toolbar {
+		left: 10px;
+	}
+	.historyControls {
+		left: 10px;
+	}
+	.zoomControls {
+		right: 10px;
+	}
+	.canvas .minimap {
+		right: 10px;
+		width: 130px;
+		height: 76px;
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	.editor * {
+		scroll-behavior: auto;
+	}
+}

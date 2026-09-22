@@ -1,25 +1,70 @@
 /* 三组分区统一占满内容区宽度，使表格左右边缘和右侧新增入口纵向对齐。 */
-.page { min-height: 100%; min-width: 0; padding: 8px 4px 16px; }
-.section { width: 100%; min-width: 0; }
-.sectionHeader { margin-bottom: 12px; min-height: 32px; }
-.sectionTitle { margin: 0 !important; font-size: var(--app-fs-title) !important; font-weight: var(--app-fw-semibold) !important; }
-.count { font-size: var(--app-fs-secondary); white-space: nowrap; }
+.page {
+	min-height: 100%;
+	min-width: 0;
+	padding: 8px 4px 16px;
+}
+.section {
+	width: 100%;
+	min-width: 0;
+}
+.sectionHeader {
+	margin-bottom: 12px;
+	min-height: 32px;
+}
+.sectionTitle {
+	margin: 0 !important;
+	font-size: var(--app-fs-title) !important;
+	font-weight: var(--app-fw-semibold) !important;
+}
+.count {
+	font-size: var(--app-fs-secondary);
+	white-space: nowrap;
+}
 /* 按最长按钮文案预留统一宽度；窄屏换行后仍靠右，保持三个新增按钮左右边缘一致。 */
-.sectionHeader > :global(.ant-btn) { flex: 0 0 140px; margin-inline-start: auto; }
+.sectionHeader > :global(.ant-btn) {
+	flex: 0 0 140px;
+	margin-inline-start: auto;
+}
 
 /* 控制表格行高与长文本换行；横向滚动时操作列固定在右侧，始终可修改和删除。 */
-.table :global(.ant-table-cell) { overflow-wrap: anywhere; }
-.table :global(.ant-table-thead > tr > th) { padding-block: 11px; white-space: nowrap; }
-.table :global(.ant-table-tbody > tr > td) { padding-block: 10px; }
-.table :global(.ant-badge-status-text) { white-space: nowrap; }
-.rowAction { padding-inline: 0; height: auto; }
-.dataNote { font-size: var(--app-fs-secondary); }
+.table :global(.ant-table-cell) {
+	overflow-wrap: anywhere;
+}
+.table :global(.ant-table-thead > tr > th) {
+	padding-block: 11px;
+	white-space: nowrap;
+}
+.table :global(.ant-table-tbody > tr > td) {
+	padding-block: 10px;
+}
+.table :global(.ant-badge-status-text) {
+	white-space: nowrap;
+}
+.rowAction {
+	padding-inline: 0;
+	height: auto;
+}
+.dataNote {
+	font-size: var(--app-fs-secondary);
+}
 
 /* 设备标签包含较长的通讯接口名称；按弹窗实际宽度将 CAN 字段排列为单列水平表单。 */
-.editor { margin-top: 16px; --app-form-label-width: 148px; }
-.numberInput { width: 100%; }
+.editor {
+	margin-top: 16px;
+	--app-form-label-width: 148px;
+}
+.numberInput {
+	width: 100%;
+}
 @media (max-width: 575px) {
-  .page { padding-inline: 0; }
-  .sectionHeader { flex-wrap: wrap; }
-  .sectionTitle { font-size: var(--app-fs-primary) !important; }
+	.page {
+		padding-inline: 0;
+	}
+	.sectionHeader {
+		flex-wrap: wrap;
+	}
+	.sectionTitle {
+		font-size: var(--app-fs-primary) !important;
+	}
 }

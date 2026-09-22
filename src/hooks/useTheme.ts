@@ -12,27 +12,29 @@ import type { ResolvedTheme } from '@/constants/designTokens'
 export const THEME_STORAGE_KEY = 'apex-admin:theme:v2'
 
 export function useTheme(): ResolvedTheme {
-  const theme = useAppSelector((state) => state.settings.theme)
-  const [systemDark, setSystemDark] = useState(
-    () => window.matchMedia('(prefers-color-scheme: dark)').matches,
-  )
+	const theme = useAppSelector((state) => state.settings.theme)
+	const [systemDark, setSystemDark] = useState(
+		() => window.matchMedia('(prefers-color-scheme: dark)').matches,
+	)
 
-  /* system 态跟随系统偏好实时切换 */
-  useEffect(() => {
-    const media = window.matchMedia('(prefers-color-scheme: dark)')
-    const onChange = (event: MediaQueryListEvent) => setSystemDark(event.matches)
-    media.addEventListener('change', onChange)
-    return () => media.removeEventListener('change', onChange)
-  }, [])
+	/* system 态跟随系统偏好实时切换 */
+	useEffect(() => {
+		const media = window.matchMedia('(prefers-color-scheme: dark)')
+		const onChange = (event: MediaQueryListEvent) =>
+			setSystemDark(event.matches)
+		media.addEventListener('change', onChange)
+		return () => media.removeEventListener('change', onChange)
+	}, [])
 
-  const resolved: ResolvedTheme = theme === 'system' ? (systemDark ? 'dark' : 'light') : theme
+	const resolved: ResolvedTheme =
+		theme === 'system' ? (systemDark ? 'dark' : 'light') : theme
 
-  /* 同步解析后的主题偏好，保留未来接入其他主题样式的入口 */
-  document.documentElement.dataset.theme = resolved
+	/* 同步解析后的主题偏好，保留未来接入其他主题样式的入口 */
+	document.documentElement.dataset.theme = resolved
 
-  useEffect(() => {
-    localStorage.setItem(THEME_STORAGE_KEY, theme)
-  }, [theme])
+	useEffect(() => {
+		localStorage.setItem(THEME_STORAGE_KEY, theme)
+	}, [theme])
 
-  return resolved
+	return resolved
 }

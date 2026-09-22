@@ -1,19 +1,91 @@
 /* 测试区沿用深色面板与青色强调，模拟标识常驻，避免与设备真实反馈混淆。 */
-.test { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--app-divider); }
-.heading, .heading strong, .statusRow { display: flex; align-items: center; justify-content: space-between; gap: 7px; }
-.heading strong { font-size: 12px; font-weight: 600; }
-.heading > span { padding: 2px 6px; border: 1px solid var(--app-line); border-radius: 4px; color: var(--app-cyan); font-size: 10px; }
-.hint { margin: 10px 0 12px; color: var(--app-text-3); font-size: 11px; line-height: 1.8; }
-.notice, .errors { color: var(--app-red-text); font-size: 11px; line-height: 1.8; }
-.errors { padding-left: 17px; margin: 10px 0 0; }
-.directions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 9px; }
-.directions :global(.ant-btn) { padding-inline: 4px; font-size: 11px; }
-.statusRow { margin-top: 12px; color: var(--app-text-3); font-size: 11px; }
-.statusRow [data-status='running'], .statusRow [data-status='done'] { color: var(--app-cyan); }
-.statusRow [data-status='failed'] { color: var(--app-red-text); }
+.test {
+	margin-top: 18px;
+	padding-top: 16px;
+	border-top: 1px solid var(--app-divider);
+}
+.heading,
+.heading strong,
+.statusRow {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 7px;
+}
+.heading strong {
+	font-size: 12px;
+	font-weight: 600;
+}
+.heading > span {
+	padding: 2px 6px;
+	border: 1px solid var(--app-line);
+	border-radius: 4px;
+	color: var(--app-cyan);
+	font-size: 10px;
+}
+.hint {
+	margin: 10px 0 12px;
+	color: var(--app-text-3);
+	font-size: 11px;
+	line-height: 1.8;
+}
+.notice,
+.errors {
+	color: var(--app-red-text);
+	font-size: 11px;
+	line-height: 1.8;
+}
+.errors {
+	padding-left: 17px;
+	margin: 10px 0 0;
+}
+.directions {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 8px;
+	margin-top: 9px;
+}
+.directions :global(.ant-btn) {
+	padding-inline: 4px;
+	font-size: 11px;
+}
+.statusRow {
+	margin-top: 12px;
+	color: var(--app-text-3);
+	font-size: 11px;
+}
+.statusRow [data-status='running'],
+.statusRow [data-status='done'] {
+	color: var(--app-cyan);
+}
+.statusRow [data-status='failed'] {
+	color: var(--app-red-text);
+}
 /* 数字反馈独立于配置输入；等宽数字避免运行中的宽度跳动。 */
-.telemetry { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; padding: 12px 0 2px; }
-.telemetry > div { display: flex; flex-direction: column; gap: 5px; }
-.telemetry span { font-size: 10px; color: var(--app-text-3); }
-.telemetry strong { font-size: 17px; font-weight: 500; font-variant-numeric: tabular-nums; color: var(--app-text); }
-.telemetry small { margin-left: 5px; font-size: 10px; font-weight: 400; color: var(--app-text-3); }
+.telemetry {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 10px;
+	padding: 12px 0 2px;
+}
+.telemetry > div {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+}
+.telemetry span {
+	font-size: 10px;
+	color: var(--app-text-3);
+}
+.telemetry strong {
+	font-size: 17px;
+	font-weight: 500;
+	font-variant-numeric: tabular-nums;
+	color: var(--app-text);
+}
+.telemetry small {
+	margin-left: 5px;
+	font-size: 10px;
+	font-weight: 400;
+	color: var(--app-text-3);
+}

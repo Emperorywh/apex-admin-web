@@ -6,15 +6,15 @@
 import { useRequestScope } from '@/components/RequestScopeProvider/RequestScopeContext'
 
 export interface PageActiveState {
-  isActive: boolean
-  /** 激活轮次；重新激活时递增，可作为依赖触发“重新激活通知” */
-  revision: number
+	isActive: boolean
+	/** 激活轮次；重新激活时递增，可作为依赖触发“重新激活通知” */
+	revision: number
 }
 
 export function usePageActive(): PageActiveState {
-  const scope = useRequestScope()
-  return {
-    isActive: scope?.isActive ?? true,
-    revision: scope?.revision ?? 0,
-  }
+	const scope = useRequestScope()
+	return {
+		isActive: scope?.isActive ?? true,
+		revision: scope?.revision ?? 0,
+	}
 }

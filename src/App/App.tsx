@@ -24,36 +24,45 @@ import { useAppSelector } from '@/hooks/useAppSelector'
 import { localeChanged } from '@/store/slices/settingsSlice'
 
 export default function App() {
-  const dispatch = useAppDispatch()
-  const locale = useAppSelector((state) => state.settings.locale)
-  /* 保留主题解析与切换接线，当前外观统一回退到深色 */
-  const resolvedTheme = useTheme()
-  const antdTheme = useMemo(() => buildAppTheme(resolvedTheme), [resolvedTheme])
-  const { i18n } = useTranslation()
+	const dispatch = useAppDispatch()
+	const locale = useAppSelector((state) => state.settings.locale)
+	/* 保留主题解析与切换接线，当前外观统一回退到深色 */
+	const resolvedTheme = useTheme()
+	const antdTheme = useMemo(
+		() => buildAppTheme(resolvedTheme),
+		[resolvedTheme],
+	)
+	const { i18n } = useTranslation()
 
-  /* 语言切换：读取一次当前页签集合计算命名空间并集，避免半翻译状态 */
-  useEffect(() => {
-    if (i18n.language === locale) return
-    const namespaces = store
-      .getState()
-      .tabs.tabs.flatMap((tab) => findRouteMeta(tab.routeId)?.i18nNamespaces ?? [])
-    void changeAppLanguage(locale, namespaces).then(() => {
-      dispatch(localeChanged(locale)) // 幂等提交，确保状态一致
-    })
-  }, [dispatch, locale, i18n])
+	/* 语言切换：读取一次当前页签集合计算命名空间并集，避免半翻译状态 */
+	useEffect(() => {
+		if (i18n.language === locale) return
+		const namespaces = store
+			.getState()
+			.tabs.tabs.flatMap(
+				(tab) => findRouteMeta(tab.routeId)?.i18nNamespaces ?? [],
+			)
+		void changeAppLanguage(locale, namespaces).then(() => {
+			dispatch(localeChanged(locale)) // 幂等提交，确保状态一致
+		})
+	}, [dispatch, locale, i18n])
 
-  const antdLocale = locale === 'zh-CN' ? zhCN : enUS
+	const antdLocale = locale === 'zh-CN' ? zhCN : enUS
 
-  return (
-    // 表单标签统一左对齐并允许长文案换行；宽度与横向排列由共享样式管理。
-    <ConfigProvider locale={antdLocale} theme={antdTheme} form={{ labelAlign: 'left', labelWrap: true, colon: false }}>
-      <AntdApp>
-        <Wallpaper />
-        <FeedbackBridge />
-        <Suspense fallback={<PageLoading />}>
-          <RouterProvider router={appRouter} />
-        </Suspense>
-      </AntdApp>
-    </ConfigProvider>
-  )
+	return (
+		// 表单标签统一左对齐并允许长文案换行；宽度与横向排列由共享样式管理。
+		<ConfigProvider
+			locale={antdLocale}
+			theme={antdTheme}
+			form={{ labelAlign: 'left', labelWrap: true, colon: false }}
+		>
+			<AntdApp>
+				<Wallpaper />
+				<FeedbackBridge />
+				<Suspense fallback={<PageLoading />}>
+					<RouterProvider router={appRouter} />
+				</Suspense>
+			</AntdApp>
+		</ConfigProvider>
+	)
 }

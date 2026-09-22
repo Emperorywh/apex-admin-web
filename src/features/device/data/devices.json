@@ -1,17 +1,74 @@
 {
-  "can": [
-    { "id": "can-1", "model": "步科-XX", "actuator": "执行器1", "encoder": "编码器1", "name": "电池", "port": "can1", "canId": 1, "alarm": false },
-    { "id": "can-2", "model": "日鼎-XX", "actuator": "执行器2", "encoder": "编码器2", "name": "顶升电机", "port": "can2", "canId": 2, "alarm": false },
-    { "id": "can-3", "model": "柯蒂斯-xxx", "actuator": "执行器3", "encoder": "编码器3", "name": "旋转电机", "port": "can3", "canId": 3, "alarm": true },
-    { "id": "can-4", "model": "中力电池-XXX", "actuator": "", "encoder": "", "name": "驱动电池", "port": "can2", "canId": 4, "alarm": false }
-  ],
-  "gpio": [
-    { "id": "gpio-1", "type": "NPN", "name": "DI 1信号", "purpose": "急停", "triggered": true, "activeHigh": true },
-    { "id": "gpio-2", "type": "PNP", "name": "DI 1信号", "purpose": "防撞", "triggered": true, "activeHigh": false },
-    { "id": "gpio-3", "type": "NPN", "name": "DO 1信号", "purpose": "充电继电器", "triggered": false, "activeHigh": true }
-  ],
-  "serial": [
-    { "id": "serial-1", "port": "RS485-1", "name": "灯光", "alarm": false },
-    { "id": "serial-2", "port": "RS485-2", "name": "语音", "alarm": true }
-  ]
+	"can": [
+		{
+			"id": "can-1",
+			"model": "步科-XX",
+			"actuator": "执行器1",
+			"encoder": "编码器1",
+			"name": "电池",
+			"port": "can1",
+			"canId": 1,
+			"alarm": false
+		},
+		{
+			"id": "can-2",
+			"model": "日鼎-XX",
+			"actuator": "执行器2",
+			"encoder": "编码器2",
+			"name": "顶升电机",
+			"port": "can2",
+			"canId": 2,
+			"alarm": false
+		},
+		{
+			"id": "can-3",
+			"model": "柯蒂斯-xxx",
+			"actuator": "执行器3",
+			"encoder": "编码器3",
+			"name": "旋转电机",
+			"port": "can3",
+			"canId": 3,
+			"alarm": true
+		},
+		{
+			"id": "can-4",
+			"model": "中力电池-XXX",
+			"actuator": "",
+			"encoder": "",
+			"name": "驱动电池",
+			"port": "can2",
+			"canId": 4,
+			"alarm": false
+		}
+	],
+	"gpio": [
+		{
+			"id": "gpio-1",
+			"type": "NPN",
+			"name": "DI 1信号",
+			"purpose": "急停",
+			"triggered": true,
+			"activeHigh": true
+		},
+		{
+			"id": "gpio-2",
+			"type": "PNP",
+			"name": "DI 1信号",
+			"purpose": "防撞",
+			"triggered": true,
+			"activeHigh": false
+		},
+		{
+			"id": "gpio-3",
+			"type": "NPN",
+			"name": "DO 1信号",
+			"purpose": "充电继电器",
+			"triggered": false,
+			"activeHigh": true
+		}
+	],
+	"serial": [
+		{ "id": "serial-1", "port": "RS485-1", "name": "灯光", "alarm": false },
+		{ "id": "serial-2", "port": "RS485-2", "name": "语音", "alarm": true }
+	]
 }

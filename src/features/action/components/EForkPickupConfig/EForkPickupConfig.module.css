@@ -1,16 +1,75 @@
 /* 专用轴配置保持与原有面板相同的紧凑节奏，按绑定、参数、启停、测试的操作顺序排列。 */
-.config { margin-top: 16px; }
-.field { display: flex; flex-direction: column; gap: 7px; margin-bottom: 14px; }
-.field > label { display: flex; justify-content: space-between; gap: 7px; color: var(--app-text-2); font-size: 11px; }
-.field > label > span { color: var(--app-text-3); font-size: 10px; }
-.field :global(.ant-input-number), .field :global(.ant-select) { width: 100%; }
-.field :global(.ant-input), .field :global(.ant-input-number), .field :global(.ant-select) { font-size: 12px; }
-.hint, .error { margin: -2px 0 12px; color: var(--app-text-3); font-size: 11px; line-height: 1.8; }
-.error { color: var(--app-red-text); }
-.parameters { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--app-divider); }
-.parameters h4 { display: flex; align-items: center; justify-content: space-between; margin: 0 0 14px; font-size: 12px; font-weight: 600; }
-.parameters h4 > span { color: var(--app-cyan); font-size: 10px; font-weight: 400; }
+.config {
+	margin-top: 16px;
+}
+.field {
+	display: flex;
+	flex-direction: column;
+	gap: 7px;
+	margin-bottom: 14px;
+}
+.field > label {
+	display: flex;
+	justify-content: space-between;
+	gap: 7px;
+	color: var(--app-text-2);
+	font-size: 11px;
+}
+.field > label > span {
+	color: var(--app-text-3);
+	font-size: 10px;
+}
+.field :global(.ant-input-number),
+.field :global(.ant-select) {
+	width: 100%;
+}
+.field :global(.ant-input),
+.field :global(.ant-input-number),
+.field :global(.ant-select) {
+	font-size: 12px;
+}
+.hint,
+.error {
+	margin: -2px 0 12px;
+	color: var(--app-text-3);
+	font-size: 11px;
+	line-height: 1.8;
+}
+.error {
+	color: var(--app-red-text);
+}
+.parameters {
+	margin-top: 18px;
+	padding-top: 16px;
+	border-top: 1px solid var(--app-divider);
+}
+.parameters h4 {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin: 0 0 14px;
+	font-size: 12px;
+	font-weight: 600;
+}
+.parameters h4 > span {
+	color: var(--app-cyan);
+	font-size: 10px;
+	font-weight: 400;
+}
 /* 开关紧邻测试；未提交输入时禁用开关，防止状态提交使尚未应用的草稿重置。 */
-.enable { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 18px 0 12px; }
-.enable label { font-size: 12px; color: var(--app-text-2); }
-.enable p { margin: 5px 0 0; color: var(--app-text-3); font-size: 10px; }
+.enable {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	margin: 18px 0 12px;
+}
+.enable label {
+	font-size: 12px;
+	color: var(--app-text-2);
+}
+.enable p {
+	margin: 5px 0 0;
+	color: var(--app-text-3);
+	font-size: 10px;
+}

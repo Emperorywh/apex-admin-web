@@ -1,212 +1,330 @@
 /* 紧凑菜单座：图标与文字同排，装饰独立于滚动导航。 */
 .dockFrame {
-  position: relative;
-  flex: none;
-  height: var(--app-dock-h);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 4px 180px;
-  background: var(--app-dock-bg);
+	position: relative;
+	flex: none;
+	height: var(--app-dock-h);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 4px 180px;
+	background: var(--app-dock-bg);
 }
-.frameLines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.frameLines {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+}
 /* 底栏轮廓采用低亮蓝色，青色仅用于导航定位的短线。 */
-.frameFill { fill: var(--app-bg-2); stroke: var(--app-card-line); }
-.frameOutline { fill: none; stroke: var(--app-line); stroke-width: 1; }
-.frameAccent { fill: none; stroke: var(--app-cyan); stroke-width: 1.2; filter: drop-shadow(0 0 4px var(--app-accent-glow)); }
-.dockBrand, .dockTagline { position: absolute; bottom: 11px; color: var(--app-text-3); white-space: nowrap; }
-.dockBrand { left: 20px; font-size: 10px; letter-spacing: 1.5px; }
-.dockBrand small { display: block; margin-top: 3px; font-size: 7px; letter-spacing: 1.5px; }
-.dockTagline { right: 20px; font-size: 11px; letter-spacing: 1.5px; text-align: right; }
-.dockTagline small { display: block; font-size: 7px; letter-spacing: 0.5px; margin-top: 3px; }
+.frameFill {
+	fill: var(--app-bg-2);
+	stroke: var(--app-card-line);
+}
+.frameOutline {
+	fill: none;
+	stroke: var(--app-line);
+	stroke-width: 1;
+}
+.frameAccent {
+	fill: none;
+	stroke: var(--app-cyan);
+	stroke-width: 1.2;
+	filter: drop-shadow(0 0 4px var(--app-accent-glow));
+}
+.dockBrand,
+.dockTagline {
+	position: absolute;
+	bottom: 11px;
+	color: var(--app-text-3);
+	white-space: nowrap;
+}
+.dockBrand {
+	left: 20px;
+	font-size: 10px;
+	letter-spacing: 1.5px;
+}
+.dockBrand small {
+	display: block;
+	margin-top: 3px;
+	font-size: 7px;
+	letter-spacing: 1.5px;
+}
+.dockTagline {
+	right: 20px;
+	font-size: 11px;
+	letter-spacing: 1.5px;
+	text-align: right;
+}
+.dockTagline small {
+	display: block;
+	font-size: 7px;
+	letter-spacing: 0.5px;
+	margin-top: 3px;
+}
 .dock {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 2px;
-  max-width: 100%;
-  height: 100%;
-  padding: 4px 8px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  scrollbar-width: none;
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	gap: 2px;
+	max-width: 100%;
+	height: 100%;
+	padding: 4px 8px;
+	overflow-x: auto;
+	overflow-y: hidden;
+	scrollbar-width: none;
 }
-.dock::-webkit-scrollbar { display: none; }
-.dock > :first-child { margin-left: auto; }
-.dock > :last-child { margin-right: auto; }
+.dock::-webkit-scrollbar {
+	display: none;
+}
+.dock > :first-child {
+	margin-left: auto;
+}
+.dock > :last-child {
+	margin-right: auto;
+}
 .item {
-  position: relative;
-  flex: 0 0 auto;
-  min-width: 80px;
-  height: 100%;
-  padding: 0 10px;
-  border: 1px solid transparent;
-  border-radius: var(--app-radius-control);
-  background: transparent;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  font-size: var(--app-fs-secondary);
-  font-weight: var(--app-fw-medium);
-  color: var(--app-text-2);
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background var(--app-dur-base), border-color var(--app-dur-base), box-shadow var(--app-dur-base);
+	position: relative;
+	flex: 0 0 auto;
+	min-width: 80px;
+	height: 100%;
+	padding: 0 10px;
+	border: 1px solid transparent;
+	border-radius: var(--app-radius-control);
+	background: transparent;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	gap: 7px;
+	font-size: var(--app-fs-secondary);
+	font-weight: var(--app-fw-medium);
+	color: var(--app-text-2);
+	cursor: pointer;
+	white-space: nowrap;
+	transition:
+		background var(--app-dur-base),
+		border-color var(--app-dur-base),
+		box-shadow var(--app-dur-base);
 }
-.item::after { content: ''; position: absolute; right: -2px; top: 8px; bottom: 8px; width: 1px; background: linear-gradient(transparent, var(--app-divider), transparent); }
-.dockIcon { display: grid; place-items: center; flex: none; color: var(--app-blue-2); }
-.item:hover, .item[aria-expanded='true'] { background: var(--app-hover-bg); color: var(--app-text); border-color: var(--app-divider); }
+.item::after {
+	content: '';
+	position: absolute;
+	right: -2px;
+	top: 8px;
+	bottom: 8px;
+	width: 1px;
+	background: linear-gradient(transparent, var(--app-divider), transparent);
+}
+.dockIcon {
+	display: grid;
+	place-items: center;
+	flex: none;
+	color: var(--app-blue-2);
+}
+.item:hover,
+.item[aria-expanded='true'] {
+	background: var(--app-hover-bg);
+	color: var(--app-text);
+	border-color: var(--app-divider);
+}
 /* 当前菜单采用暗蓝选区和青色顶线，面板主体与业务卡片保持相同亮度。 */
-.itemActive, .itemActive:hover, .itemActive[aria-expanded='true'] {
-  background: linear-gradient(180deg, var(--app-hover-bg), transparent), var(--app-bg-2);
-  border-color: var(--app-line);
-  box-shadow: inset 0 0 16px var(--app-hover-bg);
-  color: var(--app-text);
+.itemActive,
+.itemActive:hover,
+.itemActive[aria-expanded='true'] {
+	background:
+		linear-gradient(180deg, var(--app-hover-bg), transparent),
+		var(--app-bg-2);
+	border-color: var(--app-line);
+	box-shadow: inset 0 0 16px var(--app-hover-bg);
+	color: var(--app-text);
 }
-.itemActive::before { content: ''; position: absolute; top: -1px; left: 22px; right: 22px; height: 2px; background: var(--app-cyan); box-shadow: 0 0 8px var(--app-accent-glow); }
-.itemActive .dockIcon { color: var(--app-cyan); filter: drop-shadow(0 0 5px var(--app-accent-glow)); }
-.label { line-height: 16px; white-space: nowrap; }
-.trash { min-width: 68px; }
-.trash .dockIcon { color: var(--app-text-2); }
-.item:focus-visible, .panelItem:focus-visible { outline: 2px solid var(--app-cyan); outline-offset: -3px; }
-.itemLaunching > :first-child { animation: dockPress var(--app-dur-slow) var(--app-ease-standard); }
-@keyframes dockPress { 0%, 100% { transform: scale(1); } 40% { transform: scale(0.9); } }
-.separator { width: 1px; height: 22px; background: var(--app-divider); margin: 0 4px; flex: none; }
+.itemActive::before {
+	content: '';
+	position: absolute;
+	top: -1px;
+	left: 22px;
+	right: 22px;
+	height: 2px;
+	background: var(--app-cyan);
+	box-shadow: 0 0 8px var(--app-accent-glow);
+}
+.itemActive .dockIcon {
+	color: var(--app-cyan);
+	filter: drop-shadow(0 0 5px var(--app-accent-glow));
+}
+.label {
+	line-height: 16px;
+	white-space: nowrap;
+}
+.trash {
+	min-width: 68px;
+}
+.trash .dockIcon {
+	color: var(--app-text-2);
+}
+.item:focus-visible,
+.panelItem:focus-visible {
+	outline: 2px solid var(--app-cyan);
+	outline-offset: -3px;
+}
+.itemLaunching > :first-child {
+	animation: dockPress var(--app-dur-slow) var(--app-ease-standard);
+}
+@keyframes dockPress {
+	0%,
+	100% {
+		transform: scale(1);
+	}
+	40% {
+		transform: scale(0.9);
+	}
+}
+.separator {
+	width: 1px;
+	height: 22px;
+	background: var(--app-divider);
+	margin: 0 4px;
+	flex: none;
+}
 
-@media (prefers-reduced-motion: reduce) { .itemLaunching > :first-child { animation: none; } }
+@media (prefers-reduced-motion: reduce) {
+	.itemLaunching > :first-child {
+		animation: none;
+	}
+}
 
 /* 菜单分组与子菜单共享深蓝面板材质，低亮蓝边框区分浮层边界。 */
 .panel {
-  position: fixed;
-  z-index: 60;
-  overflow: hidden;
-  padding: 8px;
-  display: flex;
-  flex-direction: column;
-  border-radius: var(--app-radius-window);
-  background: var(--app-pop-bg);
-  backdrop-filter: var(--app-glass-filter-window);
-  -webkit-backdrop-filter: var(--app-glass-filter-window);
-  border: 1px solid var(--app-line);
-  box-shadow: var(--app-panel-shadow);
-  /* 从触发项方向轻盈展开，只改变透明度和位移。
+	position: fixed;
+	z-index: 60;
+	overflow: hidden;
+	padding: 8px;
+	display: flex;
+	flex-direction: column;
+	border-radius: var(--app-radius-window);
+	background: var(--app-pop-bg);
+	backdrop-filter: var(--app-glass-filter-window);
+	-webkit-backdrop-filter: var(--app-glass-filter-window);
+	border: 1px solid var(--app-line);
+	box-shadow: var(--app-panel-shadow);
+	/* 从触发项方向轻盈展开，只改变透明度和位移。
      避免缩放整个面板导致子菜单锚点测量失真。 */
-  animation: panelIn var(--app-dur-slow) var(--app-ease-window);
+	animation: panelIn var(--app-dur-slow) var(--app-ease-window);
 }
 
 @keyframes panelIn {
-  from {
-    opacity: 0;
-    translate: 0 6px;
-  }
-  to {
-    opacity: 1;
-    translate: 0 0;
-  }
+	from {
+		opacity: 0;
+		translate: 0 6px;
+	}
+	to {
+		opacity: 1;
+		translate: 0 0;
+	}
 }
 
 /* 标题使用应用图标建立与底栏的对应关系，数字使用等宽排版。
    分隔线将分区信息与可点击入口分开，保持菜单层级清晰。 */
 .panelHeader {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 0 4px 6px;
-  padding: 9px 3px 14px;
-  border-bottom: 1px solid var(--app-divider);
+	flex: 0 0 auto;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin: 0 4px 6px;
+	padding: 9px 3px 14px;
+	border-bottom: 1px solid var(--app-divider);
 }
 
 .panelHeading {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  flex: 1;
-  min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+	flex: 1;
+	min-width: 0;
 }
 
 /* 窄屏无法并排时提供返回父级的按钮。
    尺寸与标题图标一致，切换层级不会改变标题基线。 */
 .panelBack {
-  display: grid;
-  place-items: center;
-  flex: 0 0 34px;
-  height: 34px;
-  border: 1px solid var(--app-divider);
-  border-radius: var(--app-radius-control);
-  background: var(--app-control-bg);
-  color: var(--app-blue-text);
-  cursor: pointer;
+	display: grid;
+	place-items: center;
+	flex: 0 0 34px;
+	height: 34px;
+	border: 1px solid var(--app-divider);
+	border-radius: var(--app-radius-control);
+	background: var(--app-control-bg);
+	color: var(--app-blue-text);
+	cursor: pointer;
 }
 
 .panelBack:hover {
-  background: var(--app-hover-bg);
+	background: var(--app-hover-bg);
 }
 
 .panelBack:focus-visible {
-  outline: 2px solid var(--app-blue);
-  outline-offset: 2px;
+	outline: 2px solid var(--app-blue);
+	outline-offset: 2px;
 }
 
 .panelEyebrow {
-  color: var(--app-text-3);
-  font-size: var(--app-fs-caption);
-  font-weight: var(--app-fw-medium);
-  letter-spacing: 0.06em;
+	color: var(--app-text-3);
+	font-size: var(--app-fs-caption);
+	font-weight: var(--app-fw-medium);
+	letter-spacing: 0.06em;
 }
 
 .panelTitle {
-  color: var(--app-text);
-  font-size: var(--app-fs-primary);
-  font-weight: var(--app-fw-semibold);
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+	color: var(--app-text);
+	font-size: var(--app-fs-primary);
+	font-weight: var(--app-fw-semibold);
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 }
 
 .panelTotal {
-  align-self: flex-start;
-  padding-top: 3px;
-  color: var(--app-text-4);
-  font-size: var(--app-fs-caption);
-  font-variant-numeric: tabular-nums;
+	align-self: flex-start;
+	padding-top: 3px;
+	color: var(--app-text-4);
+	font-size: var(--app-fs-caption);
+	font-variant-numeric: tabular-nums;
 }
 
 /* 仅入口区滚动，防止长列表挤压标题或菜单行。
    滚动行为不传递到下层业务页面。 */
 .panelList {
-  min-height: 0;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  padding: 2px;
-  scrollbar-width: thin;
+	min-height: 0;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+	padding: 2px;
+	scrollbar-width: thin;
 }
 
 .panelItem {
-  display: flex;
-  align-items: center;
-  gap: var(--app-space-2);
-  width: 100%;
-  flex: 0 0 auto;
-  min-height: 46px;
-  padding: 6px 10px 6px 7px;
-  border: 0;
-  border-radius: var(--app-radius-control);
-  background: transparent;
-  font-size: var(--app-fs-body);
-  font-weight: var(--app-fw-semibold);
-  color: var(--app-text-2);
-  cursor: pointer;
-  transition: background var(--app-dur-fast) var(--app-ease-standard),
-    color var(--app-dur-fast) var(--app-ease-standard),
-    box-shadow var(--app-dur-fast) var(--app-ease-standard);
-  text-align: left;
+	display: flex;
+	align-items: center;
+	gap: var(--app-space-2);
+	width: 100%;
+	flex: 0 0 auto;
+	min-height: 46px;
+	padding: 6px 10px 6px 7px;
+	border: 0;
+	border-radius: var(--app-radius-control);
+	background: transparent;
+	font-size: var(--app-fs-body);
+	font-weight: var(--app-fw-semibold);
+	color: var(--app-text-2);
+	cursor: pointer;
+	transition:
+		background var(--app-dur-fast) var(--app-ease-standard),
+		color var(--app-dur-fast) var(--app-ease-standard),
+		box-shadow var(--app-dur-fast) var(--app-ease-standard);
+	text-align: left;
 }
 
 /* 悬停与展开采用同一蓝色选区，鼠标移到子面板后仍能追踪父项。
@@ -214,101 +332,125 @@
 .panelItem:hover,
 .panelItem:focus-visible,
 .panelItem[aria-expanded='true'] {
-  background: linear-gradient(110deg, color-mix(in srgb, var(--app-blue) 20%, transparent), color-mix(in srgb, var(--app-blue) 10%, transparent));
-  color: var(--app-blue-text);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--app-blue) 18%, transparent), inset 0 1px 0 var(--app-highlight-soft);
+	background: linear-gradient(
+		110deg,
+		color-mix(in srgb, var(--app-blue) 20%, transparent),
+		color-mix(in srgb, var(--app-blue) 10%, transparent)
+	);
+	color: var(--app-blue-text);
+	box-shadow:
+		inset 0 0 0 1px color-mix(in srgb, var(--app-blue) 18%, transparent),
+		inset 0 1px 0 var(--app-highlight-soft);
 }
 
 .panelItemActive {
-  background: color-mix(in srgb, var(--app-blue) 10%, transparent);
-  color: var(--app-blue-text);
+	background: color-mix(in srgb, var(--app-blue) 10%, transparent);
+	color: var(--app-blue-text);
 }
 
 .panelIcon {
-  display: grid;
-  place-items: center;
-  flex: 0 0 30px;
-  height: 30px;
-  border-radius: 8px;
-  color: var(--app-blue-text);
-  background: color-mix(in srgb, var(--app-blue) 9%, var(--app-control-bg));
-  box-shadow: inset 0 1px 0 var(--app-highlight-soft);
+	display: grid;
+	place-items: center;
+	flex: 0 0 30px;
+	height: 30px;
+	border-radius: 8px;
+	color: var(--app-blue-text);
+	background: color-mix(in srgb, var(--app-blue) 9%, var(--app-control-bg));
+	box-shadow: inset 0 1px 0 var(--app-highlight-soft);
 }
 
 .panelCount {
-  flex: 0 0 auto;
-  min-width: 20px;
-  padding: 2px 5px;
-  border-radius: var(--app-radius-badge);
-  background: var(--app-line-soft);
-  font-size: var(--app-fs-caption);
-  font-weight: var(--app-fw-medium);
-  font-variant-numeric: tabular-nums;
-  text-align: center;
-  color: var(--app-text-3);
+	flex: 0 0 auto;
+	min-width: 20px;
+	padding: 2px 5px;
+	border-radius: var(--app-radius-badge);
+	background: var(--app-line-soft);
+	font-size: var(--app-fs-caption);
+	font-weight: var(--app-fw-medium);
+	font-variant-numeric: tabular-nums;
+	text-align: center;
+	color: var(--app-text-3);
 }
 
 .panelLabel {
-  flex: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+	flex: 1;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .panelChevron {
-  flex: 0 0 auto;
-  color: var(--app-text-4);
+	flex: 0 0 auto;
+	color: var(--app-text-4);
 }
 
 /* 叶子入口在悬停及聚焦时露出跳转箭头，减少常态下的视觉噪声。
    动效只作用于辅助图标，不改变菜单行尺寸与点击位置。 */
 .panelLink {
-  flex: 0 0 auto;
-  opacity: 0;
-  transform: translate(-3px, 3px);
-  transition: opacity var(--app-dur-base), transform var(--app-dur-base);
+	flex: 0 0 auto;
+	opacity: 0;
+	transform: translate(-3px, 3px);
+	transition:
+		opacity var(--app-dur-base),
+		transform var(--app-dur-base);
 }
 
 .panelItem:hover .panelLink,
 .panelItem:focus-visible .panelLink {
-  opacity: 1;
-  transform: translate(0, 0);
+	opacity: 1;
+	transform: translate(0, 0);
 }
 
 .panelItem[aria-expanded='true'] .panelChevron {
-  color: var(--app-blue-text);
+	color: var(--app-blue-text);
 }
 
 /* 减少动态效果时直接显示面板与状态变化。
    不支持背景模糊时回退为实色，确保复杂背景上的文字对比度。 */
 @media (prefers-reduced-motion: reduce) {
-  .panel {
-    animation: none;
-  }
+	.panel {
+		animation: none;
+	}
 
-  .panelItem,
-  .panelLink {
-    transition: none;
-  }
+	.panelItem,
+	.panelLink {
+		transition: none;
+	}
 
-  .panelLink {
-    transform: none;
-  }
+	.panelLink {
+		transform: none;
+	}
 }
 
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .panel {
-    background: var(--app-pop-bg-solid);
-  }
+@supports not (
+	(backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))
+) {
+	.panel {
+		background: var(--app-pop-bg-solid);
+	}
 }
 
 @media (max-width: 1200px) {
-  .dockFrame { padding-inline: 12px; }
-  .dockBrand, .dockTagline { display: none; }
+	.dockFrame {
+		padding-inline: 12px;
+	}
+	.dockBrand,
+	.dockTagline {
+		display: none;
+	}
 }
 @media (max-width: 760px) {
-  .dockFrame { padding-inline: 4px; }
-  .dock { padding-inline: 4px; }
-  .item { min-width: 76px; padding-inline: 8px; }
-  .trash { min-width: 64px; }
+	.dockFrame {
+		padding-inline: 4px;
+	}
+	.dock {
+		padding-inline: 4px;
+	}
+	.item {
+		min-width: 76px;
+		padding-inline: 8px;
+	}
+	.trash {
+		min-width: 64px;
+	}
 }
