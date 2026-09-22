@@ -278,6 +278,8 @@ export function createWorkflowNode(
 		id: `node-${crypto.randomUUID()}`,
 		type: 'workflow',
 		position,
+		// 开始与结束是流程必备节点，菜单与画布快捷键统一读取此删除权限。
+		deletable: kind !== 'start' && kind !== 'end',
 		data: {
 			kind,
 			label: preset?.label ?? labels[kind],
@@ -314,14 +316,14 @@ function createEdge(source: WorkflowNode, target: WorkflowNode): WorkflowEdge {
 	}
 }
 
-/** 新增仅提供必要的开始节点；编辑已有组合时才加载对应名称、业务步骤与连接。 */
+/** 新增默认提供开始、结束节点，留出中间编排空间；已有组合加载业务步骤与连接。 */
 export function createWorkflowDocument(
 	id: string,
 	combination?: ActionCombination,
 ): WorkflowDocument {
-	const start = createWorkflowNode('start', { x: 0, y: 0 })
-	if (!combination)
-		return { id, name: '', nodes: layoutWorkflow([start], []), edges: [] }
+	const start = createWorkflowNode('start', { x: 80, y: 180 })
+	const end = createWorkflowNode('end', { x: 720, y: 180 })
+	if (!combination) return { id, name: '', nodes: [start, end], edges: [] }
 	const steps = combination.steps.map((step) => {
 		const preset = ACTION_PRESETS.find(
 			(item) => item.kind === 'action' && item.label === step.action,
@@ -335,7 +337,7 @@ export function createWorkflowDocument(
 		}
 		return node
 	})
-	const nodes = [start, ...steps, createWorkflowNode('end', { x: 0, y: 0 })]
+	const nodes = [start, ...steps, end]
 	const edges = nodes
 		.slice(1)
 		.map((node, index) => createEdge(nodes[index], node))

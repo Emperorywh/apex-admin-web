@@ -121,6 +121,8 @@ export function WorkflowInspector({
 										icon: <Trash2 size={14} />,
 										label: t('删除节点'),
 										danger: true,
+										// 配置面板遵循节点删除权限，结束节点保留配置与复制能力。
+										disabled: node.deletable === false,
 									},
 								],
 								onClick: ({ key }) => {

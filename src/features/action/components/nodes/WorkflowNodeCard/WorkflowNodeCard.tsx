@@ -16,12 +16,14 @@ export const WorkflowNodeCard = memo(function WorkflowNodeCard({
 	id,
 	data,
 	selected,
+	// 使用节点自身的删除权限，让菜单与画布键盘删除行为保持一致。
+	deletable,
 }: NodeProps<WorkflowNode>) {
 	const { t } = useTranslation('action')
 	const actions = useContext(WorkflowNodeActions)
 	const behavior = WORKFLOW_NODE_BEHAVIOR[data.kind]
 	const Summary = getWorkflowSummary(data)
-	// 右键与更多按钮共用菜单，始终操作当前卡片；开始节点保留唯一入口，不允许复制或删除。
+	// 右键与更多按钮共用菜单；开始节点不允许复制，开始与结束节点均不允许删除。
 	const menu: MenuProps = {
 		items: [
 			{
@@ -35,7 +37,7 @@ export const WorkflowNodeCard = memo(function WorkflowNodeCard({
 				icon: <Trash2 size={14} />,
 				label: t('删除'),
 				danger: true,
-				disabled: !behavior.editable,
+				disabled: !deletable,
 			},
 		],
 		onClick: ({ key, domEvent }) => {

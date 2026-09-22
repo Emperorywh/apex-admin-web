@@ -109,8 +109,9 @@ export default {
 	检查流程: 'Validate workflow',
 	'导出流程 JSON': 'Export workflow JSON',
 	动作编排画布: 'Action workflow canvas',
-	'按方向键移动节点，Delete 删除节点，Escape 取消选择':
-		'Use arrow keys to move the node, Delete to remove it, and Escape to clear the selection',
+	// 无障碍提示同步说明流程端点的删除限制。
+	'按方向键移动节点，Delete 删除普通节点，Escape 取消选择；开始和结束节点不可删除':
+		'Use arrow keys to move nodes, Delete to remove regular nodes, and Escape to clear the selection. Start and end nodes cannot be deleted',
 	点击节点编辑配置: 'Click a node to edit its configuration',
 	'选中连线后按 Delete 删除':
 		'Select a connection and press Delete to remove it',
@@ -151,7 +152,9 @@ export default {
 	拖动画布: 'Pan canvas',
 	撤销: 'Undo',
 	重做: 'Redo',
-	删除选中节点或连线: 'Delete selected nodes or connections',
+	// 快捷键帮助与画布实际允许删除的范围保持一致。
+	'删除选中节点或连线（开始、结束节点除外）':
+		'Delete selected nodes or connections (except start and end nodes)',
 	取消选择: 'Clear selection',
 	// 画布节点、动作选择浮层和参数编辑器共享同一套业务术语，预制中文值在展示时翻译。
 	开始: 'Start',

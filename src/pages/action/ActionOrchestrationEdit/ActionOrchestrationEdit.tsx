@@ -268,13 +268,15 @@ function WorkflowEditor({ initial }: { initial: WorkflowDocument }) {
 		return true
 	}
 
-	/** 开始节点不可删除；删除其他节点时同步清除入边和出边。 */
+	/** 开始与结束节点不可删除；拦截时保留选择态，删除其他节点时同步清除连线。 */
 	const deleteNode = useCallback(
 		(nodeId: string) => {
+			const node = latest.current.nodes.find((item) => item.id === nodeId)
+			if (!node || node.deletable === false) return
 			change((current) => {
 				if (
-					current.nodes.find((node) => node.id === nodeId)?.data
-						.kind === 'start'
+					current.nodes.find((node) => node.id === nodeId)
+						?.deletable === false
 				)
 					return current
 				return {
@@ -710,11 +712,9 @@ function WorkflowEditor({ initial }: { initial: WorkflowDocument }) {
 						}}
 					>
 						<WorkflowNodeActions.Provider value={actions}>
+							{/* 节点自带删除权限，画布据此保护开始、结束节点及其未选中的连线。 */}
 							<ReactFlow<WorkflowNode, WorkflowEdge>
-								nodes={workflow.nodes.map((node) => ({
-									...node,
-									deletable: node.data.kind !== 'start',
-								}))}
+								nodes={workflow.nodes}
 								edges={workflow.edges}
 								nodeTypes={nodeTypes}
 								edgeTypes={edgeTypes}
@@ -732,6 +732,7 @@ function WorkflowEditor({ initial }: { initial: WorkflowDocument }) {
 									interactionWidth: 22,
 								}}
 								onNodesChange={(changes) => {
+									// 删除变更再次校验节点权限，避免绕过菜单删除流程端点。
 									const relevant = changes.filter(
 										(item) =>
 											!(
@@ -739,7 +740,7 @@ function WorkflowEditor({ initial }: { initial: WorkflowDocument }) {
 												workflow.nodes.find(
 													(node) =>
 														node.id === item.id,
-												)?.data.kind === 'start'
+												)?.deletable === false
 											),
 									)
 									if (!relevant.length) return
@@ -855,7 +856,7 @@ function WorkflowEditor({ initial }: { initial: WorkflowDocument }) {
 								attributionPosition="top-right"
 								ariaLabelConfig={{
 									'node.a11yDescription.default': t(
-										'按方向键移动节点，Delete 删除节点，Escape 取消选择',
+										'按方向键移动节点，Delete 删除普通节点，Escape 取消选择；开始和结束节点不可删除',
 									),
 									'node.a11yDescription.keyboardDisabled':
 										t('点击节点编辑配置'),
@@ -1179,7 +1180,7 @@ function WorkflowEditor({ initial }: { initial: WorkflowDocument }) {
 							))}
 					</div>
 				</Modal>
-				{/* 帮助与实际键盘处理保持一致，保存按钮和快捷键共用同一套校验与提示。 */}
+				{/* 帮助与实际键盘处理保持一致，明确开始与结束节点不支持删除。 */}
 				<Modal
 					open={help}
 					title={t('快捷键')}
@@ -1195,7 +1196,10 @@ function WorkflowEditor({ initial }: { initial: WorkflowDocument }) {
 							['撤销', 'Ctrl / ⌘ + Z'],
 							['重做', 'Ctrl / ⌘ + Shift + Z'],
 							['复制节点', 'Ctrl / ⌘ + D'],
-							['删除选中节点或连线', 'Delete'],
+							[
+								'删除选中节点或连线（开始、结束节点除外）',
+								'Delete',
+							],
 							['取消选择', 'Esc'],
 						].map(([label, key]) => (
 							<div key={key}>
