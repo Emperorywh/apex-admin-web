@@ -1,0 +1,38 @@
+/* 分支逐块编辑；运算符保留 104px 宽度，其余空间交给比较值。 */
+.branch {
+	margin-bottom: 14px;
+	padding: 12px;
+	border: 1px solid var(--app-line-soft);
+	border-radius: 5px;
+	background: var(--app-highlight-soft);
+}
+
+.branchIndex {
+	font-size: 9px;
+	font-weight: 400;
+	color: var(--app-text-3);
+}
+
+.conditionValues {
+	display: grid;
+	grid-template-columns: 104px minmax(0, 1fr);
+	gap: 9px;
+}
+
+.conditionValues > div {
+	margin-bottom: 0;
+}
+
+.elseBranch {
+	margin-top: 18px;
+	padding-top: 14px;
+	border-top: 1px solid var(--app-divider);
+}
+
+.elseBranch > strong {
+	display: block;
+	margin-bottom: 9px;
+	font-size: 11px;
+	font-weight: 500;
+	color: var(--app-text-2);
+}

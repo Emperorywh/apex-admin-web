@@ -1,0 +1,91 @@
+/* 配置浮层固定为 360px；最小宽度约束避免小屏溢出，滚动仅发生在页签内容区。 */
+.inspector {
+	display: flex;
+	flex: 0 0 360px;
+	flex-direction: column;
+	width: 360px;
+	max-width: calc(100vw - 24px);
+	height: calc(100% - 20px);
+	margin: 10px 10px 10px 0;
+	min-height: 0;
+	overflow: hidden;
+	border: 1px solid var(--app-line);
+	border-radius: 9px;
+	background: var(--app-panel);
+	box-shadow: var(--app-window-shadow);
+	color: var(--app-text);
+}
+
+.header {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex-shrink: 0;
+	min-height: 59px;
+	padding: 15px 15px 9px;
+}
+
+.header > strong {
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.headerActions {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+}
+
+.headerActions :global(.ant-btn) {
+	color: var(--app-text-3);
+}
+
+.headerActions :global(.ant-btn):hover {
+	color: var(--app-cyan);
+}
+
+.tabs {
+	flex: 1;
+	min-height: 0;
+}
+
+.tabs :global(.ant-tabs-nav) {
+	flex-shrink: 0;
+	margin: 0;
+	padding: 0 17px;
+}
+
+.tabs :global(.ant-tabs-tab) {
+	padding: 12px 0;
+	font-size: 12px;
+}
+
+.tabs :global(.ant-tabs-tab-btn) {
+	font-weight: 500;
+}
+
+/* 当前 Tabs 的正文容器单独滚动，长轴表单不会把面板标题与页签推离视口。 */
+.tabs :global(.ant-tabs-body-holder) {
+	min-height: 0;
+	overflow: auto;
+	overscroll-behavior: contain;
+	scrollbar-gutter: stable;
+}
+
+.body {
+	padding: 0 16px 12px;
+}
+/* 小屏将配置面板浮在右侧，画布仍保留完整视口和底部控制。 */
+@media (max-width: 850px) {
+	.inspector {
+		position: absolute;
+		z-index: 10;
+		inset: 10px 10px 10px auto;
+		margin: 0;
+	}
+}

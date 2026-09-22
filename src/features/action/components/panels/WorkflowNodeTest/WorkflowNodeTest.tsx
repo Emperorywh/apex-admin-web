@@ -2,13 +2,13 @@ import { useEffect, useRef, useState } from 'react'
 import { Button, Progress } from 'antd'
 import { ArrowDown, ArrowUp, FlaskConical, Play, Square } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import type { AxisMotor } from '../../../axis-motor/axisMotor.types'
-import type { WorkflowNodeData } from '../../workflow.model'
+import type { AxisMotor } from '../../../../axis-motor/axisMotor.types'
+import type { WorkflowNodeData } from '../../../workflow.model'
 import {
 	encoderToHeight,
 	getPickupMotors,
 	validateActionConfiguration,
-} from '../../workflow.action'
+} from '../../../workflow.action'
 import styles from './WorkflowNodeTest.module.css'
 
 /** 父级用配置快照作为 key；改参数、换节点或关闭面板会卸载测试并清理计时器。 */

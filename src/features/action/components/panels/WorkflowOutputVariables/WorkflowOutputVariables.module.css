@@ -1,0 +1,62 @@
+.body {
+	padding: 0 16px 12px;
+}
+
+/* 输出页签展示变量契约与类型，空状态说明没有新增输出，不模拟真实运行结果。 */
+.outputVariables {
+	border-top: 1px solid var(--app-divider);
+}
+
+.outputVariable {
+	padding: 14px 0;
+	border-bottom: 1px solid var(--app-divider);
+}
+
+.outputVariable > div {
+	display: flex;
+	align-items: center;
+	gap: 7px;
+}
+
+.outputVariable svg {
+	flex-shrink: 0;
+	color: var(--app-cyan);
+}
+
+.outputVariable code {
+	flex: 1;
+	min-width: 0;
+	overflow-wrap: anywhere;
+	font-size: 12px;
+	color: var(--app-text);
+}
+
+.outputVariable span {
+	font-size: 10px;
+	color: var(--app-text-3);
+}
+
+.outputVariable p {
+	margin: 7px 0 0 20px;
+	font-size: 11px;
+	line-height: 1.7;
+	color: var(--app-text-3);
+}
+
+.empty {
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	gap: 9px;
+	padding: 42px 0;
+	color: var(--app-text-3);
+}
+
+.empty svg {
+	opacity: 0.55;
+}
+
+.empty p {
+	margin: 0;
+	font-size: 11px;
+}

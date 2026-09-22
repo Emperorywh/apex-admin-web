@@ -1,0 +1,9 @@
+/* 执行限制放在摘要下方，紧凑排列超时与重试次数。 */
+.footer {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	margin-top: 10px;
+	font-size: 10px;
+	color: var(--app-text-3);
+}

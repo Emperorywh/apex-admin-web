@@ -1,0 +1,27 @@
+/* 条件端口固定在各分支行中线，独立点击入口位于端口外侧，不拦截拖拽连线。 */
+.branches {
+	margin-top: 10px;
+}
+
+.branch {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
+	height: 29px;
+	color: var(--app-text-2);
+}
+
+.branch > span {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	font-size: 11px;
+}
+
+.branch > b {
+	font-size: 10px;
+	font-weight: 500;
+	color: var(--app-cyan);
+}

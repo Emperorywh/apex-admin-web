@@ -1,0 +1,11 @@
+/* 超时和重试使用等宽双列；移除字段底部间距，由整行控制分隔。 */
+.twoColumns {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 12px;
+	margin-bottom: 13px;
+}
+
+.twoColumns > div {
+	margin-bottom: 0;
+}

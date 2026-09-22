@@ -72,9 +72,10 @@ import {
 } from '@/features/action/workflow.model'
 import { useWorkflowHistory } from '@/features/action/useWorkflowHistory'
 import { WorkflowIcon } from '@/features/action/components/WorkflowIcon/WorkflowIcon'
-import { WorkflowNodeCard } from '@/features/action/components/WorkflowNodeCard/WorkflowNodeCard'
+// 节点与配置面板按职责分目录，页面直接引用当前公共外壳。
+import { WorkflowNodeCard } from '@/features/action/components/nodes/WorkflowNodeCard/WorkflowNodeCard'
 import { WorkflowNodeActions } from '@/features/action/workflow.context'
-import { WorkflowInspector } from '@/features/action/components/WorkflowInspector/WorkflowInspector'
+import { WorkflowInspector } from '@/features/action/components/panels/WorkflowInspector/WorkflowInspector'
 import { WorkflowPicker } from '@/features/action/components/WorkflowPicker/WorkflowPicker'
 import { WorkflowEdge as WorkflowEdgeView } from '@/features/action/components/WorkflowEdge/WorkflowEdge'
 import {

@@ -1,0 +1,64 @@
+/* 节点采用统一的紧凑宽度与分层蓝色表面，选中时以青色描边确认当前配置对象。 */
+.node {
+	position: relative;
+	width: 236px;
+	padding: 13px;
+	border: 1px solid var(--app-line);
+	border-radius: 9px;
+	background: var(--app-card-surface);
+	box-shadow: var(--app-shadow-1);
+	color: var(--app-text);
+	font-size: 12px;
+}
+
+.node:hover {
+	border-color: var(--app-blue);
+}
+
+/* 选中态优先于悬停态，鼠标停留在当前节点时仍保留清晰的青色边框。 */
+.node.selected {
+	border-color: var(--app-cyan);
+	box-shadow:
+		0 0 0 2px var(--app-accent-glow),
+		var(--app-shadow-2);
+}
+
+.heading {
+	display: flex;
+	align-items: center;
+	gap: 9px;
+	min-height: 27px;
+}
+
+.heading strong {
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-size: 13px;
+	font-weight: 600;
+}
+
+.menu {
+	display: grid;
+	place-items: center;
+	padding: 2px;
+	border: 0;
+	border-radius: 3px;
+	background: transparent;
+	color: var(--app-text-3);
+	cursor: pointer;
+}
+
+.menu:hover {
+	background: var(--app-highlight);
+	color: var(--app-cyan);
+}
+
+.node .handle {
+	width: 8px;
+	height: 8px;
+	border: 2px solid var(--app-blue-2);
+	background: var(--app-card-bg);
+}

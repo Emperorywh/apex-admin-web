@@ -1,0 +1,43 @@
+/* 追加按钮位于端口外侧；仅在卡片悬停、选中或键盘聚焦时显示。 */
+.addPort {
+	position: absolute;
+	right: -37px;
+	top: 50%;
+	transform: translateY(-50%);
+	display: grid;
+	place-items: center;
+	width: 18px;
+	height: 18px;
+	padding: 0;
+	border: 1px solid var(--app-line);
+	border-radius: 50%;
+	background: var(--app-panel);
+	color: var(--app-cyan);
+	cursor: pointer;
+	opacity: 0;
+}
+
+.singlePort {
+	right: -24px;
+}
+
+[data-workflow-card]:hover .addPort,
+[data-workflow-selected='true'] .addPort,
+.addPort:focus-visible {
+	opacity: 1;
+}
+
+.addPort:hover {
+	background: var(--app-primary);
+	color: var(--app-text);
+}
+/* 双类选择器保持与画布默认端口相同的覆盖优先级；分支行端口向右补偿卡片内边距。 */
+.handle.handle {
+	width: 8px;
+	height: 8px;
+	border: 2px solid var(--app-blue-2);
+	background: var(--app-card-bg);
+}
+.handle.branchHandle {
+	right: -18px;
+}

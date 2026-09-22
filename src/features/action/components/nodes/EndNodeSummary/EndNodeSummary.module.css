@@ -1,0 +1,8 @@
+/* 结束摘要保持与其他节点一致的内凹表面，完整展示返回结果说明。 */
+.endSummary {
+	margin-top: 11px;
+	padding: 7px 8px;
+	background: var(--app-panel-inset);
+	border-radius: 4px;
+	color: var(--app-text-2);
+}

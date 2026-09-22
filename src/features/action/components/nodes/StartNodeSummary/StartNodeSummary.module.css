@@ -1,0 +1,37 @@
+/* 入口标识悬在卡片上方；输入变量按名称和必填状态两列排列。 */
+.startLabel {
+	position: absolute;
+	top: -24px;
+	left: 2px;
+	color: var(--app-text-3);
+	font-size: 11px;
+}
+
+.variables {
+	margin-top: 10px;
+	padding: 6px 8px;
+	background: var(--app-panel-inset);
+	border-radius: 4px;
+}
+
+.variables > div {
+	display: flex;
+	justify-content: space-between;
+	gap: 8px;
+	padding: 4px 0;
+	font-size: 10px;
+}
+
+.variables b {
+	color: var(--app-cyan);
+	font-weight: 500;
+}
+
+.variables small {
+	color: var(--app-text-3);
+}
+
+.variables > span {
+	color: var(--app-text-3);
+	font-size: 11px;
+}

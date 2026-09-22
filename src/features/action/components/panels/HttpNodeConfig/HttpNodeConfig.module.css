@@ -1,0 +1,5 @@
+/* 请求体采用等宽字体，便于识别 JSON 的缩进和标点。 */
+.codeInput {
+	font-family: Consolas, 'Courier New', monospace;
+	line-height: 1.7;
+}

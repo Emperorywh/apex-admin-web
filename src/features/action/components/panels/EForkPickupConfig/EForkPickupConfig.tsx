@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react'
 import { App, Button, Input, InputNumber, Select, Switch } from 'antd'
 import { Check } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { getMotorAction } from '../../../axis-motor/axisMotor.model'
-import type { AxisMotor } from '../../../axis-motor/axisMotor.types'
-import type { WorkflowNodeData } from '../../workflow.model'
+import { getMotorAction } from '../../../../axis-motor/axisMotor.model'
+import type { AxisMotor } from '../../../../axis-motor/axisMotor.types'
+import type { WorkflowNodeData } from '../../../workflow.model'
 import {
 	EFORK_PICKUP_CODE,
 	EMPTY_PICKUP,
@@ -13,7 +13,7 @@ import {
 	heightToEncoder,
 	validatePickup,
 	type EForkPickupSettings,
-} from '../../workflow.action'
+} from '../../../workflow.action'
 import { WorkflowNodeTest } from '../WorkflowNodeTest/WorkflowNodeTest'
 import styles from './EForkPickupConfig.module.css'
 

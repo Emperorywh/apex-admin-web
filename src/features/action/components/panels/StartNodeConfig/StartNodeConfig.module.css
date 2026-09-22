@@ -1,0 +1,40 @@
+/* 输入变量标题与数量对齐，类型和必填选项并排以节省面板宽度。 */
+.sectionHeading {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.sectionHeading > span {
+	margin-bottom: 12px;
+	font-size: 10px;
+	color: var(--app-text-3);
+}
+
+/* 分支与输入条目使用轻分隔与紧凑标题，避免嵌套面板抢占配置空间。 */
+.variableEditor {
+	margin-bottom: 13px;
+	padding-bottom: 13px;
+	border-bottom: 1px solid var(--app-divider);
+}
+
+.codeLabel {
+	font-size: 10px;
+	color: var(--app-text-3);
+}
+
+.inputOptions {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	align-items: end;
+	gap: 18px;
+}
+
+.inputOptions > div {
+	margin-bottom: 0;
+}
+
+.inputOptions :global(.ant-checkbox-wrapper) {
+	padding-bottom: 6px;
+	font-size: 11px;
+}

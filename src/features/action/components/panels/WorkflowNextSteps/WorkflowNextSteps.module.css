@@ -1,0 +1,135 @@
+/* 下一步以细线连接各端口，连线按钮与断开按钮独立，避免意外切换当前节点。 */
+.nextSection {
+	padding-top: 18px;
+}
+
+.nextTree {
+	display: flex;
+	align-items: flex-start;
+	gap: 15px;
+}
+
+.nextTree > span {
+	position: relative;
+	margin-top: 13px;
+}
+
+.nextTree > span::after {
+	position: absolute;
+	top: 50%;
+	right: -15px;
+	width: 15px;
+	height: 1px;
+	background: var(--app-line);
+	content: '';
+}
+
+.nextBranches {
+	flex: 1;
+	min-width: 0;
+	padding-left: 13px;
+	border-left: 1px solid var(--app-line);
+}
+
+.nextBranch {
+	position: relative;
+	padding: 9px 0;
+}
+
+.nextBranch::before {
+	position: absolute;
+	top: 27px;
+	left: -14px;
+	width: 9px;
+	height: 1px;
+	background: var(--app-line);
+	content: '';
+}
+
+.portLabel {
+	display: block;
+	margin-bottom: 6px;
+	font-size: 9px;
+	color: var(--app-text-3);
+}
+
+.addNext {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	width: 100%;
+	min-height: 35px;
+	padding: 8px;
+	border: 1px dashed var(--app-line);
+	border-radius: 5px;
+	background: var(--app-panel-inset);
+	color: var(--app-text-3);
+	font-size: 11px;
+	text-align: left;
+	cursor: pointer;
+	transition:
+		border-color var(--app-dur-fast),
+		color var(--app-dur-fast);
+}
+
+.addNext:hover {
+	border-color: var(--app-cyan);
+	color: var(--app-cyan);
+}
+
+.connectedNode {
+	display: flex;
+	align-items: center;
+	gap: 3px;
+	margin-bottom: 5px;
+	padding: 5px;
+	border: 1px solid var(--app-line-soft);
+	border-radius: 5px;
+	background: var(--app-panel-inset);
+}
+
+.connectedNode:last-child {
+	margin-bottom: 0;
+}
+
+.connectedNode > button:first-child {
+	display: flex;
+	align-items: center;
+	flex: 1;
+	min-width: 0;
+	gap: 7px;
+	padding: 0;
+	border: 0;
+	background: transparent;
+	color: var(--app-text-2);
+	font-size: 11px;
+	text-align: left;
+	cursor: pointer;
+}
+
+.connectedNode > button:first-child:hover {
+	color: var(--app-cyan);
+}
+
+.connectedNode > button:first-child > span:first-child {
+	width: 23px;
+	height: 23px;
+	border-radius: 4px;
+}
+
+.connectedNode > button:first-child > span:nth-child(2) {
+	flex: 1;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.connectedNode > button:first-child > svg {
+	flex-shrink: 0;
+	color: var(--app-text-3);
+}
+
+.connectedNode > :global(.ant-btn) {
+	flex-shrink: 0;
+	color: var(--app-text-3);
+}

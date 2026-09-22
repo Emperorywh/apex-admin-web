@@ -1,0 +1,29 @@
+/* 动作来源以图标和两行说明组成紧凑卡片，区分库分组与动作名称。 */
+.source {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-bottom: 18px;
+	padding: 10px;
+	border: 1px solid var(--app-line-soft);
+	border-radius: 5px;
+	background: var(--app-panel-inset);
+}
+
+.source > div {
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.source > div > span {
+	font-size: 10px;
+	color: var(--app-text-3);
+}
+
+.source strong {
+	font-size: 12px;
+	font-weight: 500;
+	color: var(--app-text-2);
+}
