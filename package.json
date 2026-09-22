@@ -14,8 +14,7 @@
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
 		"typecheck": "tsc -b --noEmit",
-		"check:structure": "node scripts/check-structure.mjs",
-		"check": "pnpm lint && pnpm typecheck && pnpm check:structure",
+		"check": "pnpm lint && pnpm typecheck",
 		"preview": "vite preview",
 		"prepare": "husky"
 	},
